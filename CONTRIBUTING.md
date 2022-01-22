@@ -2,18 +2,18 @@
 We'd love your contribtion on the project!
 
 ## Topics
-* [Contributing to Podman](#contributing-to-podman-tui)
+* [Contributing to Podman TUI](#contributing-to-podman-tui)
 * [Missing Features](#missing-features)
 
 ## Contributing To Podman TUI
 
-### Fork and clone Podman
+### Fork and clone Podman TUI
 
 First you need to frok and clone podman-tui project on Github.
 
 Be sure to have [defined your `$GOPATH` environment variable](https://github.com/golang/go/wiki/GOPATH).
 
-Create a path that corresponds to the go import paths of Podman: `mkdir -p $GOPATH/src/github.com/containers`.
+Create a path that corresponds to the go import paths of Podman-tui: `mkdir -p $GOPATH/src/github.com/containers`.
 
 Then clone your fork locally:
 
