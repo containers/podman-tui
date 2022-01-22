@@ -1,0 +1,128 @@
+package containers
+
+import (
+	"fmt"
+	"net"
+
+	"github.com/containers/podman/v3/pkg/bindings/containers"
+	"github.com/containers/podman/v3/pkg/specgen"
+	"github.com/containers/podman/v3/pkg/specgenutil"
+	"github.com/rs/zerolog/log"
+
+	"github.com/containers/podman-tui/pdcs/connection"
+)
+
+//CreateOptions container create options.
+type CreateOptions struct {
+	Name            string
+	Labels          map[string]string
+	Image           string
+	Remove          bool
+	Pod             string
+	Hostname        string
+	IPAddress       string
+	Network         string
+	MacAddress      string
+	Publish         []string
+	Expose          []string
+	PublishAll      bool
+	DNSServer       []string
+	DNSOptions      []string
+	DNSSearchDomain []string
+	Volume          string
+	VolumeDest      string
+	ImageVolume     string
+}
+
+//Create creates a new container.
+func Create(opts CreateOptions) ([]string, error) {
+	var (
+		warningResponse []string
+		macAddress      net.HardwareAddr
+		ipAddr          net.IP
+		dnsServers      []net.IP
+	)
+	log.Debug().Msgf("pdcs: podman container create %v", opts)
+	conn, err := connection.GetConnection()
+	if err != nil {
+		return warningResponse, err
+	}
+	containerSpecGen := specgen.NewSpecGenerator(opts.Name, false)
+	containerSpecGen.Name = opts.Name
+	if opts.Pod != "" {
+		containerSpecGen.Pod = opts.Pod
+	}
+	containerSpecGen.Image = opts.Image
+	containerSpecGen.Labels = opts.Labels
+	containerSpecGen.Remove = opts.Remove
+
+	if opts.MacAddress != "" {
+		macAddress, err = net.ParseMAC(opts.MacAddress)
+		if err != nil {
+			return warningResponse, err
+		}
+		containerSpecGen.StaticMAC = &macAddress
+	}
+
+	if opts.IPAddress != "" {
+		ipAddr = net.ParseIP(opts.IPAddress)
+		if ipAddr == nil {
+			return warningResponse, fmt.Errorf("invalid IP address: %s", ipAddr)
+		}
+		containerSpecGen.StaticIP = &ipAddr
+	}
+	for _, d := range opts.DNSServer {
+		addr := net.ParseIP(d)
+		if addr == nil {
+			return warningResponse, fmt.Errorf("invalid DNS address: %s", ipAddr)
+		}
+		dnsServers = append(dnsServers, addr)
+	}
+	if len(dnsServers) > 0 {
+		containerSpecGen.DNSServers = dnsServers
+	}
+	if len(opts.DNSOptions) > 0 {
+		containerSpecGen.DNSOptions = opts.DNSOptions
+	}
+	if len(opts.DNSSearchDomain) > 0 {
+		containerSpecGen.DNSSearch = opts.DNSSearchDomain
+	}
+
+	// ports
+	if len(opts.Publish) > 0 {
+		containerSpecGen.PortMappings, err = specgenutil.CreatePortBindings(opts.Publish)
+		if err != nil {
+			return warningResponse, err
+		}
+	}
+	if len(opts.Expose) > 0 {
+		containerSpecGen.Expose, err = createExpose(opts.Expose)
+		if err != nil {
+			return warningResponse, err
+		}
+	}
+
+	containerSpecGen.PublishExposedPorts = opts.PublishAll
+
+	// volume
+	if opts.ImageVolume != "" {
+		containerSpecGen.ImageVolumeMode = opts.ImageVolume
+	}
+	if opts.Volume != "" {
+		containerSpecGen.Volumes = append(containerSpecGen.Volumes, &specgen.NamedVolume{
+			Name: opts.Volume,
+			Dest: opts.VolumeDest,
+		})
+	}
+
+	// validate spec
+	if err := containerSpecGen.Validate(); err != nil {
+		return warningResponse, err
+	}
+	response, err := containers.CreateWithSpec(conn, containerSpecGen, &containers.CreateOptions{})
+	if err != nil {
+		return warningResponse, err
+	}
+	warningResponse = response.Warnings
+	return warningResponse, nil
+}
