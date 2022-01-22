@@ -3,10 +3,10 @@ package images
 import (
 	"sort"
 
+	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/containers/podman/v3/pkg/bindings/images"
 	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/docker/distribution/reference"
-	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

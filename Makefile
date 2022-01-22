@@ -37,7 +37,7 @@ uninstall:  ## Uninstall podman-tui binary
 .PHONY: validate  
 validate:   ## Validate podman-tui code (fmt, lint, ...)
 	@echo "running gofmt"
-	@test -z $(shell gofmt -l $(SRC) | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
+	@test -z "$(shell gofmt -l $(SRC) | tee /dev/stderr | tr '\n' ' ')" || echo "[WARN] Fix formatting issues with 'make fmt'"
 
 	@echo "running golint"
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
@@ -47,8 +47,9 @@ validate:   ## Validate podman-tui code (fmt, lint, ...)
 
 .PHONY: fmt      
 fmt:   ## Run gofmt
-	@echo -e "gofmt check and fix:\n `echo $(SRC) | tr " " "\n"`"
-	@gofmt -l -w $(SRC)
+	@echo -e "gofmt check and fix"
+	
+	@gofmt -w $(SRC)
 
 _HLP_TGTS_RX = '^[[:print:]]+:.*?\#\# .*$$'
 _HLP_TGTS_CMD = grep -E $(_HLP_TGTS_RX) $(MAKEFILE_LIST)

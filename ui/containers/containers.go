@@ -5,10 +5,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/containers/podman-tui/ui/containers/cntdialogs"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
 

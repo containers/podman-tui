@@ -3,8 +3,8 @@ package infobar
 import (
 	"fmt"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/gdamore/tcell/v2"
 
 	"github.com/rivo/tview"
 )

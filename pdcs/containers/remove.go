@@ -1,8 +1,8 @@
 package containers
 
 import (
-	"github.com/containers/podman/v3/pkg/bindings/containers"
 	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman/v3/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
 

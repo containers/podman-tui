@@ -1,9 +1,9 @@
 package images
 
 import (
+	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/containers/podman/v3/pkg/bindings/images"
 	"github.com/containers/podman/v3/pkg/errorhandling"
-	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/rs/zerolog/log"
 )
 

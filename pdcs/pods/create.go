@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/containers/podman/v3/pkg/bindings/pods"
 	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/containers/podman/v3/pkg/errorhandling"
 	"github.com/containers/podman/v3/pkg/specgen"
 	"github.com/containers/podman/v3/pkg/util"
-	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/rs/zerolog/log"
 )
 

@@ -3,10 +3,10 @@ package images
 import (
 	"time"
 
-	"github.com/containers/podman/v3/pkg/bindings/images"
-	"github.com/docker/go-units"
 	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/containers/podman-tui/pdcs/utils"
+	"github.com/containers/podman/v3/pkg/bindings/images"
+	"github.com/docker/go-units"
 	"github.com/rs/zerolog/log"
 )
 

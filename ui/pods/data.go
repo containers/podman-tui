@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman/v3/pkg/domain/entities"
 	ppods "github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman/v3/pkg/domain/entities"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )

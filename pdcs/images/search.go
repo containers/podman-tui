@@ -3,8 +3,8 @@ package images
 import (
 	"fmt"
 
-	"github.com/containers/podman/v3/pkg/bindings/images"
 	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman/v3/pkg/bindings/images"
 	"github.com/rs/zerolog/log"
 )
 

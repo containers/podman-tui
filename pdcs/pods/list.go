@@ -3,9 +3,9 @@ package pods
 import (
 	"sort"
 
+	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/containers/podman/v3/pkg/bindings/pods"
 	"github.com/containers/podman/v3/pkg/domain/entities"
-	"github.com/containers/podman-tui/pdcs/connection"
 	"github.com/rs/zerolog/log"
 )
 

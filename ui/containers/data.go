@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/podman/v3/pkg/domain/entities"
-	"github.com/docker/go-units"
 	"github.com/containers/podman-tui/pdcs/containers"
 	putils "github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/docker/go-units"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )

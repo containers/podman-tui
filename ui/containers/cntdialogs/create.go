@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman/v3/pkg/domain/entities"
-	"github.com/gdamore/tcell/v2"
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/pdcs/networks"
@@ -13,6 +11,8 @@ import (
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )

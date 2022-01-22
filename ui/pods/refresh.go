@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/docker/go-units"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/docker/go-units"
 	"github.com/rivo/tview"
 )
 
