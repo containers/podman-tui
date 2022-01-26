@@ -1,6 +1,6 @@
 PKG_PATH = "github.com/containers/podman-tui"
-BIN = ./bin/
-DESTDIR = /usr/local/bin/
+BIN = ./bin
+DESTDIR = /usr/local/bin
 VERSION = $(shell cat VERSION)
 TARGET = $(shell basename `pwd`)
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
