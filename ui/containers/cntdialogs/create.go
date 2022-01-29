@@ -23,27 +23,27 @@ const (
 )
 
 const (
-	formFocus = 0 + iota
-	categoriesFocus
-	categoryPagesFocus
-	containerNameFieldFocus
-	containerImageFieldFocus
-	containerPodFieldFocis
-	containerLabelsFieldFocus
-	containerRemoveFieldFocus
-	containerPortExposeFieldFocus
-	containerPortPublishFieldFocus
-	containerPortPublishAllFieldFocus
-	containerHostnameFieldFocus
-	containerIPAddrFieldFocus
-	containerMacAddrFieldFocus
-	containerNetworkFieldFocus
-	containerDNSServersFieldFocus
-	containerDNSOptionsFieldFocus
-	containerDNSSearchFieldFocus
-	containerImageVolumeFieldFocus
-	containerVolumeFieldFocus
-	containerVolumeDestFocus
+	createFormFocus = 0 + iota
+	createCategoriesFocus
+	createCategoryPagesFocus
+	createContainerNameFieldFocus
+	createContainerImageFieldFocus
+	createcontainerPodFieldFocis
+	createContainerLabelsFieldFocus
+	createContainerRemoveFieldFocus
+	createContainerPortExposeFieldFocus
+	createContainerPortPublishFieldFocus
+	createContainerPortPublishAllFieldFocus
+	createContainerHostnameFieldFocus
+	createContainerIPAddrFieldFocus
+	createContainerMacAddrFieldFocus
+	createContainerNetworkFieldFocus
+	createContainerDNSServersFieldFocus
+	createContainerDNSOptionsFieldFocus
+	createContainerDNSSearchFieldFocus
+	createContainerImageVolumeFieldFocus
+	createContainerVolumeFieldFocus
+	createContainerVolumeDestFocus
 )
 
 const (
@@ -350,7 +350,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 func (d *ContainerCreateDialog) Display() {
 	d.display = true
 	d.initData()
-	d.focusElement = categoryPagesFocus
+	d.focusElement = createCategoryPagesFocus
 }
 
 // IsDisplay returns true if primitive is shown
@@ -376,11 +376,11 @@ func (d *ContainerCreateDialog) HasFocus() bool {
 func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
-	case formFocus:
+	case createFormFocus:
 		button := d.form.GetButton(d.form.GetButtonCount() - 1)
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
-				d.focusElement = categoriesFocus // category text view
+				d.focusElement = createCategoriesFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
 				return nil
@@ -393,10 +393,10 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		})
 		delegate(d.form)
 	// category text view
-	case categoriesFocus:
+	case createCategoriesFocus:
 		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
-				d.focusElement = categoryPagesFocus // category page view
+				d.focusElement = createCategoryPagesFocus // category page view
 				d.Focus(delegate)
 				return nil
 			}
@@ -410,49 +410,49 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		})
 		delegate(d.categories)
 	// basic info page
-	case containerNameFieldFocus:
+	case createContainerNameFieldFocus:
 		delegate(d.containerNameField)
-	case containerImageFieldFocus:
+	case createContainerImageFieldFocus:
 		delegate(d.containerImageField)
-	case containerPodFieldFocis:
+	case createcontainerPodFieldFocis:
 		delegate(d.containerPodField)
-	case containerLabelsFieldFocus:
+	case createContainerLabelsFieldFocus:
 		delegate(d.containerLabelsField)
-	case containerRemoveFieldFocus:
+	case createContainerRemoveFieldFocus:
 		delegate(d.containerRemoveField)
 	// networking page
-	case containerHostnameFieldFocus:
+	case createContainerHostnameFieldFocus:
 		delegate(d.containerHostnameField)
-	case containerIPAddrFieldFocus:
+	case createContainerIPAddrFieldFocus:
 		delegate(d.containerIPAddrField)
-	case containerMacAddrFieldFocus:
+	case createContainerMacAddrFieldFocus:
 		delegate(d.containerMacAddrField)
-	case containerNetworkFieldFocus:
+	case createContainerNetworkFieldFocus:
 		delegate(d.containerNetworkField)
 	// port page
 	// networking page
-	case containerPortPublishFieldFocus:
+	case createContainerPortPublishFieldFocus:
 		delegate(d.containerPortPublishField)
-	case containerPortPublishAllFieldFocus:
+	case createContainerPortPublishAllFieldFocus:
 		delegate(d.ContainerPortPublishAllField)
-	case containerPortExposeFieldFocus:
+	case createContainerPortExposeFieldFocus:
 		delegate(d.containerPortExposeField)
 	// dns page
-	case containerDNSServersFieldFocus:
+	case createContainerDNSServersFieldFocus:
 		delegate(d.containerDNSServersField)
-	case containerDNSOptionsFieldFocus:
+	case createContainerDNSOptionsFieldFocus:
 		delegate(d.containerDNSOptionsField)
-	case containerDNSSearchFieldFocus:
+	case createContainerDNSSearchFieldFocus:
 		delegate(d.containerDNSSearchField)
 	// volume page
-	case containerVolumeFieldFocus:
+	case createContainerVolumeFieldFocus:
 		delegate(d.containerVolumeField)
-	case containerVolumeDestFocus:
+	case createContainerVolumeDestFocus:
 		delegate(d.containerVolumeDestField)
-	case containerImageVolumeFieldFocus:
+	case createContainerImageVolumeFieldFocus:
 		delegate(d.containerImageVolumeField)
 	// category page
-	case categoryPagesFocus:
+	case createCategoryPagesFocus:
 		delegate(d.categoryPages)
 	}
 
@@ -678,57 +678,57 @@ func (d *ContainerCreateDialog) initData() {
 
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
 	if d.containerPortPublishField.HasFocus() {
-		d.focusElement = containerPortPublishAllFieldFocus
+		d.focusElement = createContainerPortPublishAllFieldFocus
 	} else if d.ContainerPortPublishAllField.HasFocus() {
-		d.focusElement = containerPortExposeFieldFocus
+		d.focusElement = createContainerPortExposeFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = createFormFocus
 	}
 }
 
 func (d *ContainerCreateDialog) setBasicInfoPageNextFocus() {
 	if d.containerNameField.HasFocus() {
-		d.focusElement = containerImageFieldFocus
+		d.focusElement = createContainerImageFieldFocus
 	} else if d.containerImageField.HasFocus() {
-		d.focusElement = containerPodFieldFocis
+		d.focusElement = createcontainerPodFieldFocis
 	} else if d.containerPodField.HasFocus() {
-		d.focusElement = containerLabelsFieldFocus
+		d.focusElement = createContainerLabelsFieldFocus
 	} else if d.containerLabelsField.HasFocus() {
-		d.focusElement = containerRemoveFieldFocus
+		d.focusElement = createContainerRemoveFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = createFormFocus
 	}
 }
 
 func (d *ContainerCreateDialog) setNetworkSettingsPageNextFocus() {
 	if d.containerHostnameField.HasFocus() {
-		d.focusElement = containerIPAddrFieldFocus
+		d.focusElement = createContainerIPAddrFieldFocus
 	} else if d.containerIPAddrField.HasFocus() {
-		d.focusElement = containerMacAddrFieldFocus
+		d.focusElement = createContainerMacAddrFieldFocus
 	} else if d.containerMacAddrField.HasFocus() {
-		d.focusElement = containerNetworkFieldFocus
+		d.focusElement = createContainerNetworkFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = createFormFocus
 	}
 }
 
 func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	if d.containerDNSServersField.HasFocus() {
-		d.focusElement = containerDNSOptionsFieldFocus
+		d.focusElement = createContainerDNSOptionsFieldFocus
 	} else if d.containerDNSOptionsField.HasFocus() {
-		d.focusElement = containerDNSSearchFieldFocus
+		d.focusElement = createContainerDNSSearchFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = createFormFocus
 	}
 }
 
 func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
-		d.focusElement = containerVolumeDestFocus
+		d.focusElement = createContainerVolumeDestFocus
 	} else if d.containerVolumeDestField.HasFocus() {
-		d.focusElement = containerImageVolumeFieldFocus
+		d.focusElement = createContainerImageVolumeFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = createFormFocus
 	}
 }
 

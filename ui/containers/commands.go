@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/containers"
+	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,6 +15,8 @@ func (cnt *Containers) runCommand(cmd string) {
 		cnt.createDialog.Display()
 	case "diff":
 		cnt.diff()
+	case "exec":
+		cnt.cexec()
 	case "inspect":
 		cnt.inspect()
 	case "kill":
@@ -39,6 +42,40 @@ func (cnt *Containers) runCommand(cmd string) {
 	case "unpause":
 		cnt.unpause()
 	}
+}
+
+func (cnt *Containers) cexec() {
+	if cnt.selectedID == "" {
+		cnt.errorDialog.SetText("there is no container to perform exec command")
+		cnt.errorDialog.Display()
+		return
+	}
+	cntID, cntName := cnt.getSelectedItem()
+	cnt.execDialog.SetContainerID(cntID, cntName)
+	cnt.execDialog.Display()
+}
+
+func (cnt *Containers) exec() {
+	cnt.execDialog.Hide()
+	_, _, width, height := cnt.table.GetInnerRect()
+	// TODO better calculation
+	width = width - (2 * dialogs.DialogPadding) - 6
+	height = height - (2 * (dialogs.DialogPadding - 1)) - 2*dialogs.DialogFormHeight - 4
+
+	execOpts := cnt.execDialog.ContainerExecOptions()
+	execOpts.TtyWidth = width
+	execOpts.TtyHeight = height
+
+	sessionID, err := cnt.execTerminalDialog.PrepareForExec(cnt.selectedID, cnt.selectedName, &execOpts)
+	if err != nil {
+		msg := fmt.Sprintf("CONTAINER EXEC ERROR (%s)", cnt.selectedID)
+		cnt.errorDialog.SetText(msg)
+		cnt.errorDialog.Display()
+		return
+	}
+	go containers.Exec(sessionID, execOpts)
+	cnt.execTerminalDialog.Display()
+
 }
 
 func (cnt *Containers) create() {

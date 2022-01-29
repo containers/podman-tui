@@ -38,6 +38,18 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 				createDialogHandler(event, setFocus)
 			}
 		}
+		// exec dialog dialog handler
+		if cnt.execDialog.HasFocus() {
+			if execDialogHandler := cnt.execDialog.InputHandler(); execDialogHandler != nil {
+				execDialogHandler(event, setFocus)
+			}
+		}
+		// exec terminal dialog dialog handler
+		if cnt.execTerminalDialog.HasFocus() {
+			if execTerminalDialogHandler := cnt.execTerminalDialog.InputHandler(); execTerminalDialogHandler != nil {
+				execTerminalDialogHandler(event, setFocus)
+			}
+		}
 		// confirm dialog handler
 		if cnt.confirmDialog.HasFocus() {
 			if confirmDialogHandler := cnt.confirmDialog.InputHandler(); confirmDialogHandler != nil {

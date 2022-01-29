@@ -24,28 +24,30 @@ const (
 // App represents main application struct
 type App struct {
 	*tview.Application
-	infoBar     *infobar.InfoBar
-	pages       *tview.Pages
-	pods        *pods.Pods
-	containers  *containers.Containers
-	volumes     *volumes.Volumes
-	images      *images.Images
-	networks    *networks.Networks
-	system      *system.System
-	connection  *connection.Connection
-	menu        *tview.TextView
-	health      *health.Engine
-	currentPage string
-	needInitUI  bool
+	infoBar         *infobar.InfoBar
+	pages           *tview.Pages
+	pods            *pods.Pods
+	containers      *containers.Containers
+	volumes         *volumes.Volumes
+	images          *images.Images
+	networks        *networks.Networks
+	system          *system.System
+	connection      *connection.Connection
+	menu            *tview.TextView
+	health          *health.Engine
+	currentPage     string
+	needInitUI      bool
+	fastRefreshChan chan bool
 }
 
 // NewApp returns new app
 func NewApp() *App {
 	log.Info().Msg("app: new application")
 	app := App{
-		Application: tview.NewApplication(),
-		pages:       tview.NewPages(),
-		needInitUI:  false,
+		Application:     tview.NewApplication(),
+		pages:           tview.NewPages(),
+		needInitUI:      false,
+		fastRefreshChan: make(chan bool, 10),
 	}
 	app.health = health.NewEngine(refreshInterval)
 
@@ -58,6 +60,10 @@ func NewApp() *App {
 	app.networks = networks.NewNetworks()
 	app.system = system.NewSystem()
 	app.connection = connection.NewConnection()
+
+	// set refresh channel for container page
+	// its requried for container exec dialog
+	app.containers.SetFastRefreshChannel(app.fastRefreshChan)
 
 	// menu items
 	var menuItems = [][]string{
@@ -166,6 +172,9 @@ func (app *App) Run() error {
 
 	// start refresh loop
 	go app.refresh()
+
+	// start fast refresh loop
+	go app.fastRefresh()
 
 	if err := app.SetRoot(flex, true).SetFocus(app.pods).EnableMouse(false).Run(); err != nil {
 		return err

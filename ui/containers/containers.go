@@ -15,21 +15,24 @@ import (
 // Containers implements the containers page primitive
 type Containers struct {
 	*tview.Box
-	title          string
-	headers        []string
-	table          *tview.Table
-	errorDialog    *dialogs.ErrorDialog
-	cmdDialog      *dialogs.CommandDialog
-	cmdInputDialog *dialogs.SimpleInputDialog
-	confirmDialog  *dialogs.ConfirmDialog
-	messageDialog  *dialogs.MessageDialog
-	progressDialog *dialogs.ProgressDialog
-	topDialog      *dialogs.TopDialog
-	createDialog   *cntdialogs.ContainerCreateDialog
-	containersList containerListReport
-	selectedID     string
-	selectedName   string
-	confirmData    string
+	title              string
+	headers            []string
+	table              *tview.Table
+	errorDialog        *dialogs.ErrorDialog
+	cmdDialog          *dialogs.CommandDialog
+	cmdInputDialog     *dialogs.SimpleInputDialog
+	confirmDialog      *dialogs.ConfirmDialog
+	messageDialog      *dialogs.MessageDialog
+	progressDialog     *dialogs.ProgressDialog
+	topDialog          *dialogs.TopDialog
+	createDialog       *cntdialogs.ContainerCreateDialog
+	execDialog         *cntdialogs.ContainerExecDialog
+	execTerminalDialog *cntdialogs.ContainerExecTerminalDialog
+	containersList     containerListReport
+	selectedID         string
+	selectedName       string
+	confirmData        string
+	fastRefreshChan    chan bool
 }
 
 type containerListReport struct {
@@ -40,34 +43,34 @@ type containerListReport struct {
 // NewContainers returns containers page view
 func NewContainers() *Containers {
 	containers := &Containers{
-		Box:            tview.NewBox(),
-		title:          "containers",
-		headers:        []string{"container id", "image", "pod", "created", "status", "names", "ports"},
-		errorDialog:    dialogs.NewErrorDialog(),
-		cmdInputDialog: dialogs.NewSimpleInputDialog(""),
-		messageDialog:  dialogs.NewMessageDialog(""),
-		progressDialog: dialogs.NewProgressDialog(),
-		confirmDialog:  dialogs.NewConfirmDialog(),
-		topDialog:      dialogs.NewTopDialog(),
-		createDialog:   cntdialogs.NewContainerCreateDialog(),
+		Box:                tview.NewBox(),
+		title:              "containers",
+		headers:            []string{"container id", "image", "pod", "created", "status", "names", "ports"},
+		errorDialog:        dialogs.NewErrorDialog(),
+		cmdInputDialog:     dialogs.NewSimpleInputDialog(""),
+		messageDialog:      dialogs.NewMessageDialog(""),
+		progressDialog:     dialogs.NewProgressDialog(),
+		confirmDialog:      dialogs.NewConfirmDialog(),
+		topDialog:          dialogs.NewTopDialog(),
+		createDialog:       cntdialogs.NewContainerCreateDialog(),
+		execDialog:         cntdialogs.NewContainerExecDialog(),
+		execTerminalDialog: cntdialogs.NewContainerExecTerminalDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
 	containers.cmdDialog = dialogs.NewCommandDialog([][]string{
 		{"create", "create a new container but do not start"},
 		{"diff", "inspect changes to the selected container's file systems"},
+		{"exec", "execute the specified command inside a running container"},
 		{"inspect", "display the configuration of a container"},
 		{"kill", "kill the selected running container with a SIGKILL signal"},
-		//{"init", "initialize the selected container"},
 		{"logs", "fetch the logs of the selected container"},
 		{"pause", "pause all the processes in the selected container"},
 		{"port", "list port mappings for the selected container"},
 		{"prune", "remove all non running containers"},
 		{"rename", "rename the selected container"},
 		{"rm", "remove the selected container"},
-		//{"run", "run a command in a new container"},
 		{"start", "start the selected containers"},
-		//{"stats", "display a live stream of container resource usage statistics"},
 		{"stop", "stop the selected containers"},
 		{"top", "display the running processes of the selected container"},
 		{"unpause", "unpause the selected container that was paused before"},
@@ -101,29 +104,18 @@ func NewContainers() *Containers {
 		containers.cmdDialog.Hide()
 		containers.runCommand(containers.cmdDialog.GetSelectedItem())
 	})
-	containers.cmdDialog.SetCancelFunc(func() {
-		containers.cmdDialog.Hide()
-	})
-	// set input cmd dialog functions
-	containers.cmdInputDialog.SetCancelFunc(func() {
-		containers.cmdInputDialog.Hide()
-	})
+	containers.cmdDialog.SetCancelFunc(containers.cmdDialog.Hide)
 
-	containers.cmdInputDialog.SetSelectedFunc(func() {
-		containers.cmdInputDialog.Hide()
-	})
+	// set input cmd dialog functions
+	containers.cmdInputDialog.SetCancelFunc(containers.cmdInputDialog.Hide)
+	containers.cmdInputDialog.SetSelectedFunc(containers.cmdInputDialog.Hide)
+
 	// set message dialog functions
-	containers.messageDialog.SetSelectedFunc(func() {
-		containers.messageDialog.Hide()
-	})
-	containers.messageDialog.SetCancelFunc(func() {
-		containers.messageDialog.Hide()
-	})
+	containers.messageDialog.SetSelectedFunc(containers.messageDialog.Hide)
+	containers.messageDialog.SetCancelFunc(containers.messageDialog.Hide)
 
 	// set container top dialog functions
-	containers.topDialog.SetDoneFunc(func() {
-		containers.topDialog.Hide()
-	})
+	containers.topDialog.SetDoneFunc(containers.topDialog.Hide)
 
 	// set confirm dialogs functions
 	containers.confirmDialog.SetSelectedFunc(func() {
@@ -135,9 +127,8 @@ func NewContainers() *Containers {
 			containers.remove()
 		}
 	})
-	containers.confirmDialog.SetCancelFunc(func() {
-		containers.confirmDialog.Hide()
-	})
+	containers.confirmDialog.SetCancelFunc(containers.confirmDialog.Hide)
+
 	// set create dialog functions
 	containers.createDialog.SetCancelFunc(func() {
 		containers.createDialog.Hide()
@@ -146,6 +137,19 @@ func NewContainers() *Containers {
 		containers.createDialog.Hide()
 		containers.create()
 	})
+
+	// set exec dialog functions
+	containers.execDialog.SetCancelFunc(containers.execDialog.Hide)
+	containers.execDialog.SetExecFunc(containers.exec)
+
+	// set exec terminal dialog functions
+	containers.execTerminalDialog.SetDoneFunc(containers.execTerminalDialog.Hide)
+
+	// set exec terminal fast refresh
+	containers.execTerminalDialog.SetFastRefreshHandler(func() {
+		containers.fastRefreshChan <- true
+	})
+
 	return containers
 }
 
@@ -168,7 +172,10 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.IsDisplay() {
 		return true
 	}
-	if cnt.createDialog.HasFocus() {
+	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
+		return true
+	}
+	if cnt.execTerminalDialog.HasFocus() {
 		return true
 	}
 	return cnt.Box.HasFocus()
@@ -211,6 +218,17 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		delegate(cnt.createDialog)
 		return
 	}
+	// exec dialog
+	if cnt.execDialog.IsDisplay() {
+		delegate(cnt.execDialog)
+		return
+	}
+	// exec terminal dialog
+	if cnt.execTerminalDialog.IsDisplay() {
+		delegate(cnt.execTerminalDialog)
+		return
+	}
+
 	delegate(cnt.table)
 }
 
@@ -224,4 +242,9 @@ func (cnt *Containers) getSelectedItem() (string, string) {
 	cntID = cnt.table.GetCell(row, 0).Text
 	cntName = cnt.table.GetCell(row, 5).Text
 	return cntID, cntName
+}
+
+// SetFastRefreshChannel sets channel for fastRefresh func
+func (cnt *Containers) SetFastRefreshChannel(refresh chan bool) {
+	cnt.fastRefreshChan = refresh
 }

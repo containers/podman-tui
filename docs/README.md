@@ -43,6 +43,7 @@ podman-tui uses following keyboard keys for different actions:
 | -------- | ----------- |
 | create   | create a new container but do not start
 | diff     | inspect changes to the selected container's file systems
+| exec     | execute the specified command inside a running container
 | inpsect  | display the configuration of a container
 | kill     | kill the selected running container with a SIGKILL signal
 | logs     | fetch the logs of the selected container

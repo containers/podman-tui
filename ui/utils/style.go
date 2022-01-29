@@ -63,4 +63,16 @@ var Styles = theme{
 			BgColor: tcell.ColorNavy,
 		},
 	},
+	ContainerExecDialog: containerExecDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorBlack,
+	},
+	ContainerExecTerminalDialog: containerExecTerminalDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorBlack,
+		Terminal: terminal{
+			BgColor: tcell.NewRGBColor(0, 0, 0),
+			FgColor: tcell.NewRGBColor(255, 255, 255),
+		},
+	},
 }

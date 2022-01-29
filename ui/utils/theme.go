@@ -5,13 +5,15 @@ import (
 )
 
 type theme struct {
-	InfoBar            infoBar
-	Menu               menu
-	PageTable          pageTable
-	CommandDialog      commandDialog
-	ConfirmDialog      confirmDialog
-	ImageSearchDialog  imageSearchDialog
-	ImageHistoryDialog imageHistoryDialog
+	InfoBar                     infoBar
+	Menu                        menu
+	PageTable                   pageTable
+	CommandDialog               commandDialog
+	ConfirmDialog               confirmDialog
+	ImageSearchDialog           imageSearchDialog
+	ImageHistoryDialog          imageHistoryDialog
+	ContainerExecDialog         containerExecDialog
+	ContainerExecTerminalDialog containerExecTerminalDialog
 }
 
 type infoBar struct {
@@ -71,4 +73,20 @@ type imageHistoryDialog struct {
 	BgColor   tcell.Color
 	FgColor   tcell.Color
 	HeaderRow headerRow
+}
+
+type containerExecDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type containerExecTerminalDialog struct {
+	BgColor  tcell.Color
+	FgColor  tcell.Color
+	Terminal terminal
+}
+
+type terminal struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
 }
