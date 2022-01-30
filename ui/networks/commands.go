@@ -102,6 +102,7 @@ func (nets *Networks) remove() {
 			nets.errorDialog.Display()
 			return
 		}
+		nets.UpdateData()
 	}
 	go remove(nets.selectedID)
 }
