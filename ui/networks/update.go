@@ -14,8 +14,8 @@ import (
 func (nets *Networks) UpdateData() {
 	netList, err := networks.List()
 	if err != nil {
-		log.Error().Msgf("view: networks %s", err.Error())
-		nets.errorDialog.SetText(err.Error())
+		log.Error().Msgf("view: networks update %v", err)
+		nets.errorDialog.SetText(fmt.Sprintf("%v", err))
 		nets.errorDialog.Display()
 	}
 

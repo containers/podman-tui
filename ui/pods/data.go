@@ -15,8 +15,8 @@ import (
 func (pods *Pods) UpdateData() {
 	podList, err := ppods.List()
 	if err != nil {
-		log.Error().Msgf("view: pods %s", err.Error())
-		pods.errorDialog.SetText(err.Error())
+		log.Error().Msgf("view: pods update %v", err)
+		pods.errorDialog.SetText(fmt.Sprintf("%v", err))
 		pods.errorDialog.Display()
 		return
 	}

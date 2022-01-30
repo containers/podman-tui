@@ -46,7 +46,7 @@ func (engine *Engine) streamEvents() {
 	log.Debug().Msg("health check: event steamer started")
 	if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
 		// TODO error check for events
-		log.Error().Msgf("health check: event streamer %s", err.Error())
+		log.Error().Msgf("health check: event streamer %v", err)
 	}
 	log.Debug().Msg("health check: event steamer stopped")
 }

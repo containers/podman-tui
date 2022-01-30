@@ -1,6 +1,9 @@
 package system
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/containers/podman-tui/pdcs/sysinfo"
 	"github.com/rs/zerolog/log"
 )
@@ -17,12 +20,23 @@ func (sys *System) runCommand(cmd string) {
 
 }
 
+func (sys *System) displayError(title string, err error) {
+	var message string
+	if title != "" {
+		message = fmt.Sprintf("%s: %v", title, err)
+	} else {
+		message = fmt.Sprintf("%v", err)
+	}
+
+	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
+	sys.errorDialog.SetText(message)
+	sys.errorDialog.Display()
+}
+
 func (sys *System) info() {
 	data, err := sysinfo.Info()
 	if err != nil {
-		log.Error().Msgf("view: system %s", err.Error())
-		sys.errorDialog.SetText(err.Error())
-		sys.errorDialog.Display()
+		sys.displayError("SYSTEM INFO ERROR", err)
 		return
 	}
 	sys.messageDialog.SetTitle("podman system info")
@@ -37,9 +51,7 @@ func (sys *System) df() {
 		response, err := sysinfo.DiskUsage()
 		sys.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: system %s", err.Error())
-			sys.errorDialog.SetText(err.Error())
-			sys.errorDialog.Display()
+			sys.displayError("SYSTEM DISK USAGE ERROR", err)
 			return
 		}
 		sys.dfDialog.UpdateDiskSummary(response)
@@ -62,9 +74,7 @@ func (sys *System) prune() {
 		report, err := sysinfo.Prune()
 		sys.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: system %s", err.Error())
-			sys.errorDialog.SetText(err.Error())
-			sys.errorDialog.Display()
+			sys.displayError("SYSTEM PRUNE ERROR", err)
 			return
 		}
 		sys.messageDialog.SetText("PODMAN SYSTEM PRUNE")

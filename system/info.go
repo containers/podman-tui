@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 
@@ -65,9 +66,9 @@ func (engine *Engine) updateSysInfo() {
 	info, err := sysinfo.SysInfo()
 	status := true
 	if err != nil {
-		log.Error().Msgf("health check: %s", err.Error())
+		log.Error().Msgf("health check: %v", err)
 		status = false
-		engine.conn.setStatus(false, err.Error())
+		engine.conn.setStatus(false, fmt.Sprintf("%v", err))
 		if status != engine.conn.previousStatus() {
 			engine.sysEvents.cancelChan <- true
 			engine.clearSysInfoData()
