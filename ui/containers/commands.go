@@ -68,7 +68,7 @@ func (cnt *Containers) exec() {
 
 	sessionID, err := cnt.execTerminalDialog.PrepareForExec(cnt.selectedID, cnt.selectedName, &execOpts)
 	if err != nil {
-		msg := fmt.Sprintf("CONTAINER EXEC ERROR (%s)", cnt.selectedID)
+		msg := fmt.Sprintf("CONTAINER EXEC ERROR (%s): %s", cnt.selectedID, err.Error())
 		cnt.errorDialog.SetText(msg)
 		cnt.errorDialog.Display()
 		return
