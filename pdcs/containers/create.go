@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/volumes"
 )
 
 //CreateOptions container create options.
@@ -30,7 +31,6 @@ type CreateOptions struct {
 	DNSOptions      []string
 	DNSSearchDomain []string
 	Volume          string
-	VolumeDest      string
 	ImageVolume     string
 }
 
@@ -109,9 +109,14 @@ func Create(opts CreateOptions) ([]string, error) {
 		containerSpecGen.ImageVolumeMode = opts.ImageVolume
 	}
 	if opts.Volume != "" {
+		// get volumes dest
+		volumeDest, err := volumes.VolumeDest(opts.Volume)
+		if err != nil {
+			return warningResponse, err
+		}
 		containerSpecGen.Volumes = append(containerSpecGen.Volumes, &specgen.NamedVolume{
 			Name: opts.Volume,
-			Dest: opts.VolumeDest,
+			Dest: volumeDest,
 		})
 	}
 

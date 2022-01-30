@@ -43,7 +43,6 @@ const (
 	createContainerDNSSearchFieldFocus
 	createContainerImageVolumeFieldFocus
 	createContainerVolumeFieldFocus
-	createContainerVolumeDestFocus
 )
 
 const (
@@ -88,7 +87,6 @@ type ContainerCreateDialog struct {
 	containerDNSOptionsField     *tview.InputField
 	containerDNSSearchField      *tview.InputField
 	containerVolumeField         *tview.DropDown
-	containerVolumeDestField     *tview.InputField
 	containerImageVolumeField    *tview.DropDown
 	cancelHandler                func()
 	createHandler                func()
@@ -126,7 +124,6 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerDNSOptionsField:     tview.NewInputField(),
 		containerDNSSearchField:      tview.NewInputField(),
 		containerVolumeField:         tview.NewDropDown(),
-		containerVolumeDestField:     tview.NewInputField(),
 		containerImageVolumeField:    tview.NewDropDown(),
 	}
 
@@ -235,12 +232,6 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerVolumeField.SetBackgroundColor(bgColor)
 	containerDialog.containerVolumeField.SetLabelColor(tcell.ColorWhite)
 
-	// volume
-	containerDialog.containerVolumeDestField.SetLabel("Volume Dest:")
-	containerDialog.containerVolumeDestField.SetLabelWidth(volumePageLabelWidth)
-	containerDialog.containerVolumeDestField.SetBackgroundColor(bgColor)
-	containerDialog.containerVolumeDestField.SetLabelColor(tcell.ColorWhite)
-
 	// image volume
 	containerDialog.containerImageVolumeField.SetLabel("Image volume:")
 	containerDialog.containerImageVolumeField.SetLabelWidth(volumePageLabelWidth)
@@ -322,8 +313,6 @@ func (d *ContainerCreateDialog) setupLayout() {
 	// volume settigs page
 	d.volumePage.SetDirection(tview.FlexRow)
 	d.volumePage.AddItem(d.containerVolumeField, 1, 0, true)
-	d.volumePage.AddItem(emptySpace(), 1, 0, true)
-	d.volumePage.AddItem(d.containerVolumeDestField, 1, 0, true)
 	d.volumePage.AddItem(emptySpace(), 1, 0, true)
 	d.volumePage.AddItem(d.containerImageVolumeField, 1, 0, true)
 	d.volumePage.SetBackgroundColor(bgColor)
@@ -447,8 +436,6 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	// volume page
 	case createContainerVolumeFieldFocus:
 		delegate(d.containerVolumeField)
-	case createContainerVolumeDestFocus:
-		delegate(d.containerVolumeDestField)
 	case createContainerImageVolumeFieldFocus:
 		delegate(d.containerImageVolumeField)
 	// category page
@@ -671,7 +658,6 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerNetworkField.SetCurrentOption(0)
 	d.containerVolumeField.SetOptions(volumeOptions, nil)
 	d.containerVolumeField.SetCurrentOption(0)
-	d.containerVolumeDestField.SetText("")
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
 	d.containerImageVolumeField.SetCurrentOption(0)
 }
@@ -724,8 +710,6 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 
 func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
-		d.focusElement = createContainerVolumeDestFocus
-	} else if d.containerVolumeDestField.HasFocus() {
 		d.focusElement = createContainerImageVolumeFieldFocus
 	} else {
 		d.focusElement = createFormFocus
@@ -816,7 +800,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		DNSOptions:      dnsOptions,
 		DNSSearchDomain: dnsSearchDomains,
 		Volume:          volume,
-		VolumeDest:      d.containerVolumeDestField.GetText(),
 		ImageVolume:     imageVolume,
 	}
 	return opts
