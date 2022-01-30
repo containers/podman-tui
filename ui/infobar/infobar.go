@@ -43,7 +43,7 @@ func NewInfoBar() *InfoBar {
 	}
 
 	// valueColor := Styles.InfoBar.ValueFgColor
-	table.SetCell(connectionCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "connection:")))
+	table.SetCell(connectionCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Connection:")))
 	table.SetCell(connectionCellRow, 2, emptyCell())
 
 	table.SetCell(hostnameCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Hostname:")))

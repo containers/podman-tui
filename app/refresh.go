@@ -7,7 +7,7 @@ import (
 )
 
 func (app *App) refresh() {
-	log.Debug().Msg("app: starting refresh loop")
+	log.Debug().Msgf("app: starting refresh loop (interval=%v)", refreshInterval)
 	tick := time.NewTicker(refreshInterval)
 	for {
 		select {
@@ -41,6 +41,22 @@ func (app *App) refresh() {
 			app.initInfoBar()
 			app.infoBar.UpdateConnStatus(connOK)
 			app.Application.Draw()
+		}
+	}
+}
+
+// fastRefresh method will refresh the screen as soon as it receives
+// the refresh singal. Its required for some feature e.g. container exec
+func (app *App) fastRefresh() {
+	log.Debug().Msg("app: starting fast refresh loop")
+	for {
+		select {
+		case refresh := <-app.fastRefreshChan:
+			{
+				if refresh {
+					app.Application.Draw()
+				}
+			}
 		}
 	}
 }

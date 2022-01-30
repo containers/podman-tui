@@ -63,4 +63,16 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 		cnt.topDialog.Draw(screen)
 		return
 	}
+	// exec dialog
+	if cnt.execDialog.IsDisplay() {
+		cnt.execDialog.SetRect(x, y, width, height)
+		cnt.execDialog.Draw(screen)
+		return
+	}
+	// exec terminaldialog
+	if cnt.execTerminalDialog.IsDisplay() {
+		cnt.execTerminalDialog.SetRect(x, y, width, height)
+		cnt.execTerminalDialog.Draw(screen)
+		return
+	}
 }
