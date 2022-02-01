@@ -52,13 +52,13 @@ func ResizeExecTty(id string, height int, width int) {
 	log.Debug().Msgf("pdcs: podman container exec seesion (%12s) tty resize (height=%d, width=%d)", id, height, width)
 	conn, err := connection.GetConnection()
 	if err != nil {
-		log.Error().Msg(err.Error())
+		log.Error().Msgf("%v", err)
 		return
 	}
 	for {
 		response, err := containers.ExecInspect(conn, id, &containers.ExecInspectOptions{})
 		if err != nil {
-			log.Error().Msg(err.Error())
+			log.Error().Msgf("%v", err)
 			return
 		}
 		if response.ExitCode != 0 {
@@ -68,7 +68,7 @@ func ResizeExecTty(id string, height int, width int) {
 		if response.Running {
 			err = containers.ResizeExecTTY(conn, id, new(containers.ResizeExecTTYOptions).WithHeight(height).WithWidth(width))
 			if err != nil {
-				log.Error().Msg(err.Error())
+				log.Error().Msgf("%v", err)
 				return
 			}
 			log.Debug().Msgf("pdcs: podman container exec seesion (%12s) tty resized successfully (height=%d, width=%d)", id, height, width)
@@ -83,7 +83,7 @@ func Exec(sessionID string, opts ExecOption) {
 	log.Debug().Msgf("pdcs: podman container session (%s) exec %v", sessionID, opts)
 	conn, err := connection.GetConnection()
 	if err != nil {
-		opts.OutputStream.Write([]byte(err.Error()))
+		opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err)))
 		return
 	}
 
@@ -100,15 +100,15 @@ func Exec(sessionID string, opts ExecOption) {
 			execStartAttachOpts.InputStream = opts.InputStream
 		}
 		if err := containers.ExecStartAndAttach(conn, sessionID, execStartAttachOpts); err != nil {
-			log.Error().Msgf("pdcs: podman session (%s) exec error %s", sessionID, err.Error())
-			opts.OutputStream.Write([]byte(err.Error()))
+			log.Error().Msgf("pdcs: podman session (%s) exec error %v", sessionID, err)
+			opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err)))
 		}
 		log.Debug().Msgf("pdcs: podman session (%s) exec finished successfully", sessionID)
 		return
 	}
 	if err := containers.ExecStart(conn, sessionID, &containers.ExecStartOptions{}); err != nil {
-		opts.OutputStream.Write([]byte(err.Error()))
-		log.Error().Msgf("pdcs: podman session (%s) exec error %s", sessionID, err.Error())
+		opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err)))
+		log.Error().Msgf("pdcs: podman session (%s) exec error %v", sessionID, err)
 		return
 	}
 	log.Debug().Msgf("pdcs: podman session (%s) exec finished successfully", sessionID)
@@ -136,7 +136,7 @@ func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
 	for _, envFile := range opts.EnvFile {
 		envVars, err := env.ParseFile(envFile)
 		if err != nil {
-			log.Error().Msgf("pdcs: podman container exec create config: %s", err.Error())
+			log.Error().Msgf("pdcs: podman container exec create config: %v", err)
 			return nil, err
 		}
 		for index, key := range envVars {

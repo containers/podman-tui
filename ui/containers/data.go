@@ -18,8 +18,8 @@ import (
 func (cnt *Containers) UpdateData() {
 	cntList, err := containers.List()
 	if err != nil {
-		log.Error().Msgf("view: containers %s", err.Error())
-		cnt.errorDialog.SetText(err.Error())
+		log.Error().Msgf("view: containers update %v", err)
+		cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 		cnt.errorDialog.Display()
 		return
 	}

@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/containers/podman-tui/pdcs/sysinfo"
@@ -42,8 +43,8 @@ func (engine *Engine) Start() {
 	var err error
 	engine.sysinfo.info, err = sysinfo.SysInfo()
 	if err != nil {
-		log.Error().Msgf("health check: initial connection status_nok: %s", err.Error())
-		engine.conn.setStatus(false, err.Error())
+		log.Error().Msgf("health check: initial connection status_nok: %v", err)
+		engine.conn.setStatus(false, fmt.Sprintf("%v", err))
 	} else {
 		engine.startEventStreamer()
 	}

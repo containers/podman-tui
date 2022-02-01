@@ -15,8 +15,8 @@ import (
 func (vols *Volumes) UpdateData() {
 	volList, err := volumes.List()
 	if err != nil {
-		log.Error().Msgf("view: volumes %s", err.Error())
-		vols.errorDialog.SetText(err.Error())
+		log.Error().Msgf("view: volumes update %v", err)
+		vols.errorDialog.SetText(fmt.Sprintf("%v", err))
 		vols.errorDialog.Display()
 		return
 	}

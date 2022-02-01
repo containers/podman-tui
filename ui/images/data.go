@@ -14,8 +14,8 @@ import (
 func (img *Images) UpdateData() {
 	images, err := images.List()
 	if err != nil {
-		log.Error().Msgf("view: images %s", err.Error())
-		img.errorDialog.SetText(err.Error())
+		log.Error().Msgf("view: images update %v", err)
+		img.errorDialog.SetText(fmt.Sprintf("%v", err))
 		img.errorDialog.Display()
 		return
 	}

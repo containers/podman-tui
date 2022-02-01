@@ -21,13 +21,24 @@ func (vols *Volumes) runCommand(cmd string) {
 	}
 }
 
+func (vols *Volumes) displayError(title string, err error) {
+	var message string
+	if title != "" {
+		message = fmt.Sprintf("%s: %v", title, err)
+	} else {
+		message = fmt.Sprintf("%v", err)
+	}
+
+	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
+	vols.errorDialog.SetText(message)
+	vols.errorDialog.Display()
+}
+
 func (vols *Volumes) create() {
 	createOpts := vols.createDialog.VolumeCreateOptions()
 	report, err := volumes.Create(createOpts)
 	if err != nil {
-		log.Error().Msgf("view: newtork create %s", err.Error())
-		vols.errorDialog.SetText(err.Error())
-		vols.errorDialog.Display()
+		vols.displayError("VOLUME CREATE ERROR", err)
 		return
 	}
 	vols.messageDialog.SetTitle("podman volume create")
@@ -37,15 +48,13 @@ func (vols *Volumes) create() {
 
 func (vols *Volumes) inspect() {
 	if vols.selectedID == "" {
-		vols.errorDialog.SetText("there is no volume to inspect")
-		vols.errorDialog.Display()
+		vols.displayError("", fmt.Errorf("there is no volume to display inspect"))
 		return
 	}
 	data, err := volumes.Inspect(vols.selectedID)
 	if err != nil {
-		log.Error().Msgf("view: volumes %s", err.Error())
-		vols.errorDialog.SetText(err.Error())
-		vols.errorDialog.Display()
+		title := fmt.Sprintf("VOLUME (%s) INSPECT ERROR", vols.selectedID)
+		vols.displayError(title, err)
 		return
 	}
 	vols.messageDialog.SetTitle("podman volume inspect")
@@ -63,28 +72,24 @@ func (vols *Volumes) cprune() {
 func (vols *Volumes) prune() {
 	vols.progressDialog.SetTitle("pod purne in progress")
 	vols.progressDialog.Display()
-	unpause := func() {
+	prune := func() {
 		errData, err := volumes.Prune()
 		vols.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: volumes %s", err.Error())
-			vols.errorDialog.SetText(err.Error())
-			vols.errorDialog.Display()
+			vols.displayError("VOLUME PRUNE ERROR", err)
 			return
 		}
 		if len(errData) > 0 {
-			vols.errorDialog.SetText(strings.Join(errData, "\n"))
-			vols.errorDialog.Display()
+			vols.displayError("VOLUME PRUNE ERROR", fmt.Errorf(strings.Join(errData, "\n")))
 		}
 
 	}
-	go unpause()
+	go prune()
 }
 
 func (vols *Volumes) rm() {
 	if vols.selectedID == "" {
-		vols.errorDialog.SetText("there is no volume to remove")
-		vols.errorDialog.Display()
+		vols.displayError("", fmt.Errorf("there is no volume to remove"))
 		return
 	}
 	vols.confirmDialog.SetTitle("podman pod rm")
@@ -101,9 +106,8 @@ func (vols *Volumes) remove() {
 		err := volumes.Remove(name)
 		vols.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: volumes %s", err.Error())
-			vols.errorDialog.SetText(err.Error())
-			vols.errorDialog.Display()
+			title := fmt.Sprintf("VOLUME (%s) REMOVE ERROR", vols.selectedID)
+			vols.displayError(title, err)
 			return
 		}
 

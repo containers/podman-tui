@@ -417,7 +417,7 @@ func (d *ContainerExecTerminalDialog) startVTreader() {
 		if err != io.EOF {
 			// TODO: fix out of bound error
 			// both out of bound error and unsupported controls can be safety ignored
-			//log.Error().Msgf("container exec terminal dialog: vt100: %s", err.Error())
+			//log.Error().Msgf("container exec terminal dialog: vt100: %v", err)
 			continue
 		}
 		log.Debug().Msg("container exec terminal dialog: vt100 terminal reader exited")

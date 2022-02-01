@@ -31,10 +31,22 @@ func (img *Images) runCommand(cmd string) {
 
 }
 
+func (img *Images) displayError(title string, err error) {
+	var message string
+	if title != "" {
+		message = fmt.Sprintf("%s: %v", title, err)
+	} else {
+		message = fmt.Sprintf("%v", err)
+	}
+
+	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
+	img.errorDialog.SetText(message)
+	img.errorDialog.Display()
+}
+
 func (img *Images) diff() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to display diff")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to display diff"))
 		return
 	}
 	img.progressDialog.SetTitle("image diff in progress")
@@ -43,9 +55,8 @@ func (img *Images) diff() {
 		data, err := images.Diff(img.selectedID)
 		img.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: images %s", err.Error())
-			img.errorDialog.SetText(err.Error())
-			img.errorDialog.Display()
+			title := fmt.Sprintf("IMAGE (%s) DIFF ERROR", img.selectedID)
+			img.displayError(title, err)
 			return
 		}
 		img.messageDialog.SetTitle("podman image diff")
@@ -57,15 +68,13 @@ func (img *Images) diff() {
 
 func (img *Images) history() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to display history")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to display history"))
 		return
 	}
 	result, err := images.History(img.selectedID)
 	if err != nil {
-		log.Error().Msgf("view: images %s", err.Error())
-		img.errorDialog.SetText(err.Error())
-		img.errorDialog.Display()
+		title := fmt.Sprintf("IMAGE (%s) HISTORY ERROR", img.selectedID)
+		img.displayError(title, err)
 	}
 	img.historyDialog.UpdateResults(result)
 	img.historyDialog.Display()
@@ -74,15 +83,13 @@ func (img *Images) history() {
 
 func (img *Images) inspect() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to inspect")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to display inspect"))
 		return
 	}
 	data, err := images.Inspect(img.selectedID)
 	if err != nil {
-		log.Error().Msgf("view: images %s", err.Error())
-		img.errorDialog.SetText(err.Error())
-		img.errorDialog.Display()
+		title := fmt.Sprintf("IMAGE (%s) INSPECT ERROR", img.selectedID)
+		img.displayError(title, err)
 		return
 	}
 	img.messageDialog.SetTitle("podman image inspect")
@@ -104,9 +111,7 @@ func (img *Images) prune() {
 		err := images.Prune()
 		img.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: images %s", err.Error())
-			img.errorDialog.SetText(err.Error())
-			img.errorDialog.Display()
+			img.displayError("IMAGE PRUNE ERROR", err)
 			return
 		}
 	}
@@ -115,8 +120,7 @@ func (img *Images) prune() {
 
 func (img *Images) rm() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to remove")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to remove"))
 		return
 	}
 	img.confirmDialog.SetTitle("podman image remove")
@@ -133,9 +137,8 @@ func (img *Images) remove() {
 		data, err := images.Remove(id)
 		img.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: images %s", err.Error())
-			img.errorDialog.SetText(err.Error())
-			img.errorDialog.Display()
+			title := fmt.Sprintf("IMAGE (%s) REMOVE ERROR", img.selectedID)
+			img.displayError(title, err)
 		} else {
 			img.messageDialog.SetTitle("podman image remove")
 			img.messageDialog.SetText(strings.Join(data, "\n"))
@@ -152,9 +155,8 @@ func (img *Images) search(term string) {
 	search := func(term string) {
 		result, err := images.Search(term)
 		if err != nil {
-			log.Error().Msgf("view: images %s", err.Error())
-			img.errorDialog.SetText(err.Error())
-			img.errorDialog.Display()
+			title := fmt.Sprintf("IMAGE (%s) SEARCH ERROR", img.selectedID)
+			img.displayError(title, err)
 		}
 		img.searchDialog.UpdateResults(result)
 		img.progressDialog.Hide()
@@ -164,8 +166,7 @@ func (img *Images) search(term string) {
 
 func (img *Images) ctag() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to tag")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to tag"))
 		return
 	}
 	img.cmdInputDialog.SetTitle("podman image tag")
@@ -182,16 +183,14 @@ func (img *Images) ctag() {
 
 func (img *Images) tag(tag string) {
 	if err := images.Tag(img.selectedID, tag); err != nil {
-		log.Error().Msgf("view: images %s", err.Error())
-		img.errorDialog.SetText(err.Error())
-		img.errorDialog.Display()
+		title := fmt.Sprintf("IMAGE (%s) TAG ERROR", img.selectedID)
+		img.displayError(title, err)
 	}
 }
 
 func (img *Images) cuntag() {
 	if img.selectedID == "" {
-		img.errorDialog.SetText("there is no image to untag")
-		img.errorDialog.Display()
+		img.displayError("", fmt.Errorf("there is no image to untag"))
 		return
 	}
 	img.cmdInputDialog.SetTitle("podman image untag")
@@ -208,9 +207,8 @@ func (img *Images) cuntag() {
 
 func (img *Images) untag(id string) {
 	if err := images.Untag(id); err != nil {
-		log.Error().Msgf("view: images %s", err.Error())
-		img.errorDialog.SetText(err.Error())
-		img.errorDialog.Display()
+		title := fmt.Sprintf("IMAGE (%s) UNTAG ERROR", img.selectedID)
+		img.displayError(title, err)
 	}
 }
 
@@ -221,9 +219,8 @@ func (img *Images) pull(image string) {
 	pull := func(name string) {
 		err := images.Pull(name)
 		if err != nil {
-			log.Error().Msgf("view: images %s", err.Error())
-			img.errorDialog.SetText(err.Error())
-			img.errorDialog.Display()
+			title := fmt.Sprintf("IMAGE (%s) PULL ERROR", img.selectedID)
+			img.displayError(title, err)
 		}
 		img.progressDialog.Hide()
 	}

@@ -38,28 +38,37 @@ func (p *Pods) runCommand(cmd string) {
 	}
 }
 
+func (p *Pods) displayError(title string, err error) {
+	var message string
+	if title != "" {
+		message = fmt.Sprintf("%s: %v", title, err)
+	} else {
+		message = fmt.Sprintf("%v", err)
+	}
+
+	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
+	p.errorDialog.SetText(message)
+	p.errorDialog.Display()
+}
+
 func (p *Pods) create() {
 	podSpec := p.createDialog.GetPodSpec()
 	err := ppods.Create(podSpec)
 	if err != nil {
-		log.Error().Msgf("view: pods create %s", err.Error())
-		p.errorDialog.SetText(err.Error())
-		p.errorDialog.Display()
+		p.displayError("POD CREATE ERROR", err)
 		return
 	}
 }
 
 func (p *Pods) inspect() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to inspect")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to display inspect"))
 		return
 	}
 	data, err := ppods.Inspect(p.selectedID)
 	if err != nil {
-		log.Error().Msgf("view: pods %s", err.Error())
-		p.errorDialog.SetText(err.Error())
-		p.errorDialog.Display()
+		title := fmt.Sprintf("POD (%s) INSPECT ERROR", p.selectedID)
+		p.displayError(title, err)
 		return
 	}
 	p.messageDialog.SetTitle("podman pod inspect")
@@ -69,8 +78,7 @@ func (p *Pods) inspect() {
 
 func (p *Pods) kill() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to kill")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to kill"))
 		return
 	}
 	p.progressDialog.SetTitle("pod kill in progress")
@@ -79,9 +87,8 @@ func (p *Pods) kill() {
 		err := ppods.Kill(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) KILL ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
@@ -90,8 +97,7 @@ func (p *Pods) kill() {
 
 func (p *Pods) pause() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to pause")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to pause"))
 		return
 	}
 	p.progressDialog.SetTitle("pod pause in progress")
@@ -100,9 +106,8 @@ func (p *Pods) pause() {
 		err := ppods.Pause(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) PAUSE ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
@@ -116,14 +121,12 @@ func (p *Pods) prune() {
 		errData, err := ppods.Prune()
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			p.displayError("PODS PRUNE ERROR", err)
 			return
 		}
 		if len(errData) > 0 {
-			p.errorDialog.SetText(strings.Join(errData, "\n"))
-			p.errorDialog.Display()
+			errMessages := fmt.Errorf("%v", errData)
+			p.displayError("PODS PRUNE ERROR", errMessages)
 		}
 
 	}
@@ -132,8 +135,7 @@ func (p *Pods) prune() {
 
 func (p *Pods) restart() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to restart")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to restart"))
 		return
 	}
 	p.progressDialog.SetTitle("pod restart in progress")
@@ -142,9 +144,8 @@ func (p *Pods) restart() {
 		err := ppods.Restart(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) RESTART ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
@@ -153,8 +154,7 @@ func (p *Pods) restart() {
 
 func (p *Pods) rm() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to remove")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to remove"))
 		return
 	}
 	p.confirmDialog.SetTitle("podman pod rm")
@@ -171,14 +171,13 @@ func (p *Pods) remove() {
 		errData, err := ppods.Remove(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) REMOVE ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 		if len(errData) > 0 {
-			p.errorDialog.SetText(strings.Join(errData, "\n"))
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) REMOVE ERROR", p.selectedID)
+			p.displayError(title, fmt.Errorf("%v", errData))
 		}
 	}
 	go remove(p.selectedID)
@@ -186,8 +185,7 @@ func (p *Pods) remove() {
 
 func (p *Pods) start() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to start")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to start"))
 		return
 	}
 	p.progressDialog.SetTitle("pod start in progress")
@@ -196,9 +194,8 @@ func (p *Pods) start() {
 		err := ppods.Start(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) START ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
@@ -207,8 +204,7 @@ func (p *Pods) start() {
 
 func (p *Pods) stop() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to stop")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to stop"))
 		return
 	}
 	p.progressDialog.SetTitle("pod stop in progress")
@@ -217,9 +213,8 @@ func (p *Pods) stop() {
 		err := ppods.Stop(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) STOP ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
@@ -228,15 +223,13 @@ func (p *Pods) stop() {
 
 func (p *Pods) top() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to display top")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to display top"))
 		return
 	}
 	data, err := ppods.Top(p.selectedID)
 	if err != nil {
-		log.Error().Msgf("view: pods %s", err.Error())
-		p.errorDialog.SetText(err.Error())
-		p.errorDialog.Display()
+		title := fmt.Sprintf("POD (%s) TOP ERROR", p.selectedID)
+		p.displayError(title, err)
 		return
 	}
 	p.topDialog.UpdateResults(data)
@@ -245,8 +238,7 @@ func (p *Pods) top() {
 
 func (p *Pods) unpause() {
 	if p.selectedID == "" {
-		p.errorDialog.SetText("there is no pod to unpause")
-		p.errorDialog.Display()
+		p.displayError("", fmt.Errorf("there is no pod to unpause"))
 		return
 	}
 	p.progressDialog.SetTitle("pod unpause in progress")
@@ -255,9 +247,8 @@ func (p *Pods) unpause() {
 		err := ppods.Unpause(id)
 		p.progressDialog.Hide()
 		if err != nil {
-			log.Error().Msgf("view: pods %s", err.Error())
-			p.errorDialog.SetText(err.Error())
-			p.errorDialog.Display()
+			title := fmt.Sprintf("POD (%s) UNPAUSE ERROR", p.selectedID)
+			p.displayError(title, err)
 			return
 		}
 	}
