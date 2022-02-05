@@ -6,8 +6,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	appVersion string
+const (
+	appVersion = "0.2.0-dev"
 )
 
 // versionCmd represents the version command
