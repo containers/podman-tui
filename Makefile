@@ -1,8 +1,7 @@
 PKG_PATH = "github.com/containers/podman-tui"
+TARGET = podman-tui
 BIN = ./bin
 DESTDIR = /usr/local/bin
-VERSION = $(shell cat VERSION)
-TARGET = $(shell basename `pwd`)
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo -Z)
 
@@ -20,7 +19,7 @@ binary: $(TARGET)  ## Build podman-tui binary
 $(TARGET): $(SRC)
 	@mkdir -p $(BIN)
 	@echo "running go build"
-	@go build -ldflags="-X '$(PKG_PATH)/cmd.appVersion=$(VERSION)'" -o $(BIN)/$(TARGET)
+	@go build -o $(BIN)/$(TARGET)
 
 .PHONY: clean
 clean:

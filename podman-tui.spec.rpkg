@@ -1,0 +1,64 @@
+%global provider github
+%global provider_tld com
+%global project containers
+%global repo podman-tui
+%global import_path %{provider}.%{provider_tld}/%{project}/%{repo}
+%global git0 https://%{import_path}
+%global debug_package %{nil}
+%define _build_id_links none
+
+
+Name:       podman-tui
+Version:    0.2.0
+Release:    dev.1%{?dist}
+Summary:    Podman Terminal User Interface
+License:    ASL 2.0
+URL:        https://github.com/containers/podman-tui
+VCS:        {{{ git_dir_vcs }}}
+Source:     {{{ git_dir_pack }}}
+
+%if 0%{?fedora} && ! 0%{?rhel}
+BuildRequires: btrfs-progs-devel
+%endif
+BuildRequires: gcc
+BuildRequires: golang >= 1.16.6
+BuildRequires: glib2-devel
+BuildRequires: glibc-devel
+BuildRequires: glibc-static
+BuildRequires: git-core
+BuildRequires: go-rpm-macros
+BuildRequires: make
+BuildRequires: gpgme-devel
+BuildRequires: device-mapper-devel
+BuildRequires: libassuan-devel
+%if 0%{?fedora} >= 35
+BuildRequires: shadow-utils-subid-devel
+%endif
+
+%description
+%{name} is a terminal user interface for Podman.
+
+%prep
+{{{ git_dir_setup_macro }}}
+
+%build
+%set_build_flags
+make binary DESTDIR=%{buildroot}
+
+%install
+mkdir -p %{buildroot}/usr/local/bin/
+install -D -m0755 bin/podman-tui %{buildroot}/usr/local/bin/
+
+%files
+/usr/local/bin/podman-tui
+
+%license LICENSE
+
+%doc docs/README.md
+
+%changelog
+* Sat Jan 22 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> - v0.2.0-dev
+
+* Sat Jan 22 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> - v0.1.0
+- Initial release
+
