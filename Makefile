@@ -44,6 +44,13 @@ validate:   ## Validate podman-tui code (fmt, lint, ...)
 	@echo "running go vet"
 	@go vet ../$(TARGET)
 
+.PHONY: test
+test: functionality
+
+.PHONY: functionality
+functionality:
+	bats test/
+
 .PHONY: fmt      
 fmt:   ## Run gofmt
 	@echo -e "gofmt check and fix"

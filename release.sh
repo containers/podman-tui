@@ -20,6 +20,12 @@ write_go_version()
 	sed -i "s/^\(.*appVersion = \"\).*/\1${LOCAL_VERSION}\"/" cmd/version.go
 }
 
+write_test_version()
+{
+	LOCAL_VERSION="$1"
+	sed -i "s/podman-tui v[[:digit:]].*.[[:digit:]].[[:digit:]].*\" \"/podman-tui v${LOCAL_VERSION}\" \"/" test/001-version.bats
+}
+
 write_spec_version()
 {
 	LOCAL_VERSION="$1"
@@ -52,6 +58,7 @@ release_commit()
 	write_go_version "${VERSION}" &&
 	write_spec_version "${VERSION}" &&
 	write_spec_changelog "${VERSION}" &&
+	write_test_version "${VERSION}" &&
 	git commit -asm "Bump to v${VERSION}"
 }
 
@@ -60,6 +67,7 @@ dev_version_commit()
 	write_go_version "${NEXT_VERSION}-dev" &&
 	write_spec_version "${NEXT_VERSION}-dev" &&
 	write_spec_changelog "${NEXT_VERSION}-dev" &&
+	write_test_version "${NEXT_VERSION}-dev" &&
 	git commit -asm "Bump to v${NEXT_VERSION}-dev"
 }
 
