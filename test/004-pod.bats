@@ -171,7 +171,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_pod_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 3
 
     run_podman pod ls --format "{{ .Name }}" --filter "name=$TEST_POD_NAME"
     assert "$output" "=~" "" "expected at least $TEST_POD_NAME pod removal"

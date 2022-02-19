@@ -166,8 +166,8 @@ load helpers_tui
     podman_tui_select_container_cmd "diff"
     sleep 6
 
-    run_helper grep -w "/home" $PODMAN_TUI_LOG
-    assert "$output" "=~" '/home' "expected '/home' in the logs"
+    run_helper grep -w "/etc" $PODMAN_TUI_LOG
+    assert "$output" "=~" '/etc' "expected '/etc' in the logs"
 }
 
 @test "container top" {
@@ -310,8 +310,8 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 3
 
-    run_podman container ls --all --format "'{{ .Names }}'"
-    assert "$output" !~ "$TEST_CONTAINER_NAME" "expected $TEST_CONTAINER_NAME to be removed"
+    run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}\$" --format "'{{ json .Names }}'"
+    assert "$output" "=~" "" "expected $TEST_CONTAINER_NAME to be removed"
 }
