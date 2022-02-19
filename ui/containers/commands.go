@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	bcontainers "github.com/containers/podman/v3/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,6 +36,8 @@ func (cnt *Containers) runCommand(cmd string) {
 		cnt.rm()
 	case "start":
 		cnt.start()
+	case "stats":
+		cnt.stats()
 	case "stop":
 		cnt.stop()
 	case "top":
@@ -55,6 +58,35 @@ func (cnt *Containers) displayError(title string, err error) {
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
 	cnt.errorDialog.SetText(message)
 	cnt.errorDialog.Display()
+}
+
+func (cnt *Containers) stats() {
+	if cnt.selectedID == "" {
+		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+		return
+	}
+	cntID, cntName := cnt.getSelectedItem()
+	cntStatus, err := containers.Status(cntID)
+	if err != nil {
+		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+		return
+	}
+	if cntStatus != "running" {
+		cnt.displayError("", fmt.Errorf("container (%s) status improper", cntID))
+		return
+	}
+	stream := true
+	statOption := new(bcontainers.StatsOptions)
+	statOption.Stream = &stream
+	statsChan, err := containers.Stats(cntID, statOption)
+	if err != nil {
+		cnt.displayError("CONTAINER STATS ERROR", err)
+		return
+	}
+	cnt.statsDialog.SetContainerInfo(cntID, cntName)
+	cnt.statsDialog.SetStatsChannel(&statsChan)
+	cnt.statsDialog.SetStatsStream(&stream)
+	cnt.statsDialog.Display()
 }
 
 func (cnt *Containers) cexec() {

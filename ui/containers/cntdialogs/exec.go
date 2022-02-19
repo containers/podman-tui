@@ -578,7 +578,7 @@ func (d *ContainerExecDialog) SetExecFunc(handler func()) *ContainerExecDialog {
 // SetContainerID sets container ID label
 func (d *ContainerExecDialog) SetContainerID(id string, name string) {
 	d.containerID = id
-	label := fmt.Sprintf("[black::]container:   [-::]%s", id)
+	label := fmt.Sprintf("[white::]container:   [-::]%s", id)
 	if name != "" {
 		label = fmt.Sprintf("%s (%s)", label, name)
 	}

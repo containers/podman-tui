@@ -14,6 +14,7 @@ type theme struct {
 	ImageHistoryDialog          imageHistoryDialog
 	ContainerExecDialog         containerExecDialog
 	ContainerExecTerminalDialog containerExecTerminalDialog
+	ContainerStatsDialog        containerStatsDialog
 }
 
 type infoBar struct {
@@ -84,6 +85,12 @@ type containerExecTerminalDialog struct {
 	BgColor  tcell.Color
 	FgColor  tcell.Color
 	Terminal terminal
+}
+
+type containerStatsDialog struct {
+	TableHeaderFgColor tcell.Color
+	BgColor            tcell.Color
+	FgColor            tcell.Color
 }
 
 type terminal struct {

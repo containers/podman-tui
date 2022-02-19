@@ -53,10 +53,10 @@ func NewInfoBar() *InfoBar {
 	table.SetCell(osCellRow, 2, emptyCell())
 
 	table.SetCell(memCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Memory usage:")))
-	table.SetCell(memCellRow, 2, tview.NewTableCell(progressUsageString(0.00)))
+	table.SetCell(memCellRow, 2, tview.NewTableCell(utils.ProgressUsageString(0.00)))
 
 	table.SetCell(swapCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Swap usage:")))
-	table.SetCell(swapCellRow, 2, tview.NewTableCell(progressUsageString(0.00)))
+	table.SetCell(swapCellRow, 2, tview.NewTableCell(utils.ProgressUsageString(0.00)))
 
 	// empty column
 	for i := 0; i < 5; i++ {
@@ -105,8 +105,8 @@ func (info *InfoBar) UpdateBasicInfo(hostname string, kernel string, ostype stri
 
 // UpdateSystemUsageInfo updates memory and swap values
 func (info *InfoBar) UpdateSystemUsageInfo(memUsage float64, swapUsage float64) {
-	memUsageText := progressUsageString(memUsage)
-	swapUsageText := progressUsageString(swapUsage)
+	memUsageText := utils.ProgressUsageString(memUsage)
+	swapUsageText := utils.ProgressUsageString(swapUsage)
 	info.table.GetCell(memCellRow, 2).SetText(memUsageText)
 	info.table.GetCell(swapCellRow, 2).SetText(swapUsageText)
 }
