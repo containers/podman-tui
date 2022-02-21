@@ -8,7 +8,11 @@ TMUX_SESSION="podman_tui_test"
 
 function setup() {
     # start podman socket
-    systemctl --user start podman.socket
+    local user_service_management="--user"
+    if [ ${UID} -eq 0 ] ; then
+        user_service_management=""
+    fi
+    systemctl ${user_service_management} start podman.socket
 
     # create tmux session
     tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" || echo -e "\c")

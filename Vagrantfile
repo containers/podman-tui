@@ -1,11 +1,11 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.hostname = "fedora34"
-    config.vm.box = "fedora/34-cloud-base"
-    config.vm.box_version = "34.20210423.0"
-    config.vm.provision "shell", inline: "mkdir -p /home/vagrant/go/src/github.com/containers/podman-tui"
-    config.vm.synced_folder ".", "/home/vagrant/go/src/github.com/containers/podman-tui",
+    config.vm.hostname = "fedora35"
+    config.vm.box = "fedora/35-cloud-base"
+    config.vm.box_version = "35.20211026.0"
+    config.vm.provision "shell", inline: "mkdir -p /home/vagrant/go"
+    config.vm.synced_folder ".", "/home/vagrant/go/src/podman-tui",
         type: "nfs",
         nfs_version: 4,
         nfs_udp: false
@@ -32,7 +32,6 @@ export GOBIN=/home/vagrant/go/bin
 export GOROOT=/usr/local/go
 export GOPRIVATE=github.com/containers/podman-tui
 export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
-
 BASH
 
     install_podman_env = <<-BASH

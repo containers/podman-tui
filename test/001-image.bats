@@ -23,7 +23,7 @@ load helpers_tui
     podman_tui_send_inputs "Down" "Enter"
     sleep 12
 
-    run_podman image ls busybox --noheading --format "'{{ .Repository }}'"
+    run_podman image ls busybox --format "'{{ .Repository }}'"
     assert "$output" =~ "docker.io/library/busybox" "expected image"
 }
 
@@ -46,7 +46,7 @@ load helpers_tui
 
 @test "image history" {
     image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
-    image_id=$(podman image ls --sort repository --noheading --filter "reference=docker.io/library/busybox" --format "{{ .ID }}")
+    image_id=$(podman image ls --sort repository --filter "reference=docker.io/library/busybox" --format "{{ .ID }}")
     # switch to images view
     # select busybox image from list
     # select history command from image commands dialog
@@ -91,7 +91,7 @@ load helpers_tui
     podman_tui_send_inputs "$TEST_IMAGE_TAG_NAME" "Tab" "Tab" "Enter"
     sleep 2
 
-    run_podman image ls $TEST_IMAGE_TAG_NAME --noheading --format "'{{ .Repository }}'"
+    run_podman image ls $TEST_IMAGE_TAG_NAME --format "'{{ .Repository }}'"
     assert "$output" =~ "$TEST_IMAGE_TAG_NAME" "expected tagged image $TEST_IMAGE_TAG_NAME"
 }
 
@@ -108,13 +108,13 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 2
 
-    untagged_umage=$(podman image ls --noheading --format '{{ .Repository }}' | grep none)
+    untagged_umage=$(podman image ls --format '{{ .Repository }}' | grep none)
     assert "$untagged_umage" =~ "<none>" "expected <none> image"
 
 }
 
 @test "image remove" {
-    run_podman image ls  --noheading --format "'{{ .Repository }}'"
+    run_podman image ls  --format "'{{ .Repository }}'"
     before="$output"
     untagged_image=$(podman image ls --sort repository --noheading | nl -v 0 | grep '<none> ' | awk '{print $1}')
 
@@ -132,7 +132,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Enter"
 
     # check if busybox image has been removed
-    run_helper podman image ls  --noheading --format "'{{ .Repository }}'"
+    run_helper podman image ls --format "'{{ .Repository }}'"
     assert "$output" "!~" "$before" "expected <none> image removal"
 }
 
@@ -148,7 +148,7 @@ load helpers_tui
     sleep 2
 
     # check if busybox image has been removed
-    run_helper podman image ls  --noheading --format "'{{ .Repository }}'" --filter "reference=busybox"
+    run_helper podman image ls --format "'{{ .Repository }}'" --filter "reference=busybox"
     assert "$output" "=~" "" "expected at least busybox image removal"
 }
 

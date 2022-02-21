@@ -37,7 +37,7 @@ load helpers_tui
 }
 
 @test "pod start" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -47,12 +47,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "start"
     sleep 1
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
 }
 
 @test "pod pause" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -62,12 +62,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "pause"
     sleep 1
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Paused" "expected $TEST_POD_NAME running"
 }
 
 @test "pod unpause" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -77,12 +77,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "unpause"
     sleep 1
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
 }
 
 @test "pod stop" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -92,12 +92,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "stop"
     sleep 1
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
 }
 
 @test "pod restart" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -107,12 +107,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "restart"
     sleep 2
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Running" "expected $TEST_POD_NAME exited"
 }
 
 @test "pod kill" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -122,12 +122,12 @@ load helpers_tui
     podman_tui_select_pod_cmd "kill"
     sleep 1
 
-    run_podman pod ls --noheading --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
+    run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
 }
 
 @test "pod inspect" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
     
     # switch to pods view
     # select test pod from list
@@ -144,7 +144,7 @@ load helpers_tui
 }
 
 @test "pod remove" {
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
 
     # switch to pods view
     # select test pod from list
@@ -171,7 +171,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_pod_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 3
 
     run_podman pod ls --format "{{ .Name }}" --filter "name=$TEST_POD_NAME"
     assert "$output" "=~" "" "expected at least $TEST_POD_NAME pod removal"

@@ -9,7 +9,7 @@ load helpers_tui
 @test "container create" {
     podman container rm -f $TEST_CONTAINER_NAME || echo done 
     
-    httpd_image=$(podman image ls --sort repository --noheading --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
+    httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
     if [ "${httpd_image}" == "" ] ; then 
         podman image pull docker.io/library/httpd
     fi
@@ -18,7 +18,7 @@ load helpers_tui
     podman pod create --name $TEST_POD_NAME || echo done
 
     # get required pod, image, network and volume index for number of KeyDown stroke
-    pod_index=$(podman pod ls --sort name --noheading --format "{{ .Name }}" | nl -v 1 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_POD_NAME" | awk '{print $1}')
     image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
     net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_NETWORK_NAME" | awk '{print $1}')
     vol_index=$(podman volume ls -q | nl -v 1 | grep "$TEST_VOLUME_NAME" | awk '{print $1}')
@@ -95,7 +95,7 @@ load helpers_tui
 }
 
 @test "container start" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -105,13 +105,13 @@ load helpers_tui
     podman_tui_select_container_cmd "start"
     sleep 1
 
-    run_podman container ls --all --noheading --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be up"
 
 }
 
 @test "container exec" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -140,7 +140,7 @@ load helpers_tui
 }
 
 @test "container inspect" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -156,7 +156,7 @@ load helpers_tui
 }
 
 @test "container diff" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -166,12 +166,12 @@ load helpers_tui
     podman_tui_select_container_cmd "diff"
     sleep 6
 
-    run_helper grep -w "/home" $PODMAN_TUI_LOG
-    assert "$output" "=~" '/home' "expected '/home' in the logs"
+    run_helper grep -w "/etc" $PODMAN_TUI_LOG
+    assert "$output" "=~" '/etc' "expected '/etc' in the logs"
 }
 
 @test "container top" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -186,7 +186,7 @@ load helpers_tui
 }
 
 @test "container port" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -202,7 +202,7 @@ load helpers_tui
 }
 
 @test "container pause" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -212,12 +212,12 @@ load helpers_tui
     podman_tui_select_container_cmd "pause"
     sleep 1
 
-    run_podman container ls --all --noheading --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "paused" "expected $TEST_CONTAINER_NAME to be paused"
 }
 
 @test "container unpause" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -227,12 +227,12 @@ load helpers_tui
     podman_tui_select_container_cmd "unpause"
     sleep 1
 
-    run_podman container ls --all --noheading --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be Up"
 }
 
 @test "container stop" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -242,13 +242,13 @@ load helpers_tui
     podman_tui_select_container_cmd "stop"
     sleep 1
 
-    run_podman container ls --all --noheading --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be Up"
 }
 
 @test "container kill" {
     podman container start $TEST_CONTAINER_NAME || echo done
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -258,12 +258,12 @@ load helpers_tui
     podman_tui_select_container_cmd "kill"
     sleep 1
 
-    run_podman container ls --all --noheading --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be killed"
 }
 
 @test "container remove" {
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -274,14 +274,14 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep 1
 
-    run_podman container ls --all --noheading --format "'{{ .Names }}'"
+    run_podman container ls --all --format "'{{ .Names }}'"
     assert "$output" !~ "$TEST_CONTAINER_NAME" "expected $TEST_CONTAINER_NAME to be removed"
 }
 
 @test "container rename" {
 
     podman container create --name $TEST_CONTAINER_NAME httpd
-    container_index=$(podman container ls --all --noheading --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -310,8 +310,8 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 3
 
-    run_podman container ls --all --noheading --format "'{{ .Names }}'"
-    assert "$output" !~ "$TEST_CONTAINER_NAME" "expected $TEST_CONTAINER_NAME to be removed"
+    run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}\$" --format "'{{ json .Names }}'"
+    assert "$output" "=~" "" "expected $TEST_CONTAINER_NAME to be removed"
 }

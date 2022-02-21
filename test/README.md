@@ -9,5 +9,5 @@ To run the tests locally in your sandbox, you can use one of these methods:
 * bats ./test/                # runs all
 
 ## Requirements
-- busybox image shall not exist on the sandbox (it will be pulled automatically during the test)
+- access to repository to pull busybox and httpd image 
 - tmux
