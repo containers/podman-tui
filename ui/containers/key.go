@@ -82,6 +82,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 				cntTopDialogHandler(event, setFocus)
 			}
 		}
+
+		// container stats dialog handler
+		if cnt.statsDialog.HasFocus() {
+			if cntStatsDialogHandler := cnt.statsDialog.InputHandler(); cntStatsDialogHandler != nil {
+				cntStatsDialogHandler(event, setFocus)
+			}
+		}
 		setFocus(cnt)
 	})
 }

@@ -65,7 +65,7 @@ var Styles = theme{
 	},
 	ContainerExecDialog: containerExecDialog{
 		BgColor: tcell.ColorSteelBlue,
-		FgColor: tcell.ColorBlack,
+		FgColor: tcell.ColorWhite,
 	},
 	ContainerExecTerminalDialog: containerExecTerminalDialog{
 		BgColor: tcell.ColorSteelBlue,
@@ -74,5 +74,10 @@ var Styles = theme{
 			BgColor: tcell.NewRGBColor(0, 0, 0),
 			FgColor: tcell.NewRGBColor(255, 255, 255),
 		},
+	},
+	ContainerStatsDialog: containerStatsDialog{
+		TableHeaderFgColor: tcell.ColorLightSkyBlue,
+		BgColor:            tcell.ColorSteelBlue,
+		FgColor:            tcell.ColorWhite,
 	},
 }

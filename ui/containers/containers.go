@@ -28,6 +28,7 @@ type Containers struct {
 	createDialog       *cntdialogs.ContainerCreateDialog
 	execDialog         *cntdialogs.ContainerExecDialog
 	execTerminalDialog *cntdialogs.ContainerExecTerminalDialog
+	statsDialog        *cntdialogs.ContainerStatsDialog
 	containersList     containerListReport
 	selectedID         string
 	selectedName       string
@@ -55,6 +56,7 @@ func NewContainers() *Containers {
 		createDialog:       cntdialogs.NewContainerCreateDialog(),
 		execDialog:         cntdialogs.NewContainerExecDialog(),
 		execTerminalDialog: cntdialogs.NewContainerExecTerminalDialog(),
+		statsDialog:        cntdialogs.NewContainerStatsDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
@@ -71,6 +73,7 @@ func NewContainers() *Containers {
 		{"rename", "rename the selected container"},
 		{"rm", "remove the selected container"},
 		{"start", "start the selected containers"},
+		{"stats", "display container resource usage statistics"},
 		{"stop", "stop the selected containers"},
 		{"top", "display the running processes of the selected container"},
 		{"unpause", "unpause the selected container that was paused before"},
@@ -150,6 +153,9 @@ func NewContainers() *Containers {
 		containers.fastRefreshChan <- true
 	})
 
+	// set stats dialogs functions
+	containers.statsDialog.SetDoneFunc(containers.statsDialog.Hide)
+
 	return containers
 }
 
@@ -175,7 +181,7 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
-	if cnt.execTerminalDialog.HasFocus() {
+	if cnt.execTerminalDialog.HasFocus() || cnt.statsDialog.HasFocus() {
 		return true
 	}
 	return cnt.Box.HasFocus()
@@ -226,6 +232,11 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 	// exec terminal dialog
 	if cnt.execTerminalDialog.IsDisplay() {
 		delegate(cnt.execTerminalDialog)
+		return
+	}
+	// stats dialog
+	if cnt.statsDialog.IsDisplay() {
+		delegate(cnt.statsDialog)
 		return
 	}
 

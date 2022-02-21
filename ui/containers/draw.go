@@ -75,4 +75,11 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 		cnt.execTerminalDialog.Draw(screen)
 		return
 	}
+
+	// stats dialogs
+	if cnt.statsDialog.IsDisplay() {
+		cnt.statsDialog.SetRect(x, y, width, height)
+		cnt.statsDialog.Draw(screen)
+		return
+	}
 }
