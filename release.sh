@@ -34,10 +34,10 @@ write_spec_version()
 
 write_spec_changelog()
 {
-	sed '/\*.*-dev-1/d' -i podman-tui.spec.rpkg
+	sed '/\*.*-dev/d' -i podman-tui.spec.rpkg
 	VERSION=$1
 	date=$(date "+%a %b %d %Y")
-	echo "* ${date} $(git config user.name) <$(git config user.email) ${VERSION}-1" >.changelog.txt
+	echo "* ${date} $(git config user.name) <$(git config user.email)> ${VERSION}-1" >.changelog.txt
 	if [[ "${VERSION}" != *-dev ]]; then
 	   git log --no-merges --format='- %s' "${LAST_TAG}..HEAD" >>.changelog.txt
 	else
