@@ -1,7 +1,7 @@
 PKG_PATH = "github.com/containers/podman-tui"
 TARGET = podman-tui
 BIN = ./bin
-DESTDIR = /usr/local/bin
+DESTDIR = /usr/bin
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo -Z)
 
