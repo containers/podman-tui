@@ -15,6 +15,8 @@ type theme struct {
 	ContainerExecDialog         containerExecDialog
 	ContainerExecTerminalDialog containerExecTerminalDialog
 	ContainerStatsDialog        containerStatsDialog
+	PodStatsDialog              podStatsDialog
+	DropdownStyle               dropdownStyle
 }
 
 type infoBar struct {
@@ -92,8 +94,17 @@ type containerStatsDialog struct {
 	BgColor            tcell.Color
 	FgColor            tcell.Color
 }
-
 type terminal struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
+}
+
+type podStatsDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type dropdownStyle struct {
+	Unselected tcell.Style
+	Selected   tcell.Style
 }

@@ -29,6 +29,8 @@ func (p *Pods) runCommand(cmd string) {
 		p.rm()
 	case "start":
 		p.start()
+	case "stats":
+		p.stats()
 	case "stop":
 		p.stop()
 	case "top":
@@ -49,6 +51,16 @@ func (p *Pods) displayError(title string, err error) {
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
 	p.errorDialog.SetText(message)
 	p.errorDialog.Display()
+}
+
+func (p *Pods) stats() {
+	if p.selectedID == "" {
+		p.displayError("", fmt.Errorf("there is no pod to perform stats command"))
+		return
+	}
+	podOptions := p.getAllItemsForStats()
+	p.statsDialog.SetPodsOptions(podOptions)
+	p.statsDialog.Display()
 }
 
 func (p *Pods) create() {
