@@ -348,6 +348,7 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 		return
 	}
 	d.mu.Lock()
+	defer d.mu.Unlock()
 	if index == 0 {
 		d.statQueryOpts.IDs = d.getAllPodIDs()
 	} else {
@@ -355,7 +356,6 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 			d.podDropDownOptions[index-1].ID,
 		}
 	}
-	defer d.mu.Unlock()
 	go d.query()
 }
 
@@ -364,8 +364,8 @@ func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) {
 		return
 	}
 	d.mu.Lock()
-	d.statQueryOpts.SortBy = index
 	defer d.mu.Unlock()
+	d.statQueryOpts.SortBy = index
 	go d.query()
 }
 

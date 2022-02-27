@@ -63,7 +63,6 @@ func sortStats(podSReport []*entities.PodStatsReport, sortBy int) []StatReporter
 	}
 	sort.Slice(report, sortFunc(sortBy, report))
 	return report
-
 }
 
 func sortFunc(key int, data []StatReporter) func(i, j int) bool {
