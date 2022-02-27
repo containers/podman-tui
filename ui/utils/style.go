@@ -80,4 +80,12 @@ var Styles = theme{
 		BgColor:            tcell.ColorSteelBlue,
 		FgColor:            tcell.ColorWhite,
 	},
+	PodStatsDialog: podStatsDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
+	},
+	DropdownStyle: dropdownStyle{
+		Unselected: tcell.StyleDefault.Background(tcell.ColorLightSkyBlue).Foreground(tcell.ColorBlack),
+		Selected:   tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorWhite),
+	},
 }

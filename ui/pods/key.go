@@ -64,6 +64,12 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 				topDialogHandler(event, setFocus)
 			}
 		}
+		// container stats dialog handler
+		if pods.statsDialog.HasFocus() {
+			if podStatsDialogHandler := pods.statsDialog.InputHandler(); podStatsDialogHandler != nil {
+				podStatsDialogHandler(event, setFocus)
+			}
+		}
 		setFocus(pods)
 	})
 }

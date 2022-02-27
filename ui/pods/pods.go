@@ -25,6 +25,7 @@ type Pods struct {
 	messageDialog  *dialogs.MessageDialog
 	topDialog      *dialogs.TopDialog
 	createDialog   *poddialogs.PodCreateDialog
+	statsDialog    *poddialogs.PodStatsDialog
 	podsList       podsListReport
 	selectedID     string
 	confirmData    string
@@ -47,6 +48,7 @@ func NewPods() *Pods {
 		messageDialog:  dialogs.NewMessageDialog(""),
 		topDialog:      dialogs.NewTopDialog(),
 		createDialog:   poddialogs.NewPodCreateDialog(),
+		statsDialog:    poddialogs.NewPodStatsDialog(),
 	}
 
 	pods.topDialog.SetTitle("podman pod top")
@@ -60,7 +62,7 @@ func NewPods() *Pods {
 		{"restart", "restart  the selected pod"},
 		{"rm", "remove the selected pod"},
 		{"start", "start  the selected pod"},
-		//{"stats", "display live stream of resource usage"},
+		{"stats", "display live stream of resource usage"},
 		{"stop", "stop th the selected pod"},
 		{"top", "display the running processes of the pod's containers"},
 		{"unpause", "unpause  the selected pod"},
@@ -132,6 +134,10 @@ func NewPods() *Pods {
 		pods.createDialog.Hide()
 		pods.create()
 	})
+
+	// set stats dialogs functions
+	pods.statsDialog.SetDoneFunc(pods.statsDialog.Hide)
+
 	return pods
 }
 
@@ -152,6 +158,9 @@ func (pods *Pods) HasFocus() bool {
 		return true
 	}
 	if pods.confirmDialog.HasFocus() || pods.createDialog.HasFocus() {
+		return true
+	}
+	if pods.statsDialog.HasFocus() {
 		return true
 	}
 	return pods.Box.HasFocus()
@@ -189,6 +198,11 @@ func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 		delegate(pods.createDialog)
 		return
 	}
+	// stats dialog
+	if pods.statsDialog.IsDisplay() {
+		delegate(pods.statsDialog)
+		return
+	}
 	delegate(pods.table)
 }
 
@@ -197,6 +211,19 @@ func (pods *Pods) getSelectedItem() string {
 		return ""
 	}
 	row, _ := pods.table.GetSelection()
-	podID := pods.table.GetCell(row, 0).Text
-	return podID
+	return pods.table.GetCell(row, 0).Text
+}
+
+func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {
+	var items []poddialogs.PodStatsDropDownOptions
+	rows := pods.table.GetRowCount()
+	for i := 1; i < rows; i++ {
+		podID := pods.table.GetCell(i, 0).Text
+		podName := pods.table.GetCell(i, 1).Text
+		items = append(items, poddialogs.PodStatsDropDownOptions{
+			ID:   podID,
+			Name: podName,
+		})
+	}
+	return items
 }

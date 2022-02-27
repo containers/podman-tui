@@ -62,13 +62,13 @@ func (cnt *Containers) displayError(title string, err error) {
 
 func (cnt *Containers) stats() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+		cnt.displayError("", fmt.Errorf("there is no container to perform stats command"))
 		return
 	}
 	cntID, cntName := cnt.getSelectedItem()
 	cntStatus, err := containers.Status(cntID)
 	if err != nil {
-		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+		cnt.displayError("", fmt.Errorf("there is no container to perform stats command"))
 		return
 	}
 	if cntStatus != "running" {

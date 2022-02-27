@@ -56,4 +56,10 @@ func (pods *Pods) Draw(screen tcell.Screen) {
 		pods.topDialog.Draw(screen)
 		return
 	}
+	// stats dialogs
+	if pods.statsDialog.IsDisplay() {
+		pods.statsDialog.SetRect(x, y, width, height)
+		pods.statsDialog.Draw(screen)
+		return
+	}
 }
