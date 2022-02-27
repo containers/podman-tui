@@ -75,7 +75,12 @@ You need install some dependencies before building a binary.
 
   ```shell
   $ sudo dnf install -y btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel
-  $ export PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+  ```
+
+#### Debian
+
+  ```shell
+  $ sudo apt-get -y install libgpgme-dev libbtrfs-dev libdevmapper-dev libassuan-dev pkg-config
   ```
 
 ### Validate, build binary and test your changes
@@ -83,7 +88,7 @@ You need install some dependencies before building a binary.
 ```shell
 $ make validate
 $ make binary
-$ bin/podman-tui
+$ ./bin/podman-tui
 ```
 
 ## Missing Features
