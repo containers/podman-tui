@@ -213,7 +213,7 @@ func (d *NetworkCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(d.networkDriverOptionsField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
-	// ip settigs page
+	// ip settings page
 	d.ipSettingsPage.SetDirection(tview.FlexRow)
 	d.ipSettingsPage.AddItem(d.networkIpv6CheckBox, 1, 0, true)
 	d.ipSettingsPage.AddItem(emptySpace(), 1, 0, true)

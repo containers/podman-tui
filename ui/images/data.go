@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retreives images list data
+// UpdateData retrieves images list data
 func (img *Images) UpdateData() {
 	images, err := images.List()
 	if err != nil {

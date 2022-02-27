@@ -62,7 +62,7 @@ func NewApp() *App {
 	app.connection = connection.NewConnection()
 
 	// set refresh channel for container page
-	// its requried for container exec dialog
+	// its required for container exec dialog
 	app.containers.SetFastRefreshChannel(app.fastRefreshChan)
 
 	// menu items

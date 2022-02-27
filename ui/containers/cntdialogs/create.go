@@ -281,7 +281,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(d.containerRemoveField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
-	// network settigs page
+	// network settings page
 	d.networkingPage.SetDirection(tview.FlexRow)
 	d.networkingPage.AddItem(d.containerHostnameField, 1, 0, true)
 	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
@@ -292,7 +292,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.networkingPage.AddItem(d.containerNetworkField, 1, 0, true)
 	d.networkingPage.SetBackgroundColor(bgColor)
 
-	// port settigs page
+	// port settings page
 	d.portPage.SetDirection(tview.FlexRow)
 	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
 	d.portPage.AddItem(emptySpace(), 1, 0, true)
@@ -301,7 +301,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.portPage.AddItem(d.containerPortExposeField, 1, 0, true)
 	d.portPage.SetBackgroundColor(bgColor)
 
-	// dns settigs page
+	// dns settings page
 	d.dnsPage.SetDirection(tview.FlexRow)
 	d.dnsPage.AddItem(d.containerDNSServersField, 1, 0, true)
 	d.dnsPage.AddItem(emptySpace(), 1, 0, true)
@@ -310,7 +310,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.dnsPage.AddItem(d.containerDNSSearchField, 1, 0, true)
 	d.dnsPage.SetBackgroundColor(bgColor)
 
-	// volume settigs page
+	// volume settings page
 	d.volumePage.SetDirection(tview.FlexRow)
 	d.volumePage.AddItem(d.containerVolumeField, 1, 0, true)
 	d.volumePage.AddItem(emptySpace(), 1, 0, true)

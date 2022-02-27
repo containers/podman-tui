@@ -14,7 +14,7 @@ const (
 	// DialogMinWidth dialog min width
 	DialogMinWidth = 40
 
-	// TableHeightOffset table hight offset for border
+	// TableHeightOffset table height offset for border
 	TableHeightOffset = 3
 )
 

@@ -12,7 +12,7 @@ type apiConn struct {
 	message    string
 }
 
-// ConnOK returns connetion status
+// ConnOK returns connection status
 func (conn *apiConn) ConnOK() (bool, string) {
 	status := true
 	message := ""

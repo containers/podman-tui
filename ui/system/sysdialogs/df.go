@@ -164,7 +164,7 @@ func (d *DfDialog) initTable() {
 	d.table.SetSelectable(true, false)
 }
 
-// UpdateDiskSummary udpates disk summary table result
+// UpdateDiskSummary updates disk summary table result
 func (d *DfDialog) UpdateDiskSummary(sum []*sysinfo.DfSummary) {
 	// add summaries
 	rowIndex := 1

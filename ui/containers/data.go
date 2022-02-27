@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retreives containers list data
+// UpdateData retrieves containers list data
 func (cnt *Containers) UpdateData() {
 	cntList, err := containers.List()
 	if err != nil {

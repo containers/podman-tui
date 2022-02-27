@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// MessageDialog is a simaple messsage dialog primitive
+// MessageDialog is a simaple message dialog primitive
 type MessageDialog struct {
 	*tview.Box
 	layout        *tview.Flex

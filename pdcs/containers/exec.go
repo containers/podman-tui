@@ -49,7 +49,7 @@ func NewExecSession(id string, opts ExecOption) (string, error) {
 
 // ResizeExecTty resizes exec session tty.
 func ResizeExecTty(id string, height int, width int) {
-	log.Debug().Msgf("pdcs: podman container exec seesion (%12s) tty resize (height=%d, width=%d)", id, height, width)
+	log.Debug().Msgf("pdcs: podman container exec session (%12s) tty resize (height=%d, width=%d)", id, height, width)
 	conn, err := connection.GetConnection()
 	if err != nil {
 		log.Error().Msgf("%v", err)
@@ -62,7 +62,7 @@ func ResizeExecTty(id string, height int, width int) {
 			return
 		}
 		if response.ExitCode != 0 {
-			log.Debug().Msgf("pdcs: podman container cannot resize exec seesion (%12s) tty, exec already exited", id)
+			log.Debug().Msgf("pdcs: podman container cannot resize exec session (%12s) tty, exec already exited", id)
 			return
 		}
 		if response.Running {
@@ -71,7 +71,7 @@ func ResizeExecTty(id string, height int, width int) {
 				log.Error().Msgf("%v", err)
 				return
 			}
-			log.Debug().Msgf("pdcs: podman container exec seesion (%12s) tty resized successfully (height=%d, width=%d)", id, height, width)
+			log.Debug().Msgf("pdcs: podman container exec session (%12s) tty resized successfully (height=%d, width=%d)", id, height, width)
 			return
 		}
 	}
