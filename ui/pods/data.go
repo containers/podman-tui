@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retreives pods list data
+// UpdateData retrieves pods list data
 func (pods *Pods) UpdateData() {
 	podList, err := ppods.List()
 	if err != nil {

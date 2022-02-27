@@ -98,7 +98,7 @@ func (nets *Networks) rm() {
 }
 
 func (nets *Networks) remove() {
-	nets.progressDialog.SetTitle("newtork remove in progress")
+	nets.progressDialog.SetTitle("network remove in progress")
 	nets.progressDialog.Display()
 	remove := func(id string) {
 		err := networks.Remove(id)

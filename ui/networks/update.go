@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retreives networks list data
+// UpdateData retrieves networks list data
 func (nets *Networks) UpdateData() {
 	netList, err := networks.List()
 	if err != nil {

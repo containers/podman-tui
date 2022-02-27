@@ -43,7 +43,7 @@ committing author's GitHub account.
 ## Contributing To Podman TUI
 ### Fork and clone Podman TUI
 
-First you need to frok and clone podman-tui project on Github.
+First you need to fork and clone podman-tui project on Github.
 
 Be sure to have [defined your `$GOPATH` environment variable](https://github.com/golang/go/wiki/GOPATH).
 
@@ -91,7 +91,7 @@ $ bin/podman-tui
 * podman system reset
 * podman network connect
 * podman network disconnect
-* podman newtork reload
+* podman network reload
 * podman pod stats
 * podman contaienrs stats
 * podman container attach/detach

@@ -253,7 +253,7 @@ func (d *ContainerExecTerminalDialog) Draw(screen tcell.Screen) {
 
 	x, y, width, height = d.terminalScreen.GetInnerRect()
 
-	// set terminal backgournd
+	// set terminal background
 	for trow := 0; trow < height; trow++ {
 		for tcol := 0; tcol < width; tcol++ {
 			tview.PrintJoinedSemigraphics(screen, x+tcol, y+trow, rune(0), terminalStyle)

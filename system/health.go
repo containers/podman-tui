@@ -12,7 +12,7 @@ const (
 	messageBufferSize = 100
 )
 
-// Engine implements connetion and system info check
+// Engine implements connection and system info check
 type Engine struct {
 	refreshInterval time.Duration
 	sysinfo         systemInfo

@@ -46,7 +46,7 @@ func (app *App) refresh() {
 }
 
 // fastRefresh method will refresh the screen as soon as it receives
-// the refresh singal. Its required for some feature e.g. container exec
+// the refresh signal. Its required for some feature e.g. container exec
 func (app *App) fastRefresh() {
 	log.Debug().Msg("app: starting fast refresh loop")
 	for {

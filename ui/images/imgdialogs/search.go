@@ -22,7 +22,7 @@ const (
 	sFormElement         = 4
 )
 
-// ImageSearchDialog represents image search dialgos
+// ImageSearchDialog represents image search dialogs
 type ImageSearchDialog struct {
 	*tview.Box
 	layout              *tview.Flex

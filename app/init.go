@@ -18,7 +18,7 @@ func (app *App) initInfoBar() {
 	hostname, kernel, ostype := app.health.GetSysInfo()
 	app.infoBar.UpdateBasicInfo(hostname, kernel, ostype)
 
-	// udpate memory and swap usage
+	// update memory and swap usage
 	memUsage, swapUsage := app.health.GetSysUsage()
 	app.infoBar.UpdateSystemUsageInfo(memUsage, swapUsage)
 
