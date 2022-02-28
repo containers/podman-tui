@@ -206,6 +206,9 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podNetworkField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podNetworkField.SetBackgroundColor(bgColor)
 	podDialog.podNetworkField.SetLabelColor(tcell.ColorWhite)
+	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
+	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	podDialog.podNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 
 	/*
 		// network aliases field
