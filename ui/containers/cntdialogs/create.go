@@ -128,6 +128,8 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	}
 
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
+	ddselectedStyle := utils.Styles.DropdownStyle.Selected
 
 	containerDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
@@ -147,11 +149,13 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerImageField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerImageField.SetBackgroundColor(bgColor)
 	containerDialog.containerImageField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerImageField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	// pod field
 	containerDialog.containerPodField.SetLabel("select pod:")
 	containerDialog.containerPodField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerPodField.SetBackgroundColor(bgColor)
 	containerDialog.containerPodField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerPodField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	// labels field
 	containerDialog.containerLabelsField.SetLabel("labels:")
 	containerDialog.containerLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
@@ -186,6 +190,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerNetworkField.SetLabelWidth(networkingPageLabelWidth)
 	containerDialog.containerNetworkField.SetBackgroundColor(bgColor)
 	containerDialog.containerNetworkField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 
 	// ports setup page
 	portPageLabelWidth := 15
@@ -231,12 +236,14 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerVolumeField.SetLabelWidth(volumePageLabelWidth)
 	containerDialog.containerVolumeField.SetBackgroundColor(bgColor)
 	containerDialog.containerVolumeField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 
 	// image volume
 	containerDialog.containerImageVolumeField.SetLabel("Image volume:")
 	containerDialog.containerImageVolumeField.SetLabelWidth(volumePageLabelWidth)
 	containerDialog.containerImageVolumeField.SetBackgroundColor(bgColor)
 	containerDialog.containerImageVolumeField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 
 	// category pages
 	containerDialog.categoryPages.SetBackgroundColor(bgColor)
