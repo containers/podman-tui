@@ -145,12 +145,13 @@ function podman_tui_select_pod_cmd() {
     menu_index=6;;
   "start")
     menu_index=7;;
+  # index 8 stats
   "stop")
-    menu_index=8;;
-  "top")
     menu_index=9;;
-  "unpause")
+  "top")
     menu_index=10;;
+  "unpause")
+    menu_index=11;;
   esac
 
   podman_tui_select_menu $menu_index
@@ -187,12 +188,13 @@ function podman_tui_select_container_cmd() {
     menu_index=10;;
   "start")
     menu_index=11;;
+  # index 12 stats
   "stop")
-    menu_index=12;;
-  "top")
     menu_index=13;;
-  "unpause")
+  "top")
     menu_index=14;;
+  "unpause")
+    menu_index=15;;
   esac
 
   podman_tui_select_menu $menu_index
