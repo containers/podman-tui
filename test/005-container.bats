@@ -68,7 +68,7 @@ load helpers_tui
 
     # go to "Create" button and press Enter
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
-    sleep 1
+    sleep 2
 
     # get created container information
     container_information=$(podman container ls --all --pod --filter "name=podman_tui_test_container01" --format \
@@ -103,7 +103,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "start"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be up"
@@ -132,7 +132,7 @@ load helpers_tui
     sleep 1
     podman_tui_send_inputs "echo Space test Space > Space a.txt" "Enter"
     podman_tui_send_inputs "Tab" "Enter"
-    sleep 1
+    sleep 2
 
     run_podman container exec $TEST_CONTAINER_NAME cat a.txt
 
@@ -148,7 +148,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "inspect"
-    sleep 1
+    sleep 2
 
     run_helper sed -n '/  "Labels": {/, /  },/p' $PODMAN_TUI_LOG
 
@@ -179,7 +179,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "top"
-    sleep 1
+    sleep 2
 
     run_helper grep -w "USER PID PPID" $PODMAN_TUI_LOG
     assert "$output" "=~" 'USER PID PPID' "expected 'USER PID PPID' in the logs"
@@ -194,7 +194,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "port"
-    sleep 1
+    sleep 2
 
     container_ports=$(podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "{{ .Ports }}")
     run_helper grep -w "$container_ports" $PODMAN_TUI_LOG
@@ -210,7 +210,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "pause"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "paused" "expected $TEST_CONTAINER_NAME to be paused"
@@ -225,7 +225,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "unpause"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be Up"
@@ -240,7 +240,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "stop"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be Up"
@@ -256,7 +256,7 @@ load helpers_tui
     podman_tui_set_view "containers"
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "kill"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be killed"
@@ -272,7 +272,7 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "remove"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 2
 
     run_podman container ls --all --format "'{{ .Names }}'"
     assert "$output" !~ "$TEST_CONTAINER_NAME" "expected $TEST_CONTAINER_NAME to be removed"
@@ -291,7 +291,7 @@ load helpers_tui
     podman_tui_select_container_cmd "rename"
     podman_tui_send_inputs ${TEST_CONTAINER_NAME}_renamed
     podman_tui_send_inputs "Tab" "Tab" "Enter"
-    sleep 1
+    sleep 2
     
     run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}\$" --format "'{{ json .Names }}'"
     assert "$output" "!~" "${TEST_CONTAINER_NAME}" "expected ${TEST_CONTAINER_NAME} to be not in the list"

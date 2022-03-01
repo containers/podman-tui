@@ -45,7 +45,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "start"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
@@ -60,7 +60,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "pause"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Paused" "expected $TEST_POD_NAME running"
@@ -75,7 +75,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "unpause"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
@@ -90,7 +90,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "stop"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
@@ -120,7 +120,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "kill"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --filter="name=$TEST_POD_NAME" --format "'{{ .Status}}'"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
@@ -136,7 +136,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "inspect"
-    sleep 1
+    sleep 2
     podman_tui_send_inputs "Enter"
 
     run_helper sed -n '/  "Labels": {/, /  },/p' $PODMAN_TUI_LOG
@@ -155,7 +155,7 @@ load helpers_tui
     podman_tui_select_pod_cmd "remove"
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep 2
 
     run_podman pod ls --format "{{ .Name }}" --filter "name=$TEST_POD_NAME"
     assert "$output" "=~" "" "expected $TEST_POD_NAME pod removal"
@@ -163,7 +163,7 @@ load helpers_tui
 
 @test "pod prune" {
     podman pod create --name $TEST_POD_NAME --label $TEST_LABEL || echo done
-    sleep 1
+    sleep 2
     
     # switch to pods view
     # select prune command from pod commands dialog

@@ -15,12 +15,12 @@ function setup() {
     systemctl ${user_service_management} start podman.socket
 
     # create tmux session
-    tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" || echo -e "\c")
+    tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" 2> /dev/null || echo -e "\c")
     if [ "${tmux_sessions}" != "" ] ; then 
         tmux kill-session -t $TMUX_SESSION
     fi
     /bin/rm -rf ${PODMAN_TUI_LOG}
-    run_helper tmux new-session -s $TMUX_SESSION -d ${PODMAN_TUI_DEBUG}
+    run_helper tmux new-session -s $TMUX_SESSION -d "${PODMAN_TUI_DEBUG}"
     # wait to load the interface
     sleep 5
 }
