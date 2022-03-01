@@ -10,8 +10,7 @@ import (
 )
 
 const (
-	cmdHeightOffset = 2
-	cmdWidthOffset  = 6
+	cmdWidthOffset = 6
 )
 
 // CommandDialog is a commands list dialog
@@ -37,13 +36,10 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		SetButtonsAlign(tview.AlignRight)
 
 	form.SetBackgroundColor(utils.Styles.CommandDialog.BgColor)
-	// form.SetBorder(true)
 
 	bgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
 	fgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
 	cmdsTable := tview.NewTable()
-	cmdsTable.SetBorder(true)
-	cmdsTable.SetBorderColor(utils.Styles.CommandDialog.BgColor)
 
 	cmdWidth := 0
 	// command table header
@@ -89,9 +85,21 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdsTable.SetSelectable(true, false)
 	cmdsTable.SetBackgroundColor(bgColor)
 
+	// command table layout
+	emptySpace := func() *tview.Box {
+		box := tview.NewBox()
+		box.SetBackgroundColor(bgColor)
+		box.SetBorder(false)
+		return box
+	}
+	cmdLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cmdLayout.AddItem(emptySpace(), 1, 0, false)
+	cmdLayout.AddItem(cmdsTable, 0, 1, true)
+	cmdLayout.AddItem(emptySpace(), 1, 0, false)
+
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
-	layout.AddItem(cmdsTable, len(options)+TableHeightOffset, 0, true)
+	layout.AddItem(cmdLayout, 0, 1, true)
 	layout.AddItem(form, DialogFormHeight, 0, true)
 	layout.SetBorder(true)
 	layout.SetBackgroundColor(bgColor)
@@ -105,7 +113,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		display: false,
 		options: options,
 		width:   cmdWidth + cmdWidthOffset,
-		height:  len(options) + TableHeightOffset + DialogFormHeight + cmdHeightOffset,
+		height:  len(options) + TableHeightOffset + DialogFormHeight,
 	}
 }
 
