@@ -30,6 +30,20 @@ Run `sudo make install` if you want to install the binary on the node.
 
 ---
 
+## Installing from the AUR
+
+podman-tui is using go. 
+There are 2 packages present in the Arch User Repository:
+- `podman-tui`
+- `podman-tui-git`
+
+Either one can be installed by using your prefered AUR helper, such as:
+```
+$ yay -S podman-tui
+```
+
+---
+
 ## PreRun Checks
 
 * podman-tui use podman unix socket for query therefore `podman.socket` service needs to be running.  
