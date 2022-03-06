@@ -110,6 +110,7 @@ var (
 )
 
 var (
+	// UIKeysBindings user interface key bindings
 	UIKeysBindings = []uiKeyInfo{
 		CommandMenuKey,
 		NextScreenKey,

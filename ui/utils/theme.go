@@ -8,7 +8,7 @@ type theme struct {
 	InfoBar                     infoBar
 	Menu                        menu
 	PageTable                   pageTable
-	HelpScreen                  helpScreen
+	Help                        help
 	CommandDialog               commandDialog
 	ConfirmDialog               confirmDialog
 	ImageSearchDialog           imageSearchDialog
@@ -54,7 +54,7 @@ type headerRow struct {
 	BgColor tcell.Color
 }
 
-type helpScreen struct {
+type help struct {
 	BorderColor   tcell.Color
 	BgColor       tcell.Color
 	FgColor       tcell.Color

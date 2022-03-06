@@ -37,7 +37,7 @@ type App struct {
 	connection      *connection.Connection
 	menu            *tview.TextView
 	health          *health.Engine
-	help            *help.HelpScreen
+	help            *help.Help
 	currentPage     string
 	needInitUI      bool
 	fastRefreshChan chan bool
@@ -63,7 +63,7 @@ func NewApp(name string, version string) *App {
 	app.networks = networks.NewNetworks()
 	app.system = system.NewSystem()
 	app.connection = connection.NewConnection()
-	app.help = help.NewHelpScreen(name, version)
+	app.help = help.NewHelp(name, version)
 
 	// set refresh channel for container page
 	// its required for container exec dialog

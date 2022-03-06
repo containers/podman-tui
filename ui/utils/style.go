@@ -34,7 +34,7 @@ var Styles = theme{
 			BgColor: tcell.ColorSteelBlue,
 		},
 	},
-	HelpScreen: helpScreen{
+	Help: help{
 		BorderColor:   tcell.ColorLightSkyBlue,
 		BgColor:       tview.Styles.PrimitiveBackgroundColor,
 		FgColor:       tcell.ColorWhite,

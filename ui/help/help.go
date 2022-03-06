@@ -8,26 +8,26 @@ import (
 	"github.com/rivo/tview"
 )
 
-// HelpScreen is a help primitive dialog
-type HelpScreen struct {
+// Help is a help primitive dialog
+type Help struct {
 	*tview.Box
 	title  string
 	layout *tview.Flex
 }
 
-// NewHelpScreen returns a help screen primitive.
-func NewHelpScreen(appName string, appVersion string) *HelpScreen {
+// NewHelp returns a help screen primitive.
+func NewHelp(appName string, appVersion string) *Help {
 	// returns the help primitive
-	help := &HelpScreen{
+	help := &Help{
 		Box:   tview.NewBox(),
 		title: "help",
 	}
 
 	// colors
-	headerColor := utils.Styles.HelpScreen.HeaderFgColor
-	fgColor := utils.Styles.HelpScreen.FgColor
-	bgColor := utils.Styles.HelpScreen.BgColor
-	borderColor := utils.Styles.HelpScreen.BorderColor
+	headerColor := utils.Styles.Help.HeaderFgColor
+	fgColor := utils.Styles.Help.FgColor
+	bgColor := utils.Styles.Help.BgColor
+	borderColor := utils.Styles.Help.BorderColor
 
 	// application keys descriotion table
 	keyinfo := tview.NewTable()
@@ -96,22 +96,22 @@ func NewHelpScreen(appName string, appVersion string) *HelpScreen {
 }
 
 // GetTitle returns primitive title
-func (help *HelpScreen) GetTitle() string {
+func (help *Help) GetTitle() string {
 	return help.title
 }
 
 // HasFocus returns whether or not this primitive has focus
-func (help *HelpScreen) HasFocus() bool {
+func (help *Help) HasFocus() bool {
 	return help.Box.HasFocus() || help.layout.HasFocus()
 }
 
 // Focus is called when this primitive receives focus
-func (help *HelpScreen) Focus(delegate func(p tview.Primitive)) {
+func (help *Help) Focus(delegate func(p tview.Primitive)) {
 	delegate(help.layout)
 }
 
 // Draw draws this primitive onto the screen.
-func (help *HelpScreen) Draw(screen tcell.Screen) {
+func (help *Help) Draw(screen tcell.Screen) {
 
 	x, y, width, height := help.Box.GetInnerRect()
 	if height <= 3 {
