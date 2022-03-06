@@ -93,12 +93,11 @@ $ ./bin/podman-tui
 
 ## Missing Features
 ```
+* podman run
 * podman system reset
 * podman network connect
 * podman network disconnect
 * podman network reload
-* podman pod stats
-* podman contaienrs stats
 * podman container attach/detach
 * remote connection
 * cover more podman container create options 
