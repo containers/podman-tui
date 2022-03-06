@@ -49,7 +49,7 @@ func NewHelp(appName string, appVersion string) *Help {
 	appinfo.SetTextColor(headerColor)
 
 	// help table items
-	// the items will be devided into two separate tables
+	// the items will be divided into two separate tables
 	rowIndex := 0
 	colIndex := 0
 	needInit := true

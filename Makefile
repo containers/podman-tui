@@ -27,11 +27,11 @@ clean:
 
 .PHONY: install   
 install:    ## Install podman-tui binary
-	install ${SELINUXOPT} -D -m0755 $(BIN)/$(TARGET) $(DESTDIR)/$(TARGET)
+	@install ${SELINUXOPT} -D -m0755 $(BIN)/$(TARGET) $(DESTDIR)/$(TARGET)
 
 .PHONY: uninstall 
 uninstall:  ## Uninstall podman-tui binary
-	rm -f $(DESTDIR)/$(TARGET)
+	@rm -f $(DESTDIR)/$(TARGET)
 
 .PHONY: validate  
 validate:   ## Validate podman-tui code (fmt, lint, ...)
@@ -49,12 +49,11 @@ test: functionality
 
 .PHONY: functionality
 functionality:
-	bats test/
+	@bats test/
 
 .PHONY: fmt      
 fmt:   ## Run gofmt
 	@echo -e "gofmt check and fix"
-	
 	@gofmt -w $(SRC)
 
 _HLP_TGTS_RX = '^[[:print:]]+:.*?\#\# .*$$'

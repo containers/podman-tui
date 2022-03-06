@@ -22,8 +22,8 @@ load helpers_tui
     sleep 2
     podman_tui_send_inputs "Tab" "Enter"
 
-    run_podman network ls --format "'{{ .Name }}'" --filter "name=$TEST_NETWORK_NAME"
-    assert "$output" =~ "$TEST_NETWORK_NAME" "expected $TEST_NETWORK_NAME to be in the list"
+    run_helper podman network ls --format "{{ .Name }}" --filter "name=${TEST_NETWORK_NAME}$"
+    assert "$output" == "$TEST_NETWORK_NAME" "expected $TEST_NETWORK_NAME to be in the list"
 }
 
 @test "network inspect" {
@@ -40,7 +40,7 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
 
     run_helper sed -n '/  "podman_labels": {/, /  }/p' $PODMAN_TUI_LOG
-    assert "$output" "=~" "\"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\"" "expected \"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\" in network inspect"
+    assert "$output" =~ "\"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\"" "expected \"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\" in network inspect"
 }
 
 @test "network remove" {
@@ -55,13 +55,13 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep 2
 
-    run_podman network ls --format "'{{ .Name }}'" --filter "name=$TEST_NETWORK_NAME"
-    assert "$output" =~ "" "expected $TEST_NETWORK_NAME removed"
+    run_helper podman network ls --format "{{ .Name }}" --filter "name=${TEST_NETWORK_NAME}$"
+    assert "$output" == "" "expected $TEST_NETWORK_NAME removed"
 
 }
 
 @test "network prune" {
-    run_podman network create $TEST_NETWORK_NAME
+    run_helper podman network create $TEST_NETWORK_NAME
 
     # switch to networks view
     # select prune command from network commands dialog
@@ -71,6 +71,6 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep 2
 
-    run_podman network ls --format "'{{ .Name }}'" --filter "name=$TEST_NETWORK_NAME"
-    assert "$output" "=~" "" "expected at least $TEST_NETWORK_NAME network removal"
+    run_helper podman network ls --format "{{ .Name }}" --filter "name=${TEST_NETWORK_NAME}$"
+    assert "$output" == "" "expected at least $TEST_NETWORK_NAME network removal"
 }
