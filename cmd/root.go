@@ -57,7 +57,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	log.Info().Msg(runLog)
-	app := app.NewApp()
+	app := app.NewApp(appName, appVersion)
 	if err := app.Run(); err != nil {
 		return err
 	}

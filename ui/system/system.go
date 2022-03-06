@@ -112,6 +112,22 @@ func (sys *System) HasFocus() bool {
 	return sys.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns true if there is an active dialog
+// displayed on the front screen
+func (sys *System) SubDialogHasFocus() bool {
+	if sys.cmdDialog.HasFocus() || sys.confirmDialog.HasFocus() {
+		return true
+	}
+
+	if sys.progressDialog.HasFocus() || sys.errorDialog.HasFocus() {
+		return true
+	}
+	if sys.dfDialog.HasFocus() || sys.messageDialog.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (sys *System) Focus(delegate func(p tview.Primitive)) {
 	// error dialog

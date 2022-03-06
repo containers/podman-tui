@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -9,7 +10,7 @@ import (
 // InputHandler returns the handler for this primitive.
 func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return nets.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("view: networks event %v received", event.Key())
+		log.Debug().Msgf("view: networks event %v received", event)
 		if nets.progressDialog.IsDisplay() {
 			return
 		}
@@ -37,27 +38,26 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 				confirmDialogHandler(event, setFocus)
 			}
 		}
-		// table handlers
-		if nets.table.HasFocus() {
-			if event.Key() == tcell.KeyCtrlV || event.Key() == tcell.KeyEnter {
-				if nets.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				nets.selectedID = nets.getSelectedItem()
-				nets.cmdDialog.Display()
-			}
-			if tableHandler := nets.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-			}
-		}
-
 		// command dialog handler
 		if nets.cmdDialog.HasFocus() {
 			if cmdHandler := nets.cmdDialog.InputHandler(); cmdHandler != nil {
 				cmdHandler(event, setFocus)
 			}
 		}
-
+		// table handlers
+		if nets.table.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if nets.cmdDialog.GetCommandCount() <= 1 {
+					return
+				}
+				nets.selectedID = nets.getSelectedItem()
+				nets.cmdDialog.Display()
+			} else {
+				if tableHandler := nets.table.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
+				}
+			}
+		}
 		setFocus(nets)
 	})
 }

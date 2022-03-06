@@ -1,6 +1,7 @@
 package images
 
 import (
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -9,7 +10,7 @@ import (
 // InputHandler returns the handler for this primitive.
 func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return img.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("view: images event %v received", event.Key())
+		log.Debug().Msgf("view: images event %v received", event)
 		if img.progressDialog.IsDisplay() {
 			return
 		}
@@ -17,26 +18,14 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 		if img.errorDialog.HasFocus() || img.errorDialog.IsDisplay() {
 			if errorDialogHandler := img.errorDialog.InputHandler(); errorDialogHandler != nil {
 				errorDialogHandler(event, setFocus)
+				setFocus(img.errorDialog)
 			}
 		}
 		// message dialog handler
 		if img.messageDialog.HasFocus() || img.messageDialog.IsDisplay() {
 			if messageDialogHandler := img.messageDialog.InputHandler(); messageDialogHandler != nil {
 				messageDialogHandler(event, setFocus)
-			}
-		}
-
-		// table handlers
-		if img.table.HasFocus() {
-			if event.Key() == tcell.KeyCtrlV || event.Key() == tcell.KeyEnter {
-				if img.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				img.selectedID, img.selectedName = img.getSelectedItem()
-				img.cmdDialog.Display()
-			}
-			if tableHandler := img.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
+				setFocus(img.messageDialog)
 			}
 		}
 
@@ -71,6 +60,21 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 		if img.historyDialog.HasFocus() {
 			if historyDialogHandler := img.historyDialog.InputHandler(); historyDialogHandler != nil {
 				historyDialogHandler(event, setFocus)
+			}
+		}
+
+		// table handlers
+		if img.table.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if img.cmdDialog.GetCommandCount() <= 1 {
+					return
+				}
+				img.selectedID, img.selectedName = img.getSelectedItem()
+				img.cmdDialog.Display()
+			} else {
+				if tableHandler := img.table.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
+				}
 			}
 		}
 

@@ -1,6 +1,7 @@
 package volumes
 
 import (
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -9,7 +10,7 @@ import (
 // InputHandler returns the handler for this primitive.
 func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return vols.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("view: volumes event %v received", event.Key())
+		log.Debug().Msgf("view: volumes event %v received", event)
 		if vols.progressDialog.IsDisplay() {
 			return
 		}
@@ -37,27 +38,26 @@ func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 				confirmDialogHandler(event, setFocus)
 			}
 		}
-		// table handlers
-		if vols.table.HasFocus() {
-			if event.Key() == tcell.KeyCtrlV || event.Key() == tcell.KeyEnter {
-				if vols.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				vols.selectedID = vols.getSelectedItem()
-				vols.cmdDialog.Display()
-			}
-			if tableHandler := vols.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-			}
-		}
-
 		// command dialog handler
 		if vols.cmdDialog.HasFocus() {
 			if cmdHandler := vols.cmdDialog.InputHandler(); cmdHandler != nil {
 				cmdHandler(event, setFocus)
 			}
 		}
-
+		// table handlers
+		if vols.table.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if vols.cmdDialog.GetCommandCount() <= 1 {
+					return
+				}
+				vols.selectedID = vols.getSelectedItem()
+				vols.cmdDialog.Display()
+			} else {
+				if tableHandler := vols.table.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
+				}
+			}
+		}
 		setFocus(vols)
 	})
 }

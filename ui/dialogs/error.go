@@ -61,7 +61,7 @@ func (d *ErrorDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *ErrorDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("error dialog: event %v received", event.Key())
+		log.Debug().Msgf("error dialog: event %v received", event)
 		if modalHandler := d.modal.InputHandler(); modalHandler != nil {
 			modalHandler(event, setFocus)
 			return

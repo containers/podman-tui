@@ -94,20 +94,14 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 func (d *VolumeCreateDialog) setupLayout() {
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		return box
-	}
-
 	// basic info page
-	d.layout.AddItem(emptySpace(), 1, 0, true)
+	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.layout.AddItem(d.volumeNameField, 1, 0, true)
-	d.layout.AddItem(emptySpace(), 1, 0, true)
+	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.layout.AddItem(d.volumeLabelField, 1, 0, true)
-	d.layout.AddItem(emptySpace(), 1, 0, true)
+	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.layout.AddItem(d.volumeDriverField, 1, 0, true)
-	d.layout.AddItem(emptySpace(), 1, 0, true)
+	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.layout.AddItem(d.volumeDriverOptionsField, 1, 0, true)
 	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
 
@@ -178,7 +172,7 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("volume create dialog: event %v received", event.Key())
+		log.Debug().Msgf("volume create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

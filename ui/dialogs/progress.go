@@ -97,7 +97,7 @@ func (d *ProgressDialog) HasFocus() bool {
 // InputHandler returns input handler function for this primitive
 func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("progress dialog: event %v received", event.Key())
+		log.Debug().Msgf("progress dialog: event %v received", event)
 
 	})
 }

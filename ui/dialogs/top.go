@@ -19,7 +19,6 @@ type TopDialog struct {
 	display      bool
 	tableHeaders []string
 	results      [][]string
-	height       int
 	doneHandler  func()
 }
 
@@ -33,23 +32,24 @@ func NewTopDialog() *TopDialog {
 	bgColor := utils.Styles.CommandDialog.BgColor
 	dialog.table = tview.NewTable()
 	dialog.table.SetBackgroundColor(bgColor)
-	dialog.table.SetBorder(true)
-	dialog.table.SetBorderColor(bgColor)
 	dialog.initTable()
-
-	dialog.height = len(dialog.results) + TableHeightOffset + DialogFormHeight + TableHeightOffset
 
 	dialog.form = tview.NewForm().
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 
-	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
+	// table layout
+	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	tableLayout.SetBackgroundColor(bgColor)
+	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tableLayout.AddItem(dialog.table, 0, 1, true)
+	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
+	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
-
-	dialog.layout.AddItem(dialog.table, 1, 0, true)
+	dialog.layout.AddItem(tableLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 
 	return dialog
@@ -88,16 +88,15 @@ func (d *TopDialog) HasFocus() bool {
 // InputHandler returns input handler function for this primitive
 func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("top dialog: event %v received", event.Key())
+		log.Debug().Msgf("top dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.doneHandler()
 			return
 		}
-		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp {
-			if tableHandler := d.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-				return
-			}
+		// scroll between top items
+		if tableHandler := d.table.InputHandler(); tableHandler != nil {
+			tableHandler(event, setFocus)
+			return
 		}
 	})
 }
@@ -106,18 +105,19 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
 	dWidth := width - (2 * DialogPadding)
-	dHeight := d.height
+	dHeight := len(d.results) + DialogFormHeight + 3
 
 	if dHeight > height {
 		dHeight = height
 	}
+	tableHeight := dHeight - DialogFormHeight - 2
 
 	hs := ((height - dHeight) / 2)
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 	//set table height size
-	d.layout.ResizeItem(d.table, dHeight-DialogFormHeight-2, 0)
+	d.layout.ResizeItem(d.table, tableHeight, 0)
 
 	cWidth := d.getCommandWidth()
 	for i := 0; i < d.table.GetRowCount(); i++ {
@@ -125,16 +125,13 @@ func (d *TopDialog) SetRect(x, y, width, height int) {
 		cell.SetMaxWidth(cWidth / 2)
 		d.table.SetCell(i, 7, cell)
 	}
-
 }
 
 // Draw draws this primitive onto the screen.
 func (d *TopDialog) Draw(screen tcell.Screen) {
-
 	if !d.display {
 		return
 	}
-
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
@@ -172,7 +169,6 @@ func (d *TopDialog) UpdateResults(data [][]string) {
 	alignment := tview.AlignLeft
 	rowIndex := 1
 	expand := 1
-	d.height = len(data) + TableHeightOffset + DialogFormHeight + TableHeightOffset - 2
 
 	if len(data) < 2 {
 		return

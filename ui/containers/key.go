@@ -1,6 +1,7 @@
 package containers
 
 import (
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -9,7 +10,7 @@ import (
 // InputHandler returns the handler for this primitive.
 func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return cnt.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("view: containers event %v received", event.Key())
+		log.Debug().Msgf("view: containers event %v received", event)
 		if cnt.progressDialog.IsDisplay() {
 			return
 		}
@@ -56,19 +57,6 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 				confirmDialogHandler(event, setFocus)
 			}
 		}
-		// table handlers
-		if cnt.table.HasFocus() {
-			if event.Key() == tcell.KeyCtrlV || event.Key() == tcell.KeyEnter {
-				if cnt.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
-				cnt.cmdDialog.Display()
-			}
-			if tableHandler := cnt.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-			}
-		}
 		// error dialog handler
 		if cnt.errorDialog.HasFocus() {
 			if errorDialogHandler := cnt.errorDialog.InputHandler(); errorDialogHandler != nil {
@@ -89,6 +77,22 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 				cntStatsDialogHandler(event, setFocus)
 			}
 		}
+
+		// table handlers
+		if cnt.table.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if cnt.cmdDialog.GetCommandCount() <= 1 {
+					return
+				}
+				cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
+				cnt.cmdDialog.Display()
+			} else {
+				if tableHandler := cnt.table.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
+				}
+			}
+		}
+
 		setFocus(cnt)
 	})
 }

@@ -90,20 +90,13 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 
 	dialog.form.SetBackgroundColor(bgColor)
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		box.SetBorder(false)
-		return box
-	}
-
 	//label and terminal layout
 	middleLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	middleLayout.SetBackgroundColor(bgColor)
 	middleLayout.SetBorder(false)
-	middleLayout.AddItem(emptySpace(), 1, 0, true)
+	middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	middleLayout.AddItem(dialog.label, 1, 0, true)
-	middleLayout.AddItem(emptySpace(), 1, 0, true)
+	middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	middleLayout.AddItem(dialog.terminalScreen, 0, 1, true)
 
 	// main dialog layout
@@ -111,9 +104,9 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 	layout.SetBackgroundColor(bgColor)
 	layout.SetBorder(false)
 
-	layout.AddItem(emptySpace(), 1, 0, false)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	layout.AddItem(middleLayout, 0, 1, false)
-	layout.AddItem(emptySpace(), 1, 0, false)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
@@ -209,7 +202,7 @@ func (d *ContainerExecTerminalDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *ContainerExecTerminalDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("container exec terminal dialog: event %v received", event.Key())
+		log.Debug().Msgf("container exec terminal dialog: event %v received", event)
 		// terminal screen field
 		if d.terminalScreen.HasFocus() {
 			if terminalScreenHandler := d.terminalScreen.InputHandler(); terminalScreenHandler != nil {

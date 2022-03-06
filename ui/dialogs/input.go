@@ -190,7 +190,7 @@ func (d *SimpleInputDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *SimpleInputDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("input dialog: event %v received", event.Key())
+		log.Debug().Msgf("input dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

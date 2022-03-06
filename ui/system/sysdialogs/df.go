@@ -89,16 +89,15 @@ func (d *DfDialog) HasFocus() bool {
 // InputHandler returns input handler function for this primitive
 func (d *DfDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("disk usage dialog: event %v received", event.Key())
+		log.Debug().Msgf("disk usage dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.doneHandler()
 			return
 		}
-		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp {
-			if tableHandler := d.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-				return
-			}
+		// scroll between df items
+		if tableHandler := d.table.InputHandler(); tableHandler != nil {
+			tableHandler(event, setFocus)
+			return
 		}
 	})
 }

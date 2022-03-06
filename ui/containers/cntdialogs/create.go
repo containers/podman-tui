@@ -263,64 +263,60 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.layout.AddItem(containerDialog.form, dialogs.DialogFormHeight, 0, true)
 
 	containerDialog.setActiveCategory(0)
+
+	containerDialog.initCustomInputHanlers()
 	return &containerDialog
 }
 
 func (d *ContainerCreateDialog) setupLayout() {
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		return box
-	}
-
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
 	d.basicInfoPage.AddItem(d.containerNameField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.containerImageField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.containerPodField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.containerLabelsField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.containerRemoveField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
 	// network settings page
 	d.networkingPage.SetDirection(tview.FlexRow)
 	d.networkingPage.AddItem(d.containerHostnameField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.containerIPAddrField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.containerMacAddrField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.containerNetworkField, 1, 0, true)
 	d.networkingPage.SetBackgroundColor(bgColor)
 
 	// port settings page
 	d.portPage.SetDirection(tview.FlexRow)
 	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
-	d.portPage.AddItem(emptySpace(), 1, 0, true)
+	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.portPage.AddItem(d.ContainerPortPublishAllField, 1, 0, true)
-	d.portPage.AddItem(emptySpace(), 1, 0, true)
+	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.portPage.AddItem(d.containerPortExposeField, 1, 0, true)
 	d.portPage.SetBackgroundColor(bgColor)
 
 	// dns settings page
 	d.dnsPage.SetDirection(tview.FlexRow)
 	d.dnsPage.AddItem(d.containerDNSServersField, 1, 0, true)
-	d.dnsPage.AddItem(emptySpace(), 1, 0, true)
+	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.dnsPage.AddItem(d.containerDNSOptionsField, 1, 0, true)
-	d.dnsPage.AddItem(emptySpace(), 1, 0, true)
+	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.dnsPage.AddItem(d.containerDNSSearchField, 1, 0, true)
 	d.dnsPage.SetBackgroundColor(bgColor)
 
 	// volume settings page
 	d.volumePage.SetDirection(tview.FlexRow)
 	d.volumePage.AddItem(d.containerVolumeField, 1, 0, true)
-	d.volumePage.AddItem(emptySpace(), 1, 0, true)
+	d.volumePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.volumePage.AddItem(d.containerImageVolumeField, 1, 0, true)
 	d.volumePage.SetBackgroundColor(bgColor)
 
@@ -396,6 +392,8 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.Focus(delegate)
 				return nil
 			}
+			// scroll between categories
+			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
@@ -449,13 +447,40 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	case createCategoryPagesFocus:
 		delegate(d.categoryPages)
 	}
+}
 
+func (d *ContainerCreateDialog) initCustomInputHanlers() {
+	// pod name dropdown
+	d.containerPodField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
+	// container image volume
+	d.containerImageField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
+	// container network dropdown
+	d.containerNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
+	// container volume dropdown
+	d.containerVolumeField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
+	// container image volume dropdown
+	d.containerImageVolumeField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
 }
 
 // InputHandler returns input handler function for this primitive
 func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("container create dialog: event %v received", event.Key())
+		log.Debug().Msgf("container create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return
