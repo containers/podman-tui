@@ -6,12 +6,12 @@ podman-tui is using go version >= 1.17.
  3. Build
 
       ```shell
-      $ make binary
+      make binary
       ```
  4. Run podman-tui
 
       ```shell
-      $ ./bin/podman-tui
+      ./bin/podman-tui
       ```
 
 Run `sudo make install` if you want to install the binary on the node.
@@ -26,13 +26,13 @@ There are 2 packages present in the Arch User Repository:
 
 Either one can be installed by using your prefered AUR helper, such as:
 
-```
+```shell
 yay -S podman-tui
 ```
 
 or manually:
 
-```
+```shell
 git clone https://aur.archlinux.org/podman-tui.git
 cd podman-tui
 makepkg -si
