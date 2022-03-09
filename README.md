@@ -10,37 +10,9 @@ podman-tui is a Terminal User Interface to interact with the podman v3 (>= 3.1).
 
 ---
 
-## Building From Source
+## Installation
 
-podman-tui is using go version >= 1.17. 
- 1. Clone the repo
- 2. Install [dependencies](./CONTRIBUTING.md/#prerequisite-before-build)
- 3. Build
-
-      ```shell
-      $ make binary
-      ```
- 4. Run podman-tui
-
-      ```shell
-      $ ./bin/podman-tui
-      ```
-
-Run `sudo make install` if you want to install the binary on the node.
-
----
-
-## Installing from the AUR
-
-podman-tui is using go. 
-There are 2 packages present in the Arch User Repository:
-- `podman-tui`
-- `podman-tui-git`
-
-Either one can be installed by using your prefered AUR helper, such as:
-```
-$ yay -S podman-tui
-```
+Installation steps are located [here](INSTALL.md).
 
 ---
 
@@ -105,4 +77,5 @@ podman-tui uses following keyboard keys for different actions:
 ## Available commands on different views
 
 Check [podman-tui docs](./docs/README.md) for list of available commands on different pages (pods, containers, images, ...)
+
 
