@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.2.0
+Version: 0.3.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -66,7 +66,38 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sat Jan 22 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> - v0.2.0-dev-1
+* Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-dev-1
+
+* Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.2.0-1
+- update install.md - made shell commands more accessible to those who copy/paste
+- install.md
+- tests update + codespell
+- doc update
+- keybindings improvement + help screen + ui update
+- keybindings improvement + help screen + ui update
+- readme: add AUR mention
+- tests update: udpate wait time + command index for container and pod
+- command dialog layout/height update to fit in different terminal heights
+- dropdown primitive list style update
+- docs update - API >= 3.1 and build dependencies
+- new feature - pod stats
+- Run codespell on code
+- new feature - pod stats
+- misc update - rpm prep
+- new feature - container stats
+- fix error with running tests via root account
+- remove invalid --noheadings/--noheading option from tests podman query
+- vagrant vm box update to fc35
+- tests
+- functionality tests
+- github workflow (DCO, PR stale and subject length check)
+- rpm spec (rpkg) and release script to bump version
+- error message format update in error message dialog and application logs
+- container exec error dialog: missing error message string
+- remove volume destination field from container create dialog
+- bugfix: network table not refreshing after remove
+- container exec (new feature)
+- Remove trailing "/" from Makefile (#1)
 
 * Sat Jan 22 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> - v0.1.0-1
 - Initial release
