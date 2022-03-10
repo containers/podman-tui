@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.2.0
-Release: 1%{?dist}
+Version: 0.3.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -66,6 +66,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-dev-1
+
 * Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.2.0-1
 - update install.md - made shell commands more accessible to those who copy/paste
 - install.md
