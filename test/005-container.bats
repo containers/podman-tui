@@ -7,21 +7,26 @@ load helpers
 load helpers_tui
 
 @test "container create" {
-    podman container rm -f $TEST_CONTAINER_NAME || echo done 
+    podman pod rm -f $TEST_CONTAINER_POD_NAME || echo done
+    podman container rm -f $TEST_CONTAINER_NAME || echo done
+    podman container rm -f ${TEST_CONTAINER_NAME}_renamed || echo done
+    podman network rm $TEST_CONTAINER_NETWORK_NAME || echo done
+    podman volume rm $TEST_CONTAINER_VOLUME_NAME || echo done
     
     httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
     if [ "${httpd_image}" == "" ] ; then 
         podman image pull docker.io/library/httpd
     fi
-    podman network create $TEST_NETWORK_NAME || echo done
-    podman volume create $TEST_VOLUME_NAME || echo done
-    podman pod create --name $TEST_POD_NAME || echo done
+
+    podman network create $TEST_CONTAINER_NETWORK_NAME || echo done
+    podman volume create $TEST_CONTAINER_VOLUME_NAME || echo done
+    podman pod create --name $TEST_CONTAINER_POD_NAME || echo done
 
     # get required pod, image, network and volume index for number of KeyDown stroke
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_POD_NAME" | awk '{print $1}')
+    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_CONTAINER_POD_NAME" | awk '{print $1}')
     image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
-    net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_NETWORK_NAME" | awk '{print $1}')
-    vol_index=$(podman volume ls -q | nl -v 1 | grep "$TEST_VOLUME_NAME" | awk '{print $1}')
+    net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_CONTAINER_NETWORK_NAME" | awk '{print $1}')
+    vol_index=$(podman volume ls -q | nl -v 1 | grep "$TEST_CONTAINER_VOLUME_NAME" | awk '{print $1}')
 
 
     # switch to containers view
@@ -40,7 +45,6 @@ load helpers_tui
     podman_tui_send_inputs "Down"
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
-
     podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab"
     sleep 1
 
@@ -71,7 +75,7 @@ load helpers_tui
     sleep 2
 
     # get created container information
-    container_information=$(podman container ls --all --pod --filter "name=podman_tui_test_container01" --format \
+    container_information=$(podman container ls --all --pod --filter "name=${TEST_CONTAINER_NAME}$" --format \
     "{{ json .PodName }},{{ json .Networks }},{{ json .Mounts }},{{ json .Image }},{{ json .Ports }},{{ json .Labels }}")
 
     cnt_pod_name=$(echo $container_information | awk -F, '{print $1}')
@@ -85,12 +89,10 @@ load helpers_tui
     cnt_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $2}')
     cnt_port_str="$host_port->$cnt_port/tcp"
 
-    assert "$cnt_pod_name" "=~" "$TEST_POD_NAME" "expected container pod: $TEST_POD_NAME"
-    #assert "$cnt_networks" "=~" "$TEST_NETWORK_NAME" "expected container network: $TEST_NETWORK_NAME"
-    assert "$cnt_mounts" "=~" "$TEST_VOLUME_NAME" "expected container volume: $TEST_VOLUME_NAME"
-    assert "$cnt_image_name" "=~" "$httpd_image" "expected container image name: $httpd_image"
-    assert "$cnt_ports" "=~" "$cnt_port_str" "expected container port: $cnt_port_str"
-    #assert "$cnt_labels" "=~" "\"$TEST_LABEL_NAME\":\"$TEST_LABEL_VALUE\"" "expected container port: $TEST_CONTAINER_PORT"
+    assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
+    assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_NAME" "expected container volume: $TEST_CONTAINER_VOLUME_NAME"
+    assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
+    assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
 
 }
 
@@ -105,7 +107,7 @@ load helpers_tui
     podman_tui_select_container_cmd "start"
     sleep 2
 
-    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be up"
 
 }
@@ -134,7 +136,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Enter"
     sleep 2
 
-    run_podman container exec $TEST_CONTAINER_NAME cat a.txt
+    run_helper podman container exec $TEST_CONTAINER_NAME cat a.txt
 
     assert "$output" =~ "test" "expected container a.txt file container test keyword"
 }
@@ -167,7 +169,7 @@ load helpers_tui
     sleep 6
 
     run_helper grep -w "/etc" $PODMAN_TUI_LOG
-    assert "$output" "=~" '/etc' "expected '/etc' in the logs"
+    assert "$output" =~ '/etc' "expected '/etc' in the logs"
 }
 
 @test "container top" {
@@ -182,7 +184,7 @@ load helpers_tui
     sleep 2
 
     run_helper grep -w "USER PID PPID" $PODMAN_TUI_LOG
-    assert "$output" "=~" 'USER PID PPID' "expected 'USER PID PPID' in the logs"
+    assert "$output" =~ 'USER PID PPID' "expected 'USER PID PPID' in the logs"
 }
 
 @test "container port" {
@@ -196,9 +198,9 @@ load helpers_tui
     podman_tui_select_container_cmd "port"
     sleep 2
 
-    container_ports=$(podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "{{ .Ports }}")
+    container_ports=$(podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Ports }}")
     run_helper grep -w "$container_ports" $PODMAN_TUI_LOG
-    assert "$output" "=~" "$container_ports" "expected container ports ($container_ports) in the log"
+    assert "$output" =~ "$container_ports" "expected container ports ($container_ports) in the log"
 }
 
 @test "container pause" {
@@ -212,7 +214,7 @@ load helpers_tui
     podman_tui_select_container_cmd "pause"
     sleep 2
 
-    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
     assert "$output" =~ "paused" "expected $TEST_CONTAINER_NAME to be paused"
 }
 
@@ -227,7 +229,7 @@ load helpers_tui
     podman_tui_select_container_cmd "unpause"
     sleep 2
 
-    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
     assert "$output" =~ "Up" "expected $TEST_CONTAINER_NAME to be Up"
 }
 
@@ -242,7 +244,7 @@ load helpers_tui
     podman_tui_select_container_cmd "stop"
     sleep 2
 
-    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be Up"
 }
 
@@ -258,7 +260,7 @@ load helpers_tui
     podman_tui_select_container_cmd "kill"
     sleep 2
 
-    run_podman container ls --all --filter="name=$TEST_CONTAINER_NAME" --format "'{{ .Status }}'"
+    run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
     assert "$output" =~ "Exited" "expected $TEST_CONTAINER_NAME to be killed"
 }
 
@@ -274,8 +276,8 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep 2
 
-    run_podman container ls --all --format "'{{ .Names }}'"
-    assert "$output" !~ "$TEST_CONTAINER_NAME" "expected $TEST_CONTAINER_NAME to be removed"
+    run_helper podman container ls --all --filter "name=${TEST_CONTAINER_NAME}$" --noheading
+    assert "$output" == "" "expected $TEST_CONTAINER_NAME to be removed"
 }
 
 @test "container rename" {
@@ -292,16 +294,15 @@ load helpers_tui
     podman_tui_send_inputs ${TEST_CONTAINER_NAME}_renamed
     podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 2
-    
-    run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}\$" --format "'{{ json .Names }}'"
-    assert "$output" "!~" "${TEST_CONTAINER_NAME}" "expected ${TEST_CONTAINER_NAME} to be not in the list"
 
-    run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}_renamed\$" --format "'{{ json .Names }}'"
-    assert "$output" "=~" "${TEST_CONTAINER_NAME}_renamed" "expected ${TEST_CONTAINER_NAME}_renamed to be in the list"
+    run_helper podman container ls --all --filter "name=${TEST_CONTAINER_NAME}_renamed$" --format "{{ .Names }}"
+    assert "$output" == "${TEST_CONTAINER_NAME}_renamed" "expected ${TEST_CONTAINER_NAME}_renamed to be in the list"
 }
 
 @test "container prune" {
     podman container create --name $TEST_CONTAINER_NAME docker.io/library/httpd || echo done
+    podman container start $TEST_CONTAINER_NAME || echo done
+    podman container stop $TEST_CONTAINER_NAME || echo done
 
     # switch to containers view
     # select test container from list
@@ -312,6 +313,6 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep 3
 
-    run_podman container ls --all --filter "name=${TEST_CONTAINER_NAME}\$" --format "'{{ json .Names }}'"
-    assert "$output" "=~" "" "expected $TEST_CONTAINER_NAME to be removed"
+    run_helper podman container ls --all --filter "name=${TEST_CONTAINER_NAME}$" --noheading
+    assert "$output" == "" "expected $TEST_CONTAINER_NAME to be removed"
 }

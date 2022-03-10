@@ -140,6 +140,20 @@ func (vols *Volumes) HasFocus() bool {
 	return vols.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+func (vols *Volumes) SubDialogHasFocus() bool {
+	if vols.errorDialog.HasFocus() || vols.createDialog.HasFocus() {
+		return true
+	}
+	if vols.cmdDialog.HasFocus() || vols.messageDialog.IsDisplay() {
+		return true
+	}
+	if vols.progressDialog.HasFocus() || vols.confirmDialog.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (vols *Volumes) Focus(delegate func(p tview.Primitive)) {
 	// error dialog

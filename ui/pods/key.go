@@ -1,6 +1,7 @@
 package pods
 
 import (
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -9,7 +10,7 @@ import (
 // InputHandler returns the handler for this primitive.
 func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return pods.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("view: pods event %v received", event.Key())
+		log.Debug().Msgf("view: pods event %v received", event)
 		if pods.progressDialog.IsDisplay() {
 			return
 		}
@@ -37,20 +38,6 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 				confirmDialogHandler(event, setFocus)
 			}
 		}
-		// table handlers
-		if pods.table.HasFocus() {
-			if event.Key() == tcell.KeyCtrlV || event.Key() == tcell.KeyEnter {
-				if pods.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				pods.selectedID = pods.getSelectedItem()
-				pods.cmdDialog.Display()
-			}
-			if tableHandler := pods.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-			}
-		}
-
 		// command dialog handler
 		if pods.cmdDialog.HasFocus() {
 			if cmdHandler := pods.cmdDialog.InputHandler(); cmdHandler != nil {
@@ -68,6 +55,20 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 		if pods.statsDialog.HasFocus() {
 			if podStatsDialogHandler := pods.statsDialog.InputHandler(); podStatsDialogHandler != nil {
 				podStatsDialogHandler(event, setFocus)
+			}
+		}
+		// table handlers
+		if pods.table.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if pods.cmdDialog.GetCommandCount() <= 1 {
+					return
+				}
+				pods.selectedID = pods.getSelectedItem()
+				pods.cmdDialog.Display()
+			} else {
+				if tableHandler := pods.table.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
+				}
 			}
 		}
 		setFocus(pods)

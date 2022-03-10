@@ -8,25 +8,25 @@ TMUX_SESSION="podman_tui_test"
 
 function setup() {
     # start podman socket
-    local user_service_management="--user"
-    if [ ${UID} -eq 0 ] ; then
-        user_service_management=""
-    fi
-    systemctl ${user_service_management} start podman.socket
+    if [ ! -f "${PODMAN_TUI}" ] ; then 
+        die "$PODMAN_TUI binary not found"
+    else
+        local user_service_management="--user"
+        if [ ${UID} -eq 0 ] ; then
+            user_service_management=""
+        fi
+        systemctl ${user_service_management} start podman.socket
 
-    # create tmux session
-    tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" 2> /dev/null || echo -e "\c")
-    if [ "${tmux_sessions}" != "" ] ; then 
-        tmux kill-session -t $TMUX_SESSION
+        # create tmux session
+        tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" 2> /dev/null || echo -e "\c")
+        if [ "${tmux_sessions}" != "" ] ; then 
+            tmux kill-session -t $TMUX_SESSION
+        fi
+        /bin/rm -rf ${PODMAN_TUI_LOG}
+        run_helper tmux new-session -s $TMUX_SESSION -d "${PODMAN_TUI_DEBUG}"
+        # wait to load the interface
+        sleep 5
     fi
-    /bin/rm -rf ${PODMAN_TUI_LOG}
-    run_helper tmux new-session -s $TMUX_SESSION -d "${PODMAN_TUI_DEBUG}"
-    # wait to load the interface
-    sleep 5
-}
-
-function teardown() {
-    tmux kill-session -t $TMUX_SESSION
 }
 
 ################
@@ -35,14 +35,6 @@ function teardown() {
 
 function run_podman_tui() {
     run_helper $PODMAN_TUI $@
-}
-
-################
-#  run_podman  #  run podman command
-################
-
-function run_podman() {
-    run_helper podman "$@"
 }
 
 #### Functions below are taken from netavark and adapted to podman-tui.

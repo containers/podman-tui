@@ -17,10 +17,6 @@ type MessageDialog struct {
 	form          *tview.Form
 	display       bool
 	message       string
-	x             int
-	y             int
-	width         int
-	height        int
 	cancelHandler func()
 	selectHandler func()
 }
@@ -51,7 +47,7 @@ func NewMessageDialog(text string) *MessageDialog {
 	dialog.form.SetBackgroundColor(bgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
-	dialog.layout.AddItem(dialog.textview, len(text), 0, true)
+	dialog.layout.AddItem(dialog.textview, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
@@ -87,7 +83,6 @@ func (d *MessageDialog) SetText(message string) {
 	d.textview.Clear()
 	d.textview.SetText(message)
 	d.textview.ScrollToBeginning()
-	d.setRect()
 }
 
 // TextScrollToEnd scroll downs the text view
@@ -105,61 +100,30 @@ func (d *MessageDialog) HasFocus() bool {
 	return d.form.HasFocus()
 }
 
-func (d *MessageDialog) setRect() {
-	maxHeight := d.height
-	maxWidth := d.width
-	messageHeight := len(strings.Split(d.message, "\n"))
-	messageWidth := getMessageWidth(d.message)
-
-	if d.width > DialogMinWidth {
-		if messageWidth < DialogMinWidth {
-			d.width = DialogMinWidth + 2
-		}
-	}
-
-	if maxWidth > d.width {
-		emptyWidth := (maxWidth - d.width) / 2
-		d.x = d.x + emptyWidth + DialogPadding
-	}
-
-	layoutHeight := messageHeight + 2
-	for _, line := range strings.Split(d.message, "\n") {
-		if len(line) > maxWidth-2 {
-			layoutHeight = layoutHeight + 1
-		}
-	}
-
-	if maxHeight > layoutHeight+DialogFormHeight {
-		d.height = layoutHeight + DialogFormHeight + 2
-	} else {
-		d.height = maxHeight
-		layoutHeight = d.height - DialogFormHeight - 2
-	}
-
-	if maxHeight > d.height {
-		emptyHeight := (maxHeight - d.height) / 2
-		d.y = d.y + emptyHeight - DialogPadding
-
-	}
-
-	d.layout.Clear()
-
-	bgColor := utils.Styles.CommandDialog.BgColor
-	d.layout.AddItem(d.textview, layoutHeight, 0, true)
-	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
-	d.layout.SetBorder(true)
-	d.layout.SetBackgroundColor(bgColor)
-
-	d.Box.SetRect(d.x, d.y, d.width, d.height)
-}
-
 // SetRect set rects for this primitive.
 func (d *MessageDialog) SetRect(x, y, width, height int) {
-	d.x = x + DialogPadding
-	d.y = y + DialogPadding
-	d.width = width - (2 * DialogPadding)
-	d.height = height - (2 * DialogPadding)
-	d.setRect()
+	messageHeight := len(strings.Split(d.message, "\n")) + 1
+	messageWidth := getMessageWidth(d.message)
+
+	dWidth := width - (2 * DialogPadding)
+	if messageWidth+4 < dWidth {
+		dWidth = messageWidth + 4
+	}
+	emptySpace := (width - dWidth) / 2
+	dX := x + emptySpace
+
+	dHeight := messageHeight + DialogFormHeight + DialogPadding
+	if dHeight > height {
+		dHeight = height - DialogPadding - 1
+	}
+	textviewHeight := dHeight - DialogFormHeight - 2
+	hs := ((height - dHeight) / 2)
+	dY := y + hs
+
+	d.Box.SetRect(dX, dY, dWidth, dHeight)
+	//set text view height size
+	d.layout.ResizeItem(d.textview, textviewHeight, 0)
+
 }
 
 // Draw draws this primitive onto the screen.
@@ -178,7 +142,7 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 // InputHandler returns input handler function for this primitive
 func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("message dialog: event %v received", event.Key())
+		log.Debug().Msgf("message dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return
@@ -187,12 +151,13 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 			d.selectHandler()
 			return
 		}
-		if event.Key() == tcell.KeyLeft || event.Key() == tcell.KeyRight || event.Key() == tcell.KeyTab {
+		if event.Key() == tcell.KeyTab {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
 				return
 			}
 		}
+		// scroll between message textview
 		if textHandler := d.textview.InputHandler(); textHandler != nil {
 			textHandler(event, setFocus)
 			return

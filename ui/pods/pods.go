@@ -166,6 +166,23 @@ func (pods *Pods) HasFocus() bool {
 	return pods.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+func (pods *Pods) SubDialogHasFocus() bool {
+	if pods.statsDialog.HasFocus() || pods.errorDialog.HasFocus() {
+		return true
+	}
+	if pods.cmdDialog.HasFocus() || pods.messageDialog.IsDisplay() {
+		return true
+	}
+	if pods.progressDialog.HasFocus() || pods.topDialog.HasFocus() {
+		return true
+	}
+	if pods.confirmDialog.HasFocus() || pods.createDialog.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 	// error dialog

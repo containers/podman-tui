@@ -6,11 +6,13 @@ import (
 	health "github.com/containers/podman-tui/system"
 	"github.com/containers/podman-tui/ui/connection"
 	"github.com/containers/podman-tui/ui/containers"
+	"github.com/containers/podman-tui/ui/help"
 	"github.com/containers/podman-tui/ui/images"
 	"github.com/containers/podman-tui/ui/infobar"
 	"github.com/containers/podman-tui/ui/networks"
 	"github.com/containers/podman-tui/ui/pods"
 	"github.com/containers/podman-tui/ui/system"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman-tui/ui/volumes"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -35,14 +37,15 @@ type App struct {
 	connection      *connection.Connection
 	menu            *tview.TextView
 	health          *health.Engine
+	help            *help.Help
 	currentPage     string
 	needInitUI      bool
 	fastRefreshChan chan bool
 }
 
 // NewApp returns new app
-func NewApp() *App {
-	log.Info().Msg("app: new application")
+func NewApp(name string, version string) *App {
+	log.Debug().Msg("app: new application")
 	app := App{
 		Application:     tview.NewApplication(),
 		pages:           tview.NewPages(),
@@ -60,6 +63,7 @@ func NewApp() *App {
 	app.networks = networks.NewNetworks()
 	app.system = system.NewSystem()
 	app.connection = connection.NewConnection()
+	app.help = help.NewHelp(name, version)
 
 	// set refresh channel for container page
 	// its required for container exec dialog
@@ -67,13 +71,13 @@ func NewApp() *App {
 
 	// menu items
 	var menuItems = [][]string{
-		{"F1", app.pods.GetTitle()},
-		{"F2", app.containers.GetTitle()},
-		{"F3", app.volumes.GetTitle()},
-		{"F4", app.images.GetTitle()},
-		{"F5", app.networks.GetTitle()},
-		{"F6", app.system.GetTitle()},
-		{"Enter", "commands"},
+		{utils.HelpScreenKey.Label(), app.help.GetTitle()},
+		{utils.PodsScreenKey.Label(), app.pods.GetTitle()},
+		{utils.ContainersScreenKey.Label(), app.containers.GetTitle()},
+		{utils.VolumesScreenKey.Label(), app.volumes.GetTitle()},
+		{utils.ImagesScreenKey.Label(), app.images.GetTitle()},
+		{utils.NetworksScreenKey.Label(), app.networks.GetTitle()},
+		{utils.SystemScreenKey.Label(), app.system.GetTitle()},
 	}
 	app.menu = newMenu(menuItems)
 	app.pages.AddPage(app.pods.GetTitle(), app.pods, true, false)
@@ -83,6 +87,7 @@ func NewApp() *App {
 	app.pages.AddPage(app.networks.GetTitle(), app.networks, true, false)
 	app.pages.AddPage(app.system.GetTitle(), app.system, true, false)
 	app.pages.AddPage(app.connection.GetTitle(), app.connection, true, false)
+	app.pages.AddPage(app.help.GetTitle(), app.help, true, false)
 
 	return &app
 }
@@ -109,60 +114,58 @@ func (app *App) Run() error {
 		if !connOK {
 			return event
 		}
-		switch event.Key() {
 
-		case tcell.KeyF1:
-			//pods page
-			log.Debug().Msgf("app: switching to %s view", app.pods.GetTitle())
-			app.pages.SwitchToPage(app.pods.GetTitle())
-			app.SetFocus(app.pods)
-			app.pods.UpdateData()
-			app.currentPage = app.pods.GetTitle()
-			return nil
+		if !app.frontScreenHasActiveDialog() {
+			// previous and next screen keys
+			switch event.Rune() {
+			case utils.NextScreenKey.Rune():
+				// next screen
+				app.switchToNextScreen()
+				return nil
 
-		case tcell.KeyF2:
-			// containers page
-			log.Debug().Msgf("app: switching to %s view", app.containers.GetTitle())
-			app.pages.SwitchToPage(app.containers.GetTitle())
-			app.SetFocus(app.containers)
-			app.containers.UpdateData()
-			app.currentPage = app.containers.GetTitle()
-			return nil
+			case utils.PreviousScreenKey.Rune():
+				// previous screen
+				app.switchToPreviousScreen()
+				return nil
+			}
 
-		case tcell.KeyF3:
-			// volumes page
-			log.Debug().Msgf("app: switching to %s view", app.volumes.GetTitle())
-			app.pages.SwitchToPage(app.volumes.GetTitle())
-			app.SetFocus(app.volumes)
-			app.volumes.UpdateData()
-			app.currentPage = app.volumes.GetTitle()
-			return nil
+			// normal page key switch
+			switch event.Key() {
+			case utils.HelpScreenKey.EventKey():
+				// help page
+				app.switchToScreen(app.help.GetTitle())
+				return nil
 
-		case tcell.KeyF4:
-			// images page
-			log.Debug().Msgf("app: switching to %s view", app.images.GetTitle())
-			app.pages.SwitchToPage(app.images.GetTitle())
-			app.SetFocus(app.images)
-			app.images.UpdateData()
-			app.currentPage = app.images.GetTitle()
-			return nil
+			case utils.PodsScreenKey.EventKey():
+				//pods page
+				app.switchToScreen(app.pods.GetTitle())
+				return nil
 
-		case tcell.KeyF5:
-			// networks page
-			log.Debug().Msgf("app: switching to %s view", app.networks.GetTitle())
-			app.pages.SwitchToPage(app.networks.GetTitle())
-			app.SetFocus(app.networks)
-			app.networks.UpdateData()
-			app.currentPage = app.networks.GetTitle()
-			return nil
-		case tcell.KeyF6:
-			// system page
-			log.Debug().Msgf("app: switching to %s view", app.system.GetTitle())
-			app.pages.SwitchToPage(app.system.GetTitle())
-			app.SetFocus(app.system)
-			app.currentPage = app.system.GetTitle()
-			return nil
+			case utils.ContainersScreenKey.EventKey():
+				// containers page
+				app.switchToScreen(app.containers.GetTitle())
+				return nil
 
+			case utils.VolumesScreenKey.EventKey():
+				// volumes page
+				app.switchToScreen(app.volumes.GetTitle())
+				return nil
+
+			case utils.ImagesScreenKey.EventKey():
+				// images page
+				app.switchToScreen(app.images.GetTitle())
+				return nil
+
+			case utils.NetworksScreenKey.EventKey():
+				// networks page
+				app.switchToScreen(app.networks.GetTitle())
+				return nil
+
+			case utils.SystemScreenKey.EventKey():
+				// system page
+				app.switchToScreen(app.system.GetTitle())
+				return nil
+			}
 		}
 
 		return event

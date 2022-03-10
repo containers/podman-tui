@@ -187,6 +187,29 @@ func (cnt *Containers) HasFocus() bool {
 	return cnt.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+func (cnt *Containers) SubDialogHasFocus() bool {
+	if cnt.statsDialog.HasFocus() || cnt.errorDialog.HasFocus() {
+		return true
+	}
+	if cnt.cmdDialog.HasFocus() || cnt.progressDialog.HasFocus() {
+		return true
+	}
+	if cnt.topDialog.HasFocus() || cnt.messageDialog.IsDisplay() {
+		return true
+	}
+	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.IsDisplay() {
+		return true
+	}
+	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
+		return true
+	}
+	if cnt.execTerminalDialog.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 	// error dialog

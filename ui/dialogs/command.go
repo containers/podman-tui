@@ -85,17 +85,10 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdsTable.SetSelectable(true, false)
 	cmdsTable.SetBackgroundColor(bgColor)
 
-	// command table layout
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		box.SetBorder(false)
-		return box
-	}
 	cmdLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	cmdLayout.AddItem(emptySpace(), 1, 0, false)
+	cmdLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	cmdLayout.AddItem(cmdsTable, 0, 1, true)
-	cmdLayout.AddItem(emptySpace(), 1, 0, false)
+	cmdLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -161,22 +154,22 @@ func (cmd *CommandDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return cmd.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("commands dialog: event %v received", event.Key())
+		log.Debug().Msgf("commands dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			cmd.cancelHandler()
 			return
 		}
-		if event.Key() == tcell.KeyUp || event.Key() == tcell.KeyDown || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp {
-			if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
-				return
-			}
-		}
-		if event.Key() == tcell.KeyEnter || event.Key() == tcell.KeyLeft || event.Key() == tcell.KeyRight || event.Key() == tcell.KeyTab {
+		// select command
+		if event.Key() == tcell.KeyEnter || event.Key() == tcell.KeyTab {
 			if formHandler := cmd.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
 				return
 			}
+		}
+		// scroll between command items
+		if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
+			tableHandler(event, setFocus)
+			return
 		}
 	})
 }

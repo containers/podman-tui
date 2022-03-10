@@ -135,6 +135,20 @@ func (nets *Networks) HasFocus() bool {
 	return nets.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+func (nets *Networks) SubDialogHasFocus() bool {
+	if nets.createDialog.HasFocus() || nets.errorDialog.HasFocus() {
+		return true
+	}
+	if nets.cmdDialog.HasFocus() || nets.messageDialog.IsDisplay() {
+		return true
+	}
+	if nets.progressDialog.HasFocus() || nets.confirmDialog.IsDisplay() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 	// error dialog

@@ -2,13 +2,14 @@ package utils
 
 import (
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
 // Styles represent default application style
 var Styles = theme{
 	PageTable: pageTable{
 		FgColor: tcell.ColorLightCyan,
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorLightSkyBlue,
 		HeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
 			BgColor: tcell.ColorSteelBlue,
@@ -32,6 +33,12 @@ var Styles = theme{
 			FgColor: tcell.ColorBlack,
 			BgColor: tcell.ColorSteelBlue,
 		},
+	},
+	Help: help{
+		BorderColor:   tcell.ColorLightSkyBlue,
+		BgColor:       tview.Styles.PrimitiveBackgroundColor,
+		FgColor:       tcell.ColorWhite,
+		HeaderFgColor: tcell.ColorSteelBlue,
 	},
 	CommandDialog: commandDialog{
 		BgColor: tcell.ColorSteelBlue,

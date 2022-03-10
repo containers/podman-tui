@@ -210,13 +210,6 @@ func NewPodCreateDialog() *PodCreateDialog {
 	ddselectedStyle := utils.Styles.DropdownStyle.Selected
 	podDialog.podNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 
-	/*
-		// network aliases field
-		podDialog.podNetworkAliasesField.SetLabel("network aliases:")
-		podDialog.podNetworkAliasesField.SetLabelWidth(networkingLabelWidth)
-		podDialog.podNetworkAliasesField.SetBackgroundColor(bgColor)
-		podDialog.podNetworkAliasesField.SetLabelColor(tcell.ColorWhite)
-	*/
 	// category pages
 	podDialog.categoryPages.SetBackgroundColor(bgColor)
 	podDialog.categoryPages.SetBorder(true)
@@ -235,58 +228,52 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.layout.AddItem(podDialog.form, dialogs.DialogFormHeight, 0, true)
 
 	podDialog.setActiveCategory(0)
+
+	podDialog.initCustomInputHanlers()
 	return &podDialog
 }
 
 func (d *PodCreateDialog) setupLayout() {
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		return box
-	}
-
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
 	d.basicInfoPage.AddItem(d.podNameField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.podNoHostsCheckBox, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.podLabelsField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
 	// DNS setup page
 	d.dnsSetupPage.SetDirection(tview.FlexRow)
 	d.dnsSetupPage.AddItem(d.podDNSServerField, 1, 0, true)
-	d.dnsSetupPage.AddItem(emptySpace(), 1, 0, true)
+	d.dnsSetupPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.dnsSetupPage.AddItem(d.podDNSOptionsField, 1, 0, true)
-	d.dnsSetupPage.AddItem(emptySpace(), 1, 0, true)
+	d.dnsSetupPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.dnsSetupPage.AddItem(d.podDNSSearchDomaindField, 1, 0, true)
 	d.dnsSetupPage.SetBackgroundColor(bgColor)
 
 	// infra page
 	d.infraSetupPage.SetDirection(tview.FlexRow)
 	d.infraSetupPage.AddItem(d.podInfraCheckBox, 1, 0, true)
-	d.infraSetupPage.AddItem(emptySpace(), 1, 0, true)
+	d.infraSetupPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.infraSetupPage.AddItem(d.podInfraCommandField, 1, 0, true)
-	d.infraSetupPage.AddItem(emptySpace(), 1, 0, true)
+	d.infraSetupPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.infraSetupPage.AddItem(d.podInfraImageField, 1, 0, true)
 	d.infraSetupPage.SetBackgroundColor(bgColor)
 
 	// networking page
 	d.networkingPage.SetDirection(tview.FlexRow)
 	d.networkingPage.AddItem(d.podHostnameField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podIPAddressField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podMacAddressField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podHostToIPMapField, 1, 0, true)
-	d.networkingPage.AddItem(emptySpace(), 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podNetworkField, 1, 0, true)
-	//d.networkingPage.AddItem(emptySpace(), 1, 0, true)
-	//d.networkingPage.AddItem(d.podNetworkAliasesField, 1, 0, true)
 	d.networkingPage.SetBackgroundColor(bgColor)
 
 	// adding category pages
@@ -360,13 +347,15 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.Focus(delegate)
 				return nil
 			}
+			// scroll between categories
+			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
 			if event.Key() == tcell.KeyUp {
 				d.previousCategory()
 			}
-			return event
+			return nil
 		})
 		delegate(d.categories)
 	// basic info page
@@ -402,10 +391,18 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 
 }
 
+func (d *PodCreateDialog) initCustomInputHanlers() {
+	// newtwork dropdown
+	d.podNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		event = utils.ParseKeyEventKey(event)
+		return event
+	})
+}
+
 // InputHandler returns input handler function for this primitive
 func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("pod create dialog: event %v received", event.Key())
+		log.Debug().Msgf("pod create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

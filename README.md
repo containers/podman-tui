@@ -59,18 +59,26 @@ Flags:
 
 podman-tui uses following keyboard keys for different actions:
 
-| Action                           | Command |
-| -------------------------------- | ------- |
-| To view pods list page           | F1      |
-| To view containers list page     | F2      |
-| To view volumes list page        | F3      |
-| To view images list page         | F4      |
-| To view networks list page       | F5      |
-| To view system page              | F6      |
-| Lunch page command dialog        | Enter   |
-| Close a dialog                   | Esc     |
-| Switch between interface widgets | Tab     |
-
+| Action                           | Command   |
+| -------------------------------- | --------- |
+| Display command menu             | m         |
+| Switch to next screen            | l         |
+| Switch to previous screen        | h         |
+| Move up                          | k         |
+| Move down                        | j         |
+| Exit application                 | Ctrl+c    |
+| Close the active dialog          | Esc       |
+| Switch between interface widgets | Tab       |
+| Move up/down                     | Up/Down   |
+| Scroll Up                        | Page Up   |
+| Scroll Down                      | Page Down |
+| Display help screen              | F1        |
+| Display pods screen              | F2        |
+| Display containers screen        | F3        |
+| Display volumes screen           | F4        |
+| Display images screen            | F5        |
+| Display networks screen          | F6        |
+| Display system screen            | F7        |
 
 ---
 

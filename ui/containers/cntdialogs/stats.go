@@ -41,8 +41,9 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	bgColor := utils.Styles.ContainerStatsDialog.BgColor
 
 	// table
+	tableBgColor := tview.Styles.PrimitiveBackgroundColor
 	statsDialog.table = tview.NewTable()
-	statsDialog.table.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
+	statsDialog.table.SetBackgroundColor(tableBgColor)
 	statsDialog.initTableUI()
 
 	// container info text view
@@ -57,19 +58,12 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(bgColor)
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
-		box.SetBorder(false)
-		return box
-	}
-
 	// table layout
 	statLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	statLayout.SetBackgroundColor(bgColor)
-	statLayout.AddItem(emptySpace(), 1, 0, false)
+	statLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
 	statLayout.AddItem(statsDialog.table, 0, 1, false)
-	statLayout.AddItem(emptySpace(), 1, 0, false)
+	statLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
 
 	// main dialog layout
 	statsDialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
@@ -77,7 +71,7 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog.layout.SetBackgroundColor(bgColor)
 	statsDialog.layout.SetTitle("PODMAN CONTAINER STATS")
 
-	statsDialog.layout.AddItem(emptySpace(), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statsDialog.containerInfo, 1, 0, true)
 	statsDialog.layout.AddItem(statLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
@@ -133,7 +127,7 @@ func (d *ContainerStatsDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler  returns input handler function for this primitive
 func (d *ContainerStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("container stats dialog: event %v received", event.Key())
+		log.Debug().Msgf("container stats dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.doneHandler()
 			return

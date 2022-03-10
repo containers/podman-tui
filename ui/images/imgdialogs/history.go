@@ -41,8 +41,6 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 
 	dialog.table = tview.NewTable()
 	dialog.table.SetBackgroundColor(bgColor)
-	dialog.table.SetBorder(true)
-	dialog.table.SetBorderColor(bgColor)
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
@@ -50,14 +48,19 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 
-	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
+	// table layout
+	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	tableLayout.SetBackgroundColor(bgColor)
+	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tableLayout.AddItem(dialog.table, 0, 1, true)
+	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
+	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetTitle("PODMAN IMAGE HISTORY")
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
 
-	dialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
-	dialog.layout.AddItem(dialog.table, 1, 0, true)
+	dialog.layout.AddItem(tableLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return dialog
@@ -91,20 +94,17 @@ func (d *ImageHistoryDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("image history dialog: event %v received", event.Key())
-		if event.Key() == tcell.KeyEsc {
+		log.Debug().Msgf("image history dialog: event %v received", event)
+		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
 			return
 		}
+		event = utils.ParseKeyEventKey(event)
 		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp {
 			if tableHandler := d.table.InputHandler(); tableHandler != nil {
 				tableHandler(event, setFocus)
 				return
 			}
-		}
-		if formHandler := d.form.InputHandler(); formHandler != nil {
-			formHandler(event, setFocus)
-			return
 		}
 	})
 }
@@ -113,18 +113,19 @@ func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus
 func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := len(d.results) + dialogs.DialogFormHeight + 6
+	dHeight := len(d.results) + dialogs.DialogFormHeight + 3
 
 	if dHeight > height {
 		dHeight = height
 	}
+	tableHeight := dHeight - dialogs.DialogFormHeight - 2
 
 	hs := ((height - dHeight) / 2)
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 	//set table height size
-	d.layout.ResizeItem(d.table, dHeight-dialogs.DialogFormHeight-3, 0)
+	d.layout.ResizeItem(d.table, tableHeight, 0)
 	cWidth := d.getCreatedByWidth()
 	for i := 0; i < d.table.GetRowCount(); i++ {
 		cell := d.table.GetCell(i, 2)

@@ -282,7 +282,7 @@ func (d *ImageSearchDialog) Draw(screen tcell.Screen) {
 //InputHandler returns input handler function for this primitive
 func (d *ImageSearchDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("confirm dialog: event %v received", event.Key())
+		log.Debug().Msgf("confirm dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

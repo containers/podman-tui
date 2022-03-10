@@ -192,37 +192,31 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 func (d *NetworkCreateDialog) setupLayout() {
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		return box
-	}
-
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
 	d.basicInfoPage.AddItem(d.networkNameField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkLabelsField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkInternalCheckBox, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkMacvlanField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkDriverField, 1, 0, true)
-	d.basicInfoPage.AddItem(emptySpace(), 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkDriverOptionsField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
 	// ip settings page
 	d.ipSettingsPage.SetDirection(tview.FlexRow)
 	d.ipSettingsPage.AddItem(d.networkIpv6CheckBox, 1, 0, true)
-	d.ipSettingsPage.AddItem(emptySpace(), 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.ipSettingsPage.AddItem(d.networkGatewayField, 1, 0, true)
-	d.ipSettingsPage.AddItem(emptySpace(), 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.ipSettingsPage.AddItem(d.networkIPRangeField, 1, 0, true)
-	d.ipSettingsPage.AddItem(emptySpace(), 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.ipSettingsPage.AddItem(d.networkSubnetField, 1, 0, true)
-	d.ipSettingsPage.AddItem(emptySpace(), 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.ipSettingsPage.AddItem(d.networkDisableDNSCheckBox, 1, 0, true)
 	d.ipSettingsPage.SetBackgroundColor(bgColor)
 
@@ -295,6 +289,8 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.Focus(delegate)
 				return nil
 			}
+			// scroll between categories
+			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
@@ -338,7 +334,7 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("network create dialog: event %v received", event.Key())
+		log.Debug().Msgf("network create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

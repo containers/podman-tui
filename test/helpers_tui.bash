@@ -5,7 +5,11 @@ TEST_NAME="podman_tui_test"
 TEST_VOLUME_NAME="${TEST_NAME}_vol01"
 TEST_NETWORK_NAME="${TEST_NAME}_net01"
 TEST_POD_NAME="${TEST_NAME}_pod01"
+TEST_POD_NETWORK_NAME="${TEST_NAME}_pod01_net"
 TEST_CONTAINER_NAME="${TEST_NAME}_container01"
+TEST_CONTAINER_POD_NAME="${TEST_NAME}_container01_pod"
+TEST_CONTAINER_NETWORK_NAME="${TEST_NAME}_container01_net"
+TEST_CONTAINER_VOLUME_NAME="${TEST_NAME}_container01_vol"
 TEST_CONTAINER_PORT="8888:80"
 TEST_LABEL_NAME="test"
 TEST_LABEL_VALUE="$TEST_NAME"
@@ -17,17 +21,17 @@ TEST_LABEL="${TEST_LABEL_NAME}=${TEST_LABEL_VALUE}"
 function podman_tui_set_view() {
   case $1 in
   "pods")
-    run_helper tmux send-keys -t $TMUX_SESSION F1;;
-  "containers")
     run_helper tmux send-keys -t $TMUX_SESSION F2;;
-  "volumes")
+  "containers")
     run_helper tmux send-keys -t $TMUX_SESSION F3;;
-  "images")
+  "volumes")
     run_helper tmux send-keys -t $TMUX_SESSION F4;;
-  "networks")
+  "images")
     run_helper tmux send-keys -t $TMUX_SESSION F5;;
-  "system")
+  "networks")
     run_helper tmux send-keys -t $TMUX_SESSION F6;;
+  "system")
+    run_helper tmux send-keys -t $TMUX_SESSION F7;;
   esac   
 }
 
@@ -208,7 +212,7 @@ function podman_tui_select_menu() {
   local menu_index=$1
   local current_index=0
 
-  run_helper tmux send-keys -t $TMUX_SESSION Enter
+  run_helper tmux send-keys -t $TMUX_SESSION m
   while [[ $current_index -lt $menu_index ]]
   do
     run_helper tmux send-keys -t $TMUX_SESSION Down

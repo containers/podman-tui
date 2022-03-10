@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 )
 
 const (
@@ -40,4 +41,12 @@ func AlignStringListWidth(list []string) ([]string, int) {
 		alignedList = append(alignedList, item)
 	}
 	return alignedList, max
+}
+
+// EmptyBoxSpace returns simple Box without border with bgColor as background
+func EmptyBoxSpace(bgColor tcell.Color) *tview.Box {
+	box := tview.NewBox()
+	box.SetBackgroundColor(bgColor)
+	box.SetBorder(false)
+	return box
 }

@@ -177,6 +177,23 @@ func (img *Images) HasFocus() bool {
 	return img.Box.HasFocus()
 }
 
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+func (img *Images) SubDialogHasFocus() bool {
+	if img.historyDialog.HasFocus() || img.messageDialog.HasFocus() {
+		return true
+	}
+	if img.cmdDialog.HasFocus() || img.cmdInputDialog.HasFocus() {
+		return true
+	}
+	if img.confirmDialog.HasFocus() || img.errorDialog.HasFocus() {
+		return true
+	}
+	if img.searchDialog.HasFocus() || img.progressDialog.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (img *Images) Focus(delegate func(p tview.Primitive)) {
 

@@ -163,13 +163,6 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	dialog.form.SetBackgroundColor(bgColor)
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		box.SetBorder(false)
-		return box
-	}
-
 	// main dialog layout
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
@@ -178,10 +171,10 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	mLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	// label
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.label, 1, 0, true)
 	// command
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.command, 1, 0, true)
 	// interactive, tty, privileged and detach
 	checkBoxWidth := execDialogLabelWidth + 4
@@ -192,31 +185,31 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	checkBoxLayout.AddItem(dialog.tty, len(tLabel)+labelPaddings, 0, false)
 	checkBoxLayout.AddItem(dialog.privileged, len(pLabel)+labelPaddings, 0, false)
 	checkBoxLayout.AddItem(dialog.detach, len(dLabel)+labelPaddings, 0, false)
-	checkBoxLayout.AddItem(emptySpace(), 0, 1, true)
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	checkBoxLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(checkBoxLayout, 1, 0, true)
 	// detach keys and user
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	udLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	udLayout.AddItem(dialog.detachKeys, 0, 1, true)
-	udLayout.AddItem(emptySpace(), 2, 0, true)
+	udLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, true)
 	udLayout.AddItem(dialog.user, 0, 1, true)
 	mLayout.AddItem(udLayout, 1, 0, true)
 	// working dir
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.workingDir, 1, 0, true)
 	// env variables
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.envVariables, 1, 0, true)
 	// env file
-	mLayout.AddItem(emptySpace(), 1, 0, true)
+	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.envFile, 1, 0, true)
 
 	// main layout
 	mainLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	mainLayout.AddItem(emptySpace(), 1, 0, true)
+	mainLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mainLayout.AddItem(mLayout, 0, 1, true)
-	mainLayout.AddItem(emptySpace(), 1, 0, true)
+	mainLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 
 	dialog.layout.AddItem(mainLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -426,7 +419,7 @@ func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive
 func (d *ContainerExecDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("container exec dialog: event %v received", event.Key())
+		log.Debug().Msgf("container exec dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 			return

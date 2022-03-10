@@ -105,28 +105,21 @@ func NewPodStatsDialog() *PodStatsDialog {
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(bgColor)
 
-	emptySpace := func() *tview.Box {
-		box := tview.NewBox()
-		box.SetBackgroundColor(bgColor)
-		box.SetBorder(false)
-		return box
-	}
-
 	// pod dropdown and sort by dropdown
 	statsDialog.controlLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
 	statsDialog.controlLayout.SetBackgroundColor(bgColor)
-	statsDialog.controlLayout.AddItem(emptySpace(), 1, 0, false)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	statsDialog.controlLayout.AddItem(statsDialog.podDropDown, 0, 1, false)
-	statsDialog.controlLayout.AddItem(emptySpace(), 1, 0, false)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	statsDialog.controlLayout.AddItem(statsDialog.podSortByDropDown, 0, 1, false)
-	statsDialog.controlLayout.AddItem(emptySpace(), 1, 0, false)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	// table layout
 	statLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	statLayout.SetBackgroundColor(bgColor)
-	statLayout.AddItem(emptySpace(), 1, 0, false)
+	statLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	statLayout.AddItem(statsDialog.table, 0, 1, false)
-	statLayout.AddItem(emptySpace(), 1, 0, false)
+	statLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	// main dialog layout
 	statsDialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
@@ -134,9 +127,9 @@ func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog.layout.SetBackgroundColor(bgColor)
 	statsDialog.layout.SetTitle("PODMAN POD STATS")
 
-	statsDialog.layout.AddItem(emptySpace(), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statsDialog.controlLayout, 1, 0, true)
-	statsDialog.layout.AddItem(emptySpace(), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -147,7 +140,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 func (d *PodStatsDialog) Display() {
 	d.display = true
 	d.podSortByDropDown.SetCurrentOption(0)
-	d.focusElement = podStatDialogFormFocus
+	d.focusElement = podStatDialogResultTableFocus
 	d.doneChan = make(chan bool)
 	d.startStatsQueryLoop()
 }
@@ -195,8 +188,7 @@ func (d *PodStatsDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler  returns input handler function for this primitive
 func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("pod stats dialog: event %v received", event.Key())
-
+		log.Debug().Msgf("pod stats dialog: event %v received", event)
 		// pod ID dropdown
 		if d.podDropDown.HasFocus() {
 			if event.Key() == tcell.KeyTab {
@@ -205,6 +197,7 @@ func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 				return
 			}
 			if podDropDownHandler := d.podDropDown.InputHandler(); podDropDownHandler != nil {
+				event = utils.ParseKeyEventKey(event)
 				podDropDownHandler(event, setFocus)
 				return
 			}
@@ -217,6 +210,7 @@ func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 				return
 			}
 			if podSortByDropDownHandler := d.podSortByDropDown.InputHandler(); podSortByDropDownHandler != nil {
+				event = utils.ParseKeyEventKey(event)
 				podSortByDropDownHandler(event, setFocus)
 				return
 			}
