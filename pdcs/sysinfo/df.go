@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/containers/podman-tui/pdcs/connection"
-	"github.com/containers/podman/v3/pkg/bindings/system"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/bindings/system"
+	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/go-units"
 	"github.com/rs/zerolog/log"
 )

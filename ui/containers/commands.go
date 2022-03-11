@@ -6,7 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
-	bcontainers "github.com/containers/podman/v3/pkg/bindings/containers"
+	bcontainers "github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -314,12 +314,16 @@ func (cnt *Containers) remove() {
 	cnt.progressDialog.SetTitle("container remove in progress")
 	cnt.progressDialog.Display()
 	remove := func(id string) {
-		err := containers.Remove(id)
+		errData, err := containers.Remove(id)
 		cnt.progressDialog.Hide()
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
 			return
+		}
+		if len(errData) > 0 {
+			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
+			cnt.displayError(title, fmt.Errorf("%v", errData))
 		}
 	}
 	go remove(cnt.selectedID)

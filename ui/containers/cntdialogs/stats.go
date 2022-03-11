@@ -6,7 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/go-units"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"

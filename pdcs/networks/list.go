@@ -2,11 +2,10 @@ package networks
 
 import (
 	"sort"
-	"strings"
 
+	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/connection"
-	"github.com/containers/podman/v3/pkg/bindings/network"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/bindings/network"
 	"github.com/rs/zerolog/log"
 )
 
@@ -26,14 +25,10 @@ func List() ([][]string, error) {
 	sort.Sort(netListSortedName{response})
 
 	for _, item := range response {
-		var plugins []string
-		for _, p := range item.Plugins {
-			plugins = append(plugins, p.Network.Type)
-		}
 		report = append(report, []string{
+			item.ID,
 			item.Name,
-			item.CNIVersion,
-			strings.Join(plugins, ","),
+			item.Driver,
 		})
 	}
 
@@ -42,7 +37,7 @@ func List() ([][]string, error) {
 	return report, nil
 }
 
-type lprSort []*entities.NetworkListReport
+type lprSort []types.Network
 
 func (a lprSort) Len() int      { return len(a) }
 func (a lprSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }

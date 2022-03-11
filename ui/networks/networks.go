@@ -31,7 +31,7 @@ func NewNetworks() *Networks {
 	nets := &Networks{
 		Box:            tview.NewBox(),
 		title:          "networks",
-		headers:        []string{"name", "version", "plugins"},
+		headers:        []string{"id", "name", "driver"},
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),

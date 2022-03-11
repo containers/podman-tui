@@ -2,8 +2,8 @@ package networks
 
 import (
 	"github.com/containers/podman-tui/pdcs/connection"
-	"github.com/containers/podman/v3/pkg/bindings/network"
-	"github.com/containers/podman/v3/pkg/errorhandling"
+	"github.com/containers/podman/v4/pkg/bindings/network"
+	"github.com/containers/podman/v4/pkg/errorhandling"
 	"github.com/rs/zerolog/log"
 )
 

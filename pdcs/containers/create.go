@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/containers/podman/v3/pkg/bindings/containers"
-	"github.com/containers/podman/v3/pkg/specgen"
-	"github.com/containers/podman/v3/pkg/specgenutil"
+	"github.com/containers/common/libnetwork/types"
+	"github.com/containers/podman/v4/pkg/bindings/containers"
+	"github.com/containers/podman/v4/pkg/specgen"
+	"github.com/containers/podman/v4/pkg/specgenutil"
 	"github.com/rs/zerolog/log"
 
 	"github.com/containers/podman-tui/pdcs/connection"
@@ -56,12 +57,13 @@ func Create(opts CreateOptions) ([]string, error) {
 	containerSpecGen.Labels = opts.Labels
 	containerSpecGen.Remove = opts.Remove
 
+	var perNetworkOpt types.PerNetworkOptions
 	if opts.MacAddress != "" {
 		macAddress, err = net.ParseMAC(opts.MacAddress)
 		if err != nil {
 			return warningResponse, err
 		}
-		containerSpecGen.StaticMAC = &macAddress
+		perNetworkOpt.StaticMAC = types.HardwareAddr(macAddress)
 	}
 
 	if opts.IPAddress != "" {
@@ -69,8 +71,10 @@ func Create(opts CreateOptions) ([]string, error) {
 		if ipAddr == nil {
 			return warningResponse, fmt.Errorf("invalid IP address: %s", ipAddr)
 		}
-		containerSpecGen.StaticIP = &ipAddr
+		perNetworkOpt.StaticIPs = []net.IP{ipAddr}
 	}
+	containerSpecGen.Networks[opts.Network] = perNetworkOpt
+
 	for _, d := range opts.DNSServer {
 		addr := net.ParseIP(d)
 		if addr == nil {
