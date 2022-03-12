@@ -109,6 +109,9 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 	if messageWidth+4 < dWidth {
 		dWidth = messageWidth + 4
 	}
+	if DialogMinWidth < width && dWidth < DialogMinWidth {
+		dWidth = DialogMinWidth
+	}
 	emptySpace := (width - dWidth) / 2
 	dX := x + emptySpace
 
