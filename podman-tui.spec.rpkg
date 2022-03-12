@@ -76,7 +76,7 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 - keybindings improvement + help screen + ui update
 - keybindings improvement + help screen + ui update
 - readme: add AUR mention
-- tests update: udpate wait time + command index for container and pod
+- tests update: update wait time + command index for container and pod
 - command dialog layout/height update to fit in different terminal heights
 - dropdown primitive list style update
 - docs update - API >= 3.1 and build dependencies

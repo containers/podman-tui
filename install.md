@@ -18,23 +18,10 @@ Run `sudo make install` if you want to install the binary on the node.
 
 ---
 
-## Installing from the AUR (Arch Linux)
+## Installing Packaged Versions
 
-There are 2 packages present in the Arch User Repository:
-- `podman-tui`
-- `podman-tui-git`
-
-Either one can be installed by using your prefered AUR helper, such as:
+### Arch Linux (AUR)
 
 ```shell
 yay -S podman-tui
 ```
-
-or manually:
-
-```shell
-git clone https://aur.archlinux.org/podman-tui.git
-cd podman-tui
-makepkg -si
-```
-

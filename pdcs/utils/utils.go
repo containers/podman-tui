@@ -32,7 +32,7 @@ func PrintJSON(data []interface{}) (string, error) {
 
 // Following code are from https://github.com/containers/podman/blob/main/cmd/podman/containers/ps.go
 
-// portsToString converts the ports used to a string of the from "port1, port2"
+// PortsToString converts the ports used to a string of the from "port1, port2"
 // and also groups a continuous list of ports into a readable format.
 // The format is IP:HostPort(-Range)->ContainerPort(-Range)/Proto
 func PortsToString(ports []types.PortMapping) string {
