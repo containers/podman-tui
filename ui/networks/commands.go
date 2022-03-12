@@ -36,14 +36,15 @@ func (nets *Networks) displayError(title string, err error) {
 
 func (nets *Networks) create() {
 	createOpts := nets.createDialog.NetworkCreateOptions()
-	filename, err := networks.Create(createOpts)
+	createdNetwork, err := networks.Create(createOpts)
 	if err != nil {
 		nets.displayError("NETWORK CREATE ERROR", err)
 		return
 	}
 	nets.UpdateData()
+	netInfo := fmt.Sprintf("network %s (%s) created at %s", createdNetwork.Name, createdNetwork.ID[:12], createdNetwork.Created.String())
 	nets.messageDialog.SetTitle("podman network create")
-	nets.messageDialog.SetText(filename)
+	nets.messageDialog.SetText(netInfo)
 	nets.messageDialog.Display()
 
 }

@@ -54,7 +54,6 @@ type NetworkCreateDialog struct {
 	networkNameField          *tview.InputField
 	networkLabelsField        *tview.InputField
 	networkInternalCheckBox   *tview.Checkbox
-	networkMacvlanField       *tview.InputField
 	networkDriverField        *tview.InputField
 	networkDriverOptionsField *tview.InputField
 	networkIpv6CheckBox       *tview.Checkbox
@@ -82,7 +81,6 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 		networkNameField:          tview.NewInputField(),
 		networkLabelsField:        tview.NewInputField(),
 		networkInternalCheckBox:   tview.NewCheckbox(),
-		networkMacvlanField:       tview.NewInputField(),
 		networkDriverField:        tview.NewInputField(),
 		networkDriverOptionsField: tview.NewInputField(),
 		networkIpv6CheckBox:       tview.NewCheckbox(),
@@ -118,11 +116,6 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	podDialog.networkInternalCheckBox.SetChecked(false)
 	podDialog.networkInternalCheckBox.SetBackgroundColor(bgColor)
 	podDialog.networkInternalCheckBox.SetLabelColor(tcell.ColorWhite)
-	// macvlan
-	podDialog.networkMacvlanField.SetLabel("macvlan:")
-	podDialog.networkMacvlanField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkMacvlanField.SetBackgroundColor(bgColor)
-	podDialog.networkMacvlanField.SetLabelColor(tcell.ColorWhite)
 	// drivers
 	podDialog.networkDriverField.SetLabel("drivers:")
 	podDialog.networkDriverField.SetLabelWidth(basicInfoPageLabelWidth)
@@ -198,8 +191,6 @@ func (d *NetworkCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(d.networkLabelsField, 1, 0, true)
 	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkInternalCheckBox, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.networkMacvlanField, 1, 0, true)
 	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.networkDriverField, 1, 0, true)
 	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -522,7 +513,7 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions {
 			}
 		}
 	}
-	for _, option := range strings.Split(d.networkLabelsField.GetText(), " ") {
+	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
 			if len(split) == 2 {
@@ -534,9 +525,15 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions {
 			}
 		}
 	}
-	gateways = strings.Split(d.networkGatewayField.GetText(), " ")
-	subnets = strings.Split(d.networkSubnetField.GetText(), " ")
-	ipranges = strings.Split(d.networkIPRangeField.GetText(), " ")
+	if strings.Trim(d.networkGatewayField.GetText(), " ") != "" {
+		gateways = strings.Split(d.networkGatewayField.GetText(), " ")
+	}
+	if strings.Trim(d.networkSubnetField.GetText(), " ") != "" {
+		subnets = strings.Split(d.networkSubnetField.GetText(), " ")
+	}
+	if strings.Trim(d.networkIPRangeField.GetText(), " ") != "" {
+		ipranges = strings.Split(d.networkIPRangeField.GetText(), " ")
+	}
 
 	opts := networks.CreateOptions{
 		Name:           d.networkNameField.GetText(),

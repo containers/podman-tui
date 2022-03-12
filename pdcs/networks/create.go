@@ -27,12 +27,12 @@ type CreateOptions struct {
 }
 
 // Create creates a new pod.
-func Create(opts CreateOptions) (string, error) {
+func Create(opts CreateOptions) (types.Network, error) {
 	log.Debug().Msgf("pdcs: podman network create %v", opts)
 
 	var (
-		errList  []error
-		filename string
+		errList []error
+		report  types.Network
 	)
 
 	createOptions := &types.Network{
@@ -48,7 +48,7 @@ func Create(opts CreateOptions) (string, error) {
 		for i := range opts.Subnets {
 			subnet, err := types.ParseCIDR(opts.Subnets[i])
 			if err != nil {
-				return "", err
+				return report, err
 			}
 			s := types.Subnet{
 				Subnet: subnet,
@@ -56,7 +56,7 @@ func Create(opts CreateOptions) (string, error) {
 			if len(opts.IPRanges) > i {
 				leaseRange, err := parseRange(opts.IPRanges[i])
 				if err != nil {
-					return "", err
+					return report, err
 				}
 				s.LeaseRange = leaseRange
 			}
@@ -68,19 +68,19 @@ func Create(opts CreateOptions) (string, error) {
 	}
 
 	if len(errList) > 0 {
-		return filename, errorhandling.JoinErrors(errList)
+		return report, errorhandling.JoinErrors(errList)
 	}
 
 	conn, err := connection.GetConnection()
 	if err != nil {
-		return filename, err
+		return report, err
 	}
 
-	report, err := network.Create(conn, createOptions)
+	report, err = network.Create(conn, createOptions)
 	if err != nil {
-		return filename, err
+		return report, err
 	}
-	return report.Name, nil
+	return report, nil
 
 }
 
