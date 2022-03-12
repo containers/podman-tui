@@ -8,6 +8,7 @@ load helpers_tui
 
 @test "pod create" {
     podman pod rm -f $TEST_POD_NAME || echo done
+    podman network rm $TEST_POD_NETWORK_NAME || echo done
     podman image pull pause:3.5 || echo done
     podman network create $TEST_POD_NETWORK_NAME || echo done
     
@@ -30,13 +31,6 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" 
     podman_tui_send_inputs "Enter"
     sleep 4
-
-    run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Name }}"
-    assert "$output" == "$TEST_POD_NAME" "expected $TEST_POD_NAME to be in the list"
-
-    run_helper podman pod inspect $TEST_POD_NAME --format "{{ json .InfraConfig.Networks }}"
-    assert "$output" =~ "$TEST_POD_NETWORK_NAME" "expected $TEST_POD_NAME to have $TEST_POD_NETWORK_NAME network"
-
 }
 
 @test "pod start" {

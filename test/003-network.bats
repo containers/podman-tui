@@ -18,10 +18,10 @@ load helpers_tui
     podman_tui_send_inputs "$TEST_NETWORK_NAME"
     podman_tui_send_inputs "Tab"
     podman_tui_send_inputs "$TEST_LABEL"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Enter"
-    sleep 2
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Enter"
+    sleep 1
     podman_tui_send_inputs "Tab" "Enter"
-
+    sleep 2
     run_helper podman network ls --format "{{ .Name }}" --filter "name=${TEST_NETWORK_NAME}$"
     assert "$output" == "$TEST_NETWORK_NAME" "expected $TEST_NETWORK_NAME to be in the list"
 }
@@ -36,10 +36,11 @@ load helpers_tui
     podman_tui_set_view "networks"
     podman_tui_select_item $net_index
     podman_tui_select_network_cmd "inspect"
-    sleep 2
+    sleep 1
     podman_tui_send_inputs "Enter"
+    sleep 2
 
-    run_helper sed -n '/  "podman_labels": {/, /  }/p' $PODMAN_TUI_LOG
+    run_helper sed -n '/  "labels": {/, /  }/p' $PODMAN_TUI_LOG
     assert "$output" =~ "\"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\"" "expected \"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\" in network inspect"
 }
 
