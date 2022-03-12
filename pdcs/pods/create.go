@@ -36,7 +36,10 @@ type CreateOptions struct {
 // Create creates a new pod.
 func Create(opts CreateOptions) error {
 	log.Debug().Msgf("pdcs: podman pod create %v", opts)
-	var errList []error
+	var (
+		errList  []error
+		networks = make(map[string]types.PerNetworkOptions)
+	)
 	conn, err := connection.GetConnection()
 	if err != nil {
 		return err
@@ -73,7 +76,10 @@ func Create(opts CreateOptions) error {
 			errList = append(errList, fmt.Errorf("invalid ip address: %s", opts.IPAddress))
 		}
 	}
-	podSpecGenerator.Networks[opts.Network] = perNetworkOpt
+	if opts.Network != "" {
+		networks[opts.Network] = perNetworkOpt
+	}
+	podSpecGenerator.Networks = networks
 
 	var dnsServers []net.IP
 	for _, d := range opts.DNSServer {

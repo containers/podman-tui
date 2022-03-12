@@ -38,7 +38,9 @@ func (pods *Pods) refresh() {
 		podStatus := podList[i].Status
 		podCreated := units.HumanDuration(time.Since(podList[i].Created)) + " ago"
 		podInfraID := podList[i].InfraId
-		podInfraID = podInfraID[0:utils.IDLength]
+		if len(podInfraID) > utils.IDLength {
+			podInfraID = podInfraID[0:utils.IDLength]
+		}
 		podNumCtn := fmt.Sprintf("%d", len(podList[i].Containers))
 
 		if strings.Contains(strings.ToLower(podStatus), "running") {
