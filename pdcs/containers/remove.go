@@ -22,8 +22,10 @@ func Remove(id string) ([]string, error) {
 	}
 	for _, rmRept := range response {
 		if rmRept != nil {
-			respData := fmt.Sprintf("error removing %s: %s", rmRept.Id, rmRept.Err.Error())
-			report = append(report, respData)
+			if rmRept.Err != nil {
+				respData := fmt.Sprintf("error removing %s: %v", rmRept.Id, rmRept.Err)
+				report = append(report, respData)
+			}
 		}
 	}
 	return report, err

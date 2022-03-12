@@ -42,6 +42,7 @@ func Create(opts CreateOptions) ([]string, error) {
 		macAddress      net.HardwareAddr
 		ipAddr          net.IP
 		dnsServers      []net.IP
+		networks        = make(map[string]types.PerNetworkOptions)
 	)
 	log.Debug().Msgf("pdcs: podman container create %v", opts)
 	conn, err := connection.GetConnection()
@@ -56,6 +57,7 @@ func Create(opts CreateOptions) ([]string, error) {
 	containerSpecGen.Image = opts.Image
 	containerSpecGen.Labels = opts.Labels
 	containerSpecGen.Remove = opts.Remove
+	containerSpecGen.Hostname = opts.Hostname
 
 	var perNetworkOpt types.PerNetworkOptions
 	if opts.MacAddress != "" {
@@ -73,7 +75,10 @@ func Create(opts CreateOptions) ([]string, error) {
 		}
 		perNetworkOpt.StaticIPs = []net.IP{ipAddr}
 	}
-	containerSpecGen.Networks[opts.Network] = perNetworkOpt
+	if opts.Network != "" {
+		networks[opts.Network] = perNetworkOpt
+	}
+	containerSpecGen.Networks = networks
 
 	for _, d := range opts.DNSServer {
 		addr := net.ParseIP(d)
@@ -105,7 +110,6 @@ func Create(opts CreateOptions) ([]string, error) {
 			return warningResponse, err
 		}
 	}
-
 	containerSpecGen.PublishExposedPorts = opts.PublishAll
 
 	// volume
