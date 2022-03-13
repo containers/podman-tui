@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/containers/podman-tui/pdcs/sysinfo"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/docker/api/types/events"
 	"github.com/rs/zerolog/log"
 )

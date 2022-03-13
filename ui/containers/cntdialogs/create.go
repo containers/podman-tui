@@ -11,7 +11,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v3/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -661,7 +661,7 @@ func (d *ContainerCreateDialog) initData() {
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
 	for i := 0; i < len(networkList); i++ {
-		networkOptions = append(networkOptions, networkList[i][0])
+		networkOptions = append(networkOptions, networkList[i][1])
 	}
 
 	// get available volumes
@@ -688,6 +688,9 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerMacAddrField.SetText("")
 	d.containerNetworkField.SetOptions(networkOptions, nil)
 	d.containerNetworkField.SetCurrentOption(0)
+	d.containerDNSServersField.SetText("")
+	d.containerDNSSearchField.SetText("")
+	d.containerDNSOptionsField.SetText("")
 	d.containerVolumeField.SetOptions(volumeOptions, nil)
 	d.containerVolumeField.SetCurrentOption(0)
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
@@ -762,7 +765,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		volume           string
 		imageVolume      string
 	)
-	log.Info().Msg(d.containerLabelsField.GetText())
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")

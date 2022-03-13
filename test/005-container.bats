@@ -215,7 +215,7 @@ load helpers_tui
     sleep 2
 
     run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
-    assert "$output" =~ "paused" "expected $TEST_CONTAINER_NAME to be paused"
+    assert "$output" == "Paused" "expected $TEST_CONTAINER_NAME to be paused"
 }
 
 @test "container unpause" {

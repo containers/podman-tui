@@ -110,33 +110,36 @@ func (d *ImageSearchDialog) initTable() {
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
+
 	d.searchResult.SetCell(0, 2,
-		tview.NewTableCell(fmt.Sprintf("[%s::]DESCRIPTION", utils.GetColorName(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignLeft).
-			SetSelectable(false))
-	d.searchResult.SetCell(0, 3,
 		tview.NewTableCell(fmt.Sprintf("[%s::]STARS", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
-	d.searchResult.SetCell(0, 4,
+
+	d.searchResult.SetCell(0, 3,
 		tview.NewTableCell(fmt.Sprintf("[%s::]OFFICIAL", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
-	d.searchResult.SetCell(0, 5,
+	d.searchResult.SetCell(0, 4,
 		tview.NewTableCell(fmt.Sprintf("[%s::]AUTOMATED", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	d.searchResult.SetCell(0, 5,
+		tview.NewTableCell(fmt.Sprintf("[%s::]DESCRIPTION", utils.GetColorName(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 
 	d.searchResult.SetFixed(1, 1)
@@ -383,29 +386,30 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 				SetExpansion(expand).
 				SetAlign(alignment))
 
-		// description column
-		d.searchResult.SetCell(rowIndex, 2,
-			tview.NewTableCell(desc).
-				SetExpansion(expand).
-				SetAlign(alignment))
-
 		// stars column
-		d.searchResult.SetCell(rowIndex, 3,
+		d.searchResult.SetCell(rowIndex, 2,
 			tview.NewTableCell(stars).
 				SetExpansion(expand).
 				SetAlign(tview.AlignCenter))
 
 		// official column
-		d.searchResult.SetCell(rowIndex, 4,
+		d.searchResult.SetCell(rowIndex, 3,
 			tview.NewTableCell(official).
 				SetExpansion(expand).
 				SetAlign(tview.AlignCenter))
 
 		// autoamted column
-		d.searchResult.SetCell(rowIndex, 5,
+		d.searchResult.SetCell(rowIndex, 4,
 			tview.NewTableCell(automated).
 				SetExpansion(expand).
 				SetAlign(tview.AlignCenter))
+
+		// description column
+		d.searchResult.SetCell(rowIndex, 5,
+			tview.NewTableCell(desc).
+				SetExpansion(expand).
+				SetAlign(alignment))
+
 		rowIndex++
 	}
 	if len(data) > 0 {

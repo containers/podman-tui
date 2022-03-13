@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/containers/podman-tui/pdcs/connection"
-	"github.com/containers/podman/v3/pkg/bindings/system"
+	"github.com/containers/podman/v4/pkg/bindings/system"
 	"github.com/rs/zerolog/log"
 )
 

@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/connection"
-	"github.com/containers/podman/v3/pkg/bindings/pods"
-	"github.com/containers/podman/v3/pkg/domain/entities"
-	"github.com/containers/podman/v3/pkg/errorhandling"
-	"github.com/containers/podman/v3/pkg/specgen"
-	"github.com/containers/podman/v3/pkg/util"
+	"github.com/containers/podman/v4/pkg/bindings/pods"
+	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v4/pkg/errorhandling"
+	"github.com/containers/podman/v4/pkg/specgen"
+	"github.com/containers/podman/v4/pkg/util"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,7 +36,10 @@ type CreateOptions struct {
 // Create creates a new pod.
 func Create(opts CreateOptions) error {
 	log.Debug().Msgf("pdcs: podman pod create %v", opts)
-	var errList []error
+	var (
+		errList  []error
+		networks = make(map[string]types.PerNetworkOptions)
+	)
 	conn, err := connection.GetConnection()
 	if err != nil {
 		return err
@@ -51,27 +55,31 @@ func Create(opts CreateOptions) error {
 	podSpecGenerator.InfraImage = opts.InfraImage
 	podSpecGenerator.Hostname = opts.Hostname
 	podSpecGenerator.HostAdd = opts.HostToIP
-	if opts.Network != "" {
-		podSpecGenerator.CNINetworks = []string{opts.Network}
-	}
+
+	podSpecGenerator.Networks = make(map[string]types.PerNetworkOptions)
+	var perNetworkOpt types.PerNetworkOptions
 
 	if opts.MacAddress != "" {
 		mac, err := net.ParseMAC(opts.MacAddress)
 		if err != nil {
 			errList = append(errList, err)
 		} else {
-			podSpecGenerator.StaticMAC = &mac
+			perNetworkOpt.StaticMAC = types.HardwareAddr(mac)
 		}
 
 	}
 	if opts.IPAddress != "" {
 		addr := net.ParseIP(opts.IPAddress)
 		if addr != nil {
-			podSpecGenerator.StaticIP = &addr
+			perNetworkOpt.StaticIPs = []net.IP{addr}
 		} else {
 			errList = append(errList, fmt.Errorf("invalid ip address: %s", opts.IPAddress))
 		}
 	}
+	if opts.Network != "" {
+		networks[opts.Network] = perNetworkOpt
+	}
+	podSpecGenerator.Networks = networks
 
 	var dnsServers []net.IP
 	for _, d := range opts.DNSServer {

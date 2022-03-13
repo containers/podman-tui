@@ -38,25 +38,25 @@ func (nets *Networks) UpdateData() {
 
 	nets.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(nets.title), len(netList)))
 	for i := 0; i < len(netList); i++ {
-		netName := netList[i][0]
-		netVersion := netList[i][1]
-		netPlugins := netList[i][2]
+		netID := netList[i][0]
+		netName := netList[i][1]
+		netDriver := netList[i][2]
 
 		// name name column
 		nets.table.SetCell(rowIndex, 0,
-			tview.NewTableCell(netName).
+			tview.NewTableCell(netID[:12]).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// version column
 		nets.table.SetCell(rowIndex, 1,
-			tview.NewTableCell(netVersion).
+			tview.NewTableCell(netName).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// plugins at column
 		nets.table.SetCell(rowIndex, 2,
-			tview.NewTableCell(netPlugins).
+			tview.NewTableCell(netDriver).
 				SetExpansion(expand).
 				SetAlign(alignment))
 

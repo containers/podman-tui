@@ -48,6 +48,18 @@ const (
 	BoltDBStateStore RuntimeStateStore = iota
 )
 
+// ProxyEnv is a list of Proxy Environment variables
+var ProxyEnv = []string{
+	"http_proxy",
+	"https_proxy",
+	"ftp_proxy",
+	"no_proxy",
+	"HTTP_PROXY",
+	"HTTPS_PROXY",
+	"FTP_PROXY",
+	"NO_PROXY",
+}
+
 // Config contains configuration options for container tools
 type Config struct {
 	// Containers specify settings that configure how containers will run ont the system
@@ -60,6 +72,8 @@ type Config struct {
 	Network NetworkConfig `toml:"network"`
 	// Secret section defines configurations for the secret management
 	Secrets SecretConfig `toml:"secrets"`
+	// ConfigMap section defines configurations for the configmaps management
+	ConfigMaps ConfigMapConfig `toml:"configmaps"`
 }
 
 // ContainersConfig represents the "containers" TOML config table
@@ -167,11 +181,6 @@ type ContainersConfig struct {
 	// performance implications.
 	PrepareVolumeOnCreate bool `toml:"prepare_volume_on_create,omitempty"`
 
-	// RootlessNetworking depicts the "kind" of networking for rootless
-	// containers.  Valid options are `slirp4netns` and `cni`. Default is
-	// `slirp4netns` on Linux, and `cni` on non-Linux OSes.
-	RootlessNetworking string `toml:"rootless_networking,omitempty"`
-
 	// SeccompProfile is the seccomp.json profile path which is used as the
 	// default for the runtime.
 	SeccompProfile string `toml:"seccomp_profile,omitempty"`
@@ -215,6 +224,12 @@ type EngineConfig struct {
 	// The first path pointing to a valid file will be used.
 	ConmonPath []string `toml:"conmon_path,omitempty"`
 
+	// CompatAPIEnforceDockerHub enforces using docker.io for completing
+	// short names in Podman's compatibility REST API.  Note that this will
+	// ignore unqualified-search-registries and short-name aliases defined
+	// in containers-registries.conf(5).
+	CompatAPIEnforceDockerHub bool `toml:"compat_api_enforce_docker_hub,omitempty"`
+
 	// DetachKeys is the sequence of keys used to detach a container.
 	DetachKeys string `toml:"detach_keys,omitempty"`
 
@@ -235,6 +250,9 @@ type EngineConfig struct {
 
 	// EventsLogger determines where events should be logged.
 	EventsLogger string `toml:"events_logger,omitempty"`
+
+	// graphRoot internal stores the location of the graphroot
+	graphRoot string
 
 	// HelperBinariesDir is a list of directories which are used to search for
 	// helper binaries.
@@ -331,7 +349,7 @@ type EngineConfig struct {
 	// ActiveService index to Destinations added v2.0.3
 	ActiveService string `toml:"active_service,omitempty"`
 
-	// Destinations mapped by service Names
+	// ServiceDestinations mapped by service Names
 	ServiceDestinations map[string]Destination `toml:"service_destinations,omitempty"`
 
 	// RuntimePath is the path to OCI runtime binary for launching containers.
@@ -375,6 +393,10 @@ type EngineConfig struct {
 	// containers/storage. As such this is not exposed via the config file.
 	StateType RuntimeStateStore `toml:"-"`
 
+	// ServiceTimeout is the number of seconds to wait without a connection
+	// before the `podman system service` times out and exits
+	ServiceTimeout uint `toml:"service_timeout,omitempty,omitzero"`
+
 	// StaticDir is the path to a persistent directory to store container
 	// files.
 	StaticDir string `toml:"static_dir,omitempty"`
@@ -382,6 +404,12 @@ type EngineConfig struct {
 	// StopTimeout is the number of seconds to wait for container to exit
 	// before sending kill signal.
 	StopTimeout uint `toml:"stop_timeout,omitempty,omitzero"`
+
+	// ImageCopyTmpDir is the default location for storing temporary
+	// container image content,  Can be overridden with the TMPDIR
+	// environment variable.  If you specify "storage", then the
+	// location of the container/storage tmp directory will be used.
+	ImageCopyTmpDir string `toml:"image_copy_tmp_dir,omitempty"`
 
 	// TmpDir is the path to a temporary directory to store per-boot container
 	// files. Must be stored in a tmpfs.
@@ -401,6 +429,9 @@ type EngineConfig struct {
 	// ChownCopiedFiles tells the container engine whether to chown files copied
 	// into a container to the container's primary uid/gid.
 	ChownCopiedFiles bool `toml:"chown_copied_files,omitempty"`
+
+	// CompressionFormat is the compression format used to compress image layers.
+	CompressionFormat string `toml:"compression_format,omitempty"`
 }
 
 // SetOptions contains a subset of options in a Config. It's used to indicate if
@@ -448,6 +479,10 @@ type SetOptions struct {
 
 // NetworkConfig represents the "network" TOML config table
 type NetworkConfig struct {
+	// NetworkBackend determines what backend should be used for Podman's
+	// networking.
+	NetworkBackend string `toml:"network_backend,omitempty"`
+
 	// CNIPluginDirs is where CNI plugin binaries are stored.
 	CNIPluginDirs []string `toml:"cni_plugin_dirs,omitempty"`
 
@@ -476,6 +511,17 @@ type SecretConfig struct {
 	Opts map[string]string `toml:"opts,omitempty"`
 }
 
+// ConfigMapConfig represents the "configmap" TOML config table
+type ConfigMapConfig struct {
+	// Driver specifies the configmap driver to use.
+	// Current valid value:
+	//  * file
+	//  * pass
+	Driver string `toml:"driver,omitempty"`
+	// Opts contains driver specific options
+	Opts map[string]string `toml:"opts,omitempty"`
+}
+
 // MachineConfig represents the "machine" TOML config table
 type MachineConfig struct {
 	// Number of CPU's a machine is created with.
@@ -486,6 +532,8 @@ type MachineConfig struct {
 	Image string `toml:"image,omitempty"`
 	// Memory in MB a machine is created with.
 	Memory uint64 `toml:"memory,omitempty,omitzero"`
+	// Username to use for rootless podman when init-ing a podman machine VM
+	User string `toml:"user,omitempty"`
 }
 
 // Destination represents destination for remote service
@@ -546,6 +594,10 @@ func NewConfig(userConfigPath string) (*Config, error) {
 		return nil, err
 	}
 
+	if err := config.setupEnv(); err != nil {
+		return nil, err
+	}
+
 	return config, nil
 }
 
@@ -561,7 +613,7 @@ func readConfigFromFile(path string, config *Config) error {
 	}
 	keys := meta.Undecoded()
 	if len(keys) > 0 {
-		logrus.Warningf("Failed to decode the keys %q from %q.", keys, path)
+		logrus.Debugf("Failed to decode the keys %q from %q.", keys, path)
 	}
 
 	return nil
@@ -778,21 +830,6 @@ func (c *ContainersConfig) Validate() error {
 // execution checks. It returns an `error` on validation failure, otherwise
 // `nil`.
 func (c *NetworkConfig) Validate() error {
-	expectedConfigDir := _cniConfigDir
-	if unshare.IsRootless() {
-		home, err := unshare.HomeDir()
-		if err != nil {
-			return err
-		}
-		expectedConfigDir = filepath.Join(home, _cniConfigDirRootless)
-	}
-	if c.NetworkConfigDir != expectedConfigDir {
-		err := isDirectory(c.NetworkConfigDir)
-		if err != nil && !os.IsNotExist(err) {
-			return errors.Wrapf(err, "invalid network_config_dir: %s", c.NetworkConfigDir)
-		}
-	}
-
 	if stringsEq(c.CNIPluginDirs, DefaultCNIPluginDirs) {
 		return nil
 	}
@@ -865,8 +902,7 @@ func (c *Config) GetDefaultEnvEx(envHost, httpProxy bool) []string {
 	if envHost {
 		env = append(env, os.Environ()...)
 	} else if httpProxy {
-		proxy := []string{"http_proxy", "https_proxy", "ftp_proxy", "no_proxy", "HTTP_PROXY", "HTTPS_PROXY", "FTP_PROXY", "NO_PROXY"}
-		for _, p := range proxy {
+		for _, p := range ProxyEnv {
 			if val, ok := os.LookupEnv(p); ok {
 				env = append(env, fmt.Sprintf("%s=%s", p, val))
 			}
@@ -1129,7 +1165,14 @@ func (c *Config) ActiveDestination() (uri, identity string, err error) {
 // FindHelperBinary will search the given binary name in the configured directories.
 // If searchPATH is set to true it will also search in $PATH.
 func (c *Config) FindHelperBinary(name string, searchPATH bool) (string, error) {
-	for _, path := range c.Engine.HelperBinariesDir {
+	dir_list := c.Engine.HelperBinariesDir
+
+	// If set, search this directory first. This is used in testing.
+	if dir, found := os.LookupEnv("CONTAINERS_HELPER_BINARY_DIR"); found {
+		dir_list = append([]string{dir}, dir_list...)
+	}
+
+	for _, path := range dir_list {
 		fullpath := filepath.Join(path, name)
 		if fi, err := os.Stat(fullpath); err == nil && fi.Mode().IsRegular() {
 			return fullpath, nil
@@ -1138,8 +1181,48 @@ func (c *Config) FindHelperBinary(name string, searchPATH bool) (string, error) 
 	if searchPATH {
 		return exec.LookPath(name)
 	}
+	configHint := "To resolve this error, set the helper_binaries_dir key in the `[engine]` section of containers.conf to the directory containing your helper binaries."
 	if len(c.Engine.HelperBinariesDir) == 0 {
-		return "", errors.Errorf("could not find %q because there are no helper binary directories configured", name)
+		return "", errors.Errorf("could not find %q because there are no helper binary directories configured.  %s", name, configHint)
 	}
-	return "", errors.Errorf("could not find %q in one of %v", name, c.Engine.HelperBinariesDir)
+	return "", errors.Errorf("could not find %q in one of %v.  %s", name, c.Engine.HelperBinariesDir, configHint)
+}
+
+// ImageCopyTmpDir default directory to store temporary image files during copy
+func (c *Config) ImageCopyTmpDir() (string, error) {
+	if path, found := os.LookupEnv("TMPDIR"); found {
+		return path, nil
+	}
+	switch c.Engine.ImageCopyTmpDir {
+	case "":
+		return "", nil
+	case "storage":
+		return filepath.Join(c.Engine.graphRoot, "tmp"), nil
+	default:
+		if filepath.IsAbs(c.Engine.ImageCopyTmpDir) {
+			return c.Engine.ImageCopyTmpDir, nil
+		}
+	}
+
+	return "", errors.Errorf("invalid image_copy_tmp_dir value %q (relative paths are not accepted)", c.Engine.ImageCopyTmpDir)
+}
+
+// setupEnv sets the environment variables for the engine
+func (c *Config) setupEnv() error {
+	for _, env := range c.Engine.Env {
+		splitEnv := strings.SplitN(env, "=", 2)
+		if len(splitEnv) != 2 {
+			logrus.Warnf("invalid environment variable for engine %s, valid configuration is KEY=value pair", env)
+			continue
+		}
+		// skip if the env is already defined
+		if _, ok := os.LookupEnv(splitEnv[0]); ok {
+			logrus.Debugf("environment variable %s is already defined, skip the settings from containers.conf", splitEnv[0])
+			continue
+		}
+		if err := os.Setenv(splitEnv[0], splitEnv[1]); err != nil {
+			return err
+		}
+	}
+	return nil
 }

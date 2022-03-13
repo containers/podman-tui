@@ -453,7 +453,7 @@ type Table struct {
 	selectedRow, selectedColumn int
 
 	// A temporary flag which causes the next call to Draw() to force the
-	// current selection to remain visible. Set to false afterwards.
+	// current selection to remain visible. It is set to false afterwards.
 	clampToSelection bool
 
 	// If set to true, moving the selection will wrap around horizontally (last
@@ -609,6 +609,7 @@ func (t *Table) GetSelection() (row, column int) {
 // if cells are not selectable).
 func (t *Table) Select(row, column int) *Table {
 	t.selectedRow, t.selectedColumn = row, column
+	t.clampToSelection = true
 	if t.selectionChanged != nil {
 		t.selectionChanged(row, column)
 	}
@@ -1328,6 +1329,9 @@ func (t *Table) InputHandler() func(event *tcell.EventKey, setFocus func(p Primi
 		previouslySelectedRow, previouslySelectedColumn := t.selectedRow, t.selectedColumn
 		lastColumn := t.content.GetColumnCount() - 1
 		rowCount := t.content.GetRowCount()
+		if rowCount == 0 {
+			return // No movement on empty tables.
+		}
 		var (
 			previous = func() {
 				startRow := t.selectedRow

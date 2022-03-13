@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/containers/podman/v3/pkg/bindings"
+	"github.com/containers/podman/v4/pkg/bindings"
 )
 
 var (

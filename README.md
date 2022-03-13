@@ -3,7 +3,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/containers/podman-tui)](https://pkg.go.dev/github.com/containers/podman-tui)
 [![Go Report](https://goreportcard.com/badge/github.com/containers/podman-tui)](https://goreportcard.com/report/github.com/containers/podman-tui)
 
-podman-tui is a Terminal User Interface to interact with the podman v3 (>= 3.1).  
+podman-tui is a Terminal User Interface to interact with the podman v4.  
 [podman bindings](https://github.com/containers/podman/tree/main/pkg/bindings) has been used to communicate with podman environment through rest api API (unix socket).
 
 ![Screenshot](./docs/podman-tui.gif)
@@ -12,7 +12,7 @@ podman-tui is a Terminal User Interface to interact with the podman v3 (>= 3.1).
 
 ## Installation
 
-Installation steps are located [here](INSTALL.md).
+Installation steps are located [here](install.md).
 
 ---
 
