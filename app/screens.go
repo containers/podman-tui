@@ -1,17 +1,22 @@
 package app
 
-import "github.com/rs/zerolog/log"
+import (
+	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/rs/zerolog/log"
+)
 
 func (app *App) switchToScreen(name string) {
 	log.Debug().Msgf("app: switching to %s screen", name)
 	app.pages.SwitchToPage(name)
 	app.setPageFocus(name)
-	app.pods.UpdateData()
+	app.updatePageData(name)
 	app.currentPage = name
 }
 
 func (app *App) frontScreenHasActiveDialog() bool {
 	switch app.currentPage {
+	case app.system.GetTitle():
+		return app.system.SubDialogHasFocus()
 	case app.pods.GetTitle():
 		return app.pods.SubDialogHasFocus()
 	case app.containers.GetTitle():
@@ -22,8 +27,6 @@ func (app *App) frontScreenHasActiveDialog() bool {
 		return app.images.SubDialogHasFocus()
 	case app.volumes.GetTitle():
 		return app.volumes.SubDialogHasFocus()
-	case app.system.GetTitle():
-		return app.system.SubDialogHasFocus()
 	}
 	return false
 }
@@ -31,6 +34,10 @@ func (app *App) frontScreenHasActiveDialog() bool {
 func (app *App) switchToPreviousScreen() {
 	var previousScreen string
 	switch app.currentPage {
+	case app.help.GetTitle():
+		previousScreen = app.networks.GetTitle()
+	case app.system.GetTitle():
+		previousScreen = app.networks.GetTitle()
 	case app.pods.GetTitle():
 		previousScreen = app.system.GetTitle()
 	case app.containers.GetTitle():
@@ -43,8 +50,6 @@ func (app *App) switchToPreviousScreen() {
 		previousScreen = app.images.GetTitle()
 	case app.system.GetTitle():
 		previousScreen = app.networks.GetTitle()
-	default:
-		previousScreen = app.pods.GetTitle()
 	}
 	app.switchToScreen(previousScreen)
 }
@@ -52,6 +57,10 @@ func (app *App) switchToPreviousScreen() {
 func (app *App) switchToNextScreen() {
 	var nextScreen string
 	switch app.currentPage {
+	case app.help.GetTitle():
+		nextScreen = app.system.GetTitle()
+	case app.system.GetTitle():
+		nextScreen = app.pods.GetTitle()
 	case app.pods.GetTitle():
 		nextScreen = app.containers.GetTitle()
 	case app.containers.GetTitle():
@@ -62,14 +71,16 @@ func (app *App) switchToNextScreen() {
 		nextScreen = app.networks.GetTitle()
 	case app.networks.GetTitle():
 		nextScreen = app.system.GetTitle()
-	default:
-		nextScreen = app.pods.GetTitle()
 	}
 	app.switchToScreen(nextScreen)
 }
 
 func (app *App) setPageFocus(page string) {
 	switch page {
+	case app.help.GetTitle():
+		app.Application.SetFocus(app.help)
+	case app.system.GetTitle():
+		app.Application.SetFocus(app.system)
 	case app.pods.GetTitle():
 		app.Application.SetFocus(app.pods)
 	case app.containers.GetTitle():
@@ -80,16 +91,31 @@ func (app *App) setPageFocus(page string) {
 		app.Application.SetFocus(app.images)
 	case app.volumes.GetTitle():
 		app.Application.SetFocus(app.volumes)
-	case app.system.GetTitle():
-		app.Application.SetFocus(app.system)
-	case app.connection.GetTitle():
-		app.Application.SetFocus(app.connection)
-	case app.help.GetTitle():
-		app.Application.SetFocus(app.help)
 	}
 }
 
-func (app *App) updatePageData(eventType string) {
+func (app *App) updatePageData(page string) {
+	connStatus, _ := app.health.ConnStatus()
+	if connStatus != registry.ConnectionStatusConnected {
+		return
+	}
+	switch page {
+	case app.system.GetTitle():
+		app.system.UpdateConnectionsData()
+	case app.pods.GetTitle():
+		app.pods.UpdateData()
+	case app.containers.GetTitle():
+		app.containers.UpdateData()
+	case app.networks.GetTitle():
+		app.networks.UpdateData()
+	case app.images.GetTitle():
+		app.images.UpdateData()
+	case app.volumes.GetTitle():
+		app.volumes.UpdateData()
+	}
+}
+
+func (app *App) updatePageDataFromEvent(eventType string) {
 	switch eventType {
 	case "pod":
 		app.pods.UpdateData()
@@ -102,5 +128,27 @@ func (app *App) updatePageData(eventType string) {
 	case "volume":
 		app.volumes.UpdateData()
 	}
+}
 
+func (app *App) clearViewsData() {
+	app.pods.ClearData()
+	app.pods.HideAllDialogs()
+
+	app.containers.ClearData()
+	app.containers.HideAllDialogs()
+
+	app.volumes.ClearData()
+	app.volumes.HideAllDialogs()
+
+	app.networks.ClearData()
+	app.networks.HideAllDialogs()
+
+	app.images.ClearData()
+	app.images.HideAllDialogs()
+}
+
+func (app *App) clearInfoUIData() {
+	app.infoBar.UpdateBasicInfo("", "", "")
+	app.infoBar.UpdateSystemUsageInfo(0.00, 0.00)
+	app.infoBar.UpdatePodmanInfo("", "", "", "")
 }

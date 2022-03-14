@@ -63,7 +63,7 @@ func NewPods() *Pods {
 		{"rm", "remove the selected pod"},
 		{"start", "start  the selected pod"},
 		{"stats", "display live stream of resource usage"},
-		{"stop", "stop th the selected pod"},
+		{"stop", "stop the the selected pod"},
 		{"top", "display the running processes of the pod's containers"},
 		{"unpause", "unpause  the selected pod"},
 	})
@@ -243,4 +243,32 @@ func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {
 		})
 	}
 	return items
+}
+
+// HideAllDialogs hides all sub dialogs
+func (pods *Pods) HideAllDialogs() {
+	if pods.errorDialog.IsDisplay() {
+		pods.errorDialog.Hide()
+	}
+	if pods.progressDialog.IsDisplay() {
+		pods.progressDialog.Hide()
+	}
+	if pods.confirmDialog.IsDisplay() {
+		pods.confirmDialog.Hide()
+	}
+	if pods.cmdDialog.IsDisplay() {
+		pods.cmdDialog.Hide()
+	}
+	if pods.messageDialog.IsDisplay() {
+		pods.messageDialog.Hide()
+	}
+	if pods.topDialog.IsDisplay() {
+		pods.topDialog.Hide()
+	}
+	if pods.createDialog.IsDisplay() {
+		pods.createDialog.Hide()
+	}
+	if pods.statsDialog.IsDisplay() {
+		pods.statsDialog.Hide()
+	}
 }

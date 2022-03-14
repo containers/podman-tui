@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/pods"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rs/zerolog/log"
@@ -33,7 +33,7 @@ type StatsOptions struct {
 // Stats returns resource-usage statistics of a pod.
 func Stats(opts *StatsOptions) ([]StatReporter, error) {
 	log.Debug().Msgf("pdcs: podman pods stats %v", *opts)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
 	}

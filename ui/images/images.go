@@ -246,3 +246,31 @@ func (img *Images) getSelectedItem() (string, string) {
 	imageID := img.table.GetCell(row, 2).Text
 	return imageID, imageName
 }
+
+// HideAllDialogs hides all sub dialogs
+func (img *Images) HideAllDialogs() {
+	if img.errorDialog.IsDisplay() {
+		img.errorDialog.Hide()
+	}
+	if img.progressDialog.IsDisplay() {
+		img.progressDialog.Hide()
+	}
+	if img.cmdDialog.IsDisplay() {
+		img.cmdDialog.Hide()
+	}
+	if img.cmdInputDialog.IsDisplay() {
+		img.cmdInputDialog.Hide()
+	}
+	if img.messageDialog.IsDisplay() {
+		img.messageDialog.Hide()
+	}
+	if img.searchDialog.IsDisplay() {
+		img.searchDialog.Hide()
+	}
+	if img.confirmDialog.IsDisplay() {
+		img.confirmDialog.Hide()
+	}
+	if img.historyDialog.IsDisplay() {
+		img.historyDialog.Hide()
+	}
+}

@@ -3,6 +3,7 @@ package app
 import (
 	"time"
 
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/rs/zerolog/log"
 )
 
@@ -12,36 +13,63 @@ func (app *App) refresh() {
 	for {
 		select {
 		case <-tick.C:
-			connOK, connMsg := app.health.ConnOK()
-			if connOK {
-				if app.needInitUI {
-					// init ui after reconnection
-					app.initUI()
-					app.needInitUI = false
-					app.pages.SwitchToPage(app.currentPage)
-					app.setPageFocus(app.currentPage)
-
+			connStatus, connMsg := app.health.ConnStatus()
+			switch connStatus {
+			case registry.ConnectionStatusConnected:
+				app.refreshConnOK()
+			case registry.ConnectionStatusConnectionError:
+				app.refreshNotConnOK()
+				if registry.ConnectionIsSet() {
+					name := registry.ConnectionName()
+					app.system.ConnectionProgressDisplay(true)
+					app.system.SetConnectionProgressDestName(name)
+					app.system.SetConnectionProgressMessage(connMsg)
 				}
-				eventTypes := app.health.GetEvents()
-				// update events
-				for _, evt := range eventTypes {
-					app.updatePageData(evt)
+			case registry.ConnectionStatusDisconnected:
+				app.refreshNotConnOK()
+				if registry.ConnectionIsSet() {
+					name := registry.ConnectionName()
+					app.system.ConnectionProgressDisplay(true)
+					app.system.SetConnectionProgressDestName(name)
 				}
-				if app.health.HasNewEvent() {
-					app.system.SetEventMessage(app.health.GetEventMessages())
-				}
-			} else {
-				// set init ui to true
-				app.needInitUI = true
-				app.clearUIData()
-				app.pages.SwitchToPage(app.connection.GetTitle())
-				app.connection.SetErrorMessage(connMsg)
-				app.setPageFocus(app.connection.GetTitle())
 			}
 			app.initInfoBar()
-			app.infoBar.UpdateConnStatus(connOK)
+			app.infoBar.UpdateConnStatus(connStatus)
 			app.Application.Draw()
 		}
+	}
+}
+
+func (app *App) refreshConnOK() {
+	if app.needInitUI {
+		// init ui after reconnection
+		app.initUI()
+		app.system.ConnectionProgressDisplay(false)
+		app.needInitUI = false
+		app.pages.SwitchToPage(app.currentPage)
+		app.setPageFocus(app.currentPage)
+	}
+	app.flushEvents()
+}
+
+func (app *App) refreshNotConnOK() {
+	// only switch to system view one time
+	if !app.needInitUI {
+		app.clearViewsData()
+		app.switchToScreen(app.system.GetTitle())
+	}
+	app.system.UpdateConnectionsData()
+	app.needInitUI = true
+}
+
+func (app *App) flushEvents() {
+	// update events
+	eventTypes := app.health.GetEvents()
+	for _, evt := range eventTypes {
+		app.updatePageDataFromEvent(evt)
+	}
+	if app.health.HasNewEvent() {
+		app.system.SetEventMessage(app.health.GetEventMessages())
 	}
 }
 

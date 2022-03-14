@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/pods"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +14,7 @@ import (
 func Top(id string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman pod top %s", id)
 	var report [][]string
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}

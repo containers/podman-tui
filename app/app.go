@@ -1,10 +1,12 @@
 package app
 
 import (
+	"os"
 	"time"
 
+	"github.com/containers/podman-tui/config"
+	"github.com/containers/podman-tui/pdcs/registry"
 	health "github.com/containers/podman-tui/system"
-	"github.com/containers/podman-tui/ui/connection"
 	"github.com/containers/podman-tui/ui/containers"
 	"github.com/containers/podman-tui/ui/help"
 	"github.com/containers/podman-tui/ui/images"
@@ -34,24 +36,33 @@ type App struct {
 	images          *images.Images
 	networks        *networks.Networks
 	system          *system.System
-	connection      *connection.Connection
 	menu            *tview.TextView
 	health          *health.Engine
 	help            *help.Help
 	currentPage     string
 	needInitUI      bool
 	fastRefreshChan chan bool
+	config          *config.Config
 }
 
 // NewApp returns new app
 func NewApp(name string, version string) *App {
 	log.Debug().Msg("app: new application")
+
+	// create application UI
 	app := App{
 		Application:     tview.NewApplication(),
 		pages:           tview.NewPages(),
 		needInitUI:      false,
 		fastRefreshChan: make(chan bool, 10),
 	}
+
+	var err error
+	app.config, err = config.NewConfig()
+	if err != nil {
+		log.Fatal().Msgf("%v", err)
+	}
+
 	app.health = health.NewEngine(refreshInterval)
 
 	app.infoBar = infobar.NewInfoBar()
@@ -62,7 +73,17 @@ func NewApp(name string, version string) *App {
 	app.images = images.NewImages()
 	app.networks = networks.NewNetworks()
 	app.system = system.NewSystem()
-	app.connection = connection.NewConnection()
+	app.system.SetConnectionListFunc(app.config.ServicesConnections)
+	app.system.SetConnectionSetDefaultFunc(func(name string) error {
+		err := app.config.SetDefaultService(name)
+		app.system.UpdateConnectionsData()
+		return err
+	})
+	app.system.SetConnectionConnectFunc(app.health.Connect)
+	app.system.SetConnectionDisconnectFunc(app.health.Disconnect)
+	app.system.SetConnectionAddFunc(app.config.Add)
+	app.system.SetConnectionRemoveFunc(app.config.Remove)
+
 	app.help = help.NewHelp(name, version)
 
 	// set refresh channel for container page
@@ -72,22 +93,21 @@ func NewApp(name string, version string) *App {
 	// menu items
 	var menuItems = [][]string{
 		{utils.HelpScreenKey.Label(), app.help.GetTitle()},
+		{utils.SystemScreenKey.Label(), app.system.GetTitle()},
 		{utils.PodsScreenKey.Label(), app.pods.GetTitle()},
 		{utils.ContainersScreenKey.Label(), app.containers.GetTitle()},
 		{utils.VolumesScreenKey.Label(), app.volumes.GetTitle()},
 		{utils.ImagesScreenKey.Label(), app.images.GetTitle()},
 		{utils.NetworksScreenKey.Label(), app.networks.GetTitle()},
-		{utils.SystemScreenKey.Label(), app.system.GetTitle()},
 	}
 	app.menu = newMenu(menuItems)
+	app.pages.AddPage(app.help.GetTitle(), app.help, true, false)
+	app.pages.AddPage(app.system.GetTitle(), app.system, true, false)
 	app.pages.AddPage(app.pods.GetTitle(), app.pods, true, false)
 	app.pages.AddPage(app.containers.GetTitle(), app.containers, true, false)
 	app.pages.AddPage(app.images.GetTitle(), app.images, true, false)
 	app.pages.AddPage(app.volumes.GetTitle(), app.volumes, true, false)
 	app.pages.AddPage(app.networks.GetTitle(), app.networks, true, false)
-	app.pages.AddPage(app.system.GetTitle(), app.system, true, false)
-	app.pages.AddPage(app.connection.GetTitle(), app.connection, true, false)
-	app.pages.AddPage(app.help.GetTitle(), app.help, true, false)
 
 	return &app
 }
@@ -110,11 +130,11 @@ func (app *App) Run() error {
 
 	// listen for user input
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		connOK, _ := app.health.ConnOK()
-		if !connOK {
-			return event
+		if event.Key() == utils.AppExitKey.Key {
+			log.Info().Msg("app: stop")
+			app.Stop()
+			os.Exit(0)
 		}
-
 		if !app.frontScreenHasActiveDialog() {
 			// previous and next screen keys
 			switch event.Rune() {
@@ -136,8 +156,13 @@ func (app *App) Run() error {
 				app.switchToScreen(app.help.GetTitle())
 				return nil
 
+			case utils.SystemScreenKey.EventKey():
+				// system page
+				app.switchToScreen(app.system.GetTitle())
+				return nil
+
 			case utils.PodsScreenKey.EventKey():
-				//pods page
+				// pods page
 				app.switchToScreen(app.pods.GetTitle())
 				return nil
 
@@ -160,18 +185,21 @@ func (app *App) Run() error {
 				// networks page
 				app.switchToScreen(app.networks.GetTitle())
 				return nil
-
-			case utils.SystemScreenKey.EventKey():
-				// system page
-				app.switchToScreen(app.system.GetTitle())
-				return nil
 			}
 		}
 
+		// if connection is not OK do not display command dialog
+		// except for system view and app exit key
+		if app.currentPage != app.system.GetTitle() {
+			connStatus, _ := app.health.ConnStatus()
+			if connStatus != registry.ConnectionStatusConnected {
+				return nil
+			}
+		}
 		return event
 	})
-	app.currentPage = app.pods.GetTitle()
-	app.pages.SwitchToPage(app.connection.GetTitle())
+	app.currentPage = app.system.GetTitle()
+	app.pages.SwitchToPage(app.system.GetTitle())
 
 	// start refresh loop
 	go app.refresh()
@@ -179,7 +207,7 @@ func (app *App) Run() error {
 	// start fast refresh loop
 	go app.fastRefresh()
 
-	if err := app.SetRoot(flex, true).SetFocus(app.pods).EnableMouse(false).Run(); err != nil {
+	if err := app.SetRoot(flex, true).SetFocus(app.system).EnableMouse(false).Run(); err != nil {
 		return err
 	}
 	return nil

@@ -34,6 +34,9 @@ func (vols *Volumes) getData() []*entities.VolumeListReport {
 
 // ClearData clears table data
 func (vols *Volumes) ClearData() {
+	vols.volumeList.mu.Lock()
+	vols.volumeList.report = nil
+	vols.volumeList.mu.Unlock()
 	vols.table.Clear()
 	expand := 1
 	fgColor := utils.Styles.PageTable.HeaderRow.FgColor

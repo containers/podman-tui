@@ -8,6 +8,10 @@ import (
 const (
 	// IDLength max ID length to display
 	IDLength = 12
+	// HeavyGreenCheckMark unicode
+	HeavyGreenCheckMark = "\u2705"
+	// HeavyRedCrossMark unicode
+	HeavyRedCrossMark = "\u274C"
 )
 
 // GetColorName returns convert tcell color to its name

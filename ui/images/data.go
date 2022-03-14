@@ -34,6 +34,9 @@ func (img *Images) getData() []images.ImageListReporter {
 
 // ClearData clears table data
 func (img *Images) ClearData() {
+	img.imagesList.mu.Lock()
+	img.imagesList.report = nil
+	img.imagesList.mu.Unlock()
 	img.table.Clear()
 	expand := 1
 	fgColor := utils.Styles.PageTable.HeaderRow.FgColor

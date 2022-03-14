@@ -192,3 +192,25 @@ func (vols *Volumes) getSelectedItem() string {
 	podID := vols.table.GetCell(row, 1).Text
 	return podID
 }
+
+// HideAllDialogs hides all sub dialogs
+func (vols *Volumes) HideAllDialogs() {
+	if vols.errorDialog.IsDisplay() {
+		vols.errorDialog.Hide()
+	}
+	if vols.progressDialog.IsDisplay() {
+		vols.progressDialog.Hide()
+	}
+	if vols.confirmDialog.IsDisplay() {
+		vols.confirmDialog.Hide()
+	}
+	if vols.cmdDialog.IsDisplay() {
+		vols.cmdDialog.Hide()
+	}
+	if vols.messageDialog.IsDisplay() {
+		vols.messageDialog.Hide()
+	}
+	if vols.createDialog.IsDisplay() {
+		vols.createDialog.Hide()
+	}
+}

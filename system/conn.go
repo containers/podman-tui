@@ -2,55 +2,41 @@ package system
 
 import (
 	"sync"
-	"time"
+
+	"github.com/containers/podman-tui/pdcs/registry"
 )
 
 type apiConn struct {
 	mu         sync.Mutex
-	connOK     bool
-	prevStatus bool
+	connStaus  registry.ConnStatus
+	prevStatus registry.ConnStatus
 	message    string
 }
 
-// ConnOK returns connection status
-func (conn *apiConn) ConnOK() (bool, string) {
-	status := true
+// ConnStatus returns connection status
+func (conn *apiConn) ConnStatus() (registry.ConnStatus, string) {
+	var status registry.ConnStatus
 	message := ""
 	conn.mu.Lock()
-	status = conn.connOK
+	status = conn.connStaus
 	message = conn.message
 	conn.mu.Unlock()
 	return status, message
 
 }
 
-func (conn *apiConn) previousStatus() bool {
-	status := false
+func (conn *apiConn) previousStatus() registry.ConnStatus {
+	var status registry.ConnStatus
 	conn.mu.Lock()
 	status = conn.prevStatus
 	conn.mu.Unlock()
 	return status
 }
 
-func (conn *apiConn) setStatus(status bool, message string) {
+func (conn *apiConn) setStatus(status registry.ConnStatus, message string) {
 	conn.mu.Lock()
-	conn.prevStatus = conn.connOK
-	conn.connOK = status
+	conn.prevStatus = conn.connStaus
+	conn.connStaus = status
 	conn.message = message
 	conn.mu.Unlock()
-}
-
-func (engine *Engine) checkConnHealth() {
-	tick := time.NewTicker(engine.refreshInterval)
-	for {
-		select {
-		case <-tick.C:
-			engine.updateSysInfo()
-		}
-	}
-}
-
-// ConnOK returns connection status
-func (engine *Engine) ConnOK() (bool, string) {
-	return engine.conn.ConnOK()
 }

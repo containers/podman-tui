@@ -5,7 +5,7 @@ import (
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/pods"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/errorhandling"
@@ -40,7 +40,7 @@ func Create(opts CreateOptions) error {
 		errList  []error
 		networks = make(map[string]types.PerNetworkOptions)
 	)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

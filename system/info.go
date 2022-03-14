@@ -1,12 +1,10 @@
 package system
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/containers/podman-tui/pdcs/sysinfo"
-	"github.com/rs/zerolog/log"
 )
 
 type systemInfo struct {
@@ -60,30 +58,6 @@ func (engine *Engine) GetPodmanInfo() (string, string, string, string) {
 	runtime = strings.ReplaceAll(runtime, "commit", "")
 
 	return apiVersion, runtime, conmonVersion, buildahVersion
-}
-
-func (engine *Engine) updateSysInfo() {
-	info, err := sysinfo.SysInfo()
-	status := true
-	if err != nil {
-		log.Error().Msgf("health check: %v", err)
-		status = false
-		engine.conn.setStatus(false, fmt.Sprintf("%v", err))
-		if status != engine.conn.previousStatus() {
-			engine.sysEvents.cancelChan <- true
-			engine.clearSysInfoData()
-		}
-		return
-
-	}
-	// starting event streaming process after reconnecting
-	if !engine.conn.previousStatus() && status && !engine.sysEvents.status {
-		engine.startEventStreamer()
-	}
-	engine.conn.setStatus(true, "")
-	engine.sysinfo.mu.Lock()
-	engine.sysinfo.info = info
-	engine.sysinfo.mu.Unlock()
 }
 
 func (engine *Engine) clearSysInfoData() {

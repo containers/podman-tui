@@ -1,7 +1,7 @@
 package images
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/rs/zerolog/log"
 )
@@ -10,7 +10,7 @@ import (
 func Pull(name string) error {
 	log.Debug().Msgf("pdcs: podman image pull %s", name)
 
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

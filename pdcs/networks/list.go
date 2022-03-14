@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	"github.com/containers/common/libnetwork/types"
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/network"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +14,7 @@ func List() ([][]string, error) {
 	log.Debug().Msg("pdcs: podman network ls")
 
 	var report [][]string
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}

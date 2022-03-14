@@ -44,30 +44,37 @@ func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 				errorDialogHandler(event, setFocus)
 			}
 		}
-		// textview handlers
-		if sys.textview.HasFocus() {
-			// workaround to give disk usage dialog focus after first event when dialog is displayed
-			// but system page has focus
-			if sys.dfDialog.IsDisplay() {
-				// disk usage dialog
-				if dfDialogHandler := sys.dfDialog.InputHandler(); dfDialogHandler != nil {
-					dfDialogHandler(event, setFocus)
-				}
+		// connection progress dialog handler
+		if sys.connPrgDialog.HasFocus() {
+			if connectionPrgDialog := sys.connPrgDialog.InputHandler(); connectionPrgDialog != nil {
+				connectionPrgDialog(event, setFocus)
+			}
+		}
+
+		// event dialog handler
+		if sys.eventDialog.HasFocus() {
+			if eventDialogHandler := sys.eventDialog.InputHandler(); eventDialogHandler != nil {
+				eventDialogHandler(event, setFocus)
+			}
+		}
+
+		// connection create dialog handler
+		if sys.connAddDialog.HasFocus() {
+			if connAddDialogHandler := sys.connAddDialog.InputHandler(); connAddDialogHandler != nil {
+				connAddDialogHandler(event, setFocus)
+			}
+		}
+
+		// table handlers
+		if sys.connTable.HasFocus() {
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				sys.cmdDialog.Display()
 			} else {
-				if event.Rune() == utils.CommandMenuKey.Rune() {
-					if sys.cmdDialog.GetCommandCount() <= 1 {
-						return
-					}
-					sys.cmdDialog.Display()
-				} else {
-					if textviewHandler := sys.textview.InputHandler(); textviewHandler != nil {
-						textviewHandler(event, setFocus)
-					}
+				if tableHandler := sys.connTable.InputHandler(); tableHandler != nil {
+					tableHandler(event, setFocus)
 				}
 			}
-
 		}
 		setFocus(sys)
-
 	})
 }

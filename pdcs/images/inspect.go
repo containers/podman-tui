@@ -3,7 +3,7 @@ package images
 import (
 	"strings"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/rs/zerolog/log"
@@ -13,7 +13,7 @@ import (
 func Inspect(id string) (string, error) {
 	log.Debug().Msgf("pdcs: podman image inspect %s", id)
 	var report string
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}

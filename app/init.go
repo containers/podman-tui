@@ -1,9 +1,10 @@
 package app
 
+import "github.com/containers/podman-tui/pdcs/registry"
+
 func (app *App) initUI() {
-	app.connection.Reset()
-	connOK, _ := app.health.ConnOK()
-	if connOK {
+	connStatus, _ := app.health.ConnStatus()
+	if connStatus == registry.ConnectionStatusConnected {
 		app.pods.UpdateData()
 		app.containers.UpdateData()
 		app.networks.UpdateData()
@@ -11,27 +12,24 @@ func (app *App) initUI() {
 		app.volumes.UpdateData()
 		app.initInfoBar()
 	}
+	app.system.UpdateConnectionsData()
 }
 
 func (app *App) initInfoBar() {
 	// update basic information
 	hostname, kernel, ostype := app.health.GetSysInfo()
-	app.infoBar.UpdateBasicInfo(hostname, kernel, ostype)
-
 	// update memory and swap usage
 	memUsage, swapUsage := app.health.GetSysUsage()
-	app.infoBar.UpdateSystemUsageInfo(memUsage, swapUsage)
-
 	// update podman information
 	apiVer, runtime, conmonVer, buildahVer := app.health.GetPodmanInfo()
-	app.infoBar.UpdatePodmanInfo(apiVer, runtime, conmonVer, buildahVer)
 
-}
+	connStatus, _ := app.health.ConnStatus()
+	if connStatus == registry.ConnectionStatusConnected {
+		app.infoBar.UpdateBasicInfo(hostname, kernel, ostype)
+		app.infoBar.UpdateSystemUsageInfo(memUsage, swapUsage)
+		app.infoBar.UpdatePodmanInfo(apiVer, runtime, conmonVer, buildahVer)
+		return
+	}
 
-func (app *App) clearUIData() {
-	app.pods.ClearData()
-	app.containers.ClearData()
-	app.volumes.ClearData()
-	app.networks.ClearData()
-	app.images.ClearData()
+	app.clearInfoUIData()
 }

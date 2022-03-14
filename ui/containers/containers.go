@@ -282,3 +282,40 @@ func (cnt *Containers) getSelectedItem() (string, string) {
 func (cnt *Containers) SetFastRefreshChannel(refresh chan bool) {
 	cnt.fastRefreshChan = refresh
 }
+
+// HideAllDialogs hides all sub dialogs
+func (cnt *Containers) HideAllDialogs() {
+	if cnt.errorDialog.IsDisplay() {
+		cnt.errorDialog.Hide()
+	}
+	if cnt.progressDialog.IsDisplay() {
+		cnt.progressDialog.Hide()
+	}
+	if cnt.confirmDialog.IsDisplay() {
+		cnt.confirmDialog.Hide()
+	}
+	if cnt.cmdDialog.IsDisplay() {
+		cnt.cmdDialog.Hide()
+	}
+	if cnt.cmdInputDialog.IsDisplay() {
+		cnt.cmdInputDialog.Hide()
+	}
+	if cnt.messageDialog.IsDisplay() {
+		cnt.messageDialog.Hide()
+	}
+	if cnt.topDialog.IsDisplay() {
+		cnt.topDialog.Hide()
+	}
+	if cnt.createDialog.IsDisplay() {
+		cnt.createDialog.Hide()
+	}
+	if cnt.execDialog.IsDisplay() {
+		cnt.execDialog.Hide()
+	}
+	if cnt.execTerminalDialog.IsDisplay() {
+		cnt.execTerminalDialog.Hide()
+	}
+	if cnt.statsDialog.IsDisplay() {
+		cnt.statsDialog.Hide()
+	}
+}

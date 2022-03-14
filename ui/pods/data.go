@@ -34,6 +34,9 @@ func (pods *Pods) getData() []*entities.ListPodsReport {
 
 // ClearData clears table data
 func (pods *Pods) ClearData() {
+	pods.podsList.mu.Lock()
+	pods.podsList.report = nil
+	pods.podsList.mu.Unlock()
 	pods.table.Clear()
 	expand := 1
 	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
