@@ -4,19 +4,28 @@
 PODMAN_TUI=${PODMAN_TUI:-./bin/podman-tui}
 PODMAN_TUI_DEBUG="$PODMAN_TUI -d"
 PODMAN_TUI_LOG="podman-tui.log"
+PODMAN_TUI_CONFIG_DIR="/root/.config/podman-tui"
+PODMAN_TUI_CONFIG_FILE="${PODMAN_TUI_CONFIG_DIR}/podman-tui.conf"
 TMUX_SESSION="podman_tui_test"
 
+
 function setup() {
+    # setup config file
+    [ ! -d "${PODMAN_TUI_CONFIG_DIR}" ] && mkdir -p ${PODMAN_TUI_CONFIG_DIR}
+    cat > ${PODMAN_TUI_CONFIG_FILE} << EOF
+[services]
+  [services.localhost]
+    uri = "unix://run/podman/podman.sock"
+    default = true
+  [services.localhost_test]
+    uri = "unix://run/podman/podman.sock"
+EOF
+
     # start podman socket
     if [ ! -f "${PODMAN_TUI}" ] ; then 
         die "$PODMAN_TUI binary not found"
     else
-        local user_service_management="--user"
-        if [ ${UID} -eq 0 ] ; then
-            user_service_management=""
-        fi
-        systemctl ${user_service_management} start podman.socket
-
+        systemctl start podman.socket
         # create tmux session
         tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" 2> /dev/null || echo -e "\c")
         if [ "${tmux_sessions}" != "" ] ; then 
