@@ -12,7 +12,7 @@ podman-tui is a Terminal User Interface to interact with the podman v4.
 
 ## Installation
 
-Installation steps are located [here](install.md).
+Building from source or installing packaged versions are detailed in [install guide](install.md).
 
 ---
 
@@ -73,12 +73,12 @@ podman-tui uses following keyboard keys for different actions:
 | Scroll Up                        | Page Up   |
 | Scroll Down                      | Page Down |
 | Display help screen              | F1        |
-| Display pods screen              | F2        |
-| Display containers screen        | F3        |
-| Display volumes screen           | F4        |
-| Display images screen            | F5        |
-| Display networks screen          | F6        |
-| Display system screen            | F7        |
+| Display system screen            | F2        |
+| Display pods screen              | F3        |
+| Display containers screen        | F4        |
+| Display volumes screen           | F5        |
+| Display images screen            | F6        |
+| Display networks screen          | F7        |
 
 ---
 

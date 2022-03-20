@@ -18,16 +18,30 @@ podman-tui uses following keyboard keys for different actions:
 | Scroll Up                        | Page Up   |
 | Scroll Down                      | Page Down |
 | Display help screen              | F1        |
-| Display pods screen              | F2        |
-| Display containers screen        | F3        |
-| Display volumes screen           | F4        |
-| Display images screen            | F5        |
-| Display networks screen          | F6        |
-| Display system screen            | F7        |
+| Display system screen            | F2        |
+| Display pods screen              | F3        |
+| Display containers screen        | F4        |
+| Display volumes screen           | F5        |
+| Display images screen            | F6        |
+| Display networks screen          | F7        |
 
 ---
 
 ## Available Podman Commands
+
+### system
+
+| COMMAND           | DESCRIPTION |
+| ----------------- | ----------- |
+| add connection    | record destination for the Podman TUI service
+| connect           | connect to selected destination
+| disconnect        | disconnect from connected destination
+| disk usage        | display Podman related system information
+| events            | display destination system events
+| info              | display system information
+| prune             | remove all unused pod, container, image and volume data
+| remove connection | delete named destination for the Podman TUI
+| set default       | set selected destination as a default service
 
 ### pod
 
@@ -45,7 +59,6 @@ podman-tui uses following keyboard keys for different actions:
 | stop     | stop th the selected pod
 | top      | display the running processes of the pod's containers
 | unpause  | unpause  the selected pod
-
 
 ### container
 
@@ -90,7 +103,6 @@ podman-tui uses following keyboard keys for different actions:
 | tag          | add an additional name to the selected  image
 | untag        | remove a name from the selected image
 
-
 ### network
 
 | COMMAND  | DESCRIPTION |
@@ -99,11 +111,3 @@ podman-tui uses following keyboard keys for different actions:
 | inspect  | displays the raw CNI network configuration
 | prune    | remove all unused networks
 | rm       | remove a CNI networks
-
-### system
-
-| COMMAND    | DESCRIPTION |
-| ---------- | ----------- |
-| disk usage | display Podman related system information
-| info       | display system information
-| prune      | remove all unused pod, container, image and volume data

@@ -99,7 +99,6 @@ $ ./bin/podman-tui
 * podman network disconnect
 * podman network reload
 * podman container attach/detach
-* remote connection
 * cover more podman container create options 
 * ... 
 
