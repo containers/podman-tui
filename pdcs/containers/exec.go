@@ -6,7 +6,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/api/handlers"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/containers/podman/v4/pkg/env"
@@ -34,7 +34,7 @@ type ExecOption struct {
 // NewExecSession creates a new session and returns its id
 func NewExecSession(id string, opts ExecOption) (string, error) {
 	log.Debug().Msgf("pdcs: podman container (%s) exec new session", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return "", err
 	}
@@ -50,7 +50,7 @@ func NewExecSession(id string, opts ExecOption) (string, error) {
 // ResizeExecTty resizes exec session tty.
 func ResizeExecTty(id string, height int, width int) {
 	log.Debug().Msgf("pdcs: podman container exec session (%12s) tty resize (height=%d, width=%d)", id, height, width)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		log.Error().Msgf("%v", err)
 		return
@@ -81,7 +81,7 @@ func ResizeExecTty(id string, height int, width int) {
 // Exec returns the diff of the specified container ID
 func Exec(sessionID string, opts ExecOption) {
 	log.Debug().Msgf("pdcs: podman container session (%s) exec %v", sessionID, opts)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err)))
 		return

@@ -1,7 +1,7 @@
 package images
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/rs/zerolog/log"
 )
@@ -9,7 +9,7 @@ import (
 // Tag tags the specified image ID
 func Tag(id string, tag string) error {
 	log.Debug().Msgf("pdcs: podman image tag %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,7 @@ func Tag(id string, tag string) error {
 // Untag tags the specified image ID
 func Untag(id string) error {
 	log.Debug().Msgf("pdcs: podman image untag %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

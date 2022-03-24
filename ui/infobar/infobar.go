@@ -3,6 +3,7 @@ package infobar
 import (
 	"fmt"
 
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 
@@ -17,16 +18,14 @@ const (
 	osCellRow         = 2
 	memCellRow        = 3
 	swapCellRow       = 4
-	connOK            = "\u2705"
-	connERR           = "\u274C"
 )
 
 // InfoBar implements the info bar primitive
 type InfoBar struct {
 	*tview.Box
-	table  *tview.Table
-	title  string
-	connOK bool
+	table      *tview.Table
+	title      string
+	connStatus registry.ConnStatus
 }
 
 // NewInfoBar returns info bar view
@@ -44,7 +43,8 @@ func NewInfoBar() *InfoBar {
 
 	// valueColor := Styles.InfoBar.ValueFgColor
 	table.SetCell(connectionCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Connection:")))
-	table.SetCell(connectionCellRow, 2, emptyCell())
+	disconnectStatus := fmt.Sprintf("%s DISCONNECTED", utils.HeavyRedCrossMark)
+	table.SetCell(connectionCellRow, 2, tview.NewTableCell(disconnectStatus))
 
 	table.SetCell(hostnameCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Hostname:")))
 	table.SetCell(hostnameCellRow, 2, emptyCell())
@@ -80,10 +80,10 @@ func NewInfoBar() *InfoBar {
 
 	// infobar
 	infoBar := &InfoBar{
-		Box:    tview.NewBox(),
-		title:  "infobar",
-		table:  table,
-		connOK: false,
+		Box:        tview.NewBox(),
+		title:      "infobar",
+		table:      table,
+		connStatus: registry.ConnectionStatusDisconnected,
 	}
 	return infoBar
 }
@@ -112,15 +112,18 @@ func (info *InfoBar) UpdateSystemUsageInfo(memUsage float64, swapUsage float64) 
 }
 
 // UpdateConnStatus updates connection status value
-func (info *InfoBar) UpdateConnStatus(status bool) {
-	info.connOK = status
+func (info *InfoBar) UpdateConnStatus(status registry.ConnStatus) {
+	info.connStatus = status
 	connStatus := ""
-	if info.connOK {
-		connStatus = fmt.Sprintf("%s STATUS_OK", connOK)
-
-	} else {
-		connStatus = fmt.Sprintf("%s STATUS_ERR", connERR)
+	switch info.connStatus {
+	case registry.ConnectionStatusConnected:
+		connStatus = fmt.Sprintf("%s STATUS_OK", utils.HeavyGreenCheckMark)
+	case registry.ConnectionStatusConnectionError:
+		connStatus = fmt.Sprintf("%s STATUS_ERROR", utils.HeavyRedCrossMark)
+	default:
+		connStatus = fmt.Sprintf("%s DISCONNECTED", utils.HeavyRedCrossMark)
 	}
+
 	info.table.GetCell(connectionCellRow, 2).SetText(connStatus)
 }
 

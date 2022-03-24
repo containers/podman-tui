@@ -58,7 +58,8 @@ func NewDfDialog() *DfDialog {
 
 // SetTitle sets title for the dialog
 func (d *DfDialog) SetTitle(title string) {
-	d.layout.SetTitle(strings.ToUpper(title))
+	layoutTitle := fmt.Sprintf("%s system disk usage", title)
+	d.layout.SetTitle(strings.ToUpper(layoutTitle))
 }
 
 // Display displays this primitive

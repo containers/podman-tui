@@ -3,7 +3,7 @@ package images
 import (
 	"sort"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/distribution/reference"
@@ -15,7 +15,7 @@ import (
 func List() ([]ImageListReporter, error) {
 	log.Debug().Msg("pdcs: podman image ls")
 
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
 	}

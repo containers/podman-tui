@@ -1,7 +1,7 @@
 package volumes
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/volumes"
 	"github.com/rs/zerolog/log"
 )
@@ -9,7 +9,7 @@ import (
 // Remove removes the volulme
 func Remove(name string) error {
 	log.Debug().Msgf("pdcs: podman volume remove %s", name)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

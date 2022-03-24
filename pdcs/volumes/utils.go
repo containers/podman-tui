@@ -3,7 +3,7 @@ package volumes
 import (
 	"fmt"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/volumes"
 	"github.com/rs/zerolog/log"
 )
@@ -12,7 +12,7 @@ import (
 func VolumeDest(name string) (string, error) {
 	log.Debug().Msgf("pdcs: podman volume destination query: %s", name)
 	var dest string
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return dest, err
 	}

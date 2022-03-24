@@ -1,7 +1,7 @@
 package images
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/containers/podman/v4/pkg/errorhandling"
 	"github.com/rs/zerolog/log"
@@ -12,7 +12,7 @@ func Remove(id string) ([]string, error) {
 	log.Debug().Msgf("pdcs: podman image rm %s", id)
 	var report []string
 	ids := []string{id}
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}

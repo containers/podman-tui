@@ -11,7 +11,7 @@ var Styles = theme{
 		FgColor: tcell.ColorLightCyan,
 		BgColor: tcell.ColorLightSkyBlue,
 		HeaderRow: headerRow{
-			FgColor: tcell.ColorWhite,
+			FgColor: tcell.ColorBlack,
 			BgColor: tcell.ColorSteelBlue,
 		},
 	},
@@ -39,6 +39,10 @@ var Styles = theme{
 		BgColor:       tview.Styles.PrimitiveBackgroundColor,
 		FgColor:       tcell.ColorWhite,
 		HeaderFgColor: tcell.ColorSteelBlue,
+	},
+	ConnectionProgressDialog: connectionProgressDialog{
+		BgColor: tcell.ColorOrangeRed,
+		FgColor: tcell.ColorOrange,
 	},
 	CommandDialog: commandDialog{
 		BgColor: tcell.ColorSteelBlue,
@@ -94,5 +98,17 @@ var Styles = theme{
 	DropdownStyle: dropdownStyle{
 		Unselected: tcell.StyleDefault.Background(tcell.ColorLightSkyBlue).Foreground(tcell.ColorBlack),
 		Selected:   tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorWhite),
+	},
+	EventsDialog: eventsDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
+		EventViewer: terminal{
+			BgColor: tcell.NewRGBColor(0, 0, 0),
+			FgColor: tcell.NewRGBColor(255, 255, 255),
+		},
+	},
+	ConnectionAddDialog: connectionAddDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
 	},
 }

@@ -77,35 +77,35 @@ var (
 		KeyLabel: "F1",
 		KeyDesc:  "display help screen",
 	}
-	PodsScreenKey = uiKeyInfo{
+	SystemScreenKey = uiKeyInfo{
 		Key:      tcell.KeyF2,
 		KeyLabel: "F2",
+		KeyDesc:  "display system screen",
+	}
+	PodsScreenKey = uiKeyInfo{
+		Key:      tcell.KeyF3,
+		KeyLabel: "F3",
 		KeyDesc:  "display pods screen",
 	}
 	ContainersScreenKey = uiKeyInfo{
-		Key:      tcell.KeyF3,
-		KeyLabel: "F3",
+		Key:      tcell.KeyF4,
+		KeyLabel: "F4",
 		KeyDesc:  "display containers screen",
 	}
 	VolumesScreenKey = uiKeyInfo{
-		Key:      tcell.KeyF4,
-		KeyLabel: "F4",
+		Key:      tcell.KeyF5,
+		KeyLabel: "F5",
 		KeyDesc:  "display volumes screen",
 	}
 	ImagesScreenKey = uiKeyInfo{
-		Key:      tcell.KeyF5,
-		KeyLabel: "F5",
+		Key:      tcell.KeyF6,
+		KeyLabel: "F6",
 		KeyDesc:  "display images screen",
 	}
 	NetworksScreenKey = uiKeyInfo{
-		Key:      tcell.KeyF6,
-		KeyLabel: "F6",
-		KeyDesc:  "display networks screen",
-	}
-	SystemScreenKey = uiKeyInfo{
 		Key:      tcell.KeyF7,
 		KeyLabel: "F7",
-		KeyDesc:  "display system screen",
+		KeyDesc:  "display networks screen",
 	}
 )
 
@@ -125,12 +125,12 @@ var (
 		ScrollDownKey,
 		AppExitKey,
 		HelpScreenKey,
+		SystemScreenKey,
 		PodsScreenKey,
 		ContainersScreenKey,
 		VolumesScreenKey,
 		ImagesScreenKey,
 		NetworksScreenKey,
-		SystemScreenKey,
 	}
 )
 

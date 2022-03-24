@@ -3,7 +3,7 @@ package containers
 import (
 	"sort"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rs/zerolog/log"
@@ -12,7 +12,7 @@ import (
 // List returns list of containers information
 func List() ([]entities.ListContainer, error) {
 	log.Debug().Msg("pdcs: podman container ls")
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
 	}

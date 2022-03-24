@@ -10,7 +10,7 @@ import (
 	"github.com/containers/podman/v4/pkg/specgenutil"
 	"github.com/rs/zerolog/log"
 
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/volumes"
 )
 
@@ -45,7 +45,7 @@ func Create(opts CreateOptions) ([]string, error) {
 		networks        = make(map[string]types.PerNetworkOptions)
 	)
 	log.Debug().Msgf("pdcs: podman container create %v", opts)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return warningResponse, err
 	}

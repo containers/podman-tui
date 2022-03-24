@@ -14,23 +14,25 @@ TEST_CONTAINER_PORT="8888:80"
 TEST_LABEL_NAME="test"
 TEST_LABEL_VALUE="$TEST_NAME"
 TEST_LABEL="${TEST_LABEL_NAME}=${TEST_LABEL_VALUE}"
+TEST_SYSTEM_CONN_NAME="localhost_test_tui"
+TEST_SYSTEM_CONN_URI="unix://run/podman/podman.sock"
 
 ################
 #  podman_tui_set_view  # switches to different podman-tui views
 ################
 function podman_tui_set_view() {
   case $1 in
-  "pods")
-    run_helper tmux send-keys -t $TMUX_SESSION F2;;
-  "containers")
-    run_helper tmux send-keys -t $TMUX_SESSION F3;;
-  "volumes")
-    run_helper tmux send-keys -t $TMUX_SESSION F4;;
-  "images")
-    run_helper tmux send-keys -t $TMUX_SESSION F5;;
-  "networks")
-    run_helper tmux send-keys -t $TMUX_SESSION F6;;
   "system")
+    run_helper tmux send-keys -t $TMUX_SESSION F2;;
+  "pods")
+    run_helper tmux send-keys -t $TMUX_SESSION F3;;
+  "containers")
+    run_helper tmux send-keys -t $TMUX_SESSION F4;;
+  "volumes")
+    run_helper tmux send-keys -t $TMUX_SESSION F5;;
+  "images")
+    run_helper tmux send-keys -t $TMUX_SESSION F6;;
+  "networks")
     run_helper tmux send-keys -t $TMUX_SESSION F7;;
   esac   
 }
@@ -204,6 +206,34 @@ function podman_tui_select_container_cmd() {
   podman_tui_select_menu $menu_index
 }
 
+################
+#  podman_tui_select_system_cmd # selects system command from cmd dialog
+################
+function podman_tui_select_system_cmd() {
+  local menu_index=0
+  case $1 in
+  "add")
+    menu_index=0;;
+  "connect")
+    menu_index=1;;
+  "disconnect")
+    menu_index=2;;
+  "df")
+    menu_index=3;;
+  "events")
+    menu_index=4;;
+  "info")
+    menu_index=5;;
+  "prune")
+    menu_index=6;;
+  "remove")
+    menu_index=7;;
+  "default")
+    menu_index=8;;
+  esac
+
+  podman_tui_select_menu $menu_index
+}
 
 ################
 #  podman_tui_select_menu # selects menu from menu dialog

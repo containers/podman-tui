@@ -1,7 +1,7 @@
 package containers
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
@@ -9,7 +9,7 @@ import (
 // Pause pauses a pod's containers
 func Pause(id string) error {
 	log.Debug().Msgf("pdcs: podman container pause %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}
@@ -19,7 +19,7 @@ func Pause(id string) error {
 // Unpause pauses a pod's containers
 func Unpause(id string) error {
 	log.Debug().Msgf("pdcs: podman container unpause %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

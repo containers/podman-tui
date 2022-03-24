@@ -1,7 +1,7 @@
 package sysinfo
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/system"
 	"github.com/rs/zerolog/log"
@@ -11,7 +11,7 @@ import (
 func Prune() (string, error) {
 	log.Debug().Msgf("pdcs: podman system prune")
 	var report string
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}

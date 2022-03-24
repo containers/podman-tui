@@ -1,7 +1,7 @@
 package networks
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/network"
 	"github.com/containers/podman/v4/pkg/errorhandling"
 	"github.com/rs/zerolog/log"
@@ -11,7 +11,7 @@ import (
 func Remove(name string) error {
 	var errorReport []error
 	log.Debug().Msgf("pdcs: podman network remove %s", name)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

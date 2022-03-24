@@ -9,6 +9,7 @@ type theme struct {
 	Menu                        menu
 	PageTable                   pageTable
 	Help                        help
+	ConnectionProgressDialog    connectionProgressDialog
 	CommandDialog               commandDialog
 	ConfirmDialog               confirmDialog
 	ImageSearchDialog           imageSearchDialog
@@ -18,6 +19,13 @@ type theme struct {
 	ContainerStatsDialog        containerStatsDialog
 	PodStatsDialog              podStatsDialog
 	DropdownStyle               dropdownStyle
+	EventsDialog                eventsDialog
+	ConnectionAddDialog         connectionAddDialog
+}
+
+type connectionProgressDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
 }
 
 type infoBar struct {
@@ -115,4 +123,15 @@ type podStatsDialog struct {
 type dropdownStyle struct {
 	Unselected tcell.Style
 	Selected   tcell.Style
+}
+
+type eventsDialog struct {
+	BgColor     tcell.Color
+	FgColor     tcell.Color
+	EventViewer terminal
+}
+
+type connectionAddDialog struct {
+	FgColor tcell.Color
+	BgColor tcell.Color
 }

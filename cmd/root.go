@@ -57,9 +57,38 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	log.Info().Msg(runLog)
+	// check if CONTAINER_PASSPHRASE environment variable is set and not empty
+	// otherwise set with value dummy value
+	// its required since podman/pkg/podman is using terminal package
+	// that is writing directly to os.Stdout and reading from os.Stdin
+	// for Phassphrase
+	setSSHIdentityPassphrase := true
+	v, found := os.LookupEnv("CONTAINER_PASSPHRASE")
+	if found {
+		if v != "" {
+			setSSHIdentityPassphrase = false
+		}
+	}
+	if setSSHIdentityPassphrase {
+		emptyPassphrase := "__empty__"
+		log.Debug().Msgf("env set CONTAINER_PASSPHRASE=%q", emptyPassphrase)
+		err := os.Setenv("CONTAINER_PASSPHRASE", emptyPassphrase)
+		if err != nil {
+			return err
+		}
+	}
 	app := app.NewApp(appName, appVersion)
 	if err := app.Run(); err != nil {
+		if setSSHIdentityPassphrase {
+			os.Unsetenv("CONTAINER_PASSPHRASE")
+		}
 		return err
+	}
+
+	// unset CONTAINER_PASSPHRASE environment variable if we have set it
+	// after application exits
+	if setSSHIdentityPassphrase {
+		os.Unsetenv("CONTAINER_PASSPHRASE")
 	}
 	return nil
 }

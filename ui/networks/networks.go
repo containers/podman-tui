@@ -193,3 +193,25 @@ func (nets *Networks) getSelectedItem() string {
 	}
 	return netIDorName
 }
+
+// HideAllDialogs hides all sub dialogs
+func (nets *Networks) HideAllDialogs() {
+	if nets.errorDialog.IsDisplay() {
+		nets.errorDialog.Hide()
+	}
+	if nets.progressDialog.IsDisplay() {
+		nets.progressDialog.Hide()
+	}
+	if nets.confirmDialog.IsDisplay() {
+		nets.confirmDialog.Hide()
+	}
+	if nets.cmdDialog.IsDisplay() {
+		nets.cmdDialog.Hide()
+	}
+	if nets.messageDialog.IsDisplay() {
+		nets.messageDialog.Hide()
+	}
+	if nets.createDialog.IsDisplay() {
+		nets.createDialog.Hide()
+	}
+}

@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/sysinfo"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/docker/api/types/events"
@@ -25,39 +26,41 @@ type podmanEvents struct {
 }
 
 func (engine *Engine) startEventStreamer() {
+	log.Debug().Msgf("health check: start event streamer")
+	engine.sysEvents.mu.Lock()
 	engine.sysEvents.status = true
-	engine.sysEvents.eventCancelChan = make(chan bool)
-	engine.sysEvents.cancelChan = make(chan bool)
-	engine.sysEvents.eventChan = make(chan entities.Event, 20)
 	engine.sysEvents.eventBuffer = []string{}
 	engine.sysEvents.messageBuffer = []string{}
+	engine.sysEvents.cancelChan = make(chan bool)
+	engine.sysEvents.eventCancelChan = make(chan bool)
+	engine.sysEvents.eventChan = make(chan entities.Event, 20)
+	engine.sysEvents.mu.Unlock()
 	go engine.eventReader()
 	go engine.streamEvents()
 }
 
-func (engine *Engine) stopEventStreamer() {
-	engine.sysEvents.mu.Lock()
-	engine.sysEvents.status = false
-	engine.sysEvents.eventCancelChan <- true
-	engine.sysEvents.mu.Unlock()
-}
-
 func (engine *Engine) streamEvents() {
-	log.Debug().Msg("health check: event steamer started")
+	log.Debug().Msg("health check: pdcs event steamer started")
 	if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
-		// TODO error check for events
-		log.Error().Msgf("health check: event streamer %v", err)
+		log.Error().Msgf("health check: pdcs event streamer %v", err)
+		engine.sysEvents.cancelChan <- true
+		engine.sysEvents.mu.Lock()
+		engine.sysEvents.status = false
+		engine.sysEvents.mu.Unlock()
+		log.Debug().Msgf("health check: pdcs event steamer cancel sent")
 	}
-	log.Debug().Msg("health check: event steamer stopped")
+	log.Debug().Msg("health check: pdcs event steamer stopped")
+	close(engine.sysEvents.eventCancelChan)
 }
 
 func (engine *Engine) eventReader() {
-	log.Debug().Msg("health check:: event reader started")
+	log.Debug().Msg("health check: event reader started")
 	for {
 		select {
 		case <-engine.sysEvents.cancelChan:
 			log.Debug().Msg("health check: event reader stopped")
-			engine.stopEventStreamer()
+			close(engine.sysEvents.cancelChan)
+			registry.CancelContext()
 			return
 		case event := <-engine.sysEvents.eventChan:
 			{
@@ -67,7 +70,6 @@ func (engine *Engine) eventReader() {
 				if strings.TrimSpace(msg) != "" {
 					log.Debug().Msgf("health check: event reader received %s", msg)
 				}
-
 			}
 		}
 	}
@@ -113,6 +115,13 @@ func (engine *Engine) GetEvents() []string {
 	engine.sysEvents.mu.Unlock()
 	events = unique(events)
 	return events
+}
+
+// EventStatus returns event stats
+func (engine *Engine) EventStatus() bool {
+	engine.sysEvents.mu.Lock()
+	defer engine.sysEvents.mu.Unlock()
+	return engine.sysEvents.status
 }
 
 func (engine *Engine) addEvent(event events.Message) {

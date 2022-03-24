@@ -1,7 +1,7 @@
 package pods
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/pods"
 	"github.com/containers/podman/v4/pkg/errorhandling"
 	"github.com/rs/zerolog/log"
@@ -10,7 +10,7 @@ import (
 // Kill sends SIGKILL signal to a pod's containers processeses.
 func Kill(id string) error {
 	log.Debug().Msgf("pdcs: podman pod kill %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}

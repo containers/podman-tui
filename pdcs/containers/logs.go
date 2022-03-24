@@ -1,7 +1,7 @@
 package containers
 
 import (
-	"github.com/containers/podman-tui/pdcs/connection"
+	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
@@ -10,7 +10,7 @@ import (
 func Logs(id string) ([]string, error) {
 	var logs []string
 	log.Debug().Msgf("pdcs: podman container logs %s", id)
-	conn, err := connection.GetConnection()
+	conn, err := registry.GetConnection()
 	if err != nil {
 		return logs, err
 	}

@@ -37,6 +37,9 @@ func (cnt *Containers) getData() []entities.ListContainer {
 
 // ClearData clears table data
 func (cnt *Containers) ClearData() {
+	cnt.containersList.mu.Lock()
+	cnt.containersList.report = nil
+	cnt.containersList.mu.Unlock()
 	cnt.table.Clear()
 	expand := 1
 	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
