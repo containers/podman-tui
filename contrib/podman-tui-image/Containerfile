@@ -1,0 +1,28 @@
+# upstream/Containerfile
+#
+# Build podman-tui container image from the latest
+# upstream version of podman-tui Github.
+# https://github.com/containers/podman-tui
+#
+FROM registry.fedoraproject.org/fedora:latest
+ENV GOPATH=/root/podman-tui
+
+# Install software dependencies to build podman-tui
+RUN yum -y update; yum -y install --enablerepo=updates-testing \
+    make pkgconfig go git \
+    btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel; \
+    mkdir /root/podman-tui; \
+    git clone https://github.com/containers/podman-tui.git /root/podman-tui/src/github.com/containers/podman-tui; \
+    cd /root/podman-tui/src/github.com/containers/podman-tui; \
+    make binary; \
+    make install; \
+    cd /root/; \
+    /bin/rm -rf /root/podman-tui/*; \
+    mkdir -p /root/.config/podman-tui/; \
+    touch /root/.config/podman-tui/podman-tui.conf; \
+    yum -y remove git golang make; \
+    yum clean all;
+
+VOLUME /ssh_keys/
+
+ENV TERM=xterm-256color
