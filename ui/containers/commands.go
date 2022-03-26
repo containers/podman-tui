@@ -286,16 +286,29 @@ func (cnt *Containers) rename() {
 	cnt.cmdInputDialog.SetDescription(description)
 	cnt.cmdInputDialog.SetSelectButtonLabel("rename")
 	cnt.cmdInputDialog.SetLabel("target name")
+
 	cnt.cmdInputDialog.SetSelectedFunc(func() {
 		newName := cnt.cmdInputDialog.GetInputText()
 		cnt.cmdInputDialog.Hide()
-		err := containers.Rename(cnt.selectedID, newName)
+		cnt.renameContainer(cnt.selectedID, newName)
+	})
+	cnt.cmdInputDialog.Display()
+}
+
+func (cnt *Containers) renameContainer(id string, newName string) {
+	cnt.progressDialog.SetTitle("container rename in progress")
+	cnt.progressDialog.Display()
+	renameFunc := func() {
+		err := containers.Rename(id, newName)
+		cnt.progressDialog.Hide()
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) RENAME ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+			return
 		}
-	})
-	cnt.cmdInputDialog.Display()
+		cnt.UpdateData()
+	}
+	go renameFunc()
 }
 
 func (cnt *Containers) rm() {
