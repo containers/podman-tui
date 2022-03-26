@@ -65,11 +65,17 @@ func (p *Pods) stats() {
 
 func (p *Pods) create() {
 	podSpec := p.createDialog.GetPodSpec()
-	err := ppods.Create(podSpec)
-	if err != nil {
-		p.displayError("POD CREATE ERROR", err)
-		return
+	p.progressDialog.SetTitle("pod create in progress")
+	p.progressDialog.Display()
+	createFunc := func() {
+		err := ppods.Create(podSpec)
+		p.progressDialog.Hide()
+		if err != nil {
+			p.displayError("POD CREATE ERROR", err)
+			return
+		}
 	}
+	go createFunc()
 }
 
 func (p *Pods) inspect() {
