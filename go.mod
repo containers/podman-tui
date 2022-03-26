@@ -3,8 +3,10 @@ module github.com/containers/podman-tui
 go 1.17
 
 require (
-	github.com/containers/common v0.47.4
+	github.com/BurntSushi/toml v1.0.0
+	github.com/containers/common v0.47.5
 	github.com/containers/podman/v4 v4.0.2
+	github.com/containers/storage v1.38.2
 	github.com/docker/distribution v2.8.1+incompatible
 	github.com/docker/docker v20.10.13+incompatible
 	github.com/docker/go-units v0.4.0
@@ -16,11 +18,11 @@ require (
 	github.com/rs/zerolog v1.26.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
+	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 )
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
-	github.com/BurntSushi/toml v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/Microsoft/hcsshim v0.9.2 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
@@ -37,7 +39,6 @@ require (
 	github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b // indirect
 	github.com/containers/ocicrypt v1.1.2 // indirect
 	github.com/containers/psgo v1.7.2 // indirect
-	github.com/containers/storage v1.38.2 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.3 // indirect
 	github.com/disiqueira/gotree/v3 v3.0.2 // indirect
@@ -102,7 +103,6 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20200128120323-432b2356ecb1 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce // indirect
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
