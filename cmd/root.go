@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -30,32 +32,35 @@ func Execute() {
 }
 
 func run(cmd *cobra.Command, args []string) error {
-	runLog := fmt.Sprintf("starting %s version %s", appName, appVersion)
-	// init logger
-	logfile, err := cmd.Flags().GetString("log-file")
-	if err != nil {
-		return nil
-	}
-	logFD, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
-	if err != nil {
-		return err
-	}
-	defer logFD.Close()
+	var (
+		logOutput io.Writer = ioutil.Discard
+		runLog              = fmt.Sprintf("starting %s version %s", appName, appVersion)
+	)
 
-	logrus.SetOutput(logFD)
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: logFD, TimeFormat: time.RFC3339})
-
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	// Default level is info
 	debugLevel, err := cmd.Flags().GetBool("debug")
 	if err != nil {
 		return nil
 	}
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if debugLevel {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 		runLog = runLog + " in debug mode"
-	}
+		// init logger
+		logfile, err := cmd.Flags().GetString("log-file")
+		if err != nil {
+			return nil
+		}
+		logFD, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		defer logFD.Close()
+		logOutput = logFD
 
+	}
+	logrus.SetOutput(logOutput)
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: logOutput, TimeFormat: time.RFC3339})
 	log.Info().Msg(runLog)
 	// check if CONTAINER_PASSPHRASE environment variable is set and not empty
 	// otherwise set with value dummy value
