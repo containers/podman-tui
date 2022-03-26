@@ -76,12 +76,13 @@ func (nets *Networks) prune() {
 	nets.progressDialog.SetTitle("network purne in progress")
 	nets.progressDialog.Display()
 	prune := func() {
-		err := networks.Prune()
-		nets.progressDialog.Hide()
-		if err != nil {
+		if err := networks.Prune(); err != nil {
+			nets.progressDialog.Hide()
 			nets.displayError("NETWORK PRUNE ERROR", err)
 			return
 		}
+		nets.UpdateData()
+		nets.progressDialog.Hide()
 	}
 	go prune()
 }
