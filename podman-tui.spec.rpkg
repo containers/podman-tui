@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 0.3.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -66,7 +66,27 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-dev-1
+* Sun Mar 27 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-1
+- Bump github.com/docker/docker
+- networks screen refresh after network prune command
+- container screen refresh after container rename command
+- displaying pogressbar for pod create command
+- do not write to log file if debug mode is not enabled
+- Bump github.com/containers/common from 0.47.4 to 0.47.5
+- add a dependabot config to automate vendoring (#29)
+- podman-tui-image Containerfile
+- docs update
+- tests - system connections
+- new feature - system connections
+- docs update + golint + codespell
+- image search dialog update to display all columns
+- set message dialog min width
+- tests update for podman v4
+- pods ui + pdcs update for podman v4
+- container ui + pdcs update for podman v4
+- networks ui + pdcs update for podman v4
+- upgrade to podman v4 API
+- Bump to v0.3.0-dev
 
 * Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.2.0-1
 - update install.md - made shell commands more accessible to those who copy/paste
