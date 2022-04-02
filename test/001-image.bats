@@ -27,6 +27,33 @@ load helpers_tui
     assert "$output" =~ "docker.io/library/busybox" "expected image"
 }
 
+@test "image build" {
+    podman image pull docker.io/library/busybox || echo done
+    podman image rm ${TEST_IMAGE_BUILD_REPOSITORY}/${TEST_IMAGE_BUILD_CONTEXT_DIR} || echo done
+
+    # switch to images view
+    # select build command from images commands dialog
+    # fillout Context dir field
+    # fillout image tag field
+    # fillout image repository field
+    # go to build button and press enter
+    # wait for image build
+    podman_tui_set_view "images"
+    podman_tui_select_image_cmd "build"
+    podman_tui_send_inputs ${TEST_IMAGE_BUILD_CONTEXT_DIR}
+    podman_tui_send_inputs "Tab" "Tab" "Tab"
+    podman_tui_send_inputs ${TEST_IMAGE_BUILD_TAG}
+    podman_tui_send_inputs "Tab"
+    podman_tui_send_inputs ${TEST_IMAGE_BUILD_REPOSITORY}
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "Enter"
+    sleep 8
+    podman_tui_send_inputs "Tab" "Enter"
+
+    run_helper podman image ls ${TEST_IMAGE_BUILD_TAG} --format "{{ .Repository }}:{{ .Tag }}"
+    assert "$output" =~ "${TEST_IMAGE_BUILD_REPOSITORY}/${TEST_IMAGE_BUILD_TAG}" "expected image"
+}
+
 @test "image diff" {
     image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
    

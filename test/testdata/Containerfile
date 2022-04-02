@@ -1,0 +1,2 @@
+FROM docker.io/library/busybox:latest
+ENV TERM=xterm-256color

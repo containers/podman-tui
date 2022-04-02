@@ -14,6 +14,8 @@ type theme struct {
 	ConfirmDialog               confirmDialog
 	ImageSearchDialog           imageSearchDialog
 	ImageHistoryDialog          imageHistoryDialog
+	ImageBuildDialog            imageBuildDialog
+	ImageBuildPrgDialog         imageBuildPrgDialog
 	ContainerExecDialog         containerExecDialog
 	ContainerExecTerminalDialog containerExecTerminalDialog
 	ContainerStatsDialog        containerStatsDialog
@@ -92,6 +94,18 @@ type imageHistoryDialog struct {
 	BgColor   tcell.Color
 	FgColor   tcell.Color
 	HeaderRow headerRow
+}
+
+type imageBuildDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type imageBuildPrgDialog struct {
+	BgColor      tcell.Color
+	FgColor      tcell.Color
+	PrgCellColor tcell.Color
+	Terminal     terminal
 }
 
 type containerExecDialog struct {

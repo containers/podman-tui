@@ -74,6 +74,19 @@ var Styles = theme{
 			BgColor: tcell.ColorNavy,
 		},
 	},
+	ImageBuildDialog: imageBuildDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
+	},
+	ImageBuildPrgDialog: imageBuildPrgDialog{
+		BgColor:      tcell.ColorSteelBlue,
+		FgColor:      tcell.ColorWhite,
+		PrgCellColor: tcell.ColorOrange,
+		Terminal: terminal{
+			BgColor: tview.Styles.PrimitiveBackgroundColor,
+			FgColor: tcell.ColorWhite,
+		},
+	},
 	ContainerExecDialog: containerExecDialog{
 		BgColor: tcell.ColorSteelBlue,
 		FgColor: tcell.ColorWhite,
