@@ -62,5 +62,16 @@ func (img *Images) Draw(screen tcell.Screen) {
 		img.historyDialog.Draw(screen)
 		return
 	}
-
+	// build dialog
+	if img.buildDialog.IsDisplay() {
+		img.buildDialog.SetRect(x, y, width, height)
+		img.buildDialog.Draw(screen)
+		return
+	}
+	// build progress dialog
+	if img.buildPrgDialog.IsDisplay() {
+		img.buildPrgDialog.SetRect(x, y, width, height)
+		img.buildPrgDialog.Draw(screen)
+		return
+	}
 }

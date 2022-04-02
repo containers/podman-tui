@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/BurntSushi/toml v1.0.0
+	github.com/containers/buildah v1.24.3
 	github.com/containers/common v0.47.5
 	github.com/containers/podman/v4 v4.0.3
 	github.com/containers/storage v1.39.0
@@ -34,7 +35,6 @@ require (
 	github.com/containerd/cgroups v1.0.1 // indirect
 	github.com/containerd/containerd v1.5.9 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.11.3 // indirect
-	github.com/containers/buildah v1.24.3 // indirect
 	github.com/containers/image/v5 v5.19.2 // indirect
 	github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b // indirect
 	github.com/containers/ocicrypt v1.1.2 // indirect

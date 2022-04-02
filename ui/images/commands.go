@@ -5,12 +5,15 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/images"
+
 	"github.com/rs/zerolog/log"
 )
 
 func (img *Images) runCommand(cmd string) {
 
 	switch cmd {
+	case "build":
+		img.buildDialog.Display()
 	case "diff":
 		img.diff()
 	case "history":
@@ -28,7 +31,6 @@ func (img *Images) runCommand(cmd string) {
 	case "untag":
 		img.cuntag()
 	}
-
 }
 
 func (img *Images) displayError(title string, err error) {
@@ -42,6 +44,37 @@ func (img *Images) displayError(title string, err error) {
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
 	img.errorDialog.SetText(message)
 	img.errorDialog.Display()
+}
+
+func (img *Images) build() {
+	img.buildDialog.Hide()
+	opts, err := img.buildDialog.ImageBuildOptions()
+	if err != nil {
+		img.buildPrgDialog.Hide()
+		img.displayError("IMAGE BUILD ERROR", err)
+		return
+	}
+	if opts.BuildOptions.ContextDirectory == "" && len(opts.ContainerFiles) == 0 {
+		img.displayError("IMAGE BUILD ERROR", fmt.Errorf("both context directory path and container files fields are empty"))
+		return
+	}
+	img.buildPrgDialog.Display()
+	writer := img.buildPrgDialog.LogWriter()
+	opts.BuildOptions.Out = writer
+	opts.BuildOptions.Err = writer
+
+	buildFunc := func() {
+		report, err := images.Build(opts)
+		img.buildPrgDialog.Hide()
+		if err != nil {
+			img.displayError("IMAGE BUILD ERROR", err)
+			return
+		}
+		img.messageDialog.SetTitle("podman image build")
+		img.messageDialog.SetText(report)
+		img.messageDialog.Display()
+	}
+	go buildFunc()
 }
 
 func (img *Images) diff() {
