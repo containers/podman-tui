@@ -22,15 +22,9 @@ func (nets *Networks) runCommand(cmd string) {
 }
 
 func (nets *Networks) displayError(title string, err error) {
-	var message string
-	if title != "" {
-		message = fmt.Sprintf("%s: %v", title, err)
-	} else {
-		message = fmt.Sprintf("%v", err)
-	}
-
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
-	nets.errorDialog.SetText(message)
+	nets.errorDialog.SetTitle(title)
+	nets.errorDialog.SetText(fmt.Sprintf("%v", err))
 	nets.errorDialog.Display()
 }
 

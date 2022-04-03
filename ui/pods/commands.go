@@ -41,15 +41,9 @@ func (p *Pods) runCommand(cmd string) {
 }
 
 func (p *Pods) displayError(title string, err error) {
-	var message string
-	if title != "" {
-		message = fmt.Sprintf("%s: %v", title, err)
-	} else {
-		message = fmt.Sprintf("%v", err)
-	}
-
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
-	p.errorDialog.SetText(message)
+	p.errorDialog.SetTitle(title)
+	p.errorDialog.SetText(fmt.Sprintf("%v", err))
 	p.errorDialog.Display()
 }
 

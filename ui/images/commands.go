@@ -34,15 +34,9 @@ func (img *Images) runCommand(cmd string) {
 }
 
 func (img *Images) displayError(title string, err error) {
-	var message string
-	if title != "" {
-		message = fmt.Sprintf("%s: %v", title, err)
-	} else {
-		message = fmt.Sprintf("%v", err)
-	}
-
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
-	img.errorDialog.SetText(message)
+	img.errorDialog.SetTitle(title)
+	img.errorDialog.SetText(fmt.Sprintf("%v", err))
 	img.errorDialog.Display()
 }
 

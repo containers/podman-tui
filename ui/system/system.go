@@ -142,10 +142,6 @@ func NewSystem() *System {
 		sys.eventDialog.SetText("")
 		sys.UpdateConnectionsData()
 	})
-	// set error dialog functions
-	sys.errorDialog.SetDoneFunc(func() {
-		sys.errorDialog.Hide()
-	})
 	// set connection create dialog functions
 	sys.connAddDialog.SetCancelFunc(sys.connAddDialog.Hide)
 	sys.connAddDialog.SetAddFunc(func() {
