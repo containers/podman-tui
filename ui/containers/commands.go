@@ -48,15 +48,9 @@ func (cnt *Containers) runCommand(cmd string) {
 }
 
 func (cnt *Containers) displayError(title string, err error) {
-	var message string
-	if title != "" {
-		message = fmt.Sprintf("%s: %v", title, err)
-	} else {
-		message = fmt.Sprintf("%v", err)
-	}
-
 	log.Error().Msgf("%s: %v", strings.ToLower(title), err)
-	cnt.errorDialog.SetText(message)
+	cnt.errorDialog.SetTitle(title)
+	cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 	cnt.errorDialog.Display()
 }
 
