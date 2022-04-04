@@ -94,6 +94,7 @@ podman-tui uses following keyboard keys for different actions:
 
 | COMMAND      | DESCRIPTION |
 | ------------ | ----------- |
+| build        | build an image from Containerfile
 | diff         | inspect changes to the image's file systems
 | history      | show history of the selected image
 | inspect      | display the configuration of the selected image

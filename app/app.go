@@ -90,6 +90,10 @@ func NewApp(name string, version string) *App {
 	// its required for container exec dialog
 	app.containers.SetFastRefreshChannel(app.fastRefreshChan)
 
+	// set refresh channel for image page
+	// its required for image build dialog
+	app.images.SetFastRefreshChannel(app.fastRefreshChan)
+
 	// menu items
 	var menuItems = [][]string{
 		{utils.HelpScreenKey.Label(), app.help.GetTitle()},

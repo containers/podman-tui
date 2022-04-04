@@ -63,6 +63,20 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 			}
 		}
 
+		// build dialog handler
+		if img.buildDialog.HasFocus() {
+			if buildDialogHandler := img.buildDialog.InputHandler(); buildDialogHandler != nil {
+				buildDialogHandler(event, setFocus)
+			}
+		}
+
+		// build progress dialog handler
+		if img.buildPrgDialog.HasFocus() {
+			if buildPrgDialogHandler := img.buildPrgDialog.InputHandler(); buildPrgDialogHandler != nil {
+				buildPrgDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if img.table.HasFocus() {
 			if event.Rune() == utils.CommandMenuKey.Rune() {
