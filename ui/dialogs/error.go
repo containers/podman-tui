@@ -1,6 +1,8 @@
 package dialogs
 
 import (
+	"fmt"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -10,6 +12,8 @@ import (
 type ErrorDialog struct {
 	*tview.Box
 	modal   *tview.Modal
+	title   string
+	message string
 	display bool
 }
 
@@ -17,7 +21,7 @@ type ErrorDialog struct {
 func NewErrorDialog() *ErrorDialog {
 	dialog := ErrorDialog{
 		Box:     tview.NewBox(),
-		modal:   tview.NewModal().SetBackgroundColor(tcell.ColorRed).AddButtons([]string{"OK"}),
+		modal:   tview.NewModal().SetBackgroundColor(tcell.ColorOrangeRed).AddButtons([]string{"OK"}),
 		display: false,
 	}
 	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
@@ -40,12 +44,19 @@ func (d *ErrorDialog) IsDisplay() bool {
 // Hide stops displaying this primitive
 func (d *ErrorDialog) Hide() {
 	d.SetText("")
+	d.title = ""
+	d.message = ""
 	d.display = false
 }
 
 // SetText sets error dialog message
 func (d *ErrorDialog) SetText(message string) {
-	d.modal.SetText(message)
+	d.message = message
+}
+
+// SetTitle sets error dialog message title
+func (d *ErrorDialog) SetTitle(title string) {
+	d.title = title
 }
 
 // HasFocus returns whether or not this primitive has focus
@@ -71,7 +82,6 @@ func (d *ErrorDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p
 
 // SetRect set rects for this primitive.
 func (d *ErrorDialog) SetRect(x, y, width, height int) {
-
 	d.Box.SetRect(x, y, width, height)
 }
 
@@ -83,6 +93,12 @@ func (d *ErrorDialog) GetRect() (int, int, int, int) {
 
 // Draw draws this primitive onto the screen.
 func (d *ErrorDialog) Draw(screen tcell.Screen) {
+	var errorMessage string
+	if d.title != "" {
+		errorMessage = fmt.Sprintf("[darkred::b]%s[-::-]\n", d.title)
+	}
+	errorMessage = errorMessage + d.message
+	d.modal.SetText(errorMessage)
 	d.modal.Draw(screen)
 }
 
