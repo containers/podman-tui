@@ -87,6 +87,10 @@ var Styles = theme{
 			FgColor: tcell.ColorWhite,
 		},
 	},
+	ImageSaveDialog: imageSaveDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
+	},
 	ContainerExecDialog: containerExecDialog{
 		BgColor: tcell.ColorSteelBlue,
 		FgColor: tcell.ColorWhite,

@@ -101,6 +101,7 @@ podman-tui uses following keyboard keys for different actions:
 | prune        | remove all unused images
 | rm           | removes the selected  image from local storage
 | search/pull  | search and pull image from registry
+| save         | save an image to docker-archive or oci-archive
 | tag          | add an additional name to the selected  image
 | untag        | remove a name from the selected image
 

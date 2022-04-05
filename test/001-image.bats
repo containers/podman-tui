@@ -27,6 +27,31 @@ load helpers_tui
     assert "$output" =~ "docker.io/library/busybox" "expected image"
 }
 
+@test "image save" {
+    podman image pull docker.io/library/busybox || echo done
+    image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
+    [ -f "${TEST_IMAGE_SAVE_PATH}" ] && /bin/rm -rf $TEST_IMAGE_SAVE_PATH
+
+    # switch to images view
+    # select busybox image
+    # select save command from images commands dialog
+    # fillout output path
+    # select compressed options
+    # go to save button and press enter
+
+    podman_tui_set_view "images"
+    podman_tui_select_item $image_index
+    podman_tui_select_image_cmd "save"
+
+    podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH "Tab"
+    podman_tui_send_inputs "Space" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Enter"
+    sleep 4
+
+    run_helper ls ${TEST_IMAGE_SAVE_PATH} 2> /dev/null
+    assert "$output" == "$TEST_IMAGE_SAVE_PATH" "expected $TEST_IMAGE_SAVE_PATH exists"
+}
+
 @test "image build" {
     podman image pull docker.io/library/busybox || echo done
     podman image rm ${TEST_IMAGE_BUILD_REPOSITORY}/${TEST_IMAGE_BUILD_CONTEXT_DIR} || echo done
@@ -123,20 +148,21 @@ load helpers_tui
 }
 
 @test "image untag" {
-    busybox_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep "$TEST_IMAGE_TAG_NAME " | awk '{print $1}')
+    busybox_tagindex=$(podman image ls --sort repository --noheading | nl -v 0 | grep "$TEST_IMAGE_TAG_NAME " | awk '{print $1}')
 
     # switch to images view
     # select busybox image from list
     # select untag command from image commands dialog
     # press "Tab" 2 times and "Enter" to untag busybox image
     podman_tui_set_view "images"
-    podman_tui_select_item $busyboxIndex
+    podman_tui_select_item $busybox_tagindex
+    sleep 1
     podman_tui_select_image_cmd "untag"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 2
 
-    untagged_umage=$(podman image ls --format '{{ .Repository }}' | grep none)
-    assert "$untagged_umage" =~ "<none>" "expected <none> image"
+    untagged_umage=$(podman image ls --format '{{ .Repository }}')
+    assert "$untagged_umage" !~ "$TEST_IMAGE_TAG_NAME" "expected $TEST_IMAGE_TAG_NAME not to be in the list"
 
 }
 
