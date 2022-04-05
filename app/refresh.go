@@ -4,12 +4,13 @@ import (
 	"time"
 
 	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
 func (app *App) refresh() {
-	log.Debug().Msgf("app: starting refresh loop (interval=%v)", refreshInterval)
-	tick := time.NewTicker(refreshInterval)
+	log.Debug().Msgf("app: starting refresh loop (interval=%v)", utils.RefreshInterval)
+	tick := time.NewTicker(utils.RefreshInterval)
 	for {
 		select {
 		case <-tick.C:
