@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -70,7 +71,7 @@ func validateNewService(name string, dest string, identity string) (Service, err
 				return service, err
 			}
 		}
-		serviceIdentity, err = resolveHomeDir(identity)
+		serviceIdentity, err = utils.ResolveHomeDir(identity)
 		if err != nil {
 			return service, err
 		}
