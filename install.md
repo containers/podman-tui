@@ -25,3 +25,9 @@ Run `sudo make install` if you want to install the binary on the node.
 ```shell
 yay -S podman-tui
 ```
+
+### Fedora
+
+```
+sudo dnf -y install podman-tui
+```
