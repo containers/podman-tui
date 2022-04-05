@@ -2,7 +2,6 @@ package app
 
 import (
 	"os"
-	"time"
 
 	"github.com/containers/podman-tui/config"
 	"github.com/containers/podman-tui/pdcs/registry"
@@ -19,10 +18,6 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
-)
-
-const (
-	refreshInterval = 1000 * time.Millisecond
 )
 
 // App represents main application struct
@@ -63,7 +58,7 @@ func NewApp(name string, version string) *App {
 		log.Fatal().Msgf("%v", err)
 	}
 
-	app.health = health.NewEngine(refreshInterval)
+	app.health = health.NewEngine(utils.RefreshInterval)
 
 	app.infoBar = infobar.NewInfoBar()
 

@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/containers/podman/v4/libpod/define"
@@ -47,27 +46,6 @@ func localNodeUnixSocket() (string, error) {
 
 	socket = "unix:" + sockDir + "/podman/podman.sock"
 	return socket, nil
-}
-
-// resolveHomeDir converts a path referencing the home directory via "~"
-// to an absolute path
-func resolveHomeDir(path string) (string, error) {
-	// check if the path references the home dir to avoid work
-	// don't use strings.HasPrefix(path, "~") as this doesn't match "~" alone
-	// use strings.HasPrefix(...) to not match "something/~/something"
-	if !(path == "~" || strings.HasPrefix(path, "~/")) {
-		// path does not reference home dir -> Nothing to do
-		return path, nil
-	}
-
-	// only get HomeDir when necessary
-	home, err := unshare.HomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	// replace the first "~" (start of path) with the HomeDir to resolve "~"
-	return strings.Replace(path, "~", home, 1), nil
 }
 
 func getUserInfo(uri *url.URL) (*url.Userinfo, error) {
