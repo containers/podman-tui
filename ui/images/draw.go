@@ -74,4 +74,10 @@ func (img *Images) Draw(screen tcell.Screen) {
 		img.buildPrgDialog.Draw(screen)
 		return
 	}
+	// save dialog
+	if img.saveDialog.IsDisplay() {
+		img.saveDialog.SetRect(x, y, width, height)
+		img.saveDialog.Draw(screen)
+		return
+	}
 }

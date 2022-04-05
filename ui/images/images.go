@@ -29,6 +29,7 @@ type Images struct {
 	buildDialog     *imgdialogs.ImageBuildDialog
 	buildPrgDialog  *imgdialogs.ImageBuildProgressDialog
 	progressDialog  *dialogs.ProgressDialog
+	saveDialog      *imgdialogs.ImageSaveDialog
 	imagesList      imageListReport
 	selectedID      string
 	selectedName    string
@@ -55,6 +56,7 @@ func NewImages() *Images {
 		historyDialog:  imgdialogs.NewImageHistoryDialog(),
 		buildDialog:    imgdialogs.NewImageBuildDialog(),
 		buildPrgDialog: imgdialogs.NewImageBuildProgressDialog(),
+		saveDialog:     imgdialogs.NewImageSaveDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 	}
 
@@ -65,6 +67,7 @@ func NewImages() *Images {
 		{"inspect", "display the configuration of the selected image"},
 		{"prune", "remove all unused images"},
 		{"rm", "removes the selected  image from local storage"},
+		{"save", "save an image to docker-archive or oci-archive"},
 		{"search/pull", "search and pull image from registry"},
 		{"tag", "add an additional name to the selected  image"},
 		{"untag", "remove a name from the selected image"},
@@ -162,6 +165,10 @@ func NewImages() *Images {
 		images.fastRefreshChan <- true
 	})
 
+	// set save dialog functions
+	images.saveDialog.SetCancelFunc(images.saveDialog.Hide)
+	images.saveDialog.SetSaveFunc(images.save)
+
 	return images
 }
 
@@ -187,7 +194,7 @@ func (img *Images) HasFocus() bool {
 	if img.historyDialog.HasFocus() || img.buildDialog.HasFocus() {
 		return true
 	}
-	if img.buildPrgDialog.HasFocus() {
+	if img.buildPrgDialog.HasFocus() || img.saveDialog.HasFocus() {
 		return true
 	}
 	return img.Box.HasFocus()
@@ -210,7 +217,7 @@ func (img *Images) SubDialogHasFocus() bool {
 	if img.buildDialog.HasFocus() || img.buildPrgDialog.HasFocus() {
 		return true
 	}
-	return false
+	return img.saveDialog.HasFocus()
 }
 
 // Focus is called when this primitive receives focus
@@ -261,6 +268,11 @@ func (img *Images) Focus(delegate func(p tview.Primitive)) {
 		delegate(img.buildPrgDialog)
 		return
 	}
+	// save dialog
+	if img.saveDialog.IsDisplay() {
+		delegate(img.saveDialog)
+		return
+	}
 	delegate(img.table)
 }
 
@@ -307,6 +319,9 @@ func (img *Images) HideAllDialogs() {
 	}
 	if img.buildPrgDialog.IsDisplay() {
 		img.buildPrgDialog.Hide()
+	}
+	if img.saveDialog.IsDisplay() {
+		img.saveDialog.Hide()
 	}
 }
 
