@@ -19,6 +19,7 @@ TEST_SYSTEM_CONN_URI="unix://run/podman/podman.sock"
 TEST_IMAGE_BUILD_CONTEXT_DIR="$(realpath .)/test/testdata/"
 TEST_IMAGE_BUILD_TAG="${TEST_NAME}_image:latest"
 TEST_IMAGE_BUILD_REPOSITORY="localhost"
+TEST_IMAGE_SAVE_PATH="/tmp/${TEST_NAME}_image_save.tar"
 
 ################
 #  podman_tui_set_view  # switches to different podman-tui views
@@ -83,12 +84,14 @@ function podman_tui_select_image_cmd() {
     menu_index=4;;
   "remove")
     menu_index=5;;
-  "pull")
+  "save")
     menu_index=6;;
-  "tag")
+  "pull")
     menu_index=7;;
-  "untag")
+  "tag")
     menu_index=8;;
+  "untag")
+    menu_index=9;;
   esac
 
   podman_tui_select_menu $menu_index

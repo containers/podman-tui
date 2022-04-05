@@ -24,6 +24,8 @@ func (img *Images) runCommand(cmd string) {
 		img.cprune()
 	case "rm":
 		img.rm()
+	case "save":
+		img.csave()
 	case "search/pull":
 		img.searchDialog.Display()
 	case "tag":
@@ -174,6 +176,39 @@ func (img *Images) remove() {
 
 	}
 	go remove(img.selectedID)
+}
+
+func (img *Images) csave() {
+	id, name := img.getSelectedItem()
+	if id == "" {
+		img.displayError("", fmt.Errorf("there is no image to display diff"))
+		return
+	}
+	img.saveDialog.SetImageInfo(id, name)
+	img.saveDialog.Display()
+}
+
+func (img *Images) save() {
+	saveOpts, err := img.saveDialog.ImageSaveOptions()
+	if err != nil {
+		title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
+		img.displayError(title, err)
+		return
+	}
+	img.saveDialog.Hide()
+	img.progressDialog.SetTitle("image save in progress")
+	img.progressDialog.Display()
+	saveFunc := func() {
+		err := images.Save(img.selectedID, saveOpts)
+		img.progressDialog.Hide()
+		if err != nil {
+			title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
+			img.displayError(title, err)
+			return
+		}
+	}
+	go saveFunc()
+
 }
 
 func (img *Images) search(term string) {

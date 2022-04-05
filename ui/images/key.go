@@ -77,6 +77,13 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 			}
 		}
 
+		// save dialog handler
+		if img.saveDialog.HasFocus() {
+			if saveDialogHandler := img.saveDialog.InputHandler(); saveDialogHandler != nil {
+				saveDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if img.table.HasFocus() {
 			if event.Rune() == utils.CommandMenuKey.Rune() {
