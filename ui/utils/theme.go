@@ -14,6 +14,7 @@ type theme struct {
 	ConfirmDialog               confirmDialog
 	ImageSearchDialog           imageSearchDialog
 	ImageHistoryDialog          imageHistoryDialog
+	ImageImportDialog           imageImportDialog
 	ImageBuildDialog            imageBuildDialog
 	ImageBuildPrgDialog         imageBuildPrgDialog
 	ImageSaveDialog             imageSaveDialog
@@ -95,6 +96,11 @@ type imageHistoryDialog struct {
 	BgColor   tcell.Color
 	FgColor   tcell.Color
 	HeaderRow headerRow
+}
+
+type imageImportDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
 }
 
 type imageBuildDialog struct {
