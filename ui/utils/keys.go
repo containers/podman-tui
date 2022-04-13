@@ -47,6 +47,11 @@ var (
 		KeyLabel: "Tab",
 		KeyDesc:  "switch between widgets",
 	}
+	DeleteKey = uiKeyInfo{
+		Key:      tcell.KeyDelete,
+		KeyLabel: "Delete",
+		KeyDesc:  "delete the selected item",
+	}
 	ArrorUpKey = uiKeyInfo{
 		Key:      tcell.KeyUp,
 		KeyLabel: "Arrow Up",
@@ -119,6 +124,7 @@ var (
 		MoveDownKey,
 		CloseDialogKey,
 		SwitchFocusKey,
+		DeleteKey,
 		ArrorUpKey,
 		ArrorDownKey,
 		ScrollUpKey,
