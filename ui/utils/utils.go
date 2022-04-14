@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
 	"github.com/containers/storage/pkg/unshare"
 	"github.com/gdamore/tcell/v2"
+	"github.com/pkg/errors"
 	"github.com/rivo/tview"
 )
 
@@ -80,4 +83,26 @@ func ResolveHomeDir(path string) (string, error) {
 
 	// replace the first "~" (start of path) with the HomeDir to resolve "~"
 	return strings.Replace(path, "~", home, 1), nil
+}
+
+// Following codes are from https://github.com/containers/podman/blob/main/cmd/podman/parse/net.go
+// ValidateFileName returns an error if filename contains ":"
+// as it is currently not supported
+func ValidateFileName(filename string) error {
+	if strings.Contains(filename, ":") {
+		return fmt.Errorf("invalid filename (should not contain ':') %q", filename)
+	}
+	return nil
+}
+
+// ValidURL checks a string urlStr is a url or not
+func ValidURL(urlStr string) error {
+	url, err := url.ParseRequestURI(urlStr)
+	if err != nil {
+		return errors.Wrapf(err, "invalid url %q", urlStr)
+	}
+	if url.Scheme == "" {
+		return fmt.Errorf("invalid url %q: missing scheme", urlStr)
+	}
+	return nil
 }

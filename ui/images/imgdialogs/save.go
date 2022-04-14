@@ -310,7 +310,6 @@ func (d *ImageSaveDialog) SetImageInfo(id string, name string) {
 		name = nameSplited[l-1]
 	}
 	imageInfo := fmt.Sprintf("Image ID: %s (%s)", id, name)
-	log.Info().Msg(imageInfo)
 	d.imageInfo.SetText(imageInfo)
 }
 

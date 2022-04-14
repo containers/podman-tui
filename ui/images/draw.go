@@ -80,4 +80,10 @@ func (img *Images) Draw(screen tcell.Screen) {
 		img.saveDialog.Draw(screen)
 		return
 	}
+	// import dialog
+	if img.importDialog.IsDisplay() {
+		img.importDialog.SetRect(x, y, width, height)
+		img.importDialog.Draw(screen)
+		return
+	}
 }
