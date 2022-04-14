@@ -39,8 +39,8 @@ require (
 	github.com/containers/image/v5 v5.17.0 // indirect
 	github.com/containers/libtrust v0.0.0-20190913040956-14b96171aa3b // indirect
 	github.com/containers/ocicrypt v1.1.2 // indirect
-	github.com/containers/psgo v1.7.1 // indirect
-	github.com/containers/storage v1.37.0 // indirect
+	github.com/containers/psgo v1.7.2-0.20220414132323-3ae304491648 // indirect
+	github.com/containers/storage v1.37.2 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/cyphar/filepath-securejoin v0.2.3 // indirect
 	github.com/disiqueira/gotree/v3 v3.0.2 // indirect

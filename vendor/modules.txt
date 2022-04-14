@@ -204,7 +204,7 @@ github.com/containers/podman/v3/pkg/trust
 github.com/containers/podman/v3/pkg/util
 github.com/containers/podman/v3/utils
 github.com/containers/podman/v3/version
-# github.com/containers/psgo v1.7.1
+# github.com/containers/psgo v1.7.2-0.20220414132323-3ae304491648
 ## explicit; go 1.14
 github.com/containers/psgo
 github.com/containers/psgo/internal/capabilities
@@ -213,7 +213,7 @@ github.com/containers/psgo/internal/dev
 github.com/containers/psgo/internal/host
 github.com/containers/psgo/internal/proc
 github.com/containers/psgo/internal/process
-# github.com/containers/storage v1.37.0
+# github.com/containers/storage v1.37.2
 ## explicit; go 1.14
 github.com/containers/storage
 github.com/containers/storage/drivers
