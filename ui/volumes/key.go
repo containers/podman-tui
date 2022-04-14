@@ -46,12 +46,14 @@ func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		}
 		// table handlers
 		if vols.table.HasFocus() {
+			vols.selectedID = vols.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if vols.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
-				vols.selectedID = vols.getSelectedItem()
 				vols.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				vols.rm()
 			} else {
 				if tableHandler := vols.table.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)
