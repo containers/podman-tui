@@ -17,7 +17,6 @@ package proc
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -216,10 +215,10 @@ var (
 
 func overflowIds() (string, string) {
 	overflowOnce.Do(func() {
-		if uid, err := ioutil.ReadFile("/proc/sys/kernel/overflowuid"); err == nil {
+		if uid, err := os.ReadFile("/proc/sys/kernel/overflowuid"); err == nil {
 			overflowUid = strings.TrimSpace(string(uid))
 		}
-		if gid, err := ioutil.ReadFile("/proc/sys/kernel/overflowgid"); err == nil {
+		if gid, err := os.ReadFile("/proc/sys/kernel/overflowgid"); err == nil {
 			overflowGid = strings.TrimSpace(string(gid))
 		}
 	})
