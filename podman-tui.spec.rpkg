@@ -66,6 +66,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Thu Apr 14 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.1-dev-1
+
 * Sun Mar 27 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-1
 - Bump github.com/docker/docker
 - networks screen refresh after network prune command
