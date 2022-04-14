@@ -66,6 +66,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Thu Apr 14 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.2.1-dev-1
+
 * Thu Mar 10 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.2.0-1
 - update install.md - made shell commands more accessible to those who copy/paste
 - install.md
