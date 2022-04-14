@@ -86,12 +86,14 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 
 		// table handlers
 		if img.table.HasFocus() {
+			img.selectedID, img.selectedName = img.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if img.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
-				img.selectedID, img.selectedName = img.getSelectedItem()
 				img.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				img.rm()
 			} else {
 				if tableHandler := img.table.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)

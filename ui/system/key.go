@@ -69,6 +69,8 @@ func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 		if sys.connTable.HasFocus() {
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				sys.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				sys.cremove()
 			} else {
 				if tableHandler := sys.connTable.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)
