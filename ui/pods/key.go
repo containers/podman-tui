@@ -59,12 +59,14 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 		}
 		// table handlers
 		if pods.table.HasFocus() {
+			pods.selectedID = pods.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if pods.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
-				pods.selectedID = pods.getSelectedItem()
 				pods.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				pods.rm()
 			} else {
 				if tableHandler := pods.table.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)

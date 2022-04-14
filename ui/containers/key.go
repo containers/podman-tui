@@ -80,12 +80,14 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 
 		// table handlers
 		if cnt.table.HasFocus() {
+			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if cnt.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
-				cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
 				cnt.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				cnt.rm()
 			} else {
 				if tableHandler := cnt.table.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)

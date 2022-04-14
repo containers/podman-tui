@@ -46,12 +46,14 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 		}
 		// table handlers
 		if nets.table.HasFocus() {
+			nets.selectedID = nets.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if nets.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
-				nets.selectedID = nets.getSelectedItem()
 				nets.cmdDialog.Display()
+			} else if event.Key() == utils.DeleteKey.EventKey() {
+				nets.rm()
 			} else {
 				if tableHandler := nets.table.InputHandler(); tableHandler != nil {
 					tableHandler(event, setFocus)
