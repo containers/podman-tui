@@ -74,6 +74,10 @@ var Styles = theme{
 			BgColor: tcell.ColorNavy,
 		},
 	},
+	ImageImportDialog: imageImportDialog{
+		BgColor: tcell.ColorSteelBlue,
+		FgColor: tcell.ColorWhite,
+	},
 	ImageBuildDialog: imageBuildDialog{
 		BgColor: tcell.ColorSteelBlue,
 		FgColor: tcell.ColorWhite,

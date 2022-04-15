@@ -84,6 +84,13 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 			}
 		}
 
+		// import dialog handler
+		if img.importDialog.HasFocus() {
+			if importDialogHandler := img.importDialog.InputHandler(); importDialogHandler != nil {
+				importDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if img.table.HasFocus() {
 			img.selectedID, img.selectedName = img.getSelectedItem()

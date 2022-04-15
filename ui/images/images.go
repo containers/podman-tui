@@ -26,6 +26,7 @@ type Images struct {
 	confirmDialog   *dialogs.ConfirmDialog
 	searchDialog    *imgdialogs.ImageSearchDialog
 	historyDialog   *imgdialogs.ImageHistoryDialog
+	importDialog    *imgdialogs.ImageImportDialog
 	buildDialog     *imgdialogs.ImageBuildDialog
 	buildPrgDialog  *imgdialogs.ImageBuildProgressDialog
 	progressDialog  *dialogs.ProgressDialog
@@ -54,6 +55,7 @@ func NewImages() *Images {
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		searchDialog:   imgdialogs.NewImageSearchDialog(),
 		historyDialog:  imgdialogs.NewImageHistoryDialog(),
+		importDialog:   imgdialogs.NewImageImportDialog(),
 		buildDialog:    imgdialogs.NewImageBuildDialog(),
 		buildPrgDialog: imgdialogs.NewImageBuildProgressDialog(),
 		saveDialog:     imgdialogs.NewImageSaveDialog(),
@@ -64,6 +66,7 @@ func NewImages() *Images {
 		{"build", "build an image from Containerfile"},
 		{"diff", "inspect changes to the image's file systems"},
 		{"history", "show history of the selected image"},
+		{"import", "create a container image from a tarball"},
 		{"inspect", "display the configuration of the selected image"},
 		{"prune", "remove all unused images"},
 		{"rm", "removes the selected  image from local storage"},
@@ -169,6 +172,10 @@ func NewImages() *Images {
 	images.saveDialog.SetCancelFunc(images.saveDialog.Hide)
 	images.saveDialog.SetSaveFunc(images.save)
 
+	// set import dialog functions
+	images.importDialog.SetCancelFunc(images.importDialog.Hide)
+	images.importDialog.SetImportFunc(images.imageImport)
+
 	return images
 }
 
@@ -197,7 +204,10 @@ func (img *Images) HasFocus() bool {
 	if img.buildPrgDialog.HasFocus() || img.saveDialog.HasFocus() {
 		return true
 	}
-	return img.Box.HasFocus()
+	if img.importDialog.HasFocus() || img.Box.HasFocus() {
+		return true
+	}
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus
@@ -217,7 +227,10 @@ func (img *Images) SubDialogHasFocus() bool {
 	if img.buildDialog.HasFocus() || img.buildPrgDialog.HasFocus() {
 		return true
 	}
-	return img.saveDialog.HasFocus()
+	if img.saveDialog.HasFocus() || img.importDialog.HasFocus() {
+		return true
+	}
+	return false
 }
 
 // Focus is called when this primitive receives focus
@@ -273,6 +286,11 @@ func (img *Images) Focus(delegate func(p tview.Primitive)) {
 		delegate(img.saveDialog)
 		return
 	}
+	// import dialog
+	if img.importDialog.IsDisplay() {
+		delegate(img.importDialog)
+		return
+	}
 	delegate(img.table)
 }
 
@@ -322,6 +340,9 @@ func (img *Images) HideAllDialogs() {
 	}
 	if img.saveDialog.IsDisplay() {
 		img.saveDialog.Hide()
+	}
+	if img.importDialog.IsDisplay() {
+		img.importDialog.Hide()
 	}
 }
 

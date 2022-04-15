@@ -18,6 +18,8 @@ func (img *Images) runCommand(cmd string) {
 		img.diff()
 	case "history":
 		img.history()
+	case "import":
+		img.importDialog.Display()
 	case "inspect":
 		img.inspect()
 	case "prune":
@@ -110,6 +112,29 @@ func (img *Images) history() {
 
 }
 
+func (img *Images) imageImport() {
+	importOpts, err := img.importDialog.ImageImportOptions()
+	if err != nil {
+		img.displayError("IMAGE IMPORT ERROR", err)
+		return
+	}
+	img.importDialog.Hide()
+	img.progressDialog.SetTitle("image import in progress")
+	img.progressDialog.Display()
+	importFunc := func() {
+		newImageID, err := images.Import(importOpts)
+		img.progressDialog.Hide()
+		if err != nil {
+			img.displayError("IMAGE IMPORT ERROR", err)
+			return
+		}
+		img.messageDialog.SetTitle("podman image import")
+		img.messageDialog.SetText(newImageID)
+		img.messageDialog.Display()
+	}
+	go importFunc()
+}
+
 func (img *Images) inspect() {
 	if img.selectedID == "" {
 		img.displayError("", fmt.Errorf("there is no image to display inspect"))
@@ -181,7 +206,7 @@ func (img *Images) remove() {
 func (img *Images) csave() {
 	id, name := img.getSelectedItem()
 	if id == "" {
-		img.displayError("", fmt.Errorf("there is no image to display diff"))
+		img.displayError("", fmt.Errorf("there is no image to save"))
 		return
 	}
 	img.saveDialog.SetImageInfo(id, name)

@@ -57,14 +57,14 @@ func (vols *Volumes) inspect() {
 }
 
 func (vols *Volumes) cprune() {
-	vols.confirmDialog.SetTitle("podman volume prune")
+	vols.confirmDialog.SetTitle("podman pod prune")
 	vols.confirmData = "prune"
 	vols.confirmDialog.SetText("Are you sure you want to remove all unused volumes ?")
 	vols.confirmDialog.Display()
 }
 
 func (vols *Volumes) prune() {
-	vols.progressDialog.SetTitle("volume purne in progress")
+	vols.progressDialog.SetTitle("pod purne in progress")
 	vols.progressDialog.Display()
 	prune := func() {
 		errData, err := volumes.Prune()
@@ -86,7 +86,7 @@ func (vols *Volumes) rm() {
 		vols.displayError("", fmt.Errorf("there is no volume to remove"))
 		return
 	}
-	vols.confirmDialog.SetTitle("podman volume remove")
+	vols.confirmDialog.SetTitle("podman pod rm")
 	vols.confirmData = "rm"
 	description := fmt.Sprintf("Are you sure you want to remove following volume ? \n\nVOLUME NAME : %s", vols.selectedID)
 	vols.confirmDialog.SetText(description)
