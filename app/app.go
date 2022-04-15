@@ -135,6 +135,8 @@ func (app *App) Run() error {
 			os.Exit(0)
 		}
 		if !app.frontScreenHasActiveDialog() {
+			event = utils.ParseKeyEventKey(event)
+
 			// previous and next screen keys
 			switch event.Rune() {
 			case utils.NextScreenKey.Rune():

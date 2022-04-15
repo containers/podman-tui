@@ -52,15 +52,25 @@ var (
 		KeyLabel: "Delete",
 		KeyDesc:  "delete the selected item",
 	}
-	ArrorUpKey = uiKeyInfo{
+	ArrowUpKey = uiKeyInfo{
 		Key:      tcell.KeyUp,
 		KeyLabel: "Arrow Up",
 		KeyDesc:  "move up",
 	}
-	ArrorDownKey = uiKeyInfo{
+	ArrowDownKey = uiKeyInfo{
 		Key:      tcell.KeyDown,
 		KeyLabel: "Arrow Down",
 		KeyDesc:  "move down",
+	}
+	ArrowLeftKey = uiKeyInfo{
+		Key:      tcell.KeyLeft,
+		KeyLabel: "Arrow Left",
+		KeyDesc:  "previous screen",
+	}
+	ArrowRightKey = uiKeyInfo{
+		Key:      tcell.KeyRight,
+		KeyLabel: "Arrow Right",
+		KeyDesc:  "next screen",
 	}
 	ScrollUpKey = uiKeyInfo{
 		Key:      tcell.KeyPgUp,
@@ -125,8 +135,10 @@ var (
 		CloseDialogKey,
 		SwitchFocusKey,
 		DeleteKey,
-		ArrorUpKey,
-		ArrorDownKey,
+		ArrowUpKey,
+		ArrowDownKey,
+		ArrowLeftKey,
+		ArrowRightKey,
 		ScrollUpKey,
 		ScrollDownKey,
 		AppExitKey,
@@ -172,6 +184,13 @@ func ParseKeyEventKey(event *tcell.EventKey) *tcell.EventKey {
 		return tcell.NewEventKey(MoveUpKey.Key, MoveUpKey.KeyRune, tcell.ModNone)
 	case MoveDownKey.KeyRune:
 		return tcell.NewEventKey(MoveDownKey.Key, MoveDownKey.KeyRune, tcell.ModNone)
+	}
+
+	switch event.Key() {
+	case ArrowLeftKey.Key:
+		return tcell.NewEventKey(PreviousScreenKey.Key, PreviousScreenKey.KeyRune, tcell.ModNone)
+	case ArrowRightKey.Key:
+		return tcell.NewEventKey(NextScreenKey.Key, NextScreenKey.KeyRune, tcell.ModNone)
 	}
 
 	return event
