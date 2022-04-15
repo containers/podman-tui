@@ -66,6 +66,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Fri Apr 15 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.2-dev-1
+
 * Fri Apr 15 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.1-1
 - activating left/right key to switch between different pages (#55)
 - adding image import command (#51)
