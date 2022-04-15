@@ -52,6 +52,28 @@ load helpers_tui
     assert "$output" == "$TEST_IMAGE_SAVE_PATH" "expected $TEST_IMAGE_SAVE_PATH exists"
 }
 
+@test "image import" {
+    podman image rm busybox || echo done
+
+    # switch to images view
+    # select import command from images commands dialog
+    # fillout import path field
+    # fillout reference field
+    # go to import button and press enter
+
+    podman_tui_set_view "images"
+    podman_tui_select_image_cmd "import"
+
+    podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "${TEST_NAME}_image_imported"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
+    sleep 6
+
+    run_helper podman image ls ${TEST_NAME}_image_imported --format "{{ .Repository }}:{{ .Tag }}"
+    assert "$output" =~ "localhost/${TEST_NAME}_image_imported" "expected image"
+}
+
 @test "image build" {
     podman image pull docker.io/library/busybox || echo done
     podman image rm ${TEST_IMAGE_BUILD_REPOSITORY}/${TEST_IMAGE_BUILD_CONTEXT_DIR} || echo done

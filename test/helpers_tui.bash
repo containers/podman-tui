@@ -78,20 +78,22 @@ function podman_tui_select_image_cmd() {
     menu_index=1;;
   "history")
     menu_index=2;;
-  "inspect")
+  "import")
     menu_index=3;;
-  "prune")
+  "inspect")
     menu_index=4;;
-  "remove")
+  "prune")
     menu_index=5;;
-  "save")
+  "remove")
     menu_index=6;;
-  "pull")
+  "save")
     menu_index=7;;
-  "tag")
+  "pull")
     menu_index=8;;
-  "untag")
+  "tag")
     menu_index=9;;
+  "untag")
+    menu_index=10;;
   esac
 
   podman_tui_select_menu $menu_index

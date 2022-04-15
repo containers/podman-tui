@@ -97,6 +97,7 @@ podman-tui uses following keyboard keys for different actions:
 | build        | build an image from Containerfile
 | diff         | inspect changes to the image's file systems
 | history      | show history of the selected image
+| import       | create a container image from a tarball
 | inspect      | display the configuration of the selected image
 | prune        | remove all unused images
 | rm           | removes the selected  image from local storage
