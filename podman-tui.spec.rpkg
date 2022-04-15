@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.3.0
+Version: 0.3.1
 Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -66,7 +66,19 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Thu Apr 14 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.1-dev-1
+* Fri Apr 15 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.1-1
+- activating left/right key to switch between different pages (#55)
+- adding image import command (#51)
+- activate <delete> key for removing items (#50)
+- Bump github.com/BurntSushi/toml from 1.0.0 to 1.1.0
+- using utils pkg common variables and functions
+- new feature: image save
+- doc update - fedora podman-tui rpm
+- Bump github.com/containers/buildah from 1.24.3 to 1.25.1
+- error dialog ui update to separate the title from the error message
+- new feature: image build
+- Bump github.com/containers/podman/v4 from 4.0.2 to 4.0.3
+- Bump github.com/containers/storage from 1.38.2 to 1.39.0
 
 * Sun Mar 27 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-1
 - Bump github.com/docker/docker
