@@ -2,6 +2,7 @@ package imgdialogs
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
@@ -372,6 +373,10 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 		automated := data[i][5]
 		if automated == "[OK]" {
 			automated = "\u2705"
+		}
+
+		if strings.Index(name, index+"/") == 0 {
+			name = strings.Replace(name, index+"/", "", 1)
 		}
 
 		// index column
