@@ -114,7 +114,9 @@ func NewPodCreateDialog() *PodCreateDialog {
 		//podNetworkAliasesField:   tview.NewInputField(),
 	}
 
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.PodCreateDialog.BgColor
+	fgColor := utils.Styles.PodCreateDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
 
 	podDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
@@ -128,18 +130,23 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podNameField.SetLabel("name:")
 	podDialog.podNameField.SetLabelWidth(basicInfoPageLabelWidth)
 	podDialog.podNameField.SetBackgroundColor(bgColor)
-	podDialog.podNameField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podNameField.SetLabelColor(fgColor)
+	podDialog.podNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// no hosts check box
 	podDialog.podNoHostsCheckBox.SetLabel("no hosts")
 	podDialog.podNoHostsCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
 	podDialog.podNoHostsCheckBox.SetChecked(false)
 	podDialog.podNoHostsCheckBox.SetBackgroundColor(bgColor)
-	podDialog.podNoHostsCheckBox.SetLabelColor(tcell.ColorWhite)
+	podDialog.podNoHostsCheckBox.SetLabelColor(fgColor)
+	podDialog.podNoHostsCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// labels field
 	podDialog.podLabelsField.SetLabel("labels:")
 	podDialog.podLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
 	podDialog.podLabelsField.SetBackgroundColor(bgColor)
-	podDialog.podLabelsField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podLabelsField.SetLabelColor(fgColor)
+	podDialog.podLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// DNS setup page
 	dnsPageLabelWidth := 16
@@ -147,17 +154,22 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podDNSServerField.SetLabel("DNS servers:")
 	podDialog.podDNSServerField.SetLabelWidth(dnsPageLabelWidth)
 	podDialog.podDNSServerField.SetBackgroundColor(bgColor)
-	podDialog.podDNSServerField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podDNSServerField.SetLabelColor(fgColor)
+	podDialog.podDNSServerField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// DNS options field
 	podDialog.podDNSOptionsField.SetLabel("DNS options:")
 	podDialog.podDNSOptionsField.SetLabelWidth(dnsPageLabelWidth)
 	podDialog.podDNSOptionsField.SetBackgroundColor(bgColor)
-	podDialog.podDNSOptionsField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podDNSOptionsField.SetLabelColor(fgColor)
+	podDialog.podDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// DNS search domains field
 	podDialog.podDNSSearchDomaindField.SetLabel("search domains:")
 	podDialog.podDNSSearchDomaindField.SetLabelWidth(dnsPageLabelWidth)
 	podDialog.podDNSSearchDomaindField.SetBackgroundColor(bgColor)
-	podDialog.podDNSSearchDomaindField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podDNSSearchDomaindField.SetLabelColor(fgColor)
+	podDialog.podDNSSearchDomaindField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// infra page
 	infraPageLabelWidth := 15
@@ -166,18 +178,23 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podInfraCheckBox.SetLabelWidth(infraPageLabelWidth)
 	podDialog.podInfraCheckBox.SetChecked(true)
 	podDialog.podInfraCheckBox.SetBackgroundColor(bgColor)
-	podDialog.podInfraCheckBox.SetLabelColor(tcell.ColorWhite)
+	podDialog.podInfraCheckBox.SetLabelColor(fgColor)
+	podDialog.podInfraCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// infra command field
 	podDialog.podInfraCommandField.SetLabel("infra command:")
 	podDialog.podInfraCommandField.SetLabelWidth(infraPageLabelWidth)
 	podDialog.podInfraCommandField.SetBackgroundColor(bgColor)
-	podDialog.podInfraCommandField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podInfraCommandField.SetLabelColor(fgColor)
+	podDialog.podInfraCommandField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// infra image field
 	podDialog.podInfraImageField.SetLabel("infra image:")
 	podDialog.podInfraImageField.SetText(podDialog.defaultInfraImage)
 	podDialog.podInfraImageField.SetLabelWidth(infraPageLabelWidth)
 	podDialog.podInfraImageField.SetBackgroundColor(bgColor)
-	podDialog.podInfraImageField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podInfraImageField.SetLabelColor(fgColor)
+	podDialog.podInfraImageField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// networking page
 	networkingLabelWidth := 17
@@ -185,30 +202,39 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podHostnameField.SetLabel("hostname:")
 	podDialog.podHostnameField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podHostnameField.SetBackgroundColor(bgColor)
-	podDialog.podHostnameField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podHostnameField.SetLabelColor(fgColor)
+	podDialog.podHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// ip address field
 	podDialog.podIPAddressField.SetLabel("ip address:")
 	podDialog.podIPAddressField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podIPAddressField.SetBackgroundColor(bgColor)
-	podDialog.podIPAddressField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podIPAddressField.SetLabelColor(fgColor)
+	podDialog.podIPAddressField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// mac address field
 	podDialog.podMacAddressField.SetLabel("mac address:")
 	podDialog.podMacAddressField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podMacAddressField.SetBackgroundColor(bgColor)
-	podDialog.podMacAddressField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podMacAddressField.SetLabelColor(fgColor)
+	podDialog.podMacAddressField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// host-to-ip map field
 	podDialog.podHostToIPMapField.SetLabel("host-to-ip:")
 	podDialog.podHostToIPMapField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podHostToIPMapField.SetBackgroundColor(bgColor)
-	podDialog.podHostToIPMapField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podHostToIPMapField.SetLabelColor(fgColor)
+	podDialog.podHostToIPMapField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// network field
 	podDialog.podNetworkField.SetLabel("network:")
 	podDialog.podNetworkField.SetLabelWidth(networkingLabelWidth)
 	podDialog.podNetworkField.SetBackgroundColor(bgColor)
-	podDialog.podNetworkField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podNetworkField.SetLabelColor(fgColor)
 	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
 	ddselectedStyle := utils.Styles.DropdownStyle.Selected
 	podDialog.podNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	podDialog.podNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// category pages
 	podDialog.categoryPages.SetBackgroundColor(bgColor)
@@ -219,6 +245,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.form.AddButton("Cancel", nil)
 	podDialog.form.AddButton("Create", nil)
 	podDialog.form.SetButtonsAlign(tview.AlignRight)
+	podDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	podDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
 	podDialog.setupLayout()
@@ -234,7 +261,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 }
 
 func (d *PodCreateDialog) setupLayout() {
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.PodCreateDialog.BgColor
 
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
@@ -511,13 +538,18 @@ func (d *PodCreateDialog) SetCreateFunc(handler func()) *PodCreateDialog {
 }
 
 func (d *PodCreateDialog) setActiveCategory(index int) {
+	fgColor := utils.Styles.PodCreateDialog.FgColor
+	bgColor := utils.Styles.ButtonPrimitive.BgColor
+	ctgTextColor := utils.GetColorName(fgColor)
+	ctgBgColor := utils.GetColorName(bgColor)
+
 	d.activePageIndex = index
 	d.categories.Clear()
 	var ctgList []string
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 	for i := 0; i < len(d.categoryLabels); i++ {
 		if i == index {
-			ctgList = append(ctgList, fmt.Sprintf("[white:blue:b]-> %s ", alignedList[i]))
+			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
 			continue
 		}
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))

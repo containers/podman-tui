@@ -57,6 +57,7 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(bgColor)
+	statsDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// table layout
 	statLayout := tview.NewFlex().SetDirection(tview.FlexColumn)

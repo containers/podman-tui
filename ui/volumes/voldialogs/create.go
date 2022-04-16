@@ -41,7 +41,7 @@ type VolumeCreateDialog struct {
 
 // NewVolumeCreateDialog returns new pod create dialog primitive VolumeCreateDialog
 func NewVolumeCreateDialog() *VolumeCreateDialog {
-	podDialog := VolumeCreateDialog{
+	volDialog := VolumeCreateDialog{
 		Box:                      tview.NewBox(),
 		layout:                   tview.NewFlex().SetDirection(tview.FlexRow),
 		form:                     tview.NewForm(),
@@ -52,57 +52,75 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 		volumeDriverOptionsField: tview.NewInputField(),
 	}
 
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.VolumeCreateDialog.BgColor
+	fgColor := utils.Styles.VolumeCreateDialog.FgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+	inputFieldColor := utils.Styles.InputFieldPrimitive.BgColor
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 9
 	// name field
-	podDialog.volumeNameField.SetLabel("name:")
-	podDialog.volumeNameField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.volumeNameField.SetBackgroundColor(bgColor)
-	podDialog.volumeNameField.SetLabelColor(tcell.ColorWhite)
+	volDialog.volumeNameField.SetLabel("name:")
+	volDialog.volumeNameField.SetLabelWidth(basicInfoPageLabelWidth)
+	volDialog.volumeNameField.SetBackgroundColor(bgColor)
+	volDialog.volumeNameField.SetLabelColor(fgColor)
+	volDialog.volumeNameField.SetFieldBackgroundColor(inputFieldColor)
 	// labels field
-	podDialog.volumeLabelField.SetLabel("labels:")
-	podDialog.volumeLabelField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.volumeLabelField.SetBackgroundColor(bgColor)
-	podDialog.volumeLabelField.SetLabelColor(tcell.ColorWhite)
+	volDialog.volumeLabelField.SetLabel("labels:")
+	volDialog.volumeLabelField.SetLabelWidth(basicInfoPageLabelWidth)
+	volDialog.volumeLabelField.SetBackgroundColor(bgColor)
+	volDialog.volumeLabelField.SetLabelColor(fgColor)
+	volDialog.volumeLabelField.SetFieldBackgroundColor(inputFieldColor)
 	// drivers
-	podDialog.volumeDriverField.SetLabel("drivers:")
-	podDialog.volumeDriverField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.volumeDriverField.SetBackgroundColor(bgColor)
-	podDialog.volumeDriverField.SetLabelColor(tcell.ColorWhite)
+	volDialog.volumeDriverField.SetLabel("drivers:")
+	volDialog.volumeDriverField.SetLabelWidth(basicInfoPageLabelWidth)
+	volDialog.volumeDriverField.SetBackgroundColor(bgColor)
+	volDialog.volumeDriverField.SetLabelColor(fgColor)
+	volDialog.volumeDriverField.SetFieldBackgroundColor(inputFieldColor)
 	// drivers options
-	podDialog.volumeDriverOptionsField.SetLabel("options:")
-	podDialog.volumeDriverOptionsField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.volumeDriverOptionsField.SetBackgroundColor(bgColor)
-	podDialog.volumeDriverOptionsField.SetLabelColor(tcell.ColorWhite)
+	volDialog.volumeDriverOptionsField.SetLabel("options:")
+	volDialog.volumeDriverOptionsField.SetLabelWidth(basicInfoPageLabelWidth)
+	volDialog.volumeDriverOptionsField.SetBackgroundColor(bgColor)
+	volDialog.volumeDriverOptionsField.SetLabelColor(fgColor)
+	volDialog.volumeDriverOptionsField.SetFieldBackgroundColor(inputFieldColor)
 
 	// form
-	podDialog.form.SetBackgroundColor(bgColor)
-	podDialog.form.AddButton("Cancel", nil)
-	podDialog.form.AddButton("Create", nil)
-	podDialog.form.SetButtonsAlign(tview.AlignRight)
+	volDialog.form.SetBackgroundColor(bgColor)
+	volDialog.form.AddButton("Cancel", nil)
+	volDialog.form.AddButton("Create", nil)
+	volDialog.form.SetButtonsAlign(tview.AlignRight)
+	volDialog.form.SetButtonBackgroundColor(buttonBgColor)
 
-	podDialog.setupLayout()
-	podDialog.layout.SetBackgroundColor(bgColor)
-	podDialog.layout.SetBorder(true)
-	podDialog.layout.SetTitle("PODMAN VOLUME CREATE")
+	volDialog.setupLayout()
+	volDialog.layout.SetBackgroundColor(bgColor)
+	volDialog.layout.SetBorder(true)
+	volDialog.layout.SetTitle("PODMAN VOLUME CREATE")
 
-	return &podDialog
+	return &volDialog
 }
 
 func (d *VolumeCreateDialog) setupLayout() {
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.VolumeCreateDialog.BgColor
 
-	// basic info page
-	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.layout.AddItem(d.volumeNameField, 1, 0, true)
-	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.layout.AddItem(d.volumeLabelField, 1, 0, true)
-	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.layout.AddItem(d.volumeDriverField, 1, 0, true)
-	d.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.layout.AddItem(d.volumeDriverOptionsField, 1, 0, true)
+	// layouts
+	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	inputFieldLayout.SetBackgroundColor(bgColor)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeNameField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeLabelField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeDriverField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeDriverOptionsField, 1, 0, true)
+
+	// adding an empty column space to beginning and end of the fields layout
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	layout.AddItem(inputFieldLayout, 0, 1, true)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+
+	d.layout.AddItem(layout, 0, 1, true)
 	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
 
 }

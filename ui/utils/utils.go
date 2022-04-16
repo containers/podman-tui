@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/storage/pkg/unshare"
 	"github.com/gdamore/tcell/v2"
 	"github.com/pkg/errors"
 	"github.com/rivo/tview"
@@ -76,7 +75,7 @@ func ResolveHomeDir(path string) (string, error) {
 	}
 
 	// only get HomeDir when necessary
-	home, err := unshare.HomeDir()
+	home, err := UserHomeDir()
 	if err != nil {
 		return "", err
 	}

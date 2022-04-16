@@ -55,6 +55,7 @@ func NewImageImportDialog() *ImageImportDialog {
 
 	bgColor := utils.Styles.ImageImportDialog.BgColor
 	fgColor := utils.Styles.ImageImportDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
 	labelWidth := 11
 
 	// path field
@@ -62,30 +63,35 @@ func NewImageImportDialog() *ImageImportDialog {
 	dialog.path.SetLabelColor(fgColor)
 	dialog.path.SetLabel("Source:")
 	dialog.path.SetLabelWidth(labelWidth)
+	dialog.path.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// change field
 	dialog.change.SetBackgroundColor(bgColor)
 	dialog.change.SetLabelColor(fgColor)
 	dialog.change.SetLabel("Change:")
 	dialog.change.SetLabelWidth(labelWidth)
+	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// commit field
 	dialog.commitMessage.SetBackgroundColor(bgColor)
 	dialog.commitMessage.SetLabelColor(fgColor)
 	dialog.commitMessage.SetLabel("Message:")
 	dialog.commitMessage.SetLabelWidth(labelWidth)
+	dialog.commitMessage.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// reference field
 	dialog.reference.SetBackgroundColor(bgColor)
 	dialog.reference.SetLabelColor(fgColor)
 	dialog.reference.SetLabel("Reference:")
 	dialog.reference.SetLabelWidth(labelWidth)
+	dialog.reference.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)
 	dialog.form.AddButton("Import", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)

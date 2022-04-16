@@ -57,6 +57,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 
 	bgColor := utils.Styles.ImageSaveDialog.BgColor
 	fgColor := utils.Styles.ImageSaveDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
 	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
 	ddselectedStyle := utils.Styles.DropdownStyle.Selected
 	labelWidth := 10
@@ -71,12 +72,14 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	dialog.output.SetLabelColor(fgColor)
 	dialog.output.SetLabel("Output:")
 	dialog.output.SetLabelWidth(labelWidth)
+	dialog.output.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// compress
 	dialog.compress.SetBackgroundColor(bgColor)
 	dialog.compress.SetLabelColor(fgColor)
 	dialog.compress.SetLabel("Compress:")
 	dialog.compress.SetLabelWidth(labelWidth)
+	dialog.compress.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// format
 	dialog.format.SetBackgroundColor(bgColor)
@@ -91,17 +94,20 @@ func NewImageSaveDialog() *ImageSaveDialog {
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.format.SetCurrentOption(0)
+	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// OciAcceptUncompressed
 	dialog.ociAcceptUncompressed.SetBackgroundColor(bgColor)
 	dialog.ociAcceptUncompressed.SetLabelColor(fgColor)
 	dialog.ociAcceptUncompressed.SetLabel("Accept uncompressed (OCI images): ")
+	dialog.ociAcceptUncompressed.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)
 	dialog.form.AddButton("Save", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// layout
 	compressRow := tview.NewFlex().SetDirection(tview.FlexColumn)

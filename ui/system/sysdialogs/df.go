@@ -34,7 +34,9 @@ func NewDfDialog() *DfDialog {
 		tableHeaders: []string{"type", "total", "active", "size", "reclaimable"},
 		display:      false,
 	}
-	bgColor := utils.Styles.CommandDialog.BgColor
+	bgColor := utils.Styles.DiskUageDialog.BgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+
 	dialog.table = tview.NewTable()
 	dialog.table.SetBackgroundColor(bgColor)
 	dialog.table.SetBorder(false)
@@ -44,6 +46,7 @@ func NewDfDialog() *DfDialog {
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(buttonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 
@@ -144,8 +147,8 @@ func (d *DfDialog) SetDoneFunc(handler func()) *DfDialog {
 }
 
 func (d *DfDialog) initTable() {
-	bgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
-	fgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
+	bgColor := utils.Styles.DiskUageDialog.HeaderRow.BgColor
+	fgColor := utils.Styles.DiskUageDialog.HeaderRow.FgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)

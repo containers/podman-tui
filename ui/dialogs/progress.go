@@ -3,6 +3,7 @@ package dialogs
 import (
 	"fmt"
 
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -103,6 +104,7 @@ func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 }
 
 func (d *ProgressDialog) tickStr(max int) string {
+	barColor := utils.GetColorName(utils.Styles.ProgressDailog.PgBarColor)
 	counter := d.counterValue
 	if counter < max-4 {
 		d.counterValue++
@@ -122,5 +124,6 @@ func (d *ProgressDialog) tickStr(max int) string {
 		prgEndStr = prgEndStr + fmt.Sprintf("[black::]%s", prgCell)
 	}
 
-	return fmt.Sprintf("%s[orange::]%s%s", prgHeadStr, prgStr, prgEndStr)
+	progress := fmt.Sprintf("%s[%s::]%s%s", prgHeadStr, barColor, prgStr, prgEndStr)
+	return progress
 }

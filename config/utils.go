@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/libpod/define"
 	"github.com/containers/podman/v4/pkg/terminal"
-	"github.com/containers/storage/pkg/unshare"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
@@ -23,7 +23,7 @@ func configPath() (string, error) {
 	if configHome := os.Getenv("XDG_CONFIG_HOME"); configHome != "" {
 		return filepath.Join(configHome, _configPath), nil
 	}
-	home, err := unshare.HomeDir()
+	home, err := utils.UserHomeDir()
 	if err != nil {
 		return "", err
 	}

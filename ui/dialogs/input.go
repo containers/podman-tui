@@ -43,7 +43,8 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 		focusElement: siInputElement,
 	}
 
-	bgColor := utils.Styles.CommandDialog.BgColor
+	bgColor := utils.Styles.InputDialog.BgColor
+	fgColor := utils.Styles.InputDialog.FgColor
 
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
@@ -57,6 +58,7 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
@@ -64,8 +66,10 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 
 	dialog.input = tview.NewInputField()
 	dialog.SetInputText(text)
-	dialog.input.SetLabelColor(tcell.ColorWhite)
+	dialog.input.SetLabelColor(fgColor)
 	dialog.input.SetBackgroundColor(bgColor)
+	dialog.input.SetFieldBackgroundColor(utils.Styles.InputFieldPrimitive.BgColor)
+
 	return dialog
 }
 
@@ -99,7 +103,7 @@ func (d *SimpleInputDialog) setLayout(haveDesc bool) {
 	d.layout.AddItem(d.textview, descHeight, 0, true)
 	d.layout.AddItem(d.input, 1, 0, true)
 	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
-	bgColor := utils.Styles.CommandDialog.BgColor
+	bgColor := utils.Styles.InputDialog.BgColor
 	d.layout.SetBorder(true)
 	d.layout.SetBackgroundColor(bgColor)
 }

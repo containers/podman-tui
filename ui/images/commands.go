@@ -154,7 +154,7 @@ func (img *Images) inspect() {
 func (img *Images) cprune() {
 	img.confirmDialog.SetTitle("podman image prune")
 	img.confirmData = "prune"
-	img.confirmDialog.SetText("Are you sure you want to remove all unused images")
+	img.confirmDialog.SetText("Are you sure you want to remove all unused images ?")
 	img.confirmDialog.Display()
 }
 

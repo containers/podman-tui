@@ -37,6 +37,7 @@ func NewEventDialog() *EventsDialog {
 	bgColor := utils.Styles.EventsDialog.BgColor
 	textviewBgColor := utils.Styles.EventsDialog.EventViewer.BgColor
 	textviewFgColor := utils.Styles.EventsDialog.EventViewer.FgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
 
 	// text view
 	eventsDialog.textview = tview.NewTextView().
@@ -55,6 +56,7 @@ func NewEventDialog() *EventsDialog {
 		SetButtonsAlign(tview.AlignRight)
 
 	eventsDialog.form.SetBackgroundColor(bgColor)
+	eventsDialog.form.SetButtonBackgroundColor(buttonBgColor)
 
 	// textview layout
 	tlayout := tview.NewFlex().SetDirection(tview.FlexColumn)

@@ -52,10 +52,17 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	}
 	bgColor := utils.Styles.ImageSearchDialog.BgColor
 	fgColor := utils.Styles.ImageSearchDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+
+	dialog.searchButton.SetBackgroundColor(buttonBgColor)
+	dialog.searchButton.SetLabelColorActivated(buttonBgColor)
+
 	dialog.input.SetLabel("search term: ")
 	dialog.input.SetLabelColor(fgColor)
 	dialog.input.SetFieldWidth(searchFieldMaxSize)
 	dialog.input.SetBackgroundColor(bgColor)
+	dialog.input.SetFieldBackgroundColor(inputFieldBgColor)
 
 	dialog.searchLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
 	dialog.searchLayout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
@@ -80,6 +87,7 @@ func NewImageSearchDialog() *ImageSearchDialog {
 		AddButton("Pull", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(buttonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)

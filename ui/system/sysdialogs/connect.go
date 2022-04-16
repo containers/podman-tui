@@ -36,31 +36,29 @@ func NewConnectDialog() *ConnectDialog {
 	}
 
 	// colors
-	boxFgColor := utils.Styles.PageTable.FgColor
-	boxBgColor := utils.Styles.PageTable.BgColor
+	borderColor := utils.Styles.ConnectionProgressDialog.BorderColor
+	titleColor := utils.Styles.ConnectionProgressDialog.TitleColor
 	connPrgFgColor := utils.Styles.ConnectionProgressDialog.FgColor
 	connPrgBgColor := utils.Styles.ConnectionProgressDialog.BgColor
 
 	// connect dialog box
-	conn.Box.SetBorderColor(boxBgColor)
-	conn.Box.SetTitleColor(boxFgColor)
 	conn.Box.SetBorder(false)
 
 	// progress bar
 	conn.progressDialog.SetPgBgColor(connPrgBgColor)
 	conn.progressDialog.SetBackgroundColor(connPrgBgColor)
-	conn.progressDialog.SetPgBgColor(connPrgFgColor)
+	conn.progressDialog.SetPgBgColor(utils.Styles.ConnectionProgressDialog.PrgBarColor)
 
 	// connection message text view
 	conn.textview.SetBackgroundColor(connPrgBgColor)
-	conn.textview.SetTextColor(boxFgColor)
+	conn.textview.SetTextColor(titleColor)
 
 	// cancel button and layout
 	conn.cancelButton.SetBackgroundColor(connPrgFgColor)
-	conn.cancelButton.SetLabelColor(connPrgFgColor)
+	conn.cancelButton.SetLabelColor(titleColor)
 	conn.cancelButton.SetLabelColorActivated(connPrgBgColor)
 	//conn.cancelButton.SetBackgroundColorActivated(connPrgFgColor)
-	conn.cancelButton.SetLabelColor(tcell.ColorBlack)
+
 	cancelLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	cancelLayout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 0, 1, false)
 	cancelLayout.AddItem(conn.cancelButton, 10, 0, true)
@@ -69,6 +67,9 @@ func NewConnectDialog() *ConnectDialog {
 
 	// connection progress layout
 	conn.layout.SetBorder(true)
+	conn.layout.SetBorderColor(borderColor)
+	conn.layout.SetTitleColor(titleColor)
+
 	conn.layout.SetBackgroundColor(connPrgBgColor)
 	conn.layout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 1, 0, false)
 	conn.layout.AddItem(conn.progressDialog, 1, 0, false)

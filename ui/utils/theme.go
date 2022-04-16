@@ -18,18 +18,32 @@ type theme struct {
 	ImageBuildDialog            imageBuildDialog
 	ImageBuildPrgDialog         imageBuildPrgDialog
 	ImageSaveDialog             imageSaveDialog
+	VolumeCreateDialog          volumeCreateDialog
+	NetworkCreateDialog         networkCreateDialog
+	ContainerCreateDialog       containerCreateDialog
 	ContainerExecDialog         containerExecDialog
 	ContainerExecTerminalDialog containerExecTerminalDialog
 	ContainerStatsDialog        containerStatsDialog
 	PodStatsDialog              podStatsDialog
+	PodCreateDialog             podCreateDialog
 	DropdownStyle               dropdownStyle
 	EventsDialog                eventsDialog
 	ConnectionAddDialog         connectionAddDialog
+	DiskUageDialog              diskUageDialog
+	MessageDialog               messageDialog
+	ButtonPrimitive             buttonPrimitive
+	InputFieldPrimitive         inputFieldPrimitive
+	ProgressDailog              progressDailog
+	InputDialog                 inputDialog
+	ErrorDialog                 errorDialog
 }
 
 type connectionProgressDialog struct {
-	BgColor tcell.Color
-	FgColor tcell.Color
+	BgColor     tcell.Color
+	FgColor     tcell.Color
+	BorderColor tcell.Color
+	TitleColor  tcell.Color
+	PrgBarColor tcell.Color
 }
 
 type infoBar struct {
@@ -120,15 +134,30 @@ type imageSaveDialog struct {
 	FgColor tcell.Color
 }
 
+type volumeCreateDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type networkCreateDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+type containerCreateDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
 type containerExecDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
 }
 
 type containerExecTerminalDialog struct {
-	BgColor  tcell.Color
-	FgColor  tcell.Color
-	Terminal terminal
+	BgColor       tcell.Color
+	FgColor       tcell.Color
+	HeaderBgColor tcell.Color
+	Terminal      terminal
 }
 
 type containerStatsDialog struct {
@@ -136,7 +165,13 @@ type containerStatsDialog struct {
 	BgColor            tcell.Color
 	FgColor            tcell.Color
 }
+
 type terminal struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type podCreateDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
 }
@@ -160,4 +195,39 @@ type eventsDialog struct {
 type connectionAddDialog struct {
 	FgColor tcell.Color
 	BgColor tcell.Color
+}
+
+type diskUageDialog struct {
+	BgColor   tcell.Color
+	FgColor   tcell.Color
+	HeaderRow headerRow
+}
+
+type messageDialog struct {
+	BgColor  tcell.Color
+	FgColor  tcell.Color
+	Terminal terminal
+}
+
+type buttonPrimitive struct {
+	BgColor tcell.Color
+}
+
+type inputFieldPrimitive struct {
+	BgColor tcell.Color
+}
+
+type progressDailog struct {
+	PgBarColor tcell.Color
+}
+
+type inputDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type errorDialog struct {
+	HeaderFgColor tcell.Color
+	BgColor       tcell.Color
+	FgColor       tcell.Color
 }

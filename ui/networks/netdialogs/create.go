@@ -14,7 +14,7 @@ import (
 
 const (
 	networkCreateDialogMaxWidth = 80
-	networkCreateDialogHeight   = 19
+	networkCreateDialogHeight   = 17
 )
 
 const (
@@ -67,7 +67,7 @@ type NetworkCreateDialog struct {
 
 // NewNetworkCreateDialog returns new network create dialog primitive NetworkCreateDialog
 func NewNetworkCreateDialog() *NetworkCreateDialog {
-	podDialog := NetworkCreateDialog{
+	netDialog := NetworkCreateDialog{
 		Box:                       tview.NewBox(),
 		layout:                    tview.NewFlex().SetDirection(tview.FlexRow),
 		categories:                tview.NewTextView(),
@@ -90,99 +90,118 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 		networkDisableDNSCheckBox: tview.NewCheckbox(),
 	}
 
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.NetworkCreateDialog.BgColor
+	fgColor := utils.Styles.NetworkCreateDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
 
-	podDialog.categories.SetDynamicColors(true).
+	netDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
-	podDialog.categories.SetBackgroundColor(bgColor)
-	podDialog.categories.SetBorder(true)
+	netDialog.categories.SetBackgroundColor(bgColor)
+	netDialog.categories.SetBorder(true)
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 12
 	// name field
-	podDialog.networkNameField.SetLabel("name:")
-	podDialog.networkNameField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkNameField.SetBackgroundColor(bgColor)
-	podDialog.networkNameField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkNameField.SetLabel("name:")
+	netDialog.networkNameField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkNameField.SetBackgroundColor(bgColor)
+	netDialog.networkNameField.SetLabelColor(fgColor)
+	netDialog.networkNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// labels field
-	podDialog.networkLabelsField.SetLabel("labels:")
-	podDialog.networkLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkLabelsField.SetBackgroundColor(bgColor)
-	podDialog.networkLabelsField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkLabelsField.SetLabel("labels:")
+	netDialog.networkLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkLabelsField.SetBackgroundColor(bgColor)
+	netDialog.networkLabelsField.SetLabelColor(fgColor)
+	netDialog.networkLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// internal check box
-	podDialog.networkInternalCheckBox.SetLabel("internal")
-	podDialog.networkInternalCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkInternalCheckBox.SetChecked(false)
-	podDialog.networkInternalCheckBox.SetBackgroundColor(bgColor)
-	podDialog.networkInternalCheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkInternalCheckBox.SetLabel("internal")
+	netDialog.networkInternalCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkInternalCheckBox.SetChecked(false)
+	netDialog.networkInternalCheckBox.SetBackgroundColor(bgColor)
+	netDialog.networkInternalCheckBox.SetLabelColor(fgColor)
+	netDialog.networkInternalCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// drivers
-	podDialog.networkDriverField.SetLabel("drivers:")
-	podDialog.networkDriverField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkDriverField.SetBackgroundColor(bgColor)
-	podDialog.networkDriverField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkDriverField.SetLabel("drivers:")
+	netDialog.networkDriverField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkDriverField.SetBackgroundColor(bgColor)
+	netDialog.networkDriverField.SetLabelColor(fgColor)
+	netDialog.networkDriverField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// drivers options
-	podDialog.networkDriverOptionsField.SetLabel("options:")
-	podDialog.networkDriverOptionsField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkDriverOptionsField.SetBackgroundColor(bgColor)
-	podDialog.networkDriverOptionsField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkDriverOptionsField.SetLabel("options:")
+	netDialog.networkDriverOptionsField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkDriverOptionsField.SetBackgroundColor(bgColor)
+	netDialog.networkDriverOptionsField.SetLabelColor(fgColor)
+	netDialog.networkDriverOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ip settings page
 	ipSettingsPageLabelWidth := 12
 	// ipv6 check box
-	podDialog.networkIpv6CheckBox.SetLabel("IPv6")
-	podDialog.networkIpv6CheckBox.SetLabelWidth(ipSettingsPageLabelWidth)
-	podDialog.networkIpv6CheckBox.SetChecked(false)
-	podDialog.networkIpv6CheckBox.SetBackgroundColor(bgColor)
-	podDialog.networkIpv6CheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkIpv6CheckBox.SetLabel("IPv6")
+	netDialog.networkIpv6CheckBox.SetLabelWidth(ipSettingsPageLabelWidth)
+	netDialog.networkIpv6CheckBox.SetChecked(false)
+	netDialog.networkIpv6CheckBox.SetBackgroundColor(bgColor)
+	netDialog.networkIpv6CheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkIpv6CheckBox.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// gateway
-	podDialog.networkGatewayField.SetLabel("gateway:")
-	podDialog.networkGatewayField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkGatewayField.SetBackgroundColor(bgColor)
-	podDialog.networkGatewayField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkGatewayField.SetLabel("gateway:")
+	netDialog.networkGatewayField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkGatewayField.SetBackgroundColor(bgColor)
+	netDialog.networkGatewayField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkGatewayField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ip range
-	podDialog.networkIPRangeField.SetLabel("IP range:")
-	podDialog.networkIPRangeField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkIPRangeField.SetBackgroundColor(bgColor)
-	podDialog.networkIPRangeField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkIPRangeField.SetLabel("IP range:")
+	netDialog.networkIPRangeField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkIPRangeField.SetBackgroundColor(bgColor)
+	netDialog.networkIPRangeField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkIPRangeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// subnet
-	podDialog.networkSubnetField.SetLabel("subnet:")
-	podDialog.networkSubnetField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkSubnetField.SetBackgroundColor(bgColor)
-	podDialog.networkSubnetField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkSubnetField.SetLabel("subnet:")
+	netDialog.networkSubnetField.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkSubnetField.SetBackgroundColor(bgColor)
+	netDialog.networkSubnetField.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkSubnetField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// dns check box
-	podDialog.networkDisableDNSCheckBox.SetLabel("disable DNS")
-	podDialog.networkDisableDNSCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.networkDisableDNSCheckBox.SetChecked(false)
-	podDialog.networkDisableDNSCheckBox.SetBackgroundColor(bgColor)
-	podDialog.networkDisableDNSCheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkDisableDNSCheckBox.SetLabel("disable DNS")
+	netDialog.networkDisableDNSCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
+	netDialog.networkDisableDNSCheckBox.SetChecked(false)
+	netDialog.networkDisableDNSCheckBox.SetBackgroundColor(bgColor)
+	netDialog.networkDisableDNSCheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkDisableDNSCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// category pages
-	podDialog.categoryPages.SetBackgroundColor(bgColor)
-	podDialog.categoryPages.SetBorder(true)
+	netDialog.categoryPages.SetBackgroundColor(bgColor)
+	netDialog.categoryPages.SetBorder(true)
 
 	// form
-	podDialog.form.SetBackgroundColor(bgColor)
-	podDialog.form.AddButton("Cancel", nil)
-	podDialog.form.AddButton("Create", nil)
-	podDialog.form.SetButtonsAlign(tview.AlignRight)
+	netDialog.form.SetBackgroundColor(bgColor)
+	netDialog.form.AddButton("Cancel", nil)
+	netDialog.form.AddButton("Create", nil)
+	netDialog.form.SetButtonsAlign(tview.AlignRight)
+	netDialog.form.SetButtonBackgroundColor(buttonBgColor)
 
-	podDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
-	podDialog.setupLayout()
-	podDialog.layout.SetBackgroundColor(bgColor)
-	podDialog.layout.SetBorder(true)
-	podDialog.layout.SetTitle("PODMAN NETWORK CREATE")
-	podDialog.layout.AddItem(podDialog.form, dialogs.DialogFormHeight, 0, true)
+	netDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
+	netDialog.setupLayout()
+	netDialog.layout.SetBackgroundColor(bgColor)
+	netDialog.layout.SetBorder(true)
+	netDialog.layout.SetTitle("PODMAN NETWORK CREATE")
+	netDialog.layout.AddItem(netDialog.form, dialogs.DialogFormHeight, 0, true)
 
-	podDialog.setActiveCategory(0)
-	return &podDialog
+	netDialog.setActiveCategory(0)
+	return &netDialog
 }
 
 func (d *NetworkCreateDialog) setupLayout() {
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	bgColor := utils.Styles.NetworkCreateDialog.BgColor
 
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
@@ -413,13 +432,18 @@ func (d *NetworkCreateDialog) SetCreateFunc(handler func()) *NetworkCreateDialog
 }
 
 func (d *NetworkCreateDialog) setActiveCategory(index int) {
+	fgColor := utils.Styles.NetworkCreateDialog.FgColor
+	bgColor := utils.Styles.ButtonPrimitive.BgColor
+	ctgTextColor := utils.GetColorName(fgColor)
+	ctgBgColor := utils.GetColorName(bgColor)
+
 	d.activePageIndex = index
 	d.categories.Clear()
 	var ctgList []string
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 	for i := 0; i < len(d.categoryLabels); i++ {
 		if i == index {
-			ctgList = append(ctgList, fmt.Sprintf("[white:blue:b]-> %s ", alignedList[i]))
+			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
 			continue
 		}
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))

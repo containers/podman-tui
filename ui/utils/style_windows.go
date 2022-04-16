@@ -1,5 +1,5 @@
-//go:build !windows
-// +build !windows
+//go:build windows
+// +build windows
 
 package utils
 
@@ -11,21 +11,21 @@ import (
 // Styles represent default application style
 var Styles = theme{
 	PageTable: pageTable{
-		FgColor: tcell.ColorLightCyan,
-		BgColor: tcell.ColorLightSkyBlue,
+		FgColor: tcell.ColorPink,
+		BgColor: tcell.ColorPink,
 		HeaderRow: headerRow{
 			FgColor: tcell.ColorBlack,
-			BgColor: tcell.ColorSteelBlue,
+			BgColor: tcell.ColorPink,
 		},
 	},
 	InfoBar: infoBar{
-		ItemFgColor:  tcell.ColorLightSkyBlue,
+		ItemFgColor:  tcell.ColorPink,
 		ValueFgColor: tcell.ColorWhite,
 		ProgressBar: progressBar{
 			FgColor:       tcell.ColorWhite,
 			BarEmptyColor: tcell.ColorWhite,
-			BarOKColor:    tcell.ColorGreen,
-			BarWarnColor:  tcell.ColorOrange,
+			BarOKColor:    tcell.ColorLime,
+			BarWarnColor:  tcell.ColorYellow,
 			BarCritColor:  tcell.ColorRed,
 		},
 	},
@@ -34,117 +34,117 @@ var Styles = theme{
 		BgColor: tcell.ColorBlack,
 		Item: menuItem{
 			FgColor: tcell.ColorBlack,
-			BgColor: tcell.ColorSteelBlue,
+			BgColor: tcell.ColorPink,
 		},
 	},
 	Help: help{
-		BorderColor:   tcell.ColorLightSkyBlue,
+		BorderColor:   tcell.ColorPink,
 		BgColor:       tview.Styles.PrimitiveBackgroundColor,
 		FgColor:       tcell.ColorWhite,
-		HeaderFgColor: tcell.ColorSteelBlue,
+		HeaderFgColor: tcell.ColorPink,
 	},
 	ConnectionProgressDialog: connectionProgressDialog{
-		BgColor:     tcell.ColorOrangeRed,
-		FgColor:     tcell.ColorOrange,
-		PrgBarColor: tcell.ColorOrange,
-		BorderColor: tcell.ColorLightSkyBlue,
-		TitleColor:  tcell.ColorLightCyan,
+		BgColor:     tcell.ColorPink,
+		FgColor:     tcell.ColorPurple,
+		PrgBarColor: tcell.ColorFuchsia,
+		BorderColor: tcell.ColorWhite,
+		TitleColor:  tcell.ColorWhite,
 	},
 	CommandDialog: commandDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		HeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorPurple,
 		},
 	},
 	ConfirmDialog: confirmDialog{
-		BgColor: tcell.ColorOrange,
-		FgColor: tcell.ColorBlack,
+		BgColor: tcell.ColorPink,
+		FgColor: tcell.ColorWhite,
 	},
 	ImageSearchDialog: imageSearchDialog{
-		BgColor:                tcell.ColorSteelBlue,
+		BgColor:                tcell.ColorPink,
 		FgColor:                tcell.ColorWhite,
-		ResultTableBgColor:     tcell.ColorSteelBlue,
-		ResultTableBorderColor: tcell.ColorNavy,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tview.Styles.PrimaryTextColor,
 		ResultHeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorPurple,
 		},
 	},
 	ImageHistoryDialog: imageHistoryDialog{
-		BgColor: tcell.ColorSteelBlue,
-		FgColor: tcell.ColorBlack,
+		BgColor: tcell.ColorPink,
+		FgColor: tcell.ColorWhite,
 		HeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorPurple,
 		},
 	},
 	ImageImportDialog: imageImportDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ImageBuildDialog: imageBuildDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ImageBuildPrgDialog: imageBuildPrgDialog{
-		BgColor:      tcell.ColorSteelBlue,
+		BgColor:      tcell.ColorPink,
 		FgColor:      tcell.ColorWhite,
 		PrgCellColor: tcell.ColorOrange,
 		Terminal: terminal{
 			BgColor: tview.Styles.PrimitiveBackgroundColor,
-			FgColor: tcell.ColorWhite,
+			FgColor: tview.Styles.PrimaryTextColor,
 		},
 	},
 	ImageSaveDialog: imageSaveDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	VolumeCreateDialog: volumeCreateDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	NetworkCreateDialog: networkCreateDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ContainerCreateDialog: containerCreateDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ContainerExecDialog: containerExecDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ContainerExecTerminalDialog: containerExecTerminalDialog{
-		BgColor:       tcell.ColorSteelBlue,
+		BgColor:       tcell.ColorPink,
 		FgColor:       tcell.ColorWhite,
-		HeaderBgColor: tcell.ColorNavy,
+		HeaderBgColor: tcell.ColorPurple,
 		Terminal: terminal{
 			BgColor: tcell.NewRGBColor(0, 0, 0),
 			FgColor: tcell.NewRGBColor(255, 255, 255),
 		},
 	},
 	ContainerStatsDialog: containerStatsDialog{
-		TableHeaderFgColor: tcell.ColorLightSkyBlue,
-		BgColor:            tcell.ColorSteelBlue,
+		TableHeaderFgColor: tcell.ColorPink,
+		BgColor:            tcell.ColorPink,
 		FgColor:            tcell.ColorWhite,
 	},
 	PodCreateDialog: podCreateDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	PodStatsDialog: podStatsDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	DropdownStyle: dropdownStyle{
-		Unselected: tcell.StyleDefault.Background(tcell.ColorLightSkyBlue).Foreground(tcell.ColorBlack),
-		Selected:   tcell.StyleDefault.Background(tcell.ColorBlue).Foreground(tcell.ColorWhite),
+		Unselected: tcell.StyleDefault.Background(tcell.ColorFuchsia).Foreground(tcell.ColorBlack),
+		Selected:   tcell.StyleDefault.Background(tcell.ColorPurple).Foreground(tcell.ColorWhite),
 	},
 	EventsDialog: eventsDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		EventViewer: terminal{
 			BgColor: tview.Styles.PrimitiveBackgroundColor,
@@ -152,19 +152,19 @@ var Styles = theme{
 		},
 	},
 	ConnectionAddDialog: connectionAddDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	DiskUageDialog: diskUageDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		HeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorPurple,
 		},
 	},
 	MessageDialog: messageDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		Terminal: terminal{
 			BgColor: tview.Styles.PrimitiveBackgroundColor,
@@ -172,21 +172,21 @@ var Styles = theme{
 		},
 	},
 	ButtonPrimitive: buttonPrimitive{
-		BgColor: tcell.ColorBlue,
+		BgColor: tcell.ColorPurple,
 	},
 	InputFieldPrimitive: inputFieldPrimitive{
-		BgColor: tcell.ColorBlue,
+		BgColor: tcell.ColorPurple,
 	},
 	ProgressDailog: progressDailog{
-		PgBarColor: tcell.ColorOrange,
+		PgBarColor: tcell.ColorPurple,
 	},
 	InputDialog: inputDialog{
-		BgColor: tcell.ColorSteelBlue,
+		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
 	ErrorDialog: errorDialog{
-		HeaderFgColor: tcell.ColorDarkRed,
-		BgColor:       tcell.ColorOrangeRed,
+		HeaderFgColor: tcell.ColorOrangeRed,
+		BgColor:       tcell.ColorRed,
 		FgColor:       tcell.ColorWhite,
 	},
 }
