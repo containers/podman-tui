@@ -86,6 +86,7 @@ func ResolveHomeDir(path string) (string, error) {
 }
 
 // Following codes are from https://github.com/containers/podman/blob/main/cmd/podman/parse/net.go
+
 // ValidateFileName returns an error if filename contains ":"
 // as it is currently not supported
 func ValidateFileName(filename string) error {
