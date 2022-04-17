@@ -26,7 +26,7 @@ type CreateOptions struct {
 	DisableDNS     bool
 }
 
-// Create creates a new pod.
+// Create creates a new network.
 func Create(opts CreateOptions) (types.Network, error) {
 	log.Debug().Msgf("pdcs: podman network create %v", opts)
 
