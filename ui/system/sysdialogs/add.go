@@ -47,6 +47,8 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 
 	bgColor := utils.Styles.ConnectionAddDialog.BgColor
 	fgColor := utils.Styles.ConnectionAddDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	buttonBackBgColor := utils.Styles.ButtonPrimitive.BgColor
 
 	labelWidth := 10
 	// connection name
@@ -55,6 +57,7 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 	connDialog.connNameField.SetLabelWidth(labelWidth)
 	connDialog.connNameField.SetBackgroundColor(bgColor)
 	connDialog.connNameField.SetLabelColor(fgColor)
+	connDialog.connNameField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// connection URI
 	connDialog.connURIField = tview.NewInputField()
@@ -62,6 +65,7 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 	connDialog.connURIField.SetLabelWidth(labelWidth)
 	connDialog.connURIField.SetBackgroundColor(bgColor)
 	connDialog.connURIField.SetLabelColor(fgColor)
+	connDialog.connURIField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// identity
 	connDialog.identityField = tview.NewInputField()
@@ -69,6 +73,7 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 	connDialog.identityField.SetLabelWidth(labelWidth)
 	connDialog.identityField.SetBackgroundColor(bgColor)
 	connDialog.identityField.SetLabelColor(fgColor)
+	connDialog.identityField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form
 	connDialog.form = tview.NewForm().
@@ -76,6 +81,7 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 		AddButton("Add", nil).
 		SetButtonsAlign(tview.AlignRight)
 	connDialog.form.SetBackgroundColor(bgColor)
+	connDialog.form.SetButtonBackgroundColor(buttonBackBgColor)
 
 	// layouts
 	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)

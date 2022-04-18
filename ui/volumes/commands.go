@@ -57,14 +57,14 @@ func (vols *Volumes) inspect() {
 }
 
 func (vols *Volumes) cprune() {
-	vols.confirmDialog.SetTitle("podman pod prune")
+	vols.confirmDialog.SetTitle("podman volume prune")
 	vols.confirmData = "prune"
 	vols.confirmDialog.SetText("Are you sure you want to remove all unused volumes ?")
 	vols.confirmDialog.Display()
 }
 
 func (vols *Volumes) prune() {
-	vols.progressDialog.SetTitle("pod purne in progress")
+	vols.progressDialog.SetTitle("VOLUME purne in progress")
 	vols.progressDialog.Display()
 	prune := func() {
 		errData, err := volumes.Prune()

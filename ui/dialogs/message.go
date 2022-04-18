@@ -34,20 +34,31 @@ func NewMessageDialog(text string) *MessageDialog {
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 
-	bgColor := utils.Styles.CommandDialog.BgColor
-	dialog.textview.SetTextColor(tcell.ColorBlack)
-	dialog.textview.SetBackgroundColor(bgColor)
-	dialog.textview.SetBorderColor(utils.Styles.CommandDialog.HeaderRow.BgColor)
+	bgColor := utils.Styles.MessageDialog.BgColor
+	terminalBgColor := utils.Styles.MessageDialog.Terminal.BgColor
+	terminalFgColor := utils.Styles.MessageDialog.Terminal.FgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+
+	dialog.textview.SetTextColor(terminalFgColor)
+	dialog.textview.SetBackgroundColor(terminalBgColor)
+	dialog.textview.SetBorderColor(terminalFgColor)
 	dialog.textview.SetBorder(true)
+
+	// textview layout
+	tlayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tlayout.AddItem(dialog.textview, 0, 1, true)
+	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	dialog.form = tview.NewForm().
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(buttonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
-	dialog.layout.AddItem(dialog.textview, 0, 1, true)
+	dialog.layout.AddItem(tlayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)

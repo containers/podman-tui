@@ -76,6 +76,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	}
 	bgColor := utils.Styles.ContainerExecDialog.BgColor
 	fgColor := utils.Styles.ContainerExecDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
 
 	// label (container ID and Name)
 	dialog.label.SetDynamicColors(true)
@@ -89,6 +90,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.command.SetLabel("command:")
 	dialog.command.SetLabelColor(fgColor)
 	dialog.command.SetLabelWidth(execDialogLabelWidth)
+	dialog.command.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// interactive
 	dialog.interactive.SetBackgroundColor(bgColor)
@@ -96,6 +98,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.interactive.SetLabel("interactive:")
 	dialog.interactive.SetLabelColor(fgColor)
 	dialog.interactive.SetLabelWidth(execDialogLabelWidth)
+	dialog.interactive.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// tty
 	tLabel := "tty:"
@@ -104,6 +107,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.tty.SetLabel(tLabel)
 	dialog.tty.SetLabelColor(fgColor)
 	dialog.tty.SetLabelWidth(len(tLabel) + 1)
+	dialog.tty.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// privileged
 	pLabel := "privileged:"
@@ -112,6 +116,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.privileged.SetLabel(pLabel)
 	dialog.privileged.SetLabelColor(fgColor)
 	dialog.privileged.SetLabelWidth(len(pLabel) + 1)
+	dialog.privileged.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// detach
 	dLabel := "detach:"
@@ -120,6 +125,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.detach.SetLabel(dLabel)
 	dialog.detach.SetLabelColor(fgColor)
 	dialog.detach.SetLabelWidth(len(dLabel) + 1)
+	dialog.detach.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// working dir
 	dialog.workingDir.SetBackgroundColor(bgColor)
@@ -127,6 +133,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.workingDir.SetLabel("working dir:")
 	dialog.workingDir.SetLabelColor(fgColor)
 	dialog.workingDir.SetLabelWidth(execDialogLabelWidth)
+	dialog.workingDir.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// env variables
 	dialog.envVariables.SetBackgroundColor(bgColor)
@@ -134,6 +141,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.envVariables.SetLabel("env vars:")
 	dialog.envVariables.SetLabelColor(fgColor)
 	dialog.envVariables.SetLabelWidth(execDialogLabelWidth)
+	dialog.envVariables.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// env file
 	dialog.envFile.SetBackgroundColor(bgColor)
@@ -141,6 +149,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.envFile.SetLabel("env file:")
 	dialog.envFile.SetLabelColor(fgColor)
 	dialog.envFile.SetLabelWidth(execDialogLabelWidth)
+	dialog.envFile.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// detach key
 	dialog.detachKeys.SetBackgroundColor(bgColor)
@@ -148,20 +157,22 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.detachKeys.SetLabel("detach keys:")
 	dialog.detachKeys.SetLabelColor(fgColor)
 	dialog.detachKeys.SetLabelWidth(execDialogLabelWidth)
+	dialog.detachKeys.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// user
 	dialog.user.SetBackgroundColor(bgColor)
 	dialog.user.SetBorder(false)
 	dialog.user.SetLabel("user: ")
 	dialog.user.SetLabelColor(fgColor)
+	dialog.user.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form fields
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		AddButton("Execute", nil).
 		SetButtonsAlign(tview.AlignRight)
-
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// main dialog layout
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)

@@ -69,6 +69,8 @@ func NewPodStatsDialog() *PodStatsDialog {
 	}
 	bgColor := utils.Styles.PodStatsDialog.BgColor
 	fgColor := utils.Styles.PodStatsDialog.FgColor
+	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+
 	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
 	ddselectedStyle := utils.Styles.DropdownStyle.Selected
 	// pod dropdown
@@ -78,6 +80,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog.podDropDown.SetBackgroundColor(bgColor)
 	statsDialog.podDropDown.SetLabelColor(fgColor)
 	statsDialog.podDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	statsDialog.podDropDown.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// pod sortby dropdown
 	pddSortByLabel := "Sort By:"
@@ -91,6 +94,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 		"container name",
 		"cpu %",
 		"mem %"}, statsDialog.setStatsQuerySortBy)
+	statsDialog.podSortByDropDown.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// table
 	statsDialog.table = tview.NewTable()
@@ -104,6 +108,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(bgColor)
+	statsDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// pod dropdown and sort by dropdown
 	statsDialog.controlLayout = tview.NewFlex().SetDirection(tview.FlexColumn)

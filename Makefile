@@ -9,7 +9,7 @@ SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo
 default: all
 
 .PHONY: all
-all: binary
+all: binary binary-win
 
 .PHONY: binary
 binary: $(TARGET)  ## Build podman-tui binary
@@ -20,6 +20,12 @@ $(TARGET): $(SRC)
 	@mkdir -p $(BIN)
 	@echo "running go build"
 	@go build -o $(BIN)/$(TARGET)
+
+.PHONY: binary-win
+binary-win:  ## Build podman-tui.exe windows binary
+	@mkdir -p $(BIN)/windows/
+	@echo "running go build for windows"
+	@env GOOS=windows  GOARCH=amd64 go build -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
 
 .PHONY: clean
 clean:

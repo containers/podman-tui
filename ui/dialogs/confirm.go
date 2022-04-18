@@ -48,9 +48,11 @@ func NewConfirmDialog() *ConfirmDialog {
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(fgColor)
 	dialog.layout.SetBackgroundColor(bgColor)
 
 	return dialog
@@ -146,26 +148,25 @@ func (d *ConfirmDialog) setRect() {
 	}
 
 	d.layout.Clear()
-
-	bgColor := utils.Styles.ConfirmDialog.BgColor
 	d.layout.AddItem(d.textview, layoutHeight, 0, true)
 	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
-	d.layout.SetBorder(true)
-	d.layout.SetBackgroundColor(bgColor)
 
 	d.Box.SetRect(d.x, d.y, d.width, d.height)
 }
 
 // Draw draws this primitive onto the screen.
 func (d *ConfirmDialog) Draw(screen tcell.Screen) {
-
+	fgColor := utils.Styles.ConfirmDialog.FgColor
+	bgColor := utils.Styles.ConfirmDialog.BgColor
 	if !d.display {
 		return
 	}
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
-	d.layout.SetBorderColor(tcell.ColorBlack)
+	d.layout.SetBorder(true)
+	d.layout.SetBackgroundColor(bgColor)
+	d.layout.SetBorderColor(fgColor)
 	d.layout.Draw(screen)
 }
 

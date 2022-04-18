@@ -87,8 +87,8 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 	dialog.form = tview.NewForm().
 		AddButton("Close", nil).
 		SetButtonsAlign(tview.AlignRight)
-
 	dialog.form.SetBackgroundColor(bgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	//label and terminal layout
 	middleLayout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -420,13 +420,17 @@ func (d *ContainerExecTerminalDialog) startVTreader() {
 }
 
 func (d *ContainerExecTerminalDialog) setExecInfo(id string, name string, sessionID string) {
+	fgColor := utils.Styles.ContainerExecTerminalDialog.FgColor
+	bgColor := utils.Styles.ContainerExecTerminalDialog.HeaderBgColor
+	headerFgColor := utils.GetColorName(fgColor)
+	headerBgColor := utils.GetColorName(bgColor)
 	d.containerID = id
 	d.sessionID = sessionID
 	if len(sessionID) > utils.IDLength {
 		sessionID = sessionID[0:utils.IDLength]
 	}
 
-	label := fmt.Sprintf("[white:navy:] CONTAINER ID: [white:-:] %s ", id)
+	label := fmt.Sprintf("[%s:%s:] CONTAINER ID: [%s:-:] %s ", headerFgColor, headerBgColor, headerFgColor, id)
 	if name != "" {
 		label = fmt.Sprintf("%s(%s) ", label, name)
 	}

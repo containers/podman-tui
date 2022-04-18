@@ -30,37 +30,40 @@ type CommandDialog struct {
 // NewCommandDialog returns a command list primitive.
 func NewCommandDialog(options [][]string) *CommandDialog {
 
+	headerBgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
+	headerFgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
+	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+	bgColor := utils.Styles.CommandDialog.BgColor
+	fgColor := utils.Styles.CommandDialog.FgColor
+
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 
-	form.SetBackgroundColor(utils.Styles.CommandDialog.BgColor)
+	form.SetBackgroundColor(bgColor)
+	form.SetButtonBackgroundColor(buttonBgColor)
 
-	bgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
-	fgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
 	cmdsTable := tview.NewTable()
 
 	cmdWidth := 0
 	// command table header
 	cmdsTable.SetCell(0, 0,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", utils.GetColorName(headerFgColor))).
 			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
+			SetBackgroundColor(headerBgColor).
+			SetTextColor(headerFgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 	cmdsTable.SetCell(0, 1,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", utils.GetColorName(headerFgColor))).
 			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
+			SetBackgroundColor(headerBgColor).
+			SetTextColor(headerFgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
 	// command table items
-	bgColor = utils.Styles.CommandDialog.BgColor
-	fgColor = utils.Styles.CommandDialog.FgColor
 	col1Width := 0
 	col2Width := 0
 	for i := 0; i < len(options); i++ {
