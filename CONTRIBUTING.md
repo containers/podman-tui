@@ -1,7 +1,9 @@
 # Contributing To Podman TUI
+
 We'd love your contribtion on the project!
 
 ## Topics
+
 * [Developer Certificate of Origin (DCO)](#developer_certificate_of_origin)
 * [Contributing to Podman TUI](#contributing-to-podman-tui)
 * [Missing Features](#missing-features)
@@ -41,6 +43,7 @@ The name and email address in this line must match those of the
 committing author's GitHub account.
 
 ## Contributing To Podman TUI
+
 ### Fork and clone Podman TUI
 
 First you need to fork and clone podman-tui project on Github.
@@ -69,6 +72,7 @@ Usage: make <target>
 ```
 
 ### Prerequisite before build
+
 You need install some dependencies before building a binary.
 
 #### Fedora
@@ -87,11 +91,12 @@ You need install some dependencies before building a binary.
 
 ```shell
 $ make validate
-$ make binary
+$ make all
 $ ./bin/podman-tui
 ```
 
 ## Missing Features
+
 ```
 * podman run
 * podman system reset
