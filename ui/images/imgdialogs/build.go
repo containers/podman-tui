@@ -31,12 +31,16 @@ const (
 	buildDialogContextDirectoryPathFieldFocus
 	buildDialogBuildArgsFieldFocus
 	buildDialogLayersFieldFocus
+	buildDialogNoCacheFieldfocus
+	buildDialogSquashFieldFocus
+	buildDialogFormatFieldFocus
+	buildDialogLabelsFieldFocus
 	buildDialogAnnotationFieldFocus
 	buildDialogRemoveCntFieldFocus
 	buildDialogForceRemoveCntFieldFocus
-	buildDialogNoCacheFieldfocus
-	buildDialogSquashFieldFocus
-	buildDialogLabelsFieldFocus
+	buildDialogSelinuxContextsFieldFocus
+	buildDialogApparmorProfileFieldFocus
+	buildDialogSeccompProfilePathFieldFocus
 	buildDialogNetworkFieldFocus
 	buildDialogHTTPProxyFieldFocus
 	buildDialogAddHostFieldFocus
@@ -57,6 +61,7 @@ const (
 const (
 	buildDialogBasicInfoPageIndex = 0 + iota
 	buildDialogBuildInfoPageIndex
+	buildDialogSecurityOptsPageIndex
 	buildDialogNetworkingPageIndex
 	buildDialogCapabilityPageIndex
 	buildDialogCPUMemoryPageIndex
@@ -65,93 +70,108 @@ const (
 // ImageBuildDialog represents image build dialog primitive
 type ImageBuildDialog struct {
 	*tview.Box
-	layout                *tview.Flex
-	form                  *tview.Form
-	categoryLabels        []string
-	categories            *tview.TextView
-	categoryPages         *tview.Pages
-	basicInfoPage         *tview.Flex
-	buildInfoPage         *tview.Flex
-	networkingPage        *tview.Flex
-	capabilityPage        *tview.Flex
-	cpuMemoryPage         *tview.Flex
-	containerFilePath     *tview.InputField
-	contextDirectoryPath  *tview.InputField
-	tagField              *tview.InputField
-	registryField         *tview.InputField
-	pullPolicyField       *tview.DropDown
-	buildArgsField        *tview.InputField
-	layersField           *tview.Checkbox
-	noCacheField          *tview.Checkbox
-	SquashField           *tview.Checkbox
-	labelsField           *tview.InputField
-	removeCntField        *tview.Checkbox
-	forceRemoveCntField   *tview.Checkbox
-	annotationsField      *tview.InputField
-	networkField          *tview.DropDown
-	httpProxyField        *tview.Checkbox
-	addHostField          *tview.InputField
-	dnsServersField       *tview.InputField
-	dnsOptionsField       *tview.InputField
-	dnsSearchField        *tview.InputField
-	addCapabilityField    *tview.InputField
-	removeCapabilityField *tview.InputField
-	cpuPeriodField        *tview.InputField
-	cpuQuataField         *tview.InputField
-	cpuSharesField        *tview.InputField
-	cpuSetCpusField       *tview.InputField
-	cpuSetMemsField       *tview.InputField
-	memoryField           *tview.InputField
-	memorySwapField       *tview.InputField
-	display               bool
-	focusElement          int
-	activePageIndex       int
-	cancelHandler         func()
-	buildHandler          func()
+	layout                  *tview.Flex
+	form                    *tview.Form
+	categoryLabels          []string
+	categories              *tview.TextView
+	categoryPages           *tview.Pages
+	basicInfoPage           *tview.Flex
+	buildInfoPage           *tview.Flex
+	securityOptsPage        *tview.Flex
+	networkingPage          *tview.Flex
+	capabilityPage          *tview.Flex
+	cpuMemoryPage           *tview.Flex
+	containerFilePath       *tview.InputField
+	contextDirectoryPath    *tview.InputField
+	tagField                *tview.InputField
+	registryField           *tview.InputField
+	pullPolicyField         *tview.DropDown
+	formatField             *tview.DropDown
+	buildArgsField          *tview.InputField
+	layersField             *tview.Checkbox
+	noCacheField            *tview.Checkbox
+	SquashField             *tview.Checkbox
+	labelsField             *tview.InputField
+	removeCntField          *tview.Checkbox
+	forceRemoveCntField     *tview.Checkbox
+	annotationsField        *tview.InputField
+	selinuxContextsField    *tview.InputField
+	apparmorProfileField    *tview.InputField
+	seccompProfilePathField *tview.InputField
+	networkField            *tview.DropDown
+	httpProxyField          *tview.Checkbox
+	addHostField            *tview.InputField
+	dnsServersField         *tview.InputField
+	dnsOptionsField         *tview.InputField
+	dnsSearchField          *tview.InputField
+	addCapabilityField      *tview.InputField
+	removeCapabilityField   *tview.InputField
+	cpuPeriodField          *tview.InputField
+	cpuQuataField           *tview.InputField
+	cpuSharesField          *tview.InputField
+	cpuSetCpusField         *tview.InputField
+	cpuSetMemsField         *tview.InputField
+	memoryField             *tview.InputField
+	memorySwapField         *tview.InputField
+	display                 bool
+	focusElement            int
+	activePageIndex         int
+	cancelHandler           func()
+	buildHandler            func()
 }
 
 // NewImageBuildDialog returns new image build dialog primitive
 func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog := &ImageBuildDialog{
-		Box:                   tview.NewBox(),
-		layout:                tview.NewFlex().SetDirection(tview.FlexRow),
-		form:                  tview.NewForm(),
-		categoryLabels:        []string{"Basic Information", "Build Settings", "Networking", "Capability", "CPU and Memory"},
-		categories:            tview.NewTextView(),
-		categoryPages:         tview.NewPages(),
-		basicInfoPage:         tview.NewFlex(),
-		buildInfoPage:         tview.NewFlex(),
-		networkingPage:        tview.NewFlex(),
-		capabilityPage:        tview.NewFlex(),
-		cpuMemoryPage:         tview.NewFlex(),
-		containerFilePath:     tview.NewInputField(),
-		contextDirectoryPath:  tview.NewInputField(),
-		pullPolicyField:       tview.NewDropDown(),
-		tagField:              tview.NewInputField(),
-		registryField:         tview.NewInputField(),
-		buildArgsField:        tview.NewInputField(),
-		layersField:           tview.NewCheckbox(),
-		noCacheField:          tview.NewCheckbox(),
-		SquashField:           tview.NewCheckbox(),
-		labelsField:           tview.NewInputField(),
-		removeCntField:        tview.NewCheckbox(),
-		forceRemoveCntField:   tview.NewCheckbox(),
-		annotationsField:      tview.NewInputField(),
-		networkField:          tview.NewDropDown(),
-		httpProxyField:        tview.NewCheckbox(),
-		addHostField:          tview.NewInputField(),
-		dnsServersField:       tview.NewInputField(),
-		dnsOptionsField:       tview.NewInputField(),
-		dnsSearchField:        tview.NewInputField(),
-		addCapabilityField:    tview.NewInputField(),
-		removeCapabilityField: tview.NewInputField(),
-		cpuPeriodField:        tview.NewInputField(),
-		cpuQuataField:         tview.NewInputField(),
-		cpuSharesField:        tview.NewInputField(),
-		cpuSetCpusField:       tview.NewInputField(),
-		cpuSetMemsField:       tview.NewInputField(),
-		memoryField:           tview.NewInputField(),
-		memorySwapField:       tview.NewInputField(),
+		Box:    tview.NewBox(),
+		layout: tview.NewFlex().SetDirection(tview.FlexRow),
+		form:   tview.NewForm(),
+		categoryLabels: []string{"Basic Information",
+			"Build Settings",
+			"Security Options",
+			"Networking",
+			"Capability",
+			"CPU and Memory"},
+		categories:              tview.NewTextView(),
+		categoryPages:           tview.NewPages(),
+		basicInfoPage:           tview.NewFlex(),
+		buildInfoPage:           tview.NewFlex(),
+		securityOptsPage:        tview.NewFlex(),
+		networkingPage:          tview.NewFlex(),
+		capabilityPage:          tview.NewFlex(),
+		cpuMemoryPage:           tview.NewFlex(),
+		containerFilePath:       tview.NewInputField(),
+		contextDirectoryPath:    tview.NewInputField(),
+		pullPolicyField:         tview.NewDropDown(),
+		formatField:             tview.NewDropDown(),
+		tagField:                tview.NewInputField(),
+		registryField:           tview.NewInputField(),
+		buildArgsField:          tview.NewInputField(),
+		layersField:             tview.NewCheckbox(),
+		noCacheField:            tview.NewCheckbox(),
+		SquashField:             tview.NewCheckbox(),
+		labelsField:             tview.NewInputField(),
+		removeCntField:          tview.NewCheckbox(),
+		forceRemoveCntField:     tview.NewCheckbox(),
+		annotationsField:        tview.NewInputField(),
+		selinuxContextsField:    tview.NewInputField(),
+		apparmorProfileField:    tview.NewInputField(),
+		seccompProfilePathField: tview.NewInputField(),
+		networkField:            tview.NewDropDown(),
+		httpProxyField:          tview.NewCheckbox(),
+		addHostField:            tview.NewInputField(),
+		dnsServersField:         tview.NewInputField(),
+		dnsOptionsField:         tview.NewInputField(),
+		dnsSearchField:          tview.NewInputField(),
+		addCapabilityField:      tview.NewInputField(),
+		removeCapabilityField:   tview.NewInputField(),
+		cpuPeriodField:          tview.NewInputField(),
+		cpuQuataField:           tview.NewInputField(),
+		cpuSharesField:          tview.NewInputField(),
+		cpuSetCpusField:         tview.NewInputField(),
+		cpuSetMemsField:         tview.NewInputField(),
+		memoryField:             tview.NewInputField(),
+		memorySwapField:         tview.NewInputField(),
 	}
 	bgColor := utils.Styles.ImageBuildDialog.BgColor
 	fgColor := utils.Styles.ImageBuildDialog.FgColor
@@ -210,13 +230,36 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.registryField.SetLabelColor(fgColor)
 	buildDialog.registryField.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// layers setup page
-	layersFirstColWidth := 14
+	// build settings page
+	buildSettingFirstColWidth := 15
 	buildDialog.buildArgsField.SetLabel("Runtime args:")
-	buildDialog.buildArgsField.SetLabelWidth(layersFirstColWidth)
+	buildDialog.buildArgsField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.buildArgsField.SetBackgroundColor(bgColor)
 	buildDialog.buildArgsField.SetLabelColor(fgColor)
 	buildDialog.buildArgsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// format dropdown
+	formatLabel := "Output format:"
+	buildDialog.formatField.SetLabel(formatLabel)
+	buildDialog.formatField.SetTitleAlign(tview.AlignRight)
+	buildDialog.formatField.SetLabelWidth(buildSettingFirstColWidth)
+	buildDialog.formatField.SetBackgroundColor(bgColor)
+	buildDialog.formatField.SetLabelColor(fgColor)
+	buildDialog.formatField.SetOptions([]string{
+		define.OCI,
+		define.DOCKER},
+		nil)
+	buildDialog.formatField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	buildDialog.formatField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// squash
+	squashLabel := "Squash:"
+	buildDialog.SquashField.SetBackgroundColor(bgColor)
+	buildDialog.SquashField.SetBorder(false)
+	buildDialog.SquashField.SetLabel(squashLabel)
+	buildDialog.SquashField.SetLabelColor(fgColor)
+	buildDialog.SquashField.SetLabelWidth(len(squashLabel) + 1)
+	buildDialog.SquashField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// layers
 	layersLabel := "Layers:"
@@ -236,24 +279,16 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.noCacheField.SetLabelWidth(len(noCacheLabel) + 1)
 	buildDialog.noCacheField.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// squash
-	buildDialog.SquashField.SetBackgroundColor(bgColor)
-	buildDialog.SquashField.SetBorder(false)
-	buildDialog.SquashField.SetLabel("Squash:")
-	buildDialog.SquashField.SetLabelColor(fgColor)
-	buildDialog.SquashField.SetLabelWidth(layersFirstColWidth)
-	buildDialog.SquashField.SetFieldBackgroundColor(inputFieldBgColor)
-
 	// labels
 	buildDialog.labelsField.SetLabel("Labels:")
-	buildDialog.labelsField.SetLabelWidth(layersFirstColWidth)
+	buildDialog.labelsField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.labelsField.SetBackgroundColor(bgColor)
 	buildDialog.labelsField.SetLabelColor(fgColor)
 	buildDialog.labelsField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// annotations
 	buildDialog.annotationsField.SetLabel("Annotations:")
-	buildDialog.annotationsField.SetLabelWidth(layersFirstColWidth)
+	buildDialog.annotationsField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.annotationsField.SetBackgroundColor(bgColor)
 	buildDialog.annotationsField.SetLabelColor(fgColor)
 	buildDialog.annotationsField.SetFieldBackgroundColor(inputFieldBgColor)
@@ -265,9 +300,31 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.removeCntField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	buildDialog.forceRemoveCntField.SetLabel("Force remove: ")
+	buildDialog.forceRemoveCntField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.forceRemoveCntField.SetBackgroundColor(bgColor)
 	buildDialog.forceRemoveCntField.SetLabelColor(fgColor)
 	buildDialog.forceRemoveCntField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// security options page
+	securityOptionsPAgeLabelWidth := 18
+	// selinux contexts
+	buildDialog.selinuxContextsField.SetLabel("SELinux contexts:")
+	buildDialog.selinuxContextsField.SetLabelWidth(securityOptionsPAgeLabelWidth)
+	buildDialog.selinuxContextsField.SetBackgroundColor(bgColor)
+	buildDialog.selinuxContextsField.SetLabelColor(tcell.ColorWhite)
+	buildDialog.selinuxContextsField.SetFieldBackgroundColor(inputFieldBgColor)
+	// apparmor profile
+	buildDialog.apparmorProfileField.SetLabel("Apparmor profile:")
+	buildDialog.apparmorProfileField.SetLabelWidth(securityOptionsPAgeLabelWidth)
+	buildDialog.apparmorProfileField.SetBackgroundColor(bgColor)
+	buildDialog.apparmorProfileField.SetLabelColor(tcell.ColorWhite)
+	buildDialog.apparmorProfileField.SetFieldBackgroundColor(inputFieldBgColor)
+	// seccomp profile
+	buildDialog.seccompProfilePathField.SetLabel("Seccomp profile:")
+	buildDialog.seccompProfilePathField.SetLabelWidth(securityOptionsPAgeLabelWidth)
+	buildDialog.seccompProfilePathField.SetBackgroundColor(bgColor)
+	buildDialog.seccompProfilePathField.SetLabelColor(tcell.ColorWhite)
+	buildDialog.seccompProfilePathField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// networking setup page
 	networkingPageLabelWidth := 13
@@ -293,7 +350,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.httpProxyField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// Add host field
-	buildDialog.addHostField.SetLabel("Add Host:")
+	buildDialog.addHostField.SetLabel("Add host:")
 	buildDialog.addHostField.SetLabelWidth(networkingPageLabelWidth)
 	buildDialog.addHostField.SetBackgroundColor(bgColor)
 	buildDialog.addHostField.SetLabelColor(tcell.ColorWhite)
@@ -432,6 +489,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	// layers setup page
 	secondRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	secondRowLayout.SetBackgroundColor(bgColor)
+	secondRowLayout.AddItem(d.formatField, 0, 2, true)
 	secondRowLayout.AddItem(d.SquashField, 0, 1, true)
 	secondRowLayout.AddItem(d.layersField, 0, 1, true)
 	secondRowLayout.AddItem(d.noCacheField, 0, 1, true)
@@ -453,6 +511,14 @@ func (d *ImageBuildDialog) setupLayout() {
 	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.buildInfoPage.AddItem(cntRmRowLayout, 1, 0, true)
 	d.buildInfoPage.SetBackgroundColor(bgColor)
+
+	// security options page
+	d.securityOptsPage.SetDirection(tview.FlexRow)
+	d.securityOptsPage.AddItem(d.selinuxContextsField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.apparmorProfileField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.seccompProfilePathField, 1, 0, true)
 
 	// networking setup page
 	netFirstRow := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -501,6 +567,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogBasicInfoPageIndex], d.basicInfoPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogBuildInfoPageIndex], d.buildInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogSecurityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogNetworkingPageIndex], d.networkingPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogCapabilityPageIndex], d.capabilityPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogCPUMemoryPageIndex], d.cpuMemoryPage, true, true)
@@ -596,6 +663,8 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.layersField)
 	case buildDialogNoCacheFieldfocus:
 		delegate(d.noCacheField)
+	case buildDialogFormatFieldFocus:
+		delegate(d.formatField)
 	case buildDialogSquashFieldFocus:
 		delegate(d.SquashField)
 	case buildDialogLabelsFieldFocus:
@@ -606,6 +675,13 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.removeCntField)
 	case buildDialogForceRemoveCntFieldFocus:
 		delegate(d.forceRemoveCntField)
+	// security options page
+	case buildDialogSelinuxContextsFieldFocus:
+		delegate(d.selinuxContextsField)
+	case buildDialogApparmorProfileFieldFocus:
+		delegate(d.apparmorProfileField)
+	case buildDialogSeccompProfilePathFieldFocus:
+		delegate(d.seccompProfilePathField)
 	// networking page
 	case buildDialogNetworkFieldFocus:
 		delegate(d.networkField)
@@ -651,7 +727,7 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image build dialog: event %v received", event)
 		if event.Key() == utils.CloseDialogKey.Key {
-			if !(d.pullPolicyField.HasFocus() || d.networkField.HasFocus()) {
+			if !(d.pullPolicyField.HasFocus() || d.networkField.HasFocus() || d.formatField.HasFocus()) {
 				d.cancelHandler()
 				return
 			}
@@ -662,6 +738,16 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 			if handler := d.pullPolicyField.InputHandler(); handler != nil {
 				if event.Key() == utils.SwitchFocusKey.Key {
 					d.setBasicInfoPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+		if d.formatField.HasFocus() {
+			event = utils.ParseKeyEventKey(event)
+			if handler := d.formatField.InputHandler(); handler != nil {
+				if event.Key() == utils.SwitchFocusKey.Key {
+					d.setBuildSettingsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -692,6 +778,16 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 			if handler := d.buildInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBuildSettingsPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+		// security options page
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptionsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -802,11 +898,17 @@ func (d *ImageBuildDialog) initData() {
 	d.buildArgsField.SetText("")
 	d.layersField.SetChecked(false)
 	d.noCacheField.SetChecked(false)
+	d.formatField.SetCurrentOption(0)
 	d.SquashField.SetChecked(false)
 	d.labelsField.SetText("")
 	d.annotationsField.SetText("")
 	d.removeCntField.SetChecked(false)
 	d.forceRemoveCntField.SetChecked(false)
+
+	// security options page
+	d.selinuxContextsField.SetText("")
+	d.apparmorProfileField.SetText("")
+	d.seccompProfilePathField.SetText("")
 
 	// networking setting page
 	d.networkField.SetCurrentOption(0)
@@ -905,6 +1007,8 @@ func (d *ImageBuildDialog) setNetworkingPageNextFocus() {
 
 func (d *ImageBuildDialog) setBuildSettingsPageNextFocus() {
 	if d.buildArgsField.HasFocus() {
+		d.focusElement = buildDialogFormatFieldFocus
+	} else if d.formatField.HasFocus() {
 		d.focusElement = buildDialogSquashFieldFocus
 	} else if d.SquashField.HasFocus() {
 		d.focusElement = buildDialogLayersFieldFocus
@@ -949,22 +1053,35 @@ func (d *ImageBuildDialog) setCPUMemoryPageNextFocus() {
 	}
 }
 
+func (d *ImageBuildDialog) setSecurityOptionsPageNextFocus() {
+	if d.selinuxContextsField.HasFocus() {
+		d.focusElement = buildDialogApparmorProfileFieldFocus
+	} else if d.apparmorProfileField.HasFocus() {
+		d.focusElement = buildDialogSeccompProfilePathFieldFocus
+	} else {
+		d.focusElement = buildDialogFormFocus
+	}
+}
+
 // ImageBuildOptions returns image build options
 func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error) {
 
 	var (
-		memoryLimit      int64
-		memorySwap       int64
-		cpuPeriod        uint64
-		cpuQuota         int64
-		cpuShares        uint64
-		cpuSetCpus       string
-		cpuSetMems       string
-		containerFiles   []string
-		dnsServers       []string
-		dnsOptions       []string
-		dnsSearchDomains []string
-		addHost          []string
+		memoryLimit        int64
+		memorySwap         int64
+		cpuPeriod          uint64
+		cpuQuota           int64
+		cpuShares          uint64
+		cpuSetCpus         string
+		cpuSetMems         string
+		containerFiles     []string
+		dnsServers         []string
+		dnsOptions         []string
+		dnsSearchDomains   []string
+		addHost            []string
+		labelOpts          []string
+		apparmorProfile    string
+		secCompProfilePath string
 	)
 	// basic info page
 	// Containerfiles
@@ -1002,6 +1119,14 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		opts.BuildOptions.PullPolicy = define.PullIfNewer
 	case "never":
 		opts.BuildOptions.PullPolicy = define.PullNever
+	}
+
+	_, format := d.formatField.GetCurrentOption()
+	switch format {
+	case "oci":
+		opts.BuildOptions.OutputFormat = define.OCIv1ImageManifest
+	case "docker":
+		opts.BuildOptions.OutputFormat = define.Dockerv2ImageManifest
 	}
 
 	// build settings
@@ -1120,19 +1245,37 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		}
 	}
 
+	// security options page
+	for _, selinuxContext := range strings.Split(d.selinuxContextsField.GetText(), " ") {
+		if selinuxContext != "" {
+			labelOpts = append(labelOpts, selinuxContext)
+		}
+	}
+	apparmor := strings.TrimSpace(d.apparmorProfileField.GetText())
+	if apparmor != "" {
+		apparmorProfile = apparmor
+	}
+	seccomp := strings.TrimSpace(d.seccompProfilePathField.GetText())
+	if seccomp != "" {
+		secCompProfilePath = seccomp
+	}
+
 	commonOpts := &define.CommonBuildOptions{
-		AddHost:    addHost,
-		HTTPProxy:  d.httpProxyField.IsChecked(),
-		CPUPeriod:  cpuPeriod,
-		CPUQuota:   cpuQuota,
-		CPUSetCPUs: cpuSetCpus,
-		CPUSetMems: cpuSetMems,
-		CPUShares:  cpuShares,
-		DNSServers: dnsServers,
-		DNSOptions: dnsOptions,
-		DNSSearch:  dnsSearchDomains,
-		Memory:     memoryLimit,
-		MemorySwap: memorySwap,
+		AddHost:            addHost,
+		HTTPProxy:          d.httpProxyField.IsChecked(),
+		CPUPeriod:          cpuPeriod,
+		CPUQuota:           cpuQuota,
+		CPUSetCPUs:         cpuSetCpus,
+		CPUSetMems:         cpuSetMems,
+		CPUShares:          cpuShares,
+		DNSServers:         dnsServers,
+		DNSOptions:         dnsOptions,
+		DNSSearch:          dnsSearchDomains,
+		Memory:             memoryLimit,
+		MemorySwap:         memorySwap,
+		LabelOpts:          labelOpts,
+		ApparmorProfile:    apparmorProfile,
+		SeccompProfilePath: secCompProfilePath,
 	}
 
 	opts.BuildOptions.CommonBuildOpts = commonOpts
