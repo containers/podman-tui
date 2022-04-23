@@ -1,3 +1,3 @@
-## The Podman Compose Project Community Code of Conduct
+## The Podman TUI Project Community Code of Conduct
 
-The Podman Compose project follows the [Containers Community Code of Conduct](https://github.com/containers/common/blob/master/CODE-OF-CONDUCT.md).
+This project is using the [Containers Community Code of Conduct](https://github.com/containers/common/blob/main/CODE-OF-CONDUCT.md)

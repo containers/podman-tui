@@ -3,22 +3,30 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/containers/podman-tui)](https://pkg.go.dev/github.com/containers/podman-tui)
 [![Go Report](https://goreportcard.com/badge/github.com/containers/podman-tui)](https://goreportcard.com/report/github.com/containers/podman-tui)
 
-podman-tui is a Terminal User Interface to interact with the podman v4.  
-[podman bindings](https://github.com/containers/podman/tree/main/pkg/bindings) has been used to communicate with podman environment through rest api API (unix socket).
+Terminal user interface for Podman v4.  
 
-![Screenshot](./docs/podman-tui.gif)
+![Screenshot](./docs/images/podman-tui.gif)
 
----
+- [**Overview**](#overview)
+- [**Installation**](#installation)
+- [**PreRun Checks**](#prerun-checks)
+- [**Key Bindings**](#key-bindings)
+- [**Communication**](#communication)
+- [**Code of Conduct**](#code-of-conduct)
+- [**License**](#license)
+
+## Overview
+
+podman-tui is a terminal user interface for podman v4 (>=4.0.2).  
+It is using [podman go bindings](https://github.com/containers/podman/tree/main/pkg/bindings) to communicate with local or remote podman machine (through SSH).
 
 ## Installation
 
-Building from source or installing packaged versions are detailed in [install guide](install.md).
-
----
+Building from source (Linux, Windows) or installing packaged versions are detailed in [install guide](install.md).
 
 ## PreRun Checks
 
-* podman-tui use podman unix socket for query therefore `podman.socket` service needs to be running.  
+* `podman.socket` service needs to be running on podman machine.  
     The recommended way to start Podman system service in production mode is via systemd socket-activation:  
 
     ```shell
@@ -27,65 +35,26 @@ Building from source or installing packaged versions are detailed in [install gu
 
     See [start podman system service](https://podman.io/blogs/2020/08/10/podman-go-bindings.html) for more details.
 
-* podman-tui uses 256 colors terminal mode. On `Nix system make sure TERM is set accordingly.
-
+* If the SSH key has a passphrase, then you need to set and export `CONTAINER_PASSPHRASE=<password>` variable.
     ```shell
-    $ export TERM=xterm-256color
+    $ export CONTAINER_PASSPHRASE=keypass
     ```
 
----
+* podman-tui uses 256 colors terminal mode on `Nix` system and standard ANSI colors on `Windows` system.  
 
-## The Command Line
-```shell
-Usage:
-  podman-tui [flags]
-  podman-tui [command]
+  | Gnome Terminal | Powershell Terminal |
+  | :------------: | :-----------------: |
+  | <img src="./docs/images/podman-tui-linux.png" width="250" height="150"></img> | <img src="./docs/images/podman-tui-windows.png" width="250" height="150"></img> |
 
-Available Commands:
-  help        Help about any command
-  version     Display podman-tui version and exit.
+## Key Bindings
 
+Check [podman-tui docs](./docs/README.md) for keyboard mappings.
 
-Flags:
-  -d, --debug             Run application in debug mode
-  -h, --help              help for podman-tui
-  -l, --log-file string   Application runtime log file (default "podman-tui.log")
+## Code of Conduct
 
-```
+This project is using the [Containers Community Code of Conduct](https://github.com/containers/common/blob/main/CODE-OF-CONDUCT.md)
 
----
+## License
 
-## Key Binding
-
-podman-tui uses following keyboard keys for different actions:
-
-| Action                           | Key        |
-| -------------------------------- | ---------- |
-| Display command menu             | m          |
-| Switch to next screen            | l          |
-| Switch to previous screen        | h          |
-| Move up                          | k          |
-| Move down                        | j          |
-| Exit application                 | Ctrl+c     |
-| Close the active dialog          | Esc        |
-| Switch between interface widgets | Tab        |
-| Delete selected item             | Delete     |
-| Move up/down                     | Up/Down    |
-| Previous/Next screen             | Left/Right |
-| Scroll Up                        | Page Up    |
-| Scroll Down                      | Page Down  |
-| Display help screen              | F1         |
-| Display system screen            | F2         |
-| Display pods screen              | F3         |
-| Display containers screen        | F4         |
-| Display volumes screen           | F5         |
-| Display images screen            | F6         |
-| Display networks screen          | F7         |
-
----
-
-## Available commands on different views
-
-Check [podman-tui docs](./docs/README.md) for list of available commands on different pages (pods, containers, images, ...)
-
+Licensed under the [Apache 2.0](LICENSE) license.
 
