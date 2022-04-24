@@ -33,6 +33,12 @@ type CreateOptions struct {
 	DNSSearchDomain []string
 	Volume          string
 	ImageVolume     string
+	SelinuxOpts     []string
+	ApparmorProfile string
+	Seccomp         string
+	NoNewPriv       bool
+	Mask            []string
+	Unmask          []string
 }
 
 //Create creates a new container.
@@ -127,6 +133,24 @@ func Create(opts CreateOptions) ([]string, error) {
 			Dest: volumeDest,
 		})
 	}
+
+	// security options
+	if len(opts.SelinuxOpts) > 0 {
+		containerSpecGen.ContainerSecurityConfig.SelinuxOpts = append(containerSpecGen.ContainerSecurityConfig.SelinuxOpts, opts.SelinuxOpts...)
+	}
+	if opts.ApparmorProfile != "" {
+		containerSpecGen.ContainerSecurityConfig.ApparmorProfile = opts.ApparmorProfile
+	}
+	if opts.Seccomp != "" {
+		containerSpecGen.ContainerSecurityConfig.SeccompProfilePath = opts.Seccomp
+	}
+	if len(opts.Mask) > 0 {
+		containerSpecGen.ContainerSecurityConfig.Mask = opts.Mask
+	}
+	if len(opts.Unmask) > 0 {
+		containerSpecGen.ContainerSecurityConfig.Unmask = opts.Unmask
+	}
+	containerSpecGen.ContainerSecurityConfig.NoNewPrivileges = opts.NoNewPriv
 
 	// validate spec
 	if err := containerSpecGen.Validate(); err != nil {

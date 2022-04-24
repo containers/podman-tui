@@ -67,6 +67,8 @@ load helpers_tui
     podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "${TEST_NAME}_image_imported"
+    podman_tui_send_inputs "Tab" 
+    podman_tui_send_inputs "localhost/${TEST_NAME}_image_imported:latest"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 6
 

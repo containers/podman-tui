@@ -38,6 +38,7 @@ load helpers_tui
     # select image from dropdown widget
     # select pod from dropdown widget
     # fillout label field
+    # go to security category
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
     podman_tui_send_inputs "Down" 
     podman_tui_select_item $image_index
@@ -45,7 +46,10 @@ load helpers_tui
     podman_tui_send_inputs "Down"
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
-    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Down"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Space" "Tab" "Tab"
     sleep 1
 
     # switch to "network settings" create view
@@ -88,11 +92,14 @@ load helpers_tui
     host_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $1}')
     cnt_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $2}')
     cnt_port_str="$host_port->$cnt_port/tcp"
+    
+    cnt_security_opt=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .HostConfig.SecurityOpt }}")
 
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
     assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_NAME" "expected container volume: $TEST_CONTAINER_VOLUME_NAME"
     assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
     assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
+    assert "$cnt_security_opt" =~ "no-new-privileges" "expected no-new-privileges in container security options"
 
 }
 
