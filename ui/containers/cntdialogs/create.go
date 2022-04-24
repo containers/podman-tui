@@ -19,11 +19,11 @@ import (
 
 const (
 	containerCreateDialogMaxWidth = 80
-	containerCreateDialogHeight   = 17
+	containerCreateDialogHeight   = 19
 )
 
 const (
-	createFormFocus = 0 + iota
+	createContainerFormFocus = 0 + iota
 	createCategoriesFocus
 	createCategoryPagesFocus
 	createContainerNameFieldFocus
@@ -31,6 +31,12 @@ const (
 	createcontainerPodFieldFocis
 	createContainerLabelsFieldFocus
 	createContainerRemoveFieldFocus
+	createContainerSelinuxLabelFieldFocus
+	createContainerApprarmorFieldFocus
+	createContainerSeccompFeildFocus
+	createContainerMaskFieldFocus
+	createContainerUnmaskFieldFocus
+	createContainerNoNewPrivFieldFocus
 	createContainerPortExposeFieldFocus
 	createContainerPortPublishFieldFocus
 	createContainerPortPublishAllFieldFocus
@@ -47,6 +53,7 @@ const (
 
 const (
 	basicInfoPageIndex = 0 + iota
+	securityOptsPageIndex
 	networkingPageIndex
 	portPageIndex
 	dnsPageIndex
@@ -61,6 +68,7 @@ type ContainerCreateDialog struct {
 	categories                   *tview.TextView
 	categoryPages                *tview.Pages
 	basicInfoPage                *tview.Flex
+	securityOptsPage             *tview.Flex
 	portPage                     *tview.Flex
 	networkingPage               *tview.Flex
 	dnsPage                      *tview.Flex
@@ -76,6 +84,12 @@ type ContainerCreateDialog struct {
 	containerPodField            *tview.DropDown
 	containerLabelsField         *tview.InputField
 	containerRemoveField         *tview.Checkbox
+	containerSelinuxLabelField   *tview.InputField
+	containerApparmorField       *tview.InputField
+	containerSeccompField        *tview.InputField
+	containerMaskField           *tview.InputField
+	containerUnmaskField         *tview.InputField
+	containerNoNewPrivField      *tview.Checkbox
 	containerPortExposeField     *tview.InputField
 	containerPortPublishField    *tview.InputField
 	ContainerPortPublishAllField *tview.Checkbox
@@ -95,17 +109,24 @@ type ContainerCreateDialog struct {
 // NewContainerCreateDialog returns new container create dialog primitive ContainerCreateDialog
 func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog := ContainerCreateDialog{
-		Box:                          tview.NewBox(),
-		layout:                       tview.NewFlex().SetDirection(tview.FlexRow),
-		categories:                   tview.NewTextView(),
-		categoryPages:                tview.NewPages(),
-		basicInfoPage:                tview.NewFlex(),
-		networkingPage:               tview.NewFlex(),
-		dnsPage:                      tview.NewFlex(),
-		portPage:                     tview.NewFlex(),
-		volumePage:                   tview.NewFlex(),
-		form:                         tview.NewForm(),
-		categoryLabels:               []string{"Basic Information", "Network Settings", "Ports Settings", "DNS Settings", "Volumes Settings"},
+		Box:              tview.NewBox(),
+		layout:           tview.NewFlex().SetDirection(tview.FlexRow),
+		categories:       tview.NewTextView(),
+		categoryPages:    tview.NewPages(),
+		basicInfoPage:    tview.NewFlex(),
+		securityOptsPage: tview.NewFlex(),
+		networkingPage:   tview.NewFlex(),
+		dnsPage:          tview.NewFlex(),
+		portPage:         tview.NewFlex(),
+		volumePage:       tview.NewFlex(),
+		form:             tview.NewForm(),
+		categoryLabels: []string{
+			"Basic Information",
+			"Security Options",
+			"Network Settings",
+			"Ports Settings",
+			"DNS Settings",
+			"Volumes Settings"},
 		activePageIndex:              0,
 		display:                      false,
 		containerNameField:           tview.NewInputField(),
@@ -113,6 +134,12 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerPodField:            tview.NewDropDown(),
 		containerLabelsField:         tview.NewInputField(),
 		containerRemoveField:         tview.NewCheckbox(),
+		containerSelinuxLabelField:   tview.NewInputField(),
+		containerApparmorField:       tview.NewInputField(),
+		containerSeccompField:        tview.NewInputField(),
+		containerMaskField:           tview.NewInputField(),
+		containerUnmaskField:         tview.NewInputField(),
+		containerNoNewPrivField:      tview.NewCheckbox(),
 		containerPortExposeField:     tview.NewInputField(),
 		containerPortPublishField:    tview.NewInputField(),
 		ContainerPortPublishAllField: tview.NewCheckbox(),
@@ -177,6 +204,48 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerRemoveField.SetLabelColor(tcell.ColorWhite)
 	containerDialog.containerRemoveField.SetChecked(true)
 	containerDialog.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// security options page
+	securityOptsLabelWidth := 10
+	// selinux label
+	containerDialog.containerSelinuxLabelField.SetLabel("Label:")
+	containerDialog.containerSelinuxLabelField.SetLabelWidth(securityOptsLabelWidth)
+	containerDialog.containerSelinuxLabelField.SetBackgroundColor(bgColor)
+	containerDialog.containerSelinuxLabelField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// apparmor
+	containerDialog.containerApparmorField.SetLabel("Apparmor:")
+	containerDialog.containerApparmorField.SetLabelWidth(securityOptsLabelWidth)
+	containerDialog.containerApparmorField.SetBackgroundColor(bgColor)
+	containerDialog.containerApparmorField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// seccomp
+	containerDialog.containerSeccompField.SetLabel("Seccomp:")
+	containerDialog.containerSeccompField.SetLabelWidth(securityOptsLabelWidth)
+	containerDialog.containerSeccompField.SetBackgroundColor(bgColor)
+	containerDialog.containerSeccompField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mask
+	containerDialog.containerMaskField.SetLabel("Mask:")
+	containerDialog.containerMaskField.SetLabelWidth(securityOptsLabelWidth)
+	containerDialog.containerMaskField.SetBackgroundColor(bgColor)
+	containerDialog.containerMaskField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// unmask
+	containerDialog.containerUnmaskField.SetLabel("Unmask:")
+	containerDialog.containerUnmaskField.SetLabelWidth(securityOptsLabelWidth)
+	containerDialog.containerUnmaskField.SetBackgroundColor(bgColor)
+	containerDialog.containerUnmaskField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// no-new-privileges
+	containerDialog.containerNoNewPrivField.SetLabel("No new privileges ")
+	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
+	containerDialog.containerNoNewPrivField.SetLabelColor(tcell.ColorWhite)
 
 	// networking setup page
 	networkingPageLabelWidth := 13
@@ -314,6 +383,20 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(d.containerRemoveField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
+	// security options page
+	d.securityOptsPage.SetDirection(tview.FlexRow)
+	d.securityOptsPage.AddItem(d.containerSelinuxLabelField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerApparmorField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSeccompField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerMaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerUnmaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerNoNewPrivField, 1, 0, true)
+
 	// network settings page
 	d.networkingPage.SetDirection(tview.FlexRow)
 	d.networkingPage.AddItem(d.containerHostnameField, 1, 0, true)
@@ -352,6 +435,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[portPageIndex], d.portPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
@@ -398,7 +482,7 @@ func (d *ContainerCreateDialog) HasFocus() bool {
 func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
-	case createFormFocus:
+	case createContainerFormFocus:
 		button := d.form.GetButton(d.form.GetButtonCount() - 1)
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
@@ -444,6 +528,19 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.containerLabelsField)
 	case createContainerRemoveFieldFocus:
 		delegate(d.containerRemoveField)
+	// security options page
+	case createContainerSelinuxLabelFieldFocus:
+		delegate(d.containerSelinuxLabelField)
+	case createContainerApprarmorFieldFocus:
+		delegate(d.containerApparmorField)
+	case createContainerSeccompFeildFocus:
+		delegate(d.containerSeccompField)
+	case createContainerMaskFieldFocus:
+		delegate(d.containerMaskField)
+	case createContainerUnmaskFieldFocus:
+		delegate(d.containerUnmaskField)
+	case createContainerNoNewPrivFieldFocus:
+		delegate(d.containerNoNewPrivField)
 	// networking page
 	case createContainerHostnameFieldFocus:
 		delegate(d.containerHostnameField)
@@ -519,6 +616,15 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBasicInfoPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptionsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -715,6 +821,12 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerPodField.SetCurrentOption(0)
 	d.containerLabelsField.SetText("")
 	d.containerRemoveField.SetChecked(false)
+	d.containerSelinuxLabelField.SetText("")
+	d.containerApparmorField.SetText("")
+	d.containerSeccompField.SetText("")
+	d.containerMaskField.SetText("")
+	d.containerUnmaskField.SetText("")
+	d.containerNoNewPrivField.SetChecked(false)
 	d.containerPortPublishField.SetText("")
 	d.ContainerPortPublishAllField.SetChecked(false)
 	d.containerPortExposeField.SetText("")
@@ -738,7 +850,7 @@ func (d *ContainerCreateDialog) setPortPageNextFocus() {
 	} else if d.ContainerPortPublishAllField.HasFocus() {
 		d.focusElement = createContainerPortExposeFieldFocus
 	} else {
-		d.focusElement = createFormFocus
+		d.focusElement = createContainerFormFocus
 	}
 }
 
@@ -752,7 +864,23 @@ func (d *ContainerCreateDialog) setBasicInfoPageNextFocus() {
 	} else if d.containerLabelsField.HasFocus() {
 		d.focusElement = createContainerRemoveFieldFocus
 	} else {
-		d.focusElement = createFormFocus
+		d.focusElement = createContainerFormFocus
+	}
+}
+
+func (d *ContainerCreateDialog) setSecurityOptionsPageNextFocus() {
+	if d.containerSelinuxLabelField.HasFocus() {
+		d.focusElement = createContainerApprarmorFieldFocus
+	} else if d.containerApparmorField.HasFocus() {
+		d.focusElement = createContainerSeccompFeildFocus
+	} else if d.containerSeccompField.HasFocus() {
+		d.focusElement = createContainerMaskFieldFocus
+	} else if d.containerMaskField.HasFocus() {
+		d.focusElement = createContainerUnmaskFieldFocus
+	} else if d.containerUnmaskField.HasFocus() {
+		d.focusElement = createContainerNoNewPrivFieldFocus
+	} else {
+		d.focusElement = createContainerFormFocus
 	}
 }
 
@@ -764,7 +892,7 @@ func (d *ContainerCreateDialog) setNetworkSettingsPageNextFocus() {
 	} else if d.containerMacAddrField.HasFocus() {
 		d.focusElement = createContainerNetworkFieldFocus
 	} else {
-		d.focusElement = createFormFocus
+		d.focusElement = createContainerFormFocus
 	}
 }
 
@@ -774,7 +902,7 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	} else if d.containerDNSOptionsField.HasFocus() {
 		d.focusElement = createContainerDNSSearchFieldFocus
 	} else {
-		d.focusElement = createFormFocus
+		d.focusElement = createContainerFormFocus
 	}
 }
 
@@ -782,7 +910,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
 		d.focusElement = createContainerImageVolumeFieldFocus
 	} else {
-		d.focusElement = createFormFocus
+		d.focusElement = createContainerFormFocus
 	}
 }
 
@@ -799,6 +927,11 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		expose           []string
 		volume           string
 		imageVolume      string
+		selinuxOpts      []string
+		apparmorProfile  string
+		seccompProfile   string
+		maskPaths        []string
+		unmaskPaths      []string
 	)
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
 		if label != "" {
@@ -851,6 +984,27 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	_, volume = d.containerVolumeField.GetCurrentOption()
 	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
 
+	// security options
+	for _, selinuxLabel := range strings.Split(d.containerSelinuxLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			selinuxOpts = append(selinuxOpts, selinuxLabel)
+		}
+	}
+	apparmor := strings.TrimSpace(d.containerApparmorField.GetText())
+	if apparmor != "" {
+		apparmorProfile = apparmor
+	}
+	for _, maskPath := range strings.Split(d.containerMaskField.GetText(), ":") {
+		if maskPath != "" {
+			maskPaths = append(maskPaths, maskPath)
+		}
+	}
+	for _, unmaskPath := range strings.Split(d.containerUnmaskField.GetText(), ":") {
+		if unmaskPath != "" {
+			unmaskPaths = append(unmaskPaths, unmaskPath)
+		}
+	}
+
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
 		Name:            d.containerNameField.GetText(),
@@ -870,6 +1024,10 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		DNSSearchDomain: dnsSearchDomains,
 		Volume:          volume,
 		ImageVolume:     imageVolume,
+		SelinuxOpts:     selinuxOpts,
+		ApparmorProfile: apparmorProfile,
+		Seccomp:         seccompProfile,
+		NoNewPriv:       d.containerNoNewPrivField.IsChecked(),
 	}
 	return opts
 }
