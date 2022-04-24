@@ -38,7 +38,7 @@ const (
 	buildDialogAnnotationFieldFocus
 	buildDialogRemoveCntFieldFocus
 	buildDialogForceRemoveCntFieldFocus
-	buildDialogSelinuxContextsFieldFocus
+	buildDialogSelinuxLabelFieldFocus
 	buildDialogApparmorProfileFieldFocus
 	buildDialogSeccompProfilePathFieldFocus
 	buildDialogNetworkFieldFocus
@@ -95,7 +95,7 @@ type ImageBuildDialog struct {
 	removeCntField          *tview.Checkbox
 	forceRemoveCntField     *tview.Checkbox
 	annotationsField        *tview.InputField
-	selinuxContextsField    *tview.InputField
+	selinuxLabelField       *tview.InputField
 	apparmorProfileField    *tview.InputField
 	seccompProfilePathField *tview.InputField
 	networkField            *tview.DropDown
@@ -154,7 +154,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 		removeCntField:          tview.NewCheckbox(),
 		forceRemoveCntField:     tview.NewCheckbox(),
 		annotationsField:        tview.NewInputField(),
-		selinuxContextsField:    tview.NewInputField(),
+		selinuxLabelField:       tview.NewInputField(),
 		apparmorProfileField:    tview.NewInputField(),
 		seccompProfilePathField: tview.NewInputField(),
 		networkField:            tview.NewDropDown(),
@@ -306,21 +306,21 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.forceRemoveCntField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// security options page
-	securityOptionsPAgeLabelWidth := 18
-	// selinux contexts
-	buildDialog.selinuxContextsField.SetLabel("SELinux contexts:")
-	buildDialog.selinuxContextsField.SetLabelWidth(securityOptionsPAgeLabelWidth)
-	buildDialog.selinuxContextsField.SetBackgroundColor(bgColor)
-	buildDialog.selinuxContextsField.SetLabelColor(tcell.ColorWhite)
-	buildDialog.selinuxContextsField.SetFieldBackgroundColor(inputFieldBgColor)
+	securityOptionsPAgeLabelWidth := 10
+	// selinux Label
+	buildDialog.selinuxLabelField.SetLabel("Label:")
+	buildDialog.selinuxLabelField.SetLabelWidth(securityOptionsPAgeLabelWidth)
+	buildDialog.selinuxLabelField.SetBackgroundColor(bgColor)
+	buildDialog.selinuxLabelField.SetLabelColor(tcell.ColorWhite)
+	buildDialog.selinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
 	// apparmor profile
-	buildDialog.apparmorProfileField.SetLabel("Apparmor profile:")
+	buildDialog.apparmorProfileField.SetLabel("Apparmor:")
 	buildDialog.apparmorProfileField.SetLabelWidth(securityOptionsPAgeLabelWidth)
 	buildDialog.apparmorProfileField.SetBackgroundColor(bgColor)
 	buildDialog.apparmorProfileField.SetLabelColor(tcell.ColorWhite)
 	buildDialog.apparmorProfileField.SetFieldBackgroundColor(inputFieldBgColor)
 	// seccomp profile
-	buildDialog.seccompProfilePathField.SetLabel("Seccomp profile:")
+	buildDialog.seccompProfilePathField.SetLabel("Seccomp:")
 	buildDialog.seccompProfilePathField.SetLabelWidth(securityOptionsPAgeLabelWidth)
 	buildDialog.seccompProfilePathField.SetBackgroundColor(bgColor)
 	buildDialog.seccompProfilePathField.SetLabelColor(tcell.ColorWhite)
@@ -514,7 +514,7 @@ func (d *ImageBuildDialog) setupLayout() {
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
-	d.securityOptsPage.AddItem(d.selinuxContextsField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.selinuxLabelField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.securityOptsPage.AddItem(d.apparmorProfileField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -676,8 +676,8 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 	case buildDialogForceRemoveCntFieldFocus:
 		delegate(d.forceRemoveCntField)
 	// security options page
-	case buildDialogSelinuxContextsFieldFocus:
-		delegate(d.selinuxContextsField)
+	case buildDialogSelinuxLabelFieldFocus:
+		delegate(d.selinuxLabelField)
 	case buildDialogApparmorProfileFieldFocus:
 		delegate(d.apparmorProfileField)
 	case buildDialogSeccompProfilePathFieldFocus:
@@ -906,7 +906,7 @@ func (d *ImageBuildDialog) initData() {
 	d.forceRemoveCntField.SetChecked(false)
 
 	// security options page
-	d.selinuxContextsField.SetText("")
+	d.selinuxLabelField.SetText("")
 	d.apparmorProfileField.SetText("")
 	d.seccompProfilePathField.SetText("")
 
@@ -1054,7 +1054,7 @@ func (d *ImageBuildDialog) setCPUMemoryPageNextFocus() {
 }
 
 func (d *ImageBuildDialog) setSecurityOptionsPageNextFocus() {
-	if d.selinuxContextsField.HasFocus() {
+	if d.selinuxLabelField.HasFocus() {
 		d.focusElement = buildDialogApparmorProfileFieldFocus
 	} else if d.apparmorProfileField.HasFocus() {
 		d.focusElement = buildDialogSeccompProfilePathFieldFocus
@@ -1081,7 +1081,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		addHost            []string
 		labelOpts          []string
 		apparmorProfile    string
-		secCompProfilePath string
+		seccompProfilePath string
 	)
 	// basic info page
 	// Containerfiles
@@ -1246,9 +1246,9 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	}
 
 	// security options page
-	for _, selinuxContext := range strings.Split(d.selinuxContextsField.GetText(), " ") {
-		if selinuxContext != "" {
-			labelOpts = append(labelOpts, selinuxContext)
+	for _, selinuxLabel := range strings.Split(d.selinuxLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			labelOpts = append(labelOpts, selinuxLabel)
 		}
 	}
 	apparmor := strings.TrimSpace(d.apparmorProfileField.GetText())
@@ -1257,7 +1257,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	}
 	seccomp := strings.TrimSpace(d.seccompProfilePathField.GetText())
 	if seccomp != "" {
-		secCompProfilePath = seccomp
+		seccompProfilePath = seccomp
 	}
 
 	commonOpts := &define.CommonBuildOptions{
@@ -1275,7 +1275,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		MemorySwap:         memorySwap,
 		LabelOpts:          labelOpts,
 		ApparmorProfile:    apparmorProfile,
-		SeccompProfilePath: secCompProfilePath,
+		SeccompProfilePath: seccompProfilePath,
 	}
 
 	opts.BuildOptions.CommonBuildOpts = commonOpts
