@@ -30,7 +30,7 @@ type CreateOptions struct {
 	MacAddress      string
 	HostToIP        []string
 	Network         string
-	//NetworkAliases  []string
+	SecurityOpts    []string
 }
 
 // Create creates a new pod.
@@ -94,6 +94,12 @@ func Create(opts CreateOptions) error {
 		podSpecGenerator.DNSServer = dnsServers
 	}
 
+	// security options
+	if len(opts.SecurityOpts) > 0 {
+		podSpecGenerator.SecurityOpt = opts.SecurityOpts
+	}
+
+	// validate spec
 	if err := podSpecGenerator.Validate(); err != nil {
 		errList = append(errList, err)
 	}
