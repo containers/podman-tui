@@ -15,16 +15,22 @@ import (
 
 const (
 	podCreateDialogMaxWidth = 80
-	podCreateDialogHeight   = 17
+	podCreateDialogHeight   = 19
 )
 
 const (
-	formFocus = 0 + iota
+	podFormFocus = 0 + iota
 	categoriesFocus
 	categoryPagesFocus
 	podNameFieldFocus
 	podNoHostsCheckBoxFocus
 	podLabelsFieldFocus
+	podSelinuxLabelFieldFocus
+	podApparmorFieldFocus
+	podSeccompFieldFocus
+	podMaskFieldFocus
+	podUnmaskFieldFocus
+	podNoNewPrivFieldFocus
 	podDNSServerFieldFocus
 	podDNSOptionsFieldFocus
 	podDNSSearchDomaindFieldFocus
@@ -36,11 +42,11 @@ const (
 	podMacAddressFieldFocus
 	podHostToIPMapFieldFocus
 	podNetworkFieldFocus
-	//podNetworkAliasesFieldFocus
 )
 
 const (
 	basicInfoPageIndex = 0 + iota
+	securityOptsPageIndex
 	dnsSetupPageIndex
 	infraSetupPageIndex
 	networkingPageIndex
@@ -54,6 +60,7 @@ type PodCreateDialog struct {
 	categories               *tview.TextView
 	categoryPages            *tview.Pages
 	basicInfoPage            *tview.Flex
+	securityOptsPage         *tview.Flex
 	dnsSetupPage             *tview.Flex
 	infraSetupPage           *tview.Flex
 	networkingPage           *tview.Flex
@@ -65,6 +72,12 @@ type PodCreateDialog struct {
 	podNameField             *tview.InputField
 	podNoHostsCheckBox       *tview.Checkbox
 	podLabelsField           *tview.InputField
+	podSelinuxLabelField     *tview.InputField
+	podApparmorField         *tview.InputField
+	podSeccompField          *tview.InputField
+	podMaskField             *tview.InputField
+	podUnmaskField           *tview.InputField
+	podNoNewPrivField        *tview.Checkbox
 	podDNSServerField        *tview.InputField
 	podDNSOptionsField       *tview.InputField
 	podDNSSearchDomaindField *tview.InputField
@@ -84,22 +97,34 @@ type PodCreateDialog struct {
 // NewPodCreateDialog returns new pod create dialog primitive PodCreateDialog
 func NewPodCreateDialog() *PodCreateDialog {
 	podDialog := PodCreateDialog{
-		Box:                      tview.NewBox(),
-		layout:                   tview.NewFlex().SetDirection(tview.FlexRow),
-		categories:               tview.NewTextView(),
-		categoryPages:            tview.NewPages(),
-		basicInfoPage:            tview.NewFlex(),
-		dnsSetupPage:             tview.NewFlex(),
-		infraSetupPage:           tview.NewFlex(),
-		networkingPage:           tview.NewFlex(),
-		form:                     tview.NewForm(),
-		categoryLabels:           []string{"Basic Information", "DNS Setup", "Infra Setup", "Networking"},
+		Box:              tview.NewBox(),
+		layout:           tview.NewFlex().SetDirection(tview.FlexRow),
+		categories:       tview.NewTextView(),
+		categoryPages:    tview.NewPages(),
+		basicInfoPage:    tview.NewFlex(),
+		securityOptsPage: tview.NewFlex(),
+		dnsSetupPage:     tview.NewFlex(),
+		infraSetupPage:   tview.NewFlex(),
+		networkingPage:   tview.NewFlex(),
+		form:             tview.NewForm(),
+		categoryLabels: []string{
+			"Basic Information",
+			"Security Options",
+			"DNS Setup",
+			"Infra Setup",
+			"Networking"},
 		activePageIndex:          0,
 		display:                  false,
 		defaultInfraImage:        pods.DefaultPodInfraImage(),
 		podNameField:             tview.NewInputField(),
 		podNoHostsCheckBox:       tview.NewCheckbox(),
 		podLabelsField:           tview.NewInputField(),
+		podSelinuxLabelField:     tview.NewInputField(),
+		podApparmorField:         tview.NewInputField(),
+		podSeccompField:          tview.NewInputField(),
+		podMaskField:             tview.NewInputField(),
+		podUnmaskField:           tview.NewInputField(),
+		podNoNewPrivField:        tview.NewCheckbox(),
 		podDNSServerField:        tview.NewInputField(),
 		podDNSOptionsField:       tview.NewInputField(),
 		podDNSSearchDomaindField: tview.NewInputField(),
@@ -147,6 +172,48 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podLabelsField.SetBackgroundColor(bgColor)
 	podDialog.podLabelsField.SetLabelColor(fgColor)
 	podDialog.podLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// security options
+	securityOptsPageLabelWidth := 10
+	// labels
+	podDialog.podSelinuxLabelField.SetLabel("Label:")
+	podDialog.podSelinuxLabelField.SetLabelWidth(securityOptsPageLabelWidth)
+	podDialog.podSelinuxLabelField.SetBackgroundColor(bgColor)
+	podDialog.podSelinuxLabelField.SetLabelColor(fgColor)
+	podDialog.podSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// apparmor
+	podDialog.podApparmorField.SetLabel("Apparmor:")
+	podDialog.podApparmorField.SetLabelWidth(securityOptsPageLabelWidth)
+	podDialog.podApparmorField.SetBackgroundColor(bgColor)
+	podDialog.podApparmorField.SetLabelColor(fgColor)
+	podDialog.podApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// seccomp
+	podDialog.podSeccompField.SetLabel("Seccomp:")
+	podDialog.podSeccompField.SetLabelWidth(securityOptsPageLabelWidth)
+	podDialog.podSeccompField.SetBackgroundColor(bgColor)
+	podDialog.podSeccompField.SetLabelColor(fgColor)
+	podDialog.podSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mask
+	podDialog.podMaskField.SetLabel("Mask:")
+	podDialog.podMaskField.SetLabelWidth(securityOptsPageLabelWidth)
+	podDialog.podMaskField.SetBackgroundColor(bgColor)
+	podDialog.podMaskField.SetLabelColor(fgColor)
+	podDialog.podMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// unmask
+	podDialog.podUnmaskField.SetLabel("Unmask:")
+	podDialog.podUnmaskField.SetLabelWidth(securityOptsPageLabelWidth)
+	podDialog.podUnmaskField.SetBackgroundColor(bgColor)
+	podDialog.podUnmaskField.SetLabelColor(fgColor)
+	podDialog.podUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// no new privileges
+	podDialog.podNoNewPrivField.SetLabel("No new privileges ")
+	podDialog.podNoNewPrivField.SetBackgroundColor(bgColor)
+	podDialog.podNoNewPrivField.SetLabelColor(tcell.ColorWhite)
 
 	// DNS setup page
 	dnsPageLabelWidth := 16
@@ -272,6 +339,21 @@ func (d *PodCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(d.podLabelsField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 
+	// security options page
+	d.securityOptsPage.SetDirection(tview.FlexRow)
+	d.securityOptsPage.AddItem(d.podSelinuxLabelField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.podApparmorField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.podSeccompField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.podMaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.podUnmaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.podNoNewPrivField, 1, 0, true)
+	d.securityOptsPage.SetBackgroundColor(bgColor)
+
 	// DNS setup page
 	d.dnsSetupPage.SetDirection(tview.FlexRow)
 	d.dnsSetupPage.AddItem(d.podDNSServerField, 1, 0, true)
@@ -305,6 +387,7 @@ func (d *PodCreateDialog) setupLayout() {
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[dnsSetupPageIndex], d.dnsSetupPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[infraSetupPageIndex], d.infraSetupPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
@@ -350,7 +433,7 @@ func (d *PodCreateDialog) HasFocus() bool {
 func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
-	case formFocus:
+	case podFormFocus:
 		button := d.form.GetButton(d.form.GetButtonCount() - 1)
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
@@ -390,6 +473,19 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.podNoHostsCheckBox)
 	case podLabelsFieldFocus:
 		delegate(d.podLabelsField)
+	// security options page
+	case podSelinuxLabelFieldFocus:
+		delegate(d.podSelinuxLabelField)
+	case podApparmorFieldFocus:
+		delegate(d.podApparmorField)
+	case podSeccompFieldFocus:
+		delegate(d.podSeccompField)
+	case podMaskFieldFocus:
+		delegate(d.podMaskField)
+	case podUnmaskFieldFocus:
+		delegate(d.podUnmaskField)
+	case podNoNewPrivFieldFocus:
+		delegate(d.podNoNewPrivField)
 	// dns page
 	case podDNSOptionsFieldFocus:
 		delegate(d.podDNSOptionsField)
@@ -438,6 +534,15 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBasicInfoPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -593,6 +698,13 @@ func (d *PodCreateDialog) initData() {
 	d.podNoHostsCheckBox.SetChecked(false)
 	d.podLabelsField.SetText("")
 
+	d.podSelinuxLabelField.SetText("")
+	d.podApparmorField.SetText("")
+	d.podSeccompField.SetText("")
+	d.podMaskField.SetText("")
+	d.podUnmaskField.SetText("")
+	d.podNoNewPrivField.SetChecked(false)
+
 	d.podDNSServerField.SetText("")
 	d.podDNSOptionsField.SetText("")
 	d.podDNSSearchDomaindField.SetText("")
@@ -618,7 +730,23 @@ func (d *PodCreateDialog) setBasicInfoPageNextFocus() {
 	} else if d.podNoHostsCheckBox.HasFocus() {
 		d.focusElement = podLabelsFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = podFormFocus
+	}
+}
+
+func (d *PodCreateDialog) setSecurityOptsPageNextFocus() {
+	if d.podSelinuxLabelField.HasFocus() {
+		d.focusElement = podApparmorFieldFocus
+	} else if d.podApparmorField.HasFocus() {
+		d.focusElement = podSeccompFieldFocus
+	} else if d.podSeccompField.HasFocus() {
+		d.focusElement = podMaskFieldFocus
+	} else if d.podMaskField.HasFocus() {
+		d.focusElement = podUnmaskFieldFocus
+	} else if d.podUnmaskField.HasFocus() {
+		d.focusElement = podNoNewPrivFieldFocus
+	} else {
+		d.focusElement = podFormFocus
 	}
 }
 
@@ -628,7 +756,7 @@ func (d *PodCreateDialog) setDNSSetupPageNextFocus() {
 	} else if d.podDNSOptionsField.HasFocus() {
 		d.focusElement = podDNSSearchDomaindFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = podFormFocus
 	}
 }
 
@@ -638,7 +766,7 @@ func (d *PodCreateDialog) setInfraSetupPageNextFocus() {
 	} else if d.podInfraCommandField.HasFocus() {
 		d.focusElement = podInfraImageFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = podFormFocus
 	}
 }
 
@@ -654,7 +782,7 @@ func (d *PodCreateDialog) setNetworkingPageNextFocus() {
 		//} else if d.podNetworkField.HasFocus() {
 		//	d.focusElement = podNetworkAliasesFieldFocus
 	} else {
-		d.focusElement = formFocus
+		d.focusElement = podFormFocus
 	}
 }
 
@@ -669,6 +797,7 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		hostAdd          []string
 		infraCommand     []string
 		network          string
+		securityOpts     []string
 	)
 	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
 		if label != "" {
@@ -716,6 +845,32 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		network = netName
 	}
 
+	// securuty options
+	if d.podNoNewPrivField.IsChecked() {
+		securityOpts = append(securityOpts, "no-new-privileges")
+	}
+	apparmor := strings.TrimSpace(d.podApparmorField.GetText())
+	if apparmor != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor))
+	}
+	seccomp := strings.TrimSpace(d.podSeccompField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp))
+	}
+	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel))
+		}
+	}
+	mask := strings.TrimSpace(d.podMaskField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask))
+	}
+	unmask := strings.TrimSpace(d.podUnmaskField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask))
+	}
+
 	opts := pods.CreateOptions{
 		Name:            d.podNameField.GetText(),
 		NoHost:          d.podNoHostsCheckBox.IsChecked(),
@@ -731,6 +886,7 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		MacAddress:      d.podMacAddressField.GetText(),
 		HostToIP:        hostAdd,
 		Network:         network,
+		SecurityOpts:    securityOpts,
 	}
 	return opts
 }

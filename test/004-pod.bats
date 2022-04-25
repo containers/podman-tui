@@ -17,6 +17,9 @@ load helpers_tui
     # select create command from pod commands dialog
     # fillout name field
     # fillout label field
+    # switch to "security option" create view
+    # set label disable
+    # set no new privileges
     # switch to "networking" create view
     # go to networks dropdown widget and select network name from available networks
     # go to "Create" button and press Enter
@@ -24,13 +27,23 @@ load helpers_tui
     podman_tui_select_pod_cmd "create"
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs $TEST_POD_NAME "Tab" "Tab" $TEST_LABEL
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Tab"
+    podman_tui_send_inputs "disable"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Space"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Down" "Down"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Down"
     podman_tui_select_item $net_index
     podman_tui_send_inputs "Enter"
-    podman_tui_send_inputs "Tab" "Tab" 
+    podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "Enter"
     sleep 4
+
+    run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
+    assert $output =~ "Created" "expected $TEST_POD_NAME to be created"
+
+    security_opts=$(podman pod inspect $TEST_POD_NAME | sed -n '/security_opt/,/.*]/p')
+    assert "$security_opts" =~ "no-new-privileges" "expected no-new-privileges in pod security options"
+    assert "$security_opts" =~ "label=disable" "expected label=disable in pod security options"
 }
 
 @test "pod start" {
