@@ -32,6 +32,8 @@ func (img *Images) runCommand(cmd string) {
 		img.searchDialog.Display()
 	case "tag":
 		img.ctag()
+	case "tree":
+		img.tree()
 	case "untag":
 		img.cuntag()
 	}
@@ -290,6 +292,28 @@ func (img *Images) cuntag() {
 		img.cmdInputDialog.Hide()
 	})
 	img.cmdInputDialog.Display()
+}
+
+func (img *Images) tree() {
+	if img.selectedID == "" {
+		img.displayError("", fmt.Errorf("there is no image to display tree"))
+		return
+	}
+	retTree := func() {
+		tree, err := images.Tree(img.selectedID)
+		if err != nil {
+			title := fmt.Sprintf("IMAGE (%s) TREE ERROR", img.selectedID)
+			img.displayError(title, err)
+			return
+		}
+		img.progressDialog.Hide()
+		img.messageDialog.SetTitle("podman image tree")
+		img.messageDialog.SetText(tree)
+		img.messageDialog.Display()
+	}
+	img.progressDialog.SetTitle("image tree in progress")
+	img.progressDialog.Display()
+	go retTree()
 }
 
 func (img *Images) untag(id string) {

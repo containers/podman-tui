@@ -73,6 +73,7 @@ func NewImages() *Images {
 		{"save", "save an image to docker-archive or oci-archive"},
 		{"search/pull", "search and pull image from registry"},
 		{"tag", "add an additional name to the selected  image"},
+		{"tree", "display layer hierarchy of an image"},
 		{"untag", "remove a name from the selected image"},
 	})
 
