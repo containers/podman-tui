@@ -92,8 +92,10 @@ function podman_tui_select_image_cmd() {
     menu_index=8;;
   "tag")
     menu_index=9;;
-  "untag")
+  "tree")
     menu_index=10;;
+  "untag")
+    menu_index=11;;
   esac
 
   podman_tui_select_menu $menu_index

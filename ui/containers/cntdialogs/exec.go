@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/containers"
-	putils "github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
@@ -25,12 +24,11 @@ const (
 	execInteractiveFieldFocus
 	execTtyFieldFocus
 	execPrivilegedFieldFocus
-	execDetachFieldFocus
 	execWorkingDirFieldFocus
 	execEnvVariablesFieldFocus
 	execEnvFileFieldFocus
 	execUserFieldFocus
-	execDetachKeysFieldFocus
+	execDetachFieldFocus
 	execFormFieldFocus
 )
 
@@ -48,7 +46,6 @@ type ContainerExecDialog struct {
 	envVariables  *tview.InputField
 	envFile       *tview.InputField
 	user          *tview.InputField
-	detachKeys    *tview.InputField
 	form          *tview.Form
 	display       bool
 	containerID   string
@@ -71,7 +68,6 @@ func NewContainerExecDialog() *ContainerExecDialog {
 		envVariables: tview.NewInputField(),
 		envFile:      tview.NewInputField(),
 		user:         tview.NewInputField(),
-		detachKeys:   tview.NewInputField(),
 		display:      false,
 	}
 	bgColor := utils.Styles.ContainerExecDialog.BgColor
@@ -151,19 +147,12 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.envFile.SetLabelWidth(execDialogLabelWidth)
 	dialog.envFile.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// detach key
-	dialog.detachKeys.SetBackgroundColor(bgColor)
-	dialog.detachKeys.SetBorder(false)
-	dialog.detachKeys.SetLabel("detach keys:")
-	dialog.detachKeys.SetLabelColor(fgColor)
-	dialog.detachKeys.SetLabelWidth(execDialogLabelWidth)
-	dialog.detachKeys.SetFieldBackgroundColor(inputFieldBgColor)
-
 	// user
 	dialog.user.SetBackgroundColor(bgColor)
 	dialog.user.SetBorder(false)
 	dialog.user.SetLabel("user: ")
 	dialog.user.SetLabelColor(fgColor)
+	dialog.user.SetLabelWidth(execDialogLabelWidth)
 	dialog.user.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form fields
@@ -199,13 +188,9 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	checkBoxLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(checkBoxLayout, 1, 0, true)
-	// detach keys and user
+	// user
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	udLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	udLayout.AddItem(dialog.detachKeys, 0, 1, true)
-	udLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, true)
-	udLayout.AddItem(dialog.user, 0, 1, true)
-	mLayout.AddItem(udLayout, 1, 0, true)
+	mLayout.AddItem(dialog.user, 1, 0, true)
 	// working dir
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.workingDir, 1, 0, true)
@@ -231,7 +216,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 func (d *ContainerExecDialog) Display() {
 	d.focusElement = execCommandFieldFocus
 	d.command.SetText("")
-	d.tty.SetChecked(false)
+	d.tty.SetChecked(true)
 	d.interactive.SetChecked(false)
 	d.privileged.SetChecked(false)
 	d.detach.SetChecked(false)
@@ -239,7 +224,6 @@ func (d *ContainerExecDialog) Display() {
 	d.envVariables.SetText("")
 	d.envFile.SetText("")
 	d.user.SetText("")
-	d.detachKeys.SetText(putils.DefaultContainerDetachKeys)
 	d.display = true
 }
 
@@ -269,10 +253,7 @@ func (d *ContainerExecDialog) HasFocus() bool {
 	if d.envFile.HasFocus() || d.user.HasFocus() {
 		return true
 	}
-	if d.detach.HasFocus() || d.detachKeys.HasFocus() {
-		return true
-	}
-	if d.form.HasFocus() {
+	if d.detach.HasFocus() || d.form.HasFocus() {
 		return true
 	}
 	return d.Box.HasFocus() || d.layout.HasFocus()
@@ -338,25 +319,13 @@ func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) {
 	case execDetachFieldFocus:
 		d.detach.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
-				d.focusElement = execDetachKeysFieldFocus
-				d.Focus(delegate)
-				return nil
-			}
-			return event
-		})
-		delegate(d.detach)
-		return
-	// detach keys focus
-	case execDetachKeysFieldFocus:
-		d.detachKeys.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			if event.Key() == tcell.KeyTab {
 				d.focusElement = execUserFieldFocus
 				d.Focus(delegate)
 				return nil
 			}
 			return event
 		})
-		delegate(d.detachKeys)
+		delegate(d.detach)
 		return
 	// user field focus
 	case execUserFieldFocus:
@@ -507,14 +476,6 @@ func (d *ContainerExecDialog) InputHandler() func(event *tcell.EventKey, setFocu
 			}
 
 		}
-		// detach keys field
-		if d.detachKeys.HasFocus() {
-			if detachKeysHandler := d.detachKeys.InputHandler(); detachKeysHandler != nil {
-				detachKeysHandler(event, setFocus)
-				return
-			}
-
-		}
 		// form primitive
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
@@ -613,12 +574,6 @@ func (d *ContainerExecDialog) ContainerExecOptions() containers.ExecOption {
 	}
 
 	execOptions.User = strings.TrimSpace(d.user.GetText())
-
-	detachKeys := strings.TrimSpace(d.detachKeys.GetText())
-	if detachKeys == "" {
-		detachKeys = putils.DefaultContainerDetachKeys
-	}
-	execOptions.DetachKeys = detachKeys
 
 	return execOptions
 }

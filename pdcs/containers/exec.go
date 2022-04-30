@@ -112,10 +112,10 @@ func Exec(sessionID string, opts ExecOption) {
 		return
 	}
 	log.Debug().Msgf("pdcs: podman session (%s) exec finished successfully", sessionID)
-	opts.OutputStream.Write([]byte(fmt.Sprintf("session_id ...... : %s\n", sessionID)))
-	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_mode  ...... : %s\n", "detached")))
-	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\n", strings.Join(opts.Cmd, " "))))
-	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_status ..... : %s\n", "OK")))
+	opts.OutputStream.Write([]byte(fmt.Sprintf("session_id ...... : %s\r\n", sessionID)))
+	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_mode  ...... : %s\r\n", "detached")))
+	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " "))))
+	opts.OutputStream.Write([]byte(fmt.Sprintf("exec_status ..... : %s\r\n", "OK")))
 }
 
 func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
