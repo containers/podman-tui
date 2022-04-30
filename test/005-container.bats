@@ -135,8 +135,8 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "exec"
     podman_tui_send_inputs "/bin/bash"
-    podman_tui_send_inputs "Tab" "Space" "Tab" "Space"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Space" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Enter"
     sleep 1
     podman_tui_send_inputs "echo Space test Space > Space a.txt" "Enter"

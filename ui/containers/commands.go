@@ -104,13 +104,25 @@ func (cnt *Containers) exec() {
 	execOpts.TtyWidth = width
 	execOpts.TtyHeight = height
 
-	sessionID, err := cnt.execTerminalDialog.PrepareForExec(cnt.selectedID, cnt.selectedName, &execOpts)
+	err := cnt.execTerminalDialog.PrepareForExec(cnt.selectedID, cnt.selectedName, &execOpts)
 	if err != nil {
 		title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
 		cnt.displayError(title, err)
 		return
 	}
-	go containers.Exec(sessionID, execOpts)
+
+	prepareAndExec := func() {
+		execSessionID, err := containers.NewExecSession(cnt.selectedID, execOpts)
+		if err != nil {
+			title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
+			cnt.displayError(title, err)
+			return
+		}
+		cnt.execTerminalDialog.SetExecInfo(cnt.selectedID, cnt.selectedName, execSessionID)
+		containers.Exec(execSessionID, execOpts)
+	}
+	go prepareAndExec()
+
 	cnt.execTerminalDialog.Display()
 
 }
