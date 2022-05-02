@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman/v4/pkg/channel"
 	"github.com/gdamore/tcell/v2"
-	vt100 "github.com/navidys/vtterm"
+	"github.com/hinshun/vt10x"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )
@@ -29,31 +31,27 @@ const (
 // ContainerExecTerminalDialog represents container execterminal dialog primitive
 type ContainerExecTerminalDialog struct {
 	*tview.Box
-	layout              *tview.Flex
-	label               *tview.TextView
-	terminalScreen      *tview.Box
-	form                *tview.Form
-	doneHandler         func()
-	fastRefreshHandler  func()
-	display             bool
-	state               state
-	containerID         string
-	sessionID           string
-	streamDoneChan      chan bool
-	streamOutputChannel *chan string
-	streamInputBuffer   *bufio.Writer
-	vtWriter            *io.PipeWriter
-	vtReader            *io.PipeReader
-	vtReaderBuf         **bufio.Reader
-	vtTerminal          vt
-	focusElement        int
-	ttyWidth            int
-	ttyHeight           int
-}
-
-type vt struct {
-	*vt100.VT100
-	sync.Locker
+	layout             *tview.Flex
+	label              *tview.TextView
+	terminalScreen     *tview.Box
+	form               *tview.Form
+	doneHandler        func()
+	fastRefreshHandler func()
+	display            bool
+	state              state
+	containerID        string
+	sessionID          string
+	streamDoneChan     chan bool
+	streamOutputWriter channel.WriteCloser
+	streamInputBuffer  *bufio.Writer
+	vtWriter           *io.PipeWriter
+	vtReader           *io.PipeReader
+	vtReaderBuf        **bufio.Reader
+	vtTerminal         vt10x.Terminal
+	detachKeys         detachKeys
+	focusElement       int
+	ttyWidth           int
+	ttyHeight          int
 }
 
 // NewContainerExecTerminalDialog returns new container exec terminal dialog
@@ -67,8 +65,13 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 		terminalScreen: tview.NewBox(),
 		streamDoneChan: make(chan bool, 2),
 		display:        false,
+		detachKeys: detachKeys{
+			keyString: "ctrl-p,ctrl-q,ctrl-p",
+			tcellKeys: []tcell.Key{
+				tcell.KeyCtrlP, tcell.KeyCtrlQ, tcell.KeyCtrlP,
+			},
+		},
 	}
-
 	bgColor := utils.Styles.ContainerExecTerminalDialog.BgColor
 	fgColor := utils.Styles.ContainerExecTerminalDialog.FgColor
 
@@ -94,9 +97,9 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 	middleLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	middleLayout.SetBackgroundColor(bgColor)
 	middleLayout.SetBorder(false)
-	middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	//middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	middleLayout.AddItem(dialog.label, 1, 0, true)
-	middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	//middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	middleLayout.AddItem(dialog.terminalScreen, 0, 1, true)
 
 	// main dialog layout
@@ -122,6 +125,7 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 
 // Display displays this primitive
 func (d *ContainerExecTerminalDialog) Display() {
+	// clear terminal content
 	// OS pipes attached to session and VT terminal
 	// it will read from exec session and write to VT termianl for decode
 	vReaderRaw, vWriter := io.Pipe()
@@ -129,7 +133,6 @@ func (d *ContainerExecTerminalDialog) Display() {
 	d.vtWriter = vWriter
 	d.vtReader = vReaderRaw
 	d.vtReaderBuf = &vReader
-
 	d.focusElement = terminalScreenFieldFocus
 	d.state.start()
 	go d.startVTreader()
@@ -145,15 +148,15 @@ func (d *ContainerExecTerminalDialog) IsDisplay() bool {
 
 // Hide stops displaying this primitive
 func (d *ContainerExecTerminalDialog) Hide() {
+	d.sendDetach()
 	d.state.stop()
-	d.streamDoneChan <- true
-	d.setExecInfo("", "", "")
+	d.SetExecInfo("", "", "")
 	d.ttyHeight = 0
 	d.ttyWidth = 0
 	d.display = false
 	// close OS pipes attached to session and VT terminal
 	d.vtWriter.Close()
-
+	d.streamOutputWriter.Close()
 }
 
 // HasFocus returns whether or not this primitive has focus
@@ -245,6 +248,9 @@ func (d *ContainerExecTerminalDialog) Draw(screen tcell.Screen) {
 	terminalStyle := tcell.StyleDefault.Foreground(terminalFgColor).Background(terminalBgColor)
 
 	x, y, width, height = d.terminalScreen.GetInnerRect()
+	if width != d.ttyWidth || height != d.ttyHeight {
+		d.setTtySize(width, height)
+	}
 
 	// set terminal background
 	for trow := 0; trow < height; trow++ {
@@ -252,24 +258,17 @@ func (d *ContainerExecTerminalDialog) Draw(screen tcell.Screen) {
 			tview.PrintJoinedSemigraphics(screen, x+tcol, y+trow, rune(0), terminalStyle)
 		}
 	}
-
 	content, cursor := d.vtContent()
-	for row := 0; row < len(content); row++ {
-		for col := 0; col < len(content[row]); col++ {
-			if (col >= width) || (row >= height) {
-				continue
-			}
-			screen.SetContent(x+col, y+row, content[row][col], nil, terminalStyle)
-		}
+	contentLines := strings.Split(content, "\n")
+	for row := 0; row < len(contentLines); row++ {
+		tview.PrintSimple(screen, contentLines[row], x, y+row)
 	}
 	cursorX := x + cursor.X
 	cursorY := y + cursor.Y
-	//cursorRune := []rune("▉")
 	if cursor.Y < height && cursor.X < width {
 		tview.Print(screen, "▉", cursorX, cursorY, 1, tview.AlignCenter, terminalFgColor)
 	}
 
-	//screen.SetContent(x+cursorX, y+cursorY, rune(0), cursorRune, terminalStyle)
 }
 
 // SetDoneFunc sets form close button selected function
@@ -296,40 +295,34 @@ func (d *ContainerExecTerminalDialog) setTtySize(width int, height int) {
 	d.ttyWidth = width
 	d.ttyHeight = height
 
-	d.vtTerminal = vt{
-		vt100.NewVT100(d.ttyHeight, d.ttyWidth),
-		new(sync.Mutex),
-	}
+	d.vtTerminal.Resize(d.ttyWidth, d.ttyHeight)
+
 	go containers.ResizeExecTty(d.sessionID, d.ttyHeight, d.ttyWidth)
 }
 
 // PrepareForExec prepare for session exec e.g. setting input, output streams
-func (d *ContainerExecTerminalDialog) PrepareForExec(id string, name string, opts *containers.ExecOption) (string, error) {
+func (d *ContainerExecTerminalDialog) PrepareForExec(id string, name string, opts *containers.ExecOption) error {
+	log.Debug().Msg("container exec terminal dialog: prepare for exec")
+	d.vtTerminal = vt10x.New()
 	d.containerID = id
 
-	outputStream := utils.NewStreamChannel(100)
+	c := make(chan []byte, 1000)
+	d.streamOutputWriter = channel.NewWriter(c)
 	termInputReader, termInputWriter, err := os.Pipe()
 
 	if err != nil {
-		return "", err
+		return err
 	}
-	var execOutputStream io.WriteCloser = outputStream
 	execInputStream := bufio.NewReader(termInputReader)
-	opts.OutputStream = execOutputStream
+	opts.OutputStream = d.streamOutputWriter
 	opts.InputStream = execInputStream
+	opts.DetachKeys = d.detachKeys.string()
+
 	terminalInputBuffer := bufio.NewWriter(termInputWriter)
-
-	execSessionID, err := containers.NewExecSession(d.containerID, *opts)
-	if err != nil {
-		return "", err
-	}
-	d.setExecInfo(d.containerID, name, execSessionID)
-
 	d.streamInputBuffer = terminalInputBuffer
-	d.streamOutputChannel = outputStream.Channel()
 
 	d.setTtySize(opts.TtyWidth, opts.TtyHeight)
-	return execSessionID, nil
+	return nil
 }
 
 // addKeyToTerminal adds user input key to terminal output
@@ -370,11 +363,12 @@ func (d *ContainerExecTerminalDialog) startTerminalOutputStreamReader() {
 		case <-d.streamDoneChan:
 			log.Debug().Msg("container exec terminal dialog: reader stream stopped")
 			return
-		case data := <-*d.streamOutputChannel:
+		case data := <-d.streamOutputWriter.Chan():
 			if d.state.isStopped() {
-				break
+				log.Debug().Msg("container exec terminal dialog: reader stream stopped")
+				return
 			}
-			d.addToOutput(data)
+			d.addToOutput(string(data))
 			d.fastRefreshHandler()
 		}
 
@@ -385,41 +379,33 @@ func (d *ContainerExecTerminalDialog) addToOutput(data string) {
 	d.vtWriter.Write([]byte(data))
 }
 
-func (d *ContainerExecTerminalDialog) vtContent() ([][]rune, vt100.Cursor) {
-	var content [][]rune
-	var cursor vt100.Cursor
-	d.vtTerminal.Lock()
-	content = d.vtTerminal.Content
-	cursor = d.vtTerminal.Cursor
-	d.vtTerminal.Unlock()
+// vtContent returns current content of vt10x terminal
+func (d *ContainerExecTerminalDialog) vtContent() (string, vt10x.Cursor) {
+	var content string
+	var cursor vt10x.Cursor
+	content = d.vtTerminal.String()
+	cursor = d.vtTerminal.Cursor()
 	return content, cursor
 }
 
 func (d *ContainerExecTerminalDialog) startVTreader() {
-	log.Debug().Msg("container exec terminal dialog: vt100 terminal reader started")
+	log.Debug().Msg("container exec terminal dialog: terminal reader started")
 	for {
-		cmd, err := vt100.Decode(*d.vtReaderBuf)
-		if err == nil {
-			d.vtTerminal.Lock()
-			err = d.vtTerminal.Process(cmd)
-			d.vtTerminal.Unlock()
+		err := d.vtTerminal.Parse(*d.vtReaderBuf)
+		if err != nil {
+			if err != io.EOF {
+				log.Error().Msgf("container exec terminal dialog: terminal reader error %v", err)
+			}
+			break
 		}
-		if err == nil {
-			continue
-		}
-		if err != io.EOF {
-			// TODO: fix out of bound error
-			// both out of bound error and unsupported controls can be safety ignored
-			//log.Error().Msgf("container exec terminal dialog: vt100: %v", err)
-			continue
-		}
-		log.Debug().Msg("container exec terminal dialog: vt100 terminal reader exited")
-		d.vtReader.Close()
-		return
 	}
+	log.Debug().Msg("container exec terminal dialog: terminal reader exited")
+	d.vtReader.Close()
 }
 
-func (d *ContainerExecTerminalDialog) setExecInfo(id string, name string, sessionID string) {
+// SetExecInfo sets container exec terminal information
+// container ID , name and session ID
+func (d *ContainerExecTerminalDialog) SetExecInfo(id string, name string, sessionID string) {
 	fgColor := utils.Styles.ContainerExecTerminalDialog.FgColor
 	bgColor := utils.Styles.ContainerExecTerminalDialog.HeaderBgColor
 	headerFgColor := utils.GetColorName(fgColor)
@@ -437,6 +423,15 @@ func (d *ContainerExecTerminalDialog) setExecInfo(id string, name string, sessio
 	screenLabel := fmt.Sprintf("SESSION (%s)", sessionID)
 	d.terminalScreen.SetTitle(screenLabel)
 	d.label.SetText(label)
+}
+
+func (d *ContainerExecTerminalDialog) sendDetach() {
+	log.Debug().Msg("container exec terminal dialog: sending detached keys")
+	keys := d.detachKeys.keys()
+	for i := 0; i < len(keys); i++ {
+		d.streamInputBuffer.WriteRune(rune(keys[i]))
+	}
+	d.streamInputBuffer.Flush()
 }
 
 type state struct {
@@ -462,4 +457,17 @@ func (s *state) start() {
 	s.mu.Lock()
 	s.isRunning = true
 	s.mu.Unlock()
+}
+
+type detachKeys struct {
+	keyString string
+	tcellKeys []tcell.Key
+}
+
+func (dkey detachKeys) string() string {
+	return dkey.keyString
+}
+
+func (dkey detachKeys) keys() []tcell.Key {
+	return dkey.tcellKeys
 }
