@@ -34,6 +34,10 @@ func ValidateVolumeOpts(options []string) ([]string, error) {
 			finalOpts = append(finalOpts, opt)
 			continue
 		}
+		if strings.HasPrefix(opt, "idmap") {
+			finalOpts = append(finalOpts, opt)
+			continue
+		}
 
 		switch opt {
 		case "noexec", "exec":
@@ -84,7 +88,6 @@ func ValidateVolumeOpts(options []string) ([]string, error) {
 			// are intended to be always safe to use, even not on OS
 			// X).
 			continue
-		case "idmap":
 		default:
 			return nil, errors.Errorf("invalid option type %q", opt)
 		}
@@ -138,7 +141,7 @@ func Device(device string) (src, dest, permissions string, err error) {
 // isValidDeviceMode checks if the mode for device is valid or not.
 // isValid mode is a composition of r (read), w (write), and m (mknod).
 func isValidDeviceMode(mode string) bool {
-	var legalDeviceMode = map[rune]bool{
+	legalDeviceMode := map[rune]bool{
 		'r': true,
 		'w': true,
 		'm': true,

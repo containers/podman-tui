@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -253,13 +252,14 @@ func (s *dockerImageSource) getExternalBlob(ctx context.Context, urls []string) 
 		return nil, 0, errors.New("internal error: getExternalBlob called with no URLs")
 	}
 	for _, u := range urls {
-		if u, err := url.Parse(u); err != nil || (u.Scheme != "http" && u.Scheme != "https") {
+		url, err := url.Parse(u)
+		if err != nil || (url.Scheme != "http" && url.Scheme != "https") {
 			continue // unsupported url. skip this url.
 		}
 		// NOTE: we must not authenticate on additional URLs as those
 		//       can be abused to leak credentials or tokens.  Please
 		//       refer to CVE-2020-15157 for more information.
-		resp, err = s.c.makeRequestToResolvedURL(ctx, http.MethodGet, u, nil, nil, -1, noAuth, nil)
+		resp, err = s.c.makeRequestToResolvedURL(ctx, http.MethodGet, url, nil, nil, -1, noAuth, nil)
 		if err == nil {
 			if resp.StatusCode != http.StatusOK {
 				err = errors.Errorf("error fetching external blob from %q: %d (%s)", u, resp.StatusCode, http.StatusText(resp.StatusCode))
@@ -307,7 +307,7 @@ func splitHTTP200ResponseToPartial(streams chan io.ReadCloser, errs chan error, 
 				break
 			}
 			toSkip := c.Offset - currentOffset
-			if _, err := io.Copy(ioutil.Discard, io.LimitReader(body, int64(toSkip))); err != nil {
+			if _, err := io.Copy(io.Discard, io.LimitReader(body, int64(toSkip))); err != nil {
 				errs <- err
 				break
 			}
@@ -315,7 +315,7 @@ func splitHTTP200ResponseToPartial(streams chan io.ReadCloser, errs chan error, 
 		}
 		s := signalCloseReader{
 			closed:        make(chan interface{}),
-			stream:        ioutil.NopCloser(io.LimitReader(body, int64(c.Length))),
+			stream:        io.NopCloser(io.LimitReader(body, int64(c.Length))),
 			consumeStream: true,
 		}
 		streams <- s
@@ -514,7 +514,7 @@ func (s *dockerImageSource) getOneSignature(ctx context.Context, url *url.URL) (
 	switch url.Scheme {
 	case "file":
 		logrus.Debugf("Reading %s", url.Path)
-		sig, err := ioutil.ReadFile(url.Path)
+		sig, err := os.ReadFile(url.Path)
 		if err != nil {
 			if os.IsNotExist(err) {
 				return nil, true, nil
@@ -524,7 +524,7 @@ func (s *dockerImageSource) getOneSignature(ctx context.Context, url *url.URL) (
 		return sig, false, nil
 
 	case "http", "https":
-		logrus.Debugf("GET %s", url)
+		logrus.Debugf("GET %s", url.Redacted())
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
 		if err != nil {
 			return nil, false, err
@@ -537,7 +537,7 @@ func (s *dockerImageSource) getOneSignature(ctx context.Context, url *url.URL) (
 		if res.StatusCode == http.StatusNotFound {
 			return nil, true, nil
 		} else if res.StatusCode != http.StatusOK {
-			return nil, false, errors.Errorf("Error reading signature from %s: status %d (%s)", url.String(), res.StatusCode, http.StatusText(res.StatusCode))
+			return nil, false, errors.Errorf("Error reading signature from %s: status %d (%s)", url.Redacted(), res.StatusCode, http.StatusText(res.StatusCode))
 		}
 		sig, err := iolimits.ReadAtMost(res.Body, iolimits.MaxSignatureBodySize)
 		if err != nil {
@@ -546,7 +546,7 @@ func (s *dockerImageSource) getOneSignature(ctx context.Context, url *url.URL) (
 		return sig, false, nil
 
 	default:
-		return nil, false, errors.Errorf("Unsupported scheme when reading signature from %s", url.String())
+		return nil, false, errors.Errorf("Unsupported scheme when reading signature from %s", url.Redacted())
 	}
 }
 
@@ -610,8 +610,11 @@ func deleteImage(ctx context.Context, sys *types.SystemContext, ref dockerRefere
 		return errors.Errorf("Failed to delete %v: %s (%v)", ref.ref, manifestBody, get.Status)
 	}
 
-	digest := get.Header.Get("Docker-Content-Digest")
-	deletePath := fmt.Sprintf(manifestPath, reference.Path(ref.ref), digest)
+	manifestDigest, err := manifest.Digest(manifestBody)
+	if err != nil {
+		return fmt.Errorf("computing manifest digest: %w", err)
+	}
+	deletePath := fmt.Sprintf(manifestPath, reference.Path(ref.ref), manifestDigest)
 
 	// When retrieving the digest from a registry >= 2.3 use the following header:
 	//   "Accept": "application/vnd.docker.distribution.manifest.v2+json"
@@ -627,11 +630,6 @@ func deleteImage(ctx context.Context, sys *types.SystemContext, ref dockerRefere
 	}
 	if delete.StatusCode != http.StatusAccepted {
 		return errors.Errorf("Failed to delete %v: %s (%v)", deletePath, string(body), delete.Status)
-	}
-
-	manifestDigest, err := manifest.Digest(manifestBody)
-	if err != nil {
-		return err
 	}
 
 	for i := 0; ; i++ {
@@ -764,7 +762,7 @@ func (s signalCloseReader) Read(p []byte) (int, error) {
 func (s signalCloseReader) Close() error {
 	defer close(s.closed)
 	if s.consumeStream {
-		if _, err := io.Copy(ioutil.Discard, s.stream); err != nil {
+		if _, err := io.Copy(io.Discard, s.stream); err != nil {
 			s.stream.Close()
 			return err
 		}
