@@ -7,7 +7,7 @@ require (
 	github.com/containers/buildah v1.25.1
 	github.com/containers/common v0.47.5
 	github.com/containers/podman/v4 v4.0.3
-	github.com/containers/storage v1.40.0
+	github.com/containers/storage v1.40.2
 	github.com/docker/distribution v2.8.1+incompatible
 	github.com/docker/docker v20.10.14+incompatible
 	github.com/docker/go-units v0.4.0
