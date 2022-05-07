@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/containers/buildah/define"
+	"github.com/containers/image/v5/types"
 	"github.com/containers/podman/v4/pkg/auth"
 	"github.com/containers/podman/v4/pkg/bindings"
 	"github.com/containers/podman/v4/pkg/domain/entities"
@@ -215,6 +216,12 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	if t := options.Output; len(t) > 0 {
 		params.Set("output", t)
 	}
+	if t := options.OSVersion; len(t) > 0 {
+		params.Set("osversion", t)
+	}
+	for _, t := range options.OSFeatures {
+		params.Set("osfeature", t)
+	}
 	var platform string
 	if len(options.OS) > 0 {
 		platform = options.OS
@@ -224,10 +231,8 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 			platform = "linux"
 		}
 		platform += "/" + options.Architecture
-	} else {
-		if len(platform) > 0 {
-			platform += "/" + runtime.GOARCH
-		}
+	} else if len(platform) > 0 {
+		platform += "/" + runtime.GOARCH
 	}
 	if len(platform) > 0 {
 		params.Set("platform", platform)
@@ -250,6 +255,12 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 
 	params.Set("pullpolicy", options.PullPolicy.String())
 
+	switch options.CommonBuildOpts.IdentityLabel {
+	case types.OptionalBoolTrue:
+		params.Set("identitylabel", "1")
+	case types.OptionalBoolFalse:
+		params.Set("identitylabel", "0")
+	}
 	if options.Quiet {
 		params.Set("q", "1")
 	}
@@ -298,6 +309,10 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 		params.Set("ulimits", string(ulimitsJSON))
 	}
 
+	for _, env := range options.Envs {
+		params.Add("setenv", env)
+	}
+
 	for _, uenv := range options.UnsetEnvs {
 		params.Add("unsetenv", uenv)
 	}
@@ -305,10 +320,15 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	var (
 		headers http.Header
 	)
-	if options.SystemContext != nil && options.SystemContext.DockerAuthConfig != nil {
-		headers, err = auth.MakeXRegistryAuthHeader(options.SystemContext, options.SystemContext.DockerAuthConfig.Username, options.SystemContext.DockerAuthConfig.Password)
-	} else {
-		headers, err = auth.MakeXRegistryConfigHeader(options.SystemContext, "", "")
+	if options.SystemContext != nil {
+		if options.SystemContext.DockerAuthConfig != nil {
+			headers, err = auth.MakeXRegistryAuthHeader(options.SystemContext, options.SystemContext.DockerAuthConfig.Username, options.SystemContext.DockerAuthConfig.Password)
+		} else {
+			headers, err = auth.MakeXRegistryConfigHeader(options.SystemContext, "", "")
+		}
+		if options.SystemContext.DockerInsecureSkipTLSVerify == types.OptionalBoolTrue {
+			params.Set("tlsVerify", "false")
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -367,20 +387,20 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 			return nil, err
 		}
 
-		// Check if Containerfile is in the context directory, if so truncate the contextdirectory off path
+		// Check if Containerfile is in the context directory, if so truncate the context directory off path
 		// Do NOT add to tarfile
 		if strings.HasPrefix(containerfile, contextDir+string(filepath.Separator)) {
 			containerfile = strings.TrimPrefix(containerfile, contextDir+string(filepath.Separator))
 			dontexcludes = append(dontexcludes, "!"+containerfile)
 		} else {
-			// If Containerfile does not exists assume it is in context directory, do Not add to tarfile
+			// If Containerfile does not exist, assume it is in context directory and do Not add to tarfile
 			if _, err := os.Lstat(containerfile); err != nil {
 				if !os.IsNotExist(err) {
 					return nil, err
 				}
 				containerfile = c
 			} else {
-				// If Containerfile does exists but is not in context directory add it to the tarfile
+				// If Containerfile does exist and not in the context directory, add it to the tarfile
 				tarContent = append(tarContent, containerfile)
 			}
 		}
@@ -435,7 +455,7 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 						}
 					}
 				}
-				secretsForRemote = append(secretsForRemote, strings.Join(modifiedOpt[:], ","))
+				secretsForRemote = append(secretsForRemote, strings.Join(modifiedOpt, ","))
 			}
 		}
 
@@ -576,7 +596,7 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 					if err != io.EOF {
 						return nil // non empty root dir, need to return
 					} else if err != nil {
-						logrus.Errorf("Error while reading directory %v: %v", path, err)
+						logrus.Errorf("While reading directory %v: %v", path, err)
 					}
 				}
 				name := filepath.ToSlash(strings.TrimPrefix(path, s+string(filepath.Separator)))
@@ -586,10 +606,13 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 					return errors.Wrapf(err, "error checking if %q is excluded", name)
 				}
 				if excluded {
+					// Note: filepath.SkipDir is not possible to use given .dockerignore semantics.
+					// An exception to exclusions may include an excluded directory, therefore we
+					// are required to visit all files. :(
 					return nil
 				}
-
-				if d.Type().IsRegular() { // add file item
+				switch {
+				case d.Type().IsRegular(): // add file item
 					info, err := d.Info()
 					if err != nil {
 						return err
@@ -629,7 +652,7 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 						seen[di] = name
 					}
 					return err
-				} else if d.IsDir() { // add folders
+				case d.IsDir(): // add folders
 					info, err := d.Info()
 					if err != nil {
 						return err
@@ -643,7 +666,7 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 					if lerr := tw.WriteHeader(hdr); lerr != nil {
 						return lerr
 					}
-				} else if d.Type()&os.ModeSymlink != 0 { // add symlinks as it, not content
+				case d.Type()&os.ModeSymlink != 0: // add symlinks as it, not content
 					link, err := os.Readlink(path)
 					if err != nil {
 						return err

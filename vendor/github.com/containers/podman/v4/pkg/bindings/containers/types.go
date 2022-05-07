@@ -30,6 +30,7 @@ type CommitOptions struct {
 	Comment *string
 	Format  *string
 	Pause   *bool
+	Squash  *bool
 	Repo    *string
 	Tag     *string
 }
@@ -46,6 +47,7 @@ type AttachOptions struct {
 // CheckpointOptions are optional options for checkpointing containers
 type CheckpointOptions struct {
 	Export         *string
+	CreateImage    *string
 	IgnoreRootfs   *bool
 	Keep           *bool
 	LeaveRunning   *bool
@@ -63,14 +65,21 @@ type RestoreOptions struct {
 	IgnoreVolumes   *bool
 	IgnoreStaticIP  *bool
 	IgnoreStaticMAC *bool
-	ImportAchive    *string
-	Keep            *bool
-	Name            *string
-	TCPEstablished  *bool
-	Pod             *string
-	PrintStats      *bool
-	PublishPorts    []string
-	FileLocks       *bool
+	// ImportAchive is the path to an archive which contains the checkpoint data.
+	//
+	// Deprecated: Use ImportArchive instead. This field name is a typo and
+	// will be removed in a future major release.
+	ImportAchive *string
+	// ImportArchive is the path to an archive which contains the checkpoint data.
+	// ImportArchive is preferred over ImportAchive when both are set.
+	ImportArchive  *string
+	Keep           *bool
+	Name           *string
+	TCPEstablished *bool
+	Pod            *string
+	PrintStats     *bool
+	PublishPorts   []string
+	FileLocks      *bool
 }
 
 //go:generate go run ../generator/generator.go CreateOptions

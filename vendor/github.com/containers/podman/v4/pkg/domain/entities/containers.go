@@ -154,6 +154,7 @@ type CommitOptions struct {
 	Message        string
 	Pause          bool
 	Quiet          bool
+	Squash         bool
 	Writer         io.Writer
 }
 
@@ -177,6 +178,7 @@ type ContainerExportOptions struct {
 type CheckpointOptions struct {
 	All            bool
 	Export         string
+	CreateImage    string
 	IgnoreRootFS   bool
 	IgnoreVolumes  bool
 	Keep           bool
@@ -204,6 +206,7 @@ type RestoreOptions struct {
 	IgnoreStaticIP  bool
 	IgnoreStaticMAC bool
 	Import          string
+	CheckpointImage bool
 	Keep            bool
 	Latest          bool
 	Name            string
@@ -256,6 +259,8 @@ type ContainerLogsOptions struct {
 	Tail int64
 	// Show timestamps in the logs.
 	Timestamps bool
+	// Show different colors in the logs.
+	Colors bool
 	// Write the stdout to this Writer.
 	StdoutWriter io.Writer
 	// Write the stderr to this Writer.
@@ -380,7 +385,7 @@ type ContainerInitReport struct {
 	Id  string //nolint
 }
 
-//ContainerMountOptions describes the input values for mounting containers
+// ContainerMountOptions describes the input values for mounting containers
 // in the CLI
 type ContainerMountOptions struct {
 	All        bool
@@ -462,4 +467,15 @@ type ContainerStatsReport struct {
 type ContainerRenameOptions struct {
 	// NewName is the new name that will be given to the container.
 	NewName string
+}
+
+// ContainerCloneOptions contains options for cloning an existing continer
+type ContainerCloneOptions struct {
+	ID           string
+	Destroy      bool
+	CreateOpts   ContainerCreateOptions
+	Image        string
+	RawImageName string
+	Run          bool
+	Force        bool
 }

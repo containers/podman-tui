@@ -3,11 +3,9 @@ package events
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/containers/storage/pkg/stringid"
-	"github.com/hpcloud/tail"
 	"github.com/pkg/errors"
 )
 
@@ -22,6 +20,8 @@ func (et EventerType) String() string {
 		return "file"
 	case Journald:
 		return "journald"
+	case Memory:
+		return "memory"
 	case Null:
 		return "none"
 	default:
@@ -36,6 +36,8 @@ func IsValidEventer(eventer string) bool {
 		return true
 	case Journald.String():
 		return true
+	case Memory.String():
+		return true
 	case Null.String():
 		return true
 	default:
@@ -43,7 +45,7 @@ func IsValidEventer(eventer string) bool {
 	}
 }
 
-// NewEvent creates a event struct and populates with
+// NewEvent creates an event struct and populates with
 // the given status and time.
 func NewEvent(status Status) Event {
 	return Event{
@@ -65,7 +67,7 @@ func (e *Event) ToJSONString() (string, error) {
 	return string(b), err
 }
 
-// ToHumanReadable returns human readable event as a formatted string
+// ToHumanReadable returns human-readable event as a formatted string
 func (e *Event) ToHumanReadable(truncate bool) string {
 	var humanFormat string
 	id := e.ID
@@ -87,8 +89,12 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 	case Image:
 		humanFormat = fmt.Sprintf("%s %s %s %s %s", e.Time, e.Type, e.Status, id, e.Name)
 	case System:
-		humanFormat = fmt.Sprintf("%s %s %s", e.Time, e.Type, e.Status)
-	case Volume:
+		if e.Name != "" {
+			humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, e.Name)
+		} else {
+			humanFormat = fmt.Sprintf("%s %s %s", e.Time, e.Type, e.Status)
+		}
+	case Volume, Machine:
 		humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, e.Name)
 	}
 	return humanFormat
@@ -97,19 +103,19 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 // NewEventFromString takes stringified json and converts
 // it to an event
 func newEventFromJSONString(event string) (*Event, error) {
-	e := Event{}
-	if err := json.Unmarshal([]byte(event), &e); err != nil {
+	e := new(Event)
+	if err := json.Unmarshal([]byte(event), e); err != nil {
 		return nil, err
 	}
-	return &e, nil
+	return e, nil
 }
 
-// ToString converts a Type to a string
+// String converts a Type to a string
 func (t Type) String() string {
 	return string(t)
 }
 
-// ToString converts a status to a string
+// String converts a status to a string
 func (s Status) String() string {
 	return string(s)
 }
@@ -121,6 +127,8 @@ func StringToType(name string) (Type, error) {
 		return Container, nil
 	case Image.String():
 		return Image, nil
+	case Machine.String():
+		return Machine, nil
 	case Network.String():
 		return Network, nil
 	case Pod.String():
@@ -188,12 +196,16 @@ func StringToStatus(name string) (Status, error) {
 		return Refresh, nil
 	case Remove.String():
 		return Remove, nil
+	case Rename.String():
+		return Rename, nil
 	case Renumber.String():
 		return Renumber, nil
 	case Restart.String():
 		return Restart, nil
 	case Restore.String():
 		return Restore, nil
+	case Rotate.String():
+		return Rotate, nil
 	case Save.String():
 		return Save, nil
 	case Start.String():
@@ -212,15 +224,4 @@ func StringToStatus(name string) (Status, error) {
 		return Untag, nil
 	}
 	return "", errors.Errorf("unknown event status %q", name)
-}
-
-func (e EventLogFile) getTail(options ReadOptions) (*tail.Tail, error) {
-	reopen := true
-	seek := tail.SeekInfo{Offset: 0, Whence: os.SEEK_END}
-	if options.FromStart || !options.Stream {
-		seek.Whence = 0
-		reopen = false
-	}
-	stream := options.Stream
-	return tail.TailFile(e.options.LogFilePath, tail.Config{ReOpen: reopen, Follow: stream, Location: &seek, Logger: tail.DiscardingLogger, Poll: true})
 }

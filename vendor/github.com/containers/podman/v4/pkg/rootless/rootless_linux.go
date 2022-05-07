@@ -1,3 +1,4 @@
+//go:build linux && cgo
 // +build linux,cgo
 
 package rootless
@@ -24,11 +25,12 @@ import (
 	"github.com/containers/storage/pkg/unshare"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"github.com/syndtr/gocapability/capability"
 	"golang.org/x/sys/unix"
 )
 
 /*
-#cgo remoteclient CFLAGS: -Wall -Werror -DDISABLE_JOIN_SHORTCUT
+#cgo remote CFLAGS: -Wall -Werror -DDISABLE_JOIN_SHORTCUT
 #include <stdlib.h>
 #include <sys/types.h>
 extern uid_t rootless_uid();
@@ -113,8 +115,14 @@ func GetRootlessGID() int {
 
 func tryMappingTool(uid bool, pid int, hostID int, mappings []idtools.IDMap) error {
 	var tool = "newuidmap"
+	mode := os.ModeSetuid
+	cap := capability.CAP_SETUID
+	idtype := "setuid"
 	if !uid {
 		tool = "newgidmap"
+		mode = os.ModeSetgid
+		cap = capability.CAP_SETGID
+		idtype = "setgid"
 	}
 	path, err := exec.LookPath(tool)
 	if err != nil {
@@ -145,8 +153,14 @@ func tryMappingTool(uid bool, pid int, hostID int, mappings []idtools.IDMap) err
 	}
 
 	if output, err := cmd.CombinedOutput(); err != nil {
-		logrus.Errorf("error running `%s`: %s", strings.Join(args, " "), output)
-		return errors.Wrapf(err, "cannot setup namespace using %q", path)
+		logrus.Errorf("running `%s`: %s", strings.Join(args, " "), output)
+		errorStr := fmt.Sprintf("cannot setup namespace using %q", path)
+		if isSet, err := unshare.IsSetID(cmd.Path, mode, cap); err != nil {
+			logrus.Errorf("Failed to check for %s on %s: %v", idtype, path, err)
+		} else if !isSet {
+			errorStr = fmt.Sprintf("%s: should have %s or have filecaps %s", errorStr, idtype, idtype)
+		}
+		return errors.Wrapf(err, errorStr)
 	}
 	return nil
 }
@@ -173,7 +187,7 @@ func joinUserAndMountNS(pid uint, pausePid string) (bool, int, error) {
 
 	ret := C.reexec_in_user_namespace_wait(pidC, 0)
 	if ret < 0 {
-		return false, -1, errors.New("error waiting for the re-exec process")
+		return false, -1, errors.New("waiting for the re-exec process")
 	}
 
 	return true, int(ret), nil
@@ -373,7 +387,7 @@ func becomeRootInUserNS(pausePid, fileToRead string, fileOutput *os.File) (_ boo
 	if fileOutput != nil {
 		ret := C.reexec_in_user_namespace_wait(pidC, 0)
 		if ret < 0 {
-			return false, -1, errors.New("error waiting for the re-exec process")
+			return false, -1, errors.New("waiting for the re-exec process")
 		}
 
 		return true, 0, nil
@@ -390,11 +404,11 @@ func becomeRootInUserNS(pausePid, fileToRead string, fileOutput *os.File) (_ boo
 				return joinUserAndMountNS(uint(pid), "")
 			}
 		}
-		return false, -1, errors.New("error setting up the process")
+		return false, -1, errors.New("setting up the process")
 	}
 
 	if b[0] != '0' {
-		return false, -1, errors.New("error setting up the process")
+		return false, -1, errors.New("setting up the process")
 	}
 
 	signals := []os.Signal{}
@@ -424,7 +438,7 @@ func becomeRootInUserNS(pausePid, fileToRead string, fileOutput *os.File) (_ boo
 
 	ret := C.reexec_in_user_namespace_wait(pidC, 0)
 	if ret < 0 {
-		return false, -1, errors.New("error waiting for the re-exec process")
+		return false, -1, errors.New("waiting for the re-exec process")
 	}
 
 	return true, int(ret), nil

@@ -38,6 +38,13 @@ func (s *SpecGenerator) Validate() error {
 		if len(s.PortMappings) > 0 || s.PublishExposedPorts {
 			return errors.Wrap(define.ErrNetworkOnPodContainer, "published or exposed ports must be defined when the pod is created")
 		}
+		if len(s.HostAdd) > 0 {
+			return errors.Wrap(define.ErrNetworkOnPodContainer, "extra host entries must be specified on the pod")
+		}
+	}
+
+	if s.NetNS.IsContainer() && len(s.HostAdd) > 0 {
+		return errors.Wrap(ErrInvalidSpecConfig, "cannot set extra host entries when the container is joined to another containers network namespace")
 	}
 
 	//
@@ -76,17 +83,13 @@ func (s *SpecGenerator) Validate() error {
 			s.ContainerStorageConfig.ImageVolumeMode, strings.Join(ImageVolumeModeValues, ","))
 	}
 	// shmsize conflicts with IPC namespace
-	if s.ContainerStorageConfig.ShmSize != nil && !s.ContainerStorageConfig.IpcNS.IsPrivate() {
-		return errors.New("cannot set shmsize when running in the host IPC Namespace")
+	if s.ContainerStorageConfig.ShmSize != nil && (s.ContainerStorageConfig.IpcNS.IsHost() || s.ContainerStorageConfig.IpcNS.IsNone()) {
+		return errors.Errorf("cannot set shmsize when running in the %s IPC Namespace", s.ContainerStorageConfig.IpcNS)
 	}
 
 	//
 	// ContainerSecurityConfig
 	//
-	// capadd and privileged are exclusive
-	if len(s.CapAdd) > 0 && s.Privileged {
-		return exclusiveOptions("CapAdd", "privileged")
-	}
 	// userns and idmappings conflict
 	if s.UserNS.IsPrivate() && s.IDMappings == nil {
 		return errors.Wrap(ErrInvalidSpecConfig, "IDMappings are required when not creating a User namespace")
@@ -119,19 +122,19 @@ func (s *SpecGenerator) Validate() error {
 	}
 
 	// TODO the specgen does not appear to handle this?  Should it
-	//switch config.Cgroup.Cgroups {
-	//case "disabled":
+	// switch config.Cgroup.Cgroups {
+	// case "disabled":
 	//	if addedResources {
 	//		return errors.New("cannot specify resource limits when cgroups are disabled is specified")
 	//	}
 	//	configSpec.Linux.Resources = &spec.LinuxResources{}
-	//case "enabled", "no-conmon", "":
+	// case "enabled", "no-conmon", "":
 	//	// Do nothing
-	//default:
+	// default:
 	//	return errors.New("unrecognized option for cgroups; supported are 'default', 'disabled', 'no-conmon'")
-	//}
+	// }
 	invalidUlimitFormatError := errors.New("invalid default ulimit definition must be form of type=soft:hard")
-	//set ulimits if not rootless
+	// set ulimits if not rootless
 	if len(s.ContainerResourceConfig.Rlimits) < 1 && !rootless.IsRootless() {
 		// Containers common defines this as something like nproc=4194304:4194304
 		tmpnproc := containerConfig.Ulimits()
@@ -166,7 +169,7 @@ func (s *SpecGenerator) Validate() error {
 	if err := s.UtsNS.validate(); err != nil {
 		return err
 	}
-	if err := s.IpcNS.validate(); err != nil {
+	if err := validateIPCNS(&s.IpcNS); err != nil {
 		return err
 	}
 	if err := s.PidNS.validate(); err != nil {
