@@ -35,6 +35,10 @@ const (
 	FromPod NamespaceMode = "pod"
 	// Private indicates the namespace is private
 	Private NamespaceMode = "private"
+	// Shareable indicates the namespace is shareable
+	Shareable NamespaceMode = "shareable"
+	// None indicates the IPC namespace is created without mounting /dev/shm
+	None NamespaceMode = "none"
 	// NoNetwork indicates no network namespace should
 	// be joined.  loopback should still exists.
 	// Only used with the network namespace, invalid otherwise.
@@ -51,6 +55,10 @@ const (
 	// of the namespace itself.
 	// Only used with the user namespace, invalid otherwise.
 	KeepID NamespaceMode = "keep-id"
+	// NoMap indicates a user namespace to keep the owner uid out
+	// of the namespace itself.
+	// Only used with the user namespace, invalid otherwise.
+	NoMap NamespaceMode = "no-map"
 	// Auto indicates to automatically create a user namespace.
 	// Only used with the user namespace, invalid otherwise.
 	Auto NamespaceMode = "auto"
@@ -75,6 +83,11 @@ func (n *Namespace) IsDefault() bool {
 // IsHost returns a bool if the namespace is host based
 func (n *Namespace) IsHost() bool {
 	return n.NSMode == Host
+}
+
+// IsNone returns a bool if the namespace is set to none
+func (n *Namespace) IsNone() bool {
+	return n.NSMode == None
 }
 
 // IsBridge returns a bool if the namespace is a Bridge
@@ -112,6 +125,11 @@ func (n *Namespace) IsKeepID() bool {
 	return n.NSMode == KeepID
 }
 
+// IsNoMap indicates the namespace is NoMap
+func (n *Namespace) IsNoMap() bool {
+	return n.NSMode == NoMap
+}
+
 func (n *Namespace) String() string {
 	if n.Value != "" {
 		return fmt.Sprintf("%s:%s", n.NSMode, n.Value)
@@ -124,7 +142,7 @@ func validateUserNS(n *Namespace) error {
 		return nil
 	}
 	switch n.NSMode {
-	case Auto, KeepID:
+	case Auto, KeepID, NoMap:
 		return nil
 	}
 	return n.validate()
@@ -156,6 +174,17 @@ func validateNetNS(n *Namespace) error {
 	}
 
 	return nil
+}
+
+func validateIPCNS(n *Namespace) error {
+	if n == nil {
+		return nil
+	}
+	switch n.NSMode {
+	case Shareable, None:
+		return nil
+	}
+	return n.validate()
 }
 
 // Validate perform simple validation on the namespace to make sure it is not
@@ -202,14 +231,14 @@ func ParseNamespace(ns string) (Namespace, error) {
 	case strings.HasPrefix(ns, "ns:"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, errors.Errorf("must provide a path to a namespace when specifying ns:")
+			return toReturn, errors.Errorf("must provide a path to a namespace when specifying \"ns:\"")
 		}
 		toReturn.NSMode = Path
 		toReturn.Value = split[1]
 	case strings.HasPrefix(ns, "container:"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, errors.Errorf("must provide name or ID or a container when specifying container:")
+			return toReturn, errors.Errorf("must provide name or ID or a container when specifying \"container:\"")
 		}
 		toReturn.NSMode = FromContainer
 		toReturn.Value = split[1]
@@ -237,12 +266,27 @@ func ParseCgroupNamespace(ns string) (Namespace, error) {
 		case "private", "":
 			toReturn.NSMode = Private
 		default:
-			return toReturn, errors.Errorf("unrecognized namespace mode %s passed", ns)
+			return toReturn, errors.Errorf("unrecognized cgroup namespace mode %s passed", ns)
 		}
 	} else {
 		toReturn.NSMode = Host
 	}
 	return toReturn, nil
+}
+
+// ParseIPCNamespace parses a ipc namespace specification in string
+// form.
+func ParseIPCNamespace(ns string) (Namespace, error) {
+	toReturn := Namespace{}
+	switch {
+	case ns == "shareable", ns == "":
+		toReturn.NSMode = Shareable
+		return toReturn, nil
+	case ns == "none":
+		toReturn.NSMode = None
+		return toReturn, nil
+	}
+	return ParseNamespace(ns)
 }
 
 // ParseUserNamespace parses a user namespace specification in string
@@ -263,6 +307,9 @@ func ParseUserNamespace(ns string) (Namespace, error) {
 		return toReturn, nil
 	case ns == "keep-id":
 		toReturn.NSMode = KeepID
+		return toReturn, nil
+	case ns == "nomap":
+		toReturn.NSMode = NoMap
 		return toReturn, nil
 	case ns == "":
 		toReturn.NSMode = Host
@@ -302,14 +349,14 @@ func ParseNetworkNamespace(ns string, rootlessDefaultCNI bool) (Namespace, map[s
 	case strings.HasPrefix(ns, "ns:"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, nil, errors.Errorf("must provide a path to a namespace when specifying ns:")
+			return toReturn, nil, errors.Errorf("must provide a path to a namespace when specifying \"ns:\"")
 		}
 		toReturn.NSMode = Path
 		toReturn.Value = split[1]
 	case strings.HasPrefix(ns, string(FromContainer)+":"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, nil, errors.Errorf("must provide name or ID or a container when specifying container:")
+			return toReturn, nil, errors.Errorf("must provide name or ID or a container when specifying \"container:\"")
 		}
 		toReturn.NSMode = FromContainer
 		toReturn.Value = split[1]
@@ -380,14 +427,14 @@ func ParseNetworkFlag(networks []string) (Namespace, map[string]types.PerNetwork
 	case strings.HasPrefix(ns, "ns:"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, nil, nil, errors.Errorf("must provide a path to a namespace when specifying ns:")
+			return toReturn, nil, nil, errors.Errorf("must provide a path to a namespace when specifying \"ns:\"")
 		}
 		toReturn.NSMode = Path
 		toReturn.Value = split[1]
 	case strings.HasPrefix(ns, string(FromContainer)+":"):
 		split := strings.SplitN(ns, ":", 2)
 		if len(split) != 2 {
-			return toReturn, nil, nil, errors.Errorf("must provide name or ID or a container when specifying container:")
+			return toReturn, nil, nil, errors.Errorf("must provide name or ID or a container when specifying \"container:\"")
 		}
 		toReturn.NSMode = FromContainer
 		toReturn.Value = split[1]
@@ -513,20 +560,41 @@ func SetupUserNS(idmappings *storage.IDMappingOptions, userns Namespace, g *gene
 		g.SetProcessUID(uint32(uid))
 		g.SetProcessGID(uint32(gid))
 		user = fmt.Sprintf("%d:%d", uid, gid)
-		fallthrough
-	case Private:
-		if err := g.AddOrReplaceLinuxNamespace(string(spec.UserNamespace), ""); err != nil {
+		if err := privateUserNamespace(idmappings, g); err != nil {
 			return user, err
 		}
-		if idmappings == nil || (len(idmappings.UIDMap) == 0 && len(idmappings.GIDMap) == 0) {
-			return user, errors.Errorf("must provide at least one UID or GID mapping to configure a user namespace")
+	case NoMap:
+		mappings, uid, gid, err := util.GetNoMapMapping()
+		if err != nil {
+			return user, err
 		}
-		for _, uidmap := range idmappings.UIDMap {
-			g.AddLinuxUIDMapping(uint32(uidmap.HostID), uint32(uidmap.ContainerID), uint32(uidmap.Size))
+		idmappings = mappings
+		g.SetProcessUID(uint32(uid))
+		g.SetProcessGID(uint32(gid))
+		user = fmt.Sprintf("%d:%d", uid, gid)
+		if err := privateUserNamespace(idmappings, g); err != nil {
+			return user, err
 		}
-		for _, gidmap := range idmappings.GIDMap {
-			g.AddLinuxGIDMapping(uint32(gidmap.HostID), uint32(gidmap.ContainerID), uint32(gidmap.Size))
+	case Private:
+		if err := privateUserNamespace(idmappings, g); err != nil {
+			return user, err
 		}
 	}
 	return user, nil
+}
+
+func privateUserNamespace(idmappings *storage.IDMappingOptions, g *generate.Generator) error {
+	if err := g.AddOrReplaceLinuxNamespace(string(spec.UserNamespace), ""); err != nil {
+		return err
+	}
+	if idmappings == nil || (len(idmappings.UIDMap) == 0 && len(idmappings.GIDMap) == 0) {
+		return errors.Errorf("must provide at least one UID or GID mapping to configure a user namespace")
+	}
+	for _, uidmap := range idmappings.UIDMap {
+		g.AddLinuxUIDMapping(uint32(uidmap.HostID), uint32(uidmap.ContainerID), uint32(uidmap.Size))
+	}
+	for _, gidmap := range idmappings.GIDMap {
+		g.AddLinuxGIDMapping(uint32(gidmap.HostID), uint32(gidmap.ContainerID), uint32(gidmap.Size))
+	}
+	return nil
 }

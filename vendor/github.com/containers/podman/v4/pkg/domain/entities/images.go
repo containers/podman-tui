@@ -90,6 +90,8 @@ type ImageRemoveOptions struct {
 	All bool
 	// Foce will force image removal including containers using the images.
 	Force bool
+	// Ignore if a specified image does not exist and do not throw an error.
+	Ignore bool
 	// Confirms if given name is a manifest list and removes it, otherwise returns error.
 	LookupManifest bool
 }
@@ -277,6 +279,7 @@ type ImageLoadReport struct {
 
 type ImageImportOptions struct {
 	Architecture    string
+	Variant         string
 	Changes         []string
 	Message         string
 	OS              string

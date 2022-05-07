@@ -8,12 +8,16 @@ import (
 
 // PlayKubeOptions controls playing kube YAML files.
 type PlayKubeOptions struct {
+	// Annotations - Annotations to add to Pods
+	Annotations map[string]string
 	// Authfile - path to an authentication file.
 	Authfile string
 	// Indicator to build all images with Containerfile or Dockerfile
 	Build types.OptionalBool
 	// CertDir - to a directory containing TLS certifications and keys.
 	CertDir string
+	// ContextDir - directory containing image contexts used for Build
+	ContextDir string
 	// Down indicates whether to bring contents of a yaml file "down"
 	// as in stop
 	Down bool

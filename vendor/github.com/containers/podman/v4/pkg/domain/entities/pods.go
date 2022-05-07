@@ -149,6 +149,8 @@ type PodLogsOptions struct {
 	ContainerLogsOptions
 	// If specified will only fetch the logs of specified container
 	ContainerName string
+	// Show different colors in the logs.
+	Color bool
 }
 
 type ContainerCreateOptions struct {
@@ -210,7 +212,7 @@ type ContainerCreateOptions struct {
 	Name              string `json:"container_name"`
 	NoHealthCheck     bool
 	OOMKillDisable    bool
-	OOMScoreAdj       int
+	OOMScoreAdj       *int
 	Arch              string
 	OS                string
 	Variant           string
@@ -263,11 +265,15 @@ type ContainerCreateOptions struct {
 	Workdir           string
 	SeccompPolicy     string
 	PidFile           string
+	ChrootDirs        []string
 	IsInfra           bool
+	IsClone           bool
 
 	Net *NetOptions `json:"net,omitempty"`
 
 	CgroupConf []string
+
+	PasswdEntry string
 }
 
 func NewInfraContainerCreateOptions() ContainerCreateOptions {
@@ -480,6 +486,7 @@ func PodLogsOptionsToContainerLogsOptions(options PodLogsOptions) ContainerLogsO
 		Until:        options.Until,
 		Tail:         options.Tail,
 		Timestamps:   options.Timestamps,
+		Colors:       options.Colors,
 		StdoutWriter: options.StdoutWriter,
 		StderrWriter: options.StderrWriter,
 	}

@@ -75,6 +75,10 @@ type InspectContainerConfig struct {
 	StopTimeout uint `json:"StopTimeout"`
 	// Passwd determines whether or not podman can add entries to /etc/passwd and /etc/group
 	Passwd *bool `json:"Passwd,omitempty"`
+	// ChrootDirs is an additional set of directories that need to be
+	// treated as root directories. Standard bind mounts will be mounted
+	// into paths relative to these directories.
+	ChrootDirs []string `json:"ChrootDirs,omitempty"`
 }
 
 // InspectRestartPolicy holds information about the container's restart policy.
@@ -96,7 +100,7 @@ type InspectRestartPolicy struct {
 // InspectLogConfig holds information about a container's configured log driver
 type InspectLogConfig struct {
 	Type   string            `json:"Type"`
-	Config map[string]string `json:"Config"` //idk type, TODO
+	Config map[string]string `json:"Config"`
 	// Path specifies a path to the log file
 	Path string `json:"Path"`
 	// Tag specifies a custom log tag for the container
@@ -676,7 +680,7 @@ type InspectContainerData struct {
 	SizeRootFs      int64                       `json:"SizeRootFs,omitempty"`
 	Mounts          []InspectMount              `json:"Mounts"`
 	Dependencies    []string                    `json:"Dependencies"`
-	NetworkSettings *InspectNetworkSettings     `json:"NetworkSettings"` //TODO
+	NetworkSettings *InspectNetworkSettings     `json:"NetworkSettings"`
 	Namespace       string                      `json:"Namespace"`
 	IsInfra         bool                        `json:"IsInfra"`
 	Config          *InspectContainerConfig     `json:"Config"`

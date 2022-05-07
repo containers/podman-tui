@@ -206,6 +206,8 @@ type ContainerBasicConfig struct {
 	UnsetEnvAll bool `json:"unsetenvall,omitempty"`
 	// Passwd is a container run option that determines if we are validating users/groups before running the container
 	Passwd *bool `json:"manage_password,omitempty"`
+	// PasswdEntry specifies arbitrary data to append to a file.
+	PasswdEntry string `json:"passwd_entry,omitempty"`
 }
 
 // ContainerStorageConfig contains information on the storage configuration of a
@@ -301,6 +303,10 @@ type ContainerStorageConfig struct {
 	// Volatile specifies whether the container storage can be optimized
 	// at the cost of not syncing all the dirty files in memory.
 	Volatile bool `json:"volatile,omitempty"`
+	// ChrootDirs is an additional set of directories that need to be
+	// treated as root directories. Standard bind mounts will be mounted
+	// into paths relative to these directories.
+	ChrootDirs []string `json:"chroot_directories,omitempty"`
 }
 
 // ContainerSecurityConfig is a container's security features, including
@@ -463,7 +469,13 @@ type ContainerNetworkConfig struct {
 	// UseImageHosts indicates that /etc/hosts should not be managed by
 	// Podman, and instead sourced from the image.
 	// Conflicts with HostAdd.
-	UseImageHosts bool `json:"use_image_hosts,omitempty"`
+	// Do not set omitempty here, if this is false it should be set to not get
+	// the server default.
+	// Ideally this would be a pointer so we could differentiate between an
+	// explicitly false/true and unset (containers.conf default). However
+	// specgen is stable so we can not change this right now.
+	// TODO (5.0): change to pointer
+	UseImageHosts bool `json:"use_image_hosts"`
 	// HostAdd is a set of hosts which will be added to the container's
 	// /etc/hosts file.
 	// Conflicts with UseImageHosts.

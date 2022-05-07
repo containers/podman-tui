@@ -20,7 +20,7 @@ import (
 	"github.com/moby/term"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/crypto/ssh/terminal"
+	terminal "golang.org/x/term"
 )
 
 // The CloseWriter interface is used to determine whether we can do a  one-sided
@@ -242,7 +242,7 @@ func Attach(ctx context.Context, nameOrID string, stdin io.Reader, stdout io.Wri
 					}
 				}
 			case fd == 3:
-				return fmt.Errorf("error from service from stream: %s", frame)
+				return fmt.Errorf("from service from stream: %s", frame)
 			default:
 				return fmt.Errorf("unrecognized channel '%d' in header, 0-3 supported", fd)
 			}
@@ -279,7 +279,7 @@ func DemuxFrame(r io.Reader, buffer []byte, length int) (frame []byte, err error
 
 	n, err := io.ReadFull(r, buffer[0:length])
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 	if n < length {
 		err = io.ErrUnexpectedEOF
@@ -562,7 +562,7 @@ func ExecStartAndAttach(ctx context.Context, sessionID string, options *ExecStar
 					}
 				}
 			case fd == 3:
-				return fmt.Errorf("error from service from stream: %s", frame)
+				return fmt.Errorf("from service from stream: %s", frame)
 			default:
 				return fmt.Errorf("unrecognized channel '%d' in header, 0-3 supported", fd)
 			}

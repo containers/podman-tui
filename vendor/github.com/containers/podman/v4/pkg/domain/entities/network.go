@@ -22,7 +22,7 @@ type NetworkReloadOptions struct {
 
 // NetworkReloadReport describes the results of reloading a container network.
 type NetworkReloadReport struct {
-	// nolint:stylecheck,golint
+	// nolint:stylecheck,revive
 	Id  string
 	Err error
 }
@@ -33,7 +33,7 @@ type NetworkRmOptions struct {
 	Timeout *uint
 }
 
-//NetworkRmReport describes the results of network removal
+// NetworkRmReport describes the results of network removal
 type NetworkRmReport struct {
 	Name string
 	Err  error

@@ -96,6 +96,11 @@ func (n UsernsMode) IsKeepID() bool {
 	return n == "keep-id"
 }
 
+// IsNoMap indicates whether container uses a mapping where the (uid, gid) on the host is not present in the namespace.
+func (n UsernsMode) IsNoMap() bool {
+	return n == "nomap"
+}
+
 // IsAuto indicates whether container uses the "auto" userns mode.
 func (n UsernsMode) IsAuto() bool {
 	parts := strings.Split(string(n), ":")
@@ -158,7 +163,7 @@ func (n UsernsMode) IsPrivate() bool {
 func (n UsernsMode) Valid() bool {
 	parts := strings.Split(string(n), ":")
 	switch mode := parts[0]; mode {
-	case "", privateType, hostType, "keep-id", nsType, "auto":
+	case "", privateType, hostType, "keep-id", nsType, "auto", "nomap":
 	case containerType:
 		if len(parts) != 2 || parts[1] == "" {
 			return false
@@ -254,7 +259,7 @@ func (n IpcMode) IsHost() bool {
 	return n == hostType
 }
 
-// IsShareable indicates whether the container's ipc namespace can be shared with another container.
+// IsShareable indicates whether the container uses its own shareable ipc namespace which can be shared.
 func (n IpcMode) IsShareable() bool {
 	return n == shareableType
 }
@@ -370,7 +375,7 @@ func (n NetworkMode) Container() string {
 	return ""
 }
 
-//UserDefined indicates user-created network
+// UserDefined indicates user-created network
 func (n NetworkMode) UserDefined() string {
 	if n.IsUserDefined() {
 		return string(n)

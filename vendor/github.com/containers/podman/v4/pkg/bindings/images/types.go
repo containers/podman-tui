@@ -11,6 +11,8 @@ type RemoveOptions struct {
 	All *bool
 	// Forces removes all containers based on the image
 	Force *bool
+	// Ignore if a specified image does not exist and do not throw an error.
+	Ignore *bool
 }
 
 //go:generate go run ../generator/generator.go DiffOptions
@@ -101,6 +103,12 @@ type ImportOptions struct {
 	Reference *string
 	// Url to option image to import. Cannot be used with the reader
 	URL *string
+	// OS for the imported image
+	OS *string
+	// Architecture for the imported image
+	Architecture *string
+	// Variant for the imported image
+	Variant *string
 }
 
 //go:generate go run ../generator/generator.go PushOptions
@@ -169,7 +177,7 @@ type PullOptions struct {
 	Variant *string
 }
 
-//BuildOptions are optional options for building images
+// BuildOptions are optional options for building images
 type BuildOptions struct {
 	buildahDefine.BuildOptions
 }

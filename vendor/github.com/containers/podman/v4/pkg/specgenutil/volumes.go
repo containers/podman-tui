@@ -1,8 +1,9 @@
 package specgenutil
 
 import (
+	"encoding/csv"
 	"fmt"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/containers/common/pkg/parse"
@@ -28,7 +29,7 @@ var (
 // TODO: handle options parsing/processing via containers/storage/pkg/mount
 func parseVolumes(volumeFlag, mountFlag, tmpfsFlag []string, addReadOnlyTmpfs bool) ([]spec.Mount, []*specgen.NamedVolume, []*specgen.OverlayVolume, []*specgen.ImageVolume, error) {
 	// Get mounts from the --mounts flag.
-	unifiedMounts, unifiedVolumes, unifiedImageVolumes, err := getMounts(mountFlag)
+	unifiedMounts, unifiedVolumes, unifiedImageVolumes, err := Mounts(mountFlag)
 	if err != nil {
 		return nil, nil, nil, nil, err
 	}
@@ -122,7 +123,7 @@ func parseVolumes(volumeFlag, mountFlag, tmpfsFlag []string, addReadOnlyTmpfs bo
 	finalMounts := make([]spec.Mount, 0, len(unifiedMounts))
 	for _, mount := range unifiedMounts {
 		if mount.Type == define.TypeBind {
-			absSrc, err := filepath.Abs(mount.Source)
+			absSrc, err := specgen.ConvertWinMountPath(mount.Source)
 			if err != nil {
 				return nil, nil, nil, nil, errors.Wrapf(err, "error getting absolute path of %s", mount.Source)
 			}
@@ -152,7 +153,15 @@ func findMountType(input string) (mountType string, tokens []string, err error) 
 	// Split by comma, iterate over the slice and look for
 	// "type=$mountType". Everything else is appended to tokens.
 	found := false
-	for _, s := range strings.Split(input, ",") {
+	csvReader := csv.NewReader(strings.NewReader(input))
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		return "", nil, err
+	}
+	if len(records) != 1 {
+		return "", nil, errInvalidSyntax
+	}
+	for _, s := range records[0] {
 		kv := strings.Split(s, "=")
 		if found || !(len(kv) == 2 && kv[0] == "type") {
 			tokens = append(tokens, s)
@@ -167,12 +176,12 @@ func findMountType(input string) (mountType string, tokens []string, err error) 
 	return
 }
 
-// getMounts takes user-provided input from the --mount flag and creates OCI
+// Mounts takes user-provided input from the --mount flag and creates OCI
 // spec mounts and Libpod named volumes.
 // podman run --mount type=bind,src=/etc/resolv.conf,target=/etc/resolv.conf ...
 // podman run --mount type=tmpfs,target=/dev/shm ...
 // podman run --mount type=volume,source=test-volume, ...
-func getMounts(mountFlag []string) (map[string]spec.Mount, map[string]*specgen.NamedVolume, map[string]*specgen.ImageVolume, error) {
+func Mounts(mountFlag []string) (map[string]spec.Mount, map[string]*specgen.NamedVolume, map[string]*specgen.ImageVolume, error) {
 	finalMounts := make(map[string]spec.Mount)
 	finalNamedVolumes := make(map[string]*specgen.NamedVolume)
 	finalImageVolumes := make(map[string]*specgen.ImageVolume)
@@ -325,7 +334,7 @@ func getBindMount(args []string) (spec.Mount, error) {
 			if err := parse.ValidateVolumeCtrDir(kv[1]); err != nil {
 				return newMount, err
 			}
-			newMount.Destination = filepath.Clean(kv[1])
+			newMount.Destination = unixPathClean(kv[1])
 			setDest = true
 		case "relabel":
 			if setRelabel {
@@ -356,7 +365,11 @@ func getBindMount(args []string) (spec.Mount, error) {
 			}
 			setOwnership = true
 		case "idmap":
-			newMount.Options = append(newMount.Options, "idmap")
+			if len(kv) > 1 {
+				newMount.Options = append(newMount.Options, fmt.Sprintf("idmap=%s", kv[1]))
+			} else {
+				newMount.Options = append(newMount.Options, "idmap")
+			}
 		case "consistency":
 			// Often used on MACs and mistakenly on Linux platforms.
 			// Since Docker ignores this option so shall we.
@@ -443,7 +456,7 @@ func getTmpfsMount(args []string) (spec.Mount, error) {
 			if err := parse.ValidateVolumeCtrDir(kv[1]); err != nil {
 				return newMount, err
 			}
-			newMount.Destination = filepath.Clean(kv[1])
+			newMount.Destination = unixPathClean(kv[1])
 			setDest = true
 		case "U", "chown":
 			if setOwnership {
@@ -494,7 +507,7 @@ func getDevptsMount(args []string) (spec.Mount, error) {
 			if err := parse.ValidateVolumeCtrDir(kv[1]); err != nil {
 				return newMount, err
 			}
-			newMount.Destination = filepath.Clean(kv[1])
+			newMount.Destination = unixPathClean(kv[1])
 			setDest = true
 		default:
 			return newMount, errors.Wrapf(util.ErrBadMntOption, "%s", kv[0])
@@ -514,11 +527,13 @@ func getDevptsMount(args []string) (spec.Mount, error) {
 func getNamedVolume(args []string) (*specgen.NamedVolume, error) {
 	newVolume := new(specgen.NamedVolume)
 
-	var setSource, setDest, setRORW, setSuid, setDev, setExec, setOwnership bool
+	var setDest, setRORW, setSuid, setDev, setExec, setOwnership bool
 
 	for _, val := range args {
 		kv := strings.SplitN(val, "=", 2)
 		switch kv[0] {
+		case "volume-opt":
+			newVolume.Options = append(newVolume.Options, val)
 		case "ro", "rw":
 			if setRORW {
 				return nil, errors.Wrapf(optionArgError, "cannot pass 'ro' and 'rw' options more than once")
@@ -550,7 +565,6 @@ func getNamedVolume(args []string) (*specgen.NamedVolume, error) {
 				return nil, errors.Wrapf(optionArgError, kv[0])
 			}
 			newVolume.Name = kv[1]
-			setSource = true
 		case "target", "dst", "destination":
 			if len(kv) == 1 {
 				return nil, errors.Wrapf(optionArgError, kv[0])
@@ -558,7 +572,7 @@ func getNamedVolume(args []string) (*specgen.NamedVolume, error) {
 			if err := parse.ValidateVolumeCtrDir(kv[1]); err != nil {
 				return nil, err
 			}
-			newVolume.Dest = filepath.Clean(kv[1])
+			newVolume.Dest = unixPathClean(kv[1])
 			setDest = true
 		case "U", "chown":
 			if setOwnership {
@@ -581,9 +595,6 @@ func getNamedVolume(args []string) (*specgen.NamedVolume, error) {
 		}
 	}
 
-	if !setSource {
-		return nil, errors.Errorf("must set source volume")
-	}
 	if !setDest {
 		return nil, noDestError
 	}
@@ -613,7 +624,7 @@ func getImageVolume(args []string) (*specgen.ImageVolume, error) {
 			if err := parse.ValidateVolumeCtrDir(kv[1]); err != nil {
 				return nil, err
 			}
-			newVolume.Destination = filepath.Clean(kv[1])
+			newVolume.Destination = unixPathClean(kv[1])
 		case "rw", "readwrite":
 			switch kv[1] {
 			case "true":
@@ -659,7 +670,7 @@ func getTmpfsMounts(tmpfsFlag []string) (map[string]spec.Mount, error) {
 		}
 
 		mount := spec.Mount{
-			Destination: filepath.Clean(destPath),
+			Destination: unixPathClean(destPath),
 			Type:        define.TypeTmpfs,
 			Options:     options,
 			Source:      define.TypeTmpfs,
@@ -688,4 +699,9 @@ func validChownFlag(flag string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// Use path instead of filepath to preserve Unix style paths on Windows
+func unixPathClean(p string) string {
+	return path.Clean(p)
 }
