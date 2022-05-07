@@ -29,6 +29,8 @@ type CommonBuildOptions struct {
 	CPUSetMems string
 	// HTTPProxy determines whether *_proxy env vars from the build host are passed into the container.
 	HTTPProxy bool
+	// IdentityLabel if set ensures that default `io.buildah.version` label is not applied to build image.
+	IdentityLabel types.OptionalBool
 	// Memory is the upper limit (in bytes) on how much memory running containers can use.
 	Memory int64
 	// DNSSearch is the list of DNS search domains to add to the build container's /etc/resolv.conf
@@ -121,6 +123,10 @@ type BuildOptions struct {
 	Args map[string]string
 	// Name of the image to write to.
 	Output string
+	// BuildOutput specifies if any custom build output is selected for following build.
+	// It allows end user to export recently built rootfs into a directory or tar.
+	// See the documentation of 'buildah build --output' for the details of the format.
+	BuildOutput string
 	// Additional tags to add to the image that we write, if we know of a
 	// way to add them.
 	AdditionalTags []string
@@ -254,4 +260,14 @@ type BuildOptions struct {
 	AllPlatforms bool
 	// UnsetEnvs is a list of environments to not add to final image.
 	UnsetEnvs []string
+	// Envs is a list of environment variables to set in the final image.
+	Envs []string
+	// OSFeatures specifies operating system features the image requires.
+	// It is typically only set when the OS is "windows".
+	OSFeatures []string
+	// OSVersion specifies the exact operating system version the image
+	// requires.  It is typically only set when the OS is "windows".  Any
+	// value set in a base image will be preserved, so this does not
+	// frequently need to be set.
+	OSVersion string
 }
