@@ -56,7 +56,7 @@ github.com/chzyer/readline
 # github.com/containerd/cgroups v1.0.3
 ## explicit; go 1.16
 github.com/containerd/cgroups/stats/v1
-# github.com/containerd/containerd v1.6.2
+# github.com/containerd/containerd v1.6.3
 ## explicit; go 1.17
 github.com/containerd/containerd/errdefs
 github.com/containerd/containerd/log
@@ -68,8 +68,8 @@ github.com/containerd/stargz-snapshotter/estargz/errorutil
 # github.com/containers/buildah v1.25.1
 ## explicit; go 1.13
 github.com/containers/buildah/define
-# github.com/containers/common v0.47.5
-## explicit; go 1.15
+# github.com/containers/common v0.48.0
+## explicit; go 1.16
 github.com/containers/common/libimage
 github.com/containers/common/libimage/manifests
 github.com/containers/common/libnetwork/types
@@ -91,8 +91,8 @@ github.com/containers/common/pkg/supplemented
 github.com/containers/common/pkg/timetype
 github.com/containers/common/pkg/util
 github.com/containers/common/version
-# github.com/containers/image/v5 v5.20.0
-## explicit; go 1.13
+# github.com/containers/image/v5 v5.21.1
+## explicit; go 1.16
 github.com/containers/image/v5/copy
 github.com/containers/image/v5/directory
 github.com/containers/image/v5/directory/explicitfilepath
@@ -144,7 +144,7 @@ github.com/containers/image/v5/version
 # github.com/containers/libtrust v0.0.0-20200511145503-9c3a6c22cd9a
 ## explicit
 github.com/containers/libtrust
-# github.com/containers/ocicrypt v1.1.3
+# github.com/containers/ocicrypt v1.1.4-0.20220428134531-566b808bdf6f
 ## explicit; go 1.12
 github.com/containers/ocicrypt
 github.com/containers/ocicrypt/blockcipher
@@ -365,7 +365,7 @@ github.com/gdamore/tcell/v2/terminfo/x/xterm_termite
 # github.com/ghodss/yaml v1.0.0
 ## explicit
 github.com/ghodss/yaml
-# github.com/godbus/dbus/v5 v5.0.6
+# github.com/godbus/dbus/v5 v5.1.0
 ## explicit; go 1.12
 github.com/godbus/dbus/v5
 # github.com/gogo/protobuf v1.3.2
@@ -558,7 +558,7 @@ github.com/spf13/pflag
 # github.com/stefanberger/go-pkcs11uri v0.0.0-20201008174630-78d3cae3a980
 ## explicit
 github.com/stefanberger/go-pkcs11uri
-# github.com/sylabs/sif/v2 v2.3.2
+# github.com/sylabs/sif/v2 v2.7.0
 ## explicit; go 1.17
 github.com/sylabs/sif/v2/pkg/sif
 # github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635
@@ -578,7 +578,7 @@ github.com/ulikunitz/xz/lzma
 github.com/vbatts/tar-split/archive/tar
 github.com/vbatts/tar-split/tar/asm
 github.com/vbatts/tar-split/tar/storage
-# github.com/vbauerster/mpb/v7 v7.3.2
+# github.com/vbauerster/mpb/v7 v7.4.1
 ## explicit; go 1.14
 github.com/vbauerster/mpb/v7
 github.com/vbauerster/mpb/v7/cwriter
@@ -642,7 +642,7 @@ golang.org/x/net/trace
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27
+# golang.org/x/sys v0.0.0-20220422013727-9388b58f7150
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
@@ -661,10 +661,10 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
-## explicit; go 1.11
+# google.golang.org/genproto v0.0.0-20220304144024-325a89244dc8
+## explicit; go 1.15
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.43.0
+# google.golang.org/grpc v1.44.0
 ## explicit; go 1.14
 google.golang.org/grpc
 google.golang.org/grpc/attributes
