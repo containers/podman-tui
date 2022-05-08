@@ -17,23 +17,23 @@ load helpers_tui
     # select create command from pod commands dialog
     # fillout name field
     # fillout label field
+    # switch to "networking" create view
+    # go to networks dropdown widget and select network name from available networks
     # switch to "security option" create view
     # set label disable
     # set no new privileges
-    # switch to "networking" create view
-    # go to networks dropdown widget and select network name from available networks
     # go to "Create" button and press Enter
     podman_tui_set_view "pods"
     podman_tui_select_pod_cmd "create"
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs $TEST_POD_NAME "Tab" "Tab" $TEST_LABEL
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Down" "Down" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Down"
+    podman_tui_select_item $net_index
+    podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Tab"
     podman_tui_send_inputs "disable"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Space"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Down" "Down"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Down"
-    podman_tui_select_item $net_index
-    podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "Enter"
     sleep 4

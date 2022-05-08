@@ -46,10 +46,10 @@ const (
 
 const (
 	basicInfoPageIndex = 0 + iota
-	securityOptsPageIndex
 	dnsSetupPageIndex
 	infraSetupPageIndex
 	networkingPageIndex
+	securityOptsPageIndex
 )
 
 // PodCreateDialog implements pod create dialog
@@ -109,10 +109,10 @@ func NewPodCreateDialog() *PodCreateDialog {
 		form:             tview.NewForm(),
 		categoryLabels: []string{
 			"Basic Information",
-			"Security Options",
 			"DNS Setup",
 			"Infra Setup",
-			"Networking"},
+			"Networking",
+			"Security Options"},
 		activePageIndex:          0,
 		display:                  false,
 		defaultInfraImage:        pods.DefaultPodInfraImage(),
@@ -387,10 +387,10 @@ func (d *PodCreateDialog) setupLayout() {
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[dnsSetupPageIndex], d.dnsSetupPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[infraSetupPageIndex], d.infraSetupPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
 
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
@@ -539,15 +539,6 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 				return
 			}
 		}
-		if d.securityOptsPage.HasFocus() {
-			if handler := d.securityOptsPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setSecurityOptsPageNextFocus()
-				}
-				handler(event, setFocus)
-				return
-			}
-		}
 		if d.dnsSetupPage.HasFocus() {
 			if handler := d.dnsSetupPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
@@ -570,6 +561,15 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 			if handler := d.networkingPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setNetworkingPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return

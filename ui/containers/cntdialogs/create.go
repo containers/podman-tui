@@ -53,10 +53,10 @@ const (
 
 const (
 	basicInfoPageIndex = 0 + iota
-	securityOptsPageIndex
+	dnsPageIndex
 	networkingPageIndex
 	portPageIndex
-	dnsPageIndex
+	securityOptsPageIndex
 	volumePageIndex
 )
 
@@ -122,10 +122,10 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		form:             tview.NewForm(),
 		categoryLabels: []string{
 			"Basic Information",
-			"Security Options",
+			"DNS Settings",
 			"Network Settings",
 			"Ports Settings",
-			"DNS Settings",
+			"Security Options",
 			"Volumes Settings"},
 		activePageIndex:              0,
 		display:                      false,
@@ -435,10 +435,10 @@ func (d *ContainerCreateDialog) setupLayout() {
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[portPageIndex], d.portPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[volumePageIndex], d.volumePage, true, true)
 
 	// add it to layout.
@@ -621,10 +621,10 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 				return
 			}
 		}
-		if d.securityOptsPage.HasFocus() {
-			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+		if d.dnsPage.HasFocus() {
+			if handler := d.dnsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
-					d.setSecurityOptionsPageNextFocus()
+					d.setDNSSettingsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -648,10 +648,10 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 				return
 			}
 		}
-		if d.dnsPage.HasFocus() {
-			if handler := d.dnsPage.InputHandler(); handler != nil {
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
-					d.setDNSSettingsPageNextFocus()
+					d.setSecurityOptionsPageNextFocus()
 				}
 				handler(event, setFocus)
 				return
@@ -1028,6 +1028,8 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		ApparmorProfile: apparmorProfile,
 		Seccomp:         seccompProfile,
 		NoNewPriv:       d.containerNoNewPrivField.IsChecked(),
+		Mask:            maskPaths,
+		Unmask:          unmaskPaths,
 	}
 	return opts
 }
