@@ -127,9 +127,11 @@ var Styles = theme{
 		},
 	},
 	ContainerStatsDialog: containerStatsDialog{
-		TableHeaderFgColor: tcell.ColorLightSkyBlue,
-		BgColor:            tcell.ColorSteelBlue,
-		FgColor:            tcell.ColorWhite,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tcell.ColorWhite,
+		TableHeaderFgColor:     tcell.ColorLightSkyBlue,
+		BgColor:                tcell.ColorSteelBlue,
+		FgColor:                tcell.ColorWhite,
 	},
 	PodCreateDialog: podCreateDialog{
 		BgColor: tcell.ColorSteelBlue,
