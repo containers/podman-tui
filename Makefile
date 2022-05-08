@@ -1,4 +1,7 @@
 PKG_PATH = "github.com/containers/podman-tui"
+COVERAGE_PATH ?= .coverage
+GO := go
+GOBIN := $(shell $(GO) env GOBIN)
 TARGET = podman-tui
 BIN = ./bin
 DESTDIR = /usr/bin
@@ -51,10 +54,25 @@ validate:   ## Validate podman-tui code (fmt, lint, ...)
 	@go vet ../$(TARGET)
 
 .PHONY: test
-test: functionality
+test: test-unit test-functionality
 
-.PHONY: functionality
-functionality:
+.PHONY: test-unit
+test-unit: ## Run unit tests
+	rm -rf ${COVERAGE_PATH} && mkdir -p ${COVERAGE_PATH}
+	$(GOBIN)/ginkgo \
+		-r \
+		--skip-package test/ \
+		--cover \
+		--covermode atomic \
+		--coverprofile coverprofile \
+		--output-dir ${COVERAGE_PATH} \
+		--succinct
+	$(GO) tool cover -html=${COVERAGE_PATH}/coverprofile -o ${COVERAGE_PATH}/coverage.html
+	$(GO) tool cover -func=${COVERAGE_PATH}/coverprofile > ${COVERAGE_PATH}/functions
+	cat ${COVERAGE_PATH}/functions | sed -n 's/\(total:\).*\([0-9][0-9].[0-9]\)/\1 \2/p'
+
+.PHONY: test-functionality
+test-functionality: ## Run functionality tests
 	@bats test/
 
 .PHONY: fmt      
