@@ -239,6 +239,7 @@ func (img *Images) save() {
 }
 
 func (img *Images) search(term string) {
+	img.searchDialog.ClearResults()
 	img.progressDialog.SetTitle("image search in progress")
 	img.progressDialog.Display()
 	search := func(term string) {
