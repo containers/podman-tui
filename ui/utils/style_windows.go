@@ -73,9 +73,11 @@ var Styles = theme{
 		},
 	},
 	ImageHistoryDialog: imageHistoryDialog{
-		BgColor: tcell.ColorPink,
-		FgColor: tcell.ColorWhite,
-		HeaderRow: headerRow{
+		BgColor:                tcell.ColorPink,
+		FgColor:                tcell.ColorWhite,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tview.Styles.PrimaryTextColor,
+		ResultHeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
 			BgColor: tcell.ColorPurple,
 		},
