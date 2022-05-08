@@ -12,6 +12,7 @@ type theme struct {
 	ConnectionProgressDialog    connectionProgressDialog
 	CommandDialog               commandDialog
 	ConfirmDialog               confirmDialog
+	TopDialog                   topDialog
 	ImageSearchDialog           imageSearchDialog
 	ImageHistoryDialog          imageHistoryDialog
 	ImageImportDialog           imageImportDialog
@@ -91,6 +92,14 @@ type commandDialog struct {
 	BgColor   tcell.Color
 	FgColor   tcell.Color
 	HeaderRow headerRow
+}
+
+type topDialog struct {
+	BgColor                tcell.Color
+	FgColor                tcell.Color
+	ResultHeaderRow        headerRow
+	ResultTableBgColor     tcell.Color
+	ResultTableBorderColor tcell.Color
 }
 
 type confirmDialog struct {

@@ -29,9 +29,14 @@ func NewTopDialog() *TopDialog {
 		tableHeaders: []string{"user", "pid", "ppid", "%cpu", "elapsed", "tty", "time", "command"},
 		display:      false,
 	}
-	bgColor := utils.Styles.CommandDialog.BgColor
+	bgColor := utils.Styles.TopDialog.BgColor
+	tableBgColor := utils.Styles.TopDialog.ResultTableBgColor
+	tableBorderColor := utils.Styles.TopDialog.ResultTableBorderColor
+
 	dialog.table = tview.NewTable()
-	dialog.table.SetBackgroundColor(bgColor)
+	dialog.table.SetBorder(true)
+	dialog.table.SetBorderColor(tableBorderColor)
+	dialog.table.SetBackgroundColor(tableBgColor)
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
@@ -50,6 +55,7 @@ func NewTopDialog() *TopDialog {
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	dialog.layout.AddItem(tableLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 
@@ -106,7 +112,7 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
 	dWidth := width - (2 * DialogPadding)
-	dHeight := len(d.results) + DialogFormHeight + 3
+	dHeight := len(d.results) + DialogFormHeight + 5
 
 	if dHeight > height {
 		dHeight = height
@@ -146,15 +152,15 @@ func (d *TopDialog) SetDoneFunc(handler func()) *TopDialog {
 }
 
 func (d *TopDialog) initTable() {
-	bgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
-	fgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
+	bgColor := utils.Styles.TopDialog.ResultHeaderRow.BgColor
+	fgColor := utils.Styles.TopDialog.ResultHeaderRow.FgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(0).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).
