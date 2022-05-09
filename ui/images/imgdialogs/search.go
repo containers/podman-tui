@@ -65,9 +65,9 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.input.SetFieldBackgroundColor(inputFieldBgColor)
 
 	dialog.searchLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
-	dialog.searchLayout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
+	dialog.searchLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	dialog.searchLayout.AddItem(dialog.input, searchFieldMaxSize+searchInpuLabelWidth, 10, true)
-	dialog.searchLayout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
+	dialog.searchLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	dialog.searchLayout.AddItem(dialog.searchButton, searchButtonWidth, 0, true)
 	dialog.searchLayout.SetBackgroundColor(bgColor)
 
@@ -75,10 +75,13 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	stBorderColor := utils.Styles.ImageSearchDialog.ResultTableBorderColor
 	stBorderTitleColor := utils.Styles.ImageSearchDialog.FgColor
 	dialog.searchResult.SetBackgroundColor(stBgColor)
-	dialog.searchResult.SetTitle("Search Result")
 	dialog.searchResult.SetTitleColor(stBorderTitleColor)
 	dialog.searchResult.SetBorder(true)
 	dialog.searchResult.SetBorderColor(stBorderColor)
+	searchResultLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	searchResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	searchResultLayout.AddItem(dialog.searchResult, 0, 1, true)
+	searchResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	dialog.initTable()
 
@@ -93,10 +96,10 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetTitle("PODMAN IMAGE SEARCH/PULL")
-	dialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
+	dialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	dialog.layout.AddItem(dialog.searchLayout, 1, 0, true)
-	dialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
-	dialog.layout.AddItem(dialog.searchResult, 1, 0, true)
+	dialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	dialog.layout.AddItem(searchResultLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 	return dialog
 }
@@ -106,14 +109,14 @@ func (d *ImageSearchDialog) initTable() {
 	fgColor := utils.Styles.ImageSearchDialog.ResultHeaderRow.FgColor
 	d.searchResult.Clear()
 	d.searchResult.SetCell(0, 0,
-		tview.NewTableCell(fmt.Sprintf("[%s::]INDEX", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]INDEX", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 	d.searchResult.SetCell(0, 1,
-		tview.NewTableCell(fmt.Sprintf("[%s::]NAME", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]NAME", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -121,7 +124,7 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 2,
-		tview.NewTableCell(fmt.Sprintf("[%s::]STARS", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]STARS", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -129,14 +132,14 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 3,
-		tview.NewTableCell(fmt.Sprintf("[%s::]OFFICIAL", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]OFFICIAL", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 	d.searchResult.SetCell(0, 4,
-		tview.NewTableCell(fmt.Sprintf("[%s::]AUTOMATED", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]AUTOMATED", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -144,11 +147,11 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 5,
-		tview.NewTableCell(fmt.Sprintf("[%s::]DESCRIPTION", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", utils.GetColorName(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
-			SetAlign(tview.AlignLeft).
+			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
 	d.searchResult.SetFixed(1, 1)
@@ -170,8 +173,7 @@ func (d *ImageSearchDialog) Hide() {
 	d.focusElement = sInputElement
 	d.display = false
 	d.input.SetText("")
-	d.result = [][]string{}
-	d.initTable()
+	d.ClearResults()
 }
 
 // Focus is called when this primitive receives focus
@@ -254,10 +256,12 @@ func (d *ImageSearchDialog) HasFocus() bool {
 
 // SetRect set rects for this primitive.
 func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
-	dX := x + dialogs.DialogPadding
-	dY := y + dialogs.DialogPadding
-	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := height - (2 * dialogs.DialogPadding)
+	paddingX := 1
+	paddingY := dialogs.DialogPadding - 1
+	dX := x + paddingX
+	dY := y + paddingY
+	dWidth := width - (2 * paddingX)
+	dHeight := height - (2 * paddingY)
 
 	//set search input field size
 	iwidth := dWidth - searchInpuLabelWidth - searchButtonWidth - 2 - 2 - 1
@@ -269,9 +273,7 @@ func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
 
 	//set table height size
 	d.layout.ResizeItem(d.searchResult, dHeight-dialogs.DialogFormHeight-5, 0)
-
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
-
 }
 
 // Draw draws this primitive onto the screen.
@@ -361,10 +363,14 @@ func (d *ImageSearchDialog) GetSelectedItem() string {
 	return ""
 }
 
+// ClearResults clear image search result table
+func (d *ImageSearchDialog) ClearResults() {
+	d.UpdateResults([][]string{})
+}
+
 // UpdateResults updates result table
 func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 	d.result = data
-
 	d.initTable()
 	alignment := tview.AlignLeft
 	rowIndex := 1

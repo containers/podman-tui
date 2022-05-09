@@ -75,11 +75,11 @@ var Styles = theme{
 	ImageSearchDialog: imageSearchDialog{
 		BgColor:                tcell.ColorSteelBlue,
 		FgColor:                tcell.ColorWhite,
-		ResultTableBgColor:     tcell.ColorSteelBlue,
-		ResultTableBorderColor: tcell.ColorNavy,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tcell.ColorWhite,
 		ResultHeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorSteelBlue,
 		},
 	},
 	ImageHistoryDialog: imageHistoryDialog{
