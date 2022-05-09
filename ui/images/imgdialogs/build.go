@@ -61,10 +61,10 @@ const (
 const (
 	buildDialogBasicInfoPageIndex = 0 + iota
 	buildDialogBuildInfoPageIndex
-	buildDialogSecurityOptsPageIndex
-	buildDialogNetworkingPageIndex
 	buildDialogCapabilityPageIndex
 	buildDialogCPUMemoryPageIndex
+	buildDialogNetworkingPageIndex
+	buildDialogSecurityOptsPageIndex
 )
 
 // ImageBuildDialog represents image build dialog primitive
@@ -128,10 +128,10 @@ func NewImageBuildDialog() *ImageBuildDialog {
 		form:   tview.NewForm(),
 		categoryLabels: []string{"Basic Information",
 			"Build Settings",
-			"Security Options",
-			"Networking",
 			"Capability",
-			"CPU and Memory"},
+			"CPU and Memory",
+			"Networking",
+			"Security Options"},
 		categories:              tview.NewTextView(),
 		categoryPages:           tview.NewPages(),
 		basicInfoPage:           tview.NewFlex(),
@@ -567,10 +567,10 @@ func (d *ImageBuildDialog) setupLayout() {
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogBasicInfoPageIndex], d.basicInfoPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogBuildInfoPageIndex], d.buildInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogSecurityOptsPageIndex], d.securityOptsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogNetworkingPageIndex], d.networkingPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogCapabilityPageIndex], d.capabilityPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[buildDialogCPUMemoryPageIndex], d.cpuMemoryPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogNetworkingPageIndex], d.networkingPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogSecurityOptsPageIndex], d.securityOptsPage, true, true)
 
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)

@@ -21,6 +21,7 @@ load helpers_tui
     podman network create $TEST_CONTAINER_NETWORK_NAME || echo done
     podman volume create $TEST_CONTAINER_VOLUME_NAME || echo done
     podman pod create --name $TEST_CONTAINER_POD_NAME || echo done
+    sleep 2
 
     # get required pod, image, network and volume index for number of KeyDown stroke
     pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_CONTAINER_POD_NAME" | awk '{print $1}')
@@ -38,7 +39,6 @@ load helpers_tui
     # select image from dropdown widget
     # select pod from dropdown widget
     # fillout label field
-    # go to security category
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
     podman_tui_send_inputs "Down" 
     podman_tui_select_item $image_index
@@ -47,14 +47,11 @@ load helpers_tui
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab"
-    podman_tui_send_inputs "Down"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
-    podman_tui_send_inputs "Space" "Tab" "Tab"
     sleep 1
 
     # switch to "network settings" create view
     # select network from dropdown widget
-    podman_tui_send_inputs "Tab" "Down" "Tab"
+    podman_tui_send_inputs "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Down"
     podman_tui_select_item $net_index
     podman_tui_send_inputs "Enter"
@@ -64,14 +61,19 @@ load helpers_tui
     # switch to "ports settings" create view
     # fillout "publish ports" field
     podman_tui_send_inputs "Tab" "Down" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_PORT "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_PORT "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep 1
+
+    # switch to "security options" create view
+    podman_tui_send_inputs "Down" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Space" "Tab" "Tab" "Tab"
 
     # switch to "volumes settings" create view
     # select volume from dropdown widget
-    podman_tui_send_inputs "Tab" "Down" "Down" "Tab" "Down"
+    podman_tui_send_inputs "Down" "Tab" "Down"
     podman_tui_select_item $vol_index
-    podman_tui_send_inputs "Enter" "Down" "Enter"
+    podman_tui_send_inputs "Enter"
     sleep 1
 
     # go to "Create" button and press Enter
