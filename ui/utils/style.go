@@ -58,6 +58,16 @@ var Styles = theme{
 			BgColor: tcell.ColorNavy,
 		},
 	},
+	TopDialog: topDialog{
+		BgColor:                tcell.ColorSteelBlue,
+		FgColor:                tcell.ColorBlack,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tcell.ColorWhite,
+		ResultHeaderRow: headerRow{
+			FgColor: tcell.ColorWhite,
+			BgColor: tcell.ColorSteelBlue,
+		},
+	},
 	ConfirmDialog: confirmDialog{
 		BgColor: tcell.ColorOrange,
 		FgColor: tcell.ColorBlack,
