@@ -38,9 +38,13 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 	}
 
 	bgColor := utils.Styles.ImageHistoryDialog.BgColor
+	historyTableBgColor := utils.Styles.ImageHistoryDialog.ResultTableBgColor
+	historyTableBorderColor := utils.Styles.ImageHistoryDialog.ResultTableBorderColor
 
 	dialog.table = tview.NewTable()
-	dialog.table.SetBackgroundColor(bgColor)
+	dialog.table.SetBorder(true)
+	dialog.table.SetBorderColor(historyTableBorderColor)
+	dialog.table.SetBackgroundColor(historyTableBgColor)
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
@@ -156,15 +160,15 @@ func (d *ImageHistoryDialog) SetCancelFunc(handler func()) *ImageHistoryDialog {
 }
 
 func (d *ImageHistoryDialog) initTable() {
-	bgColor := utils.Styles.ImageHistoryDialog.HeaderRow.BgColor
-	fgColor := utils.Styles.ImageHistoryDialog.HeaderRow.FgColor
+	bgColor := utils.Styles.ImageHistoryDialog.ResultHeaderRow.BgColor
+	fgColor := utils.Styles.ImageHistoryDialog.ResultHeaderRow.FgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(0).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

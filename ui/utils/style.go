@@ -83,11 +83,13 @@ var Styles = theme{
 		},
 	},
 	ImageHistoryDialog: imageHistoryDialog{
-		BgColor: tcell.ColorSteelBlue,
-		FgColor: tcell.ColorBlack,
-		HeaderRow: headerRow{
+		BgColor:                tcell.ColorSteelBlue,
+		FgColor:                tcell.ColorBlack,
+		ResultTableBgColor:     tview.Styles.PrimitiveBackgroundColor,
+		ResultTableBorderColor: tcell.ColorWhite,
+		ResultHeaderRow: headerRow{
 			FgColor: tcell.ColorWhite,
-			BgColor: tcell.ColorNavy,
+			BgColor: tcell.ColorSteelBlue,
 		},
 	},
 	ImageImportDialog: imageImportDialog{

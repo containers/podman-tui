@@ -116,9 +116,11 @@ type imageSearchDialog struct {
 }
 
 type imageHistoryDialog struct {
-	BgColor   tcell.Color
-	FgColor   tcell.Color
-	HeaderRow headerRow
+	BgColor                tcell.Color
+	FgColor                tcell.Color
+	ResultHeaderRow        headerRow
+	ResultTableBgColor     tcell.Color
+	ResultTableBorderColor tcell.Color
 }
 
 type imageImportDialog struct {
