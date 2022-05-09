@@ -35,19 +35,21 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog := ContainerStatsDialog{
 		Box:           tview.NewBox(),
 		containerInfo: tview.NewTextView(),
-		maxHeight:     13,
-		maxWidth:      90,
+		maxHeight:     15,
+		maxWidth:      92,
 	}
 	bgColor := utils.Styles.ContainerStatsDialog.BgColor
+	tableBgColor := utils.Styles.ContainerStatsDialog.ResultTableBgColor
+	tableBorderColor := utils.Styles.ContainerStatsDialog.ResultTableBorderColor
 
 	// table
-	tableBgColor := tview.Styles.PrimitiveBackgroundColor
+
 	statsDialog.table = tview.NewTable()
 	statsDialog.table.SetBackgroundColor(tableBgColor)
 	statsDialog.initTableUI()
 
 	// container info text view
-	statsDialog.containerInfo.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
+	statsDialog.containerInfo.SetBackgroundColor(tableBgColor)
 	statsDialog.containerInfo.SetDynamicColors(true)
 	statsDialog.containerInfo.SetWordWrap(false)
 	statsDialog.containerInfo.SetBorder(false)
@@ -60,11 +62,16 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
 
 	// table layout
-	statLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	statLayout.SetBackgroundColor(bgColor)
-	statLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
-	statLayout.AddItem(statsDialog.table, 0, 1, false)
-	statLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
+	statTableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	statTableLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
+	statTableLayout.AddItem(statsDialog.table, 0, 1, false)
+	statTableLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
+
+	statResultLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	statResultLayout.AddItem(statsDialog.containerInfo, 1, 0, true)
+	statResultLayout.AddItem(statTableLayout, 0, 1, true)
+	statResultLayout.SetBorder(true)
+	statResultLayout.SetBorderColor(tableBorderColor)
 
 	// main dialog layout
 	statsDialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
@@ -72,9 +79,13 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog.layout.SetBackgroundColor(bgColor)
 	statsDialog.layout.SetTitle("PODMAN CONTAINER STATS")
 
-	statsDialog.layout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, true)
-	statsDialog.layout.AddItem(statsDialog.containerInfo, 1, 0, true)
-	statsDialog.layout.AddItem(statLayout, 0, 1, true)
+	statDialogResultLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statDialogResultLayout.AddItem(statResultLayout, 0, 1, false)
+	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	statsDialog.layout.AddItem(statDialogResultLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return &statsDialog

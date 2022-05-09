@@ -170,9 +170,11 @@ type containerExecTerminalDialog struct {
 }
 
 type containerStatsDialog struct {
-	TableHeaderFgColor tcell.Color
-	BgColor            tcell.Color
-	FgColor            tcell.Color
+	ResultTableBgColor     tcell.Color
+	ResultTableBorderColor tcell.Color
+	TableHeaderFgColor     tcell.Color
+	BgColor                tcell.Color
+	FgColor                tcell.Color
 }
 
 type terminal struct {
