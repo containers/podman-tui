@@ -41,7 +41,7 @@ $ sudo dnf -y install podman-tui
 podman-tui.conf is the configuration file which specifies local and remotes podman systems connections details.
 
 ```shell
-services]
+[services]
 
   [services.fc36node01]
     uri = "ssh://navid@fc36node01:22/run/user/1000/podman/podman.sock"
