@@ -19,7 +19,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_SYSTEM_CONN_URI
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
     sleep 1
-    
+
     run_helper tail -2 $PODMAN_TUI_CONFIG_FILE
     assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
     assert "$output" =~ "uri = \"unix://run/podman/podman.sock\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
@@ -33,7 +33,7 @@ load helpers_tui
     podman_tui_select_item 1
     podman_tui_select_system_cmd "default"
     sleep 1
-    
+
     run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
     assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
     assert "$output" =~ "uri = \"unix://run/podman/podman.sock\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
@@ -48,9 +48,9 @@ load helpers_tui
     podman_tui_set_view "system"
     podman_tui_select_item 1
     podman_tui_select_system_cmd "remove"
-    podman_tui_send_inputs "Enter" 
+    podman_tui_send_inputs "Enter"
     sleep 1
-    
+
     run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
     assert "$output" !~ "services.${TEST_SYSTEM_CONN_NAME}" "expected [services.${TEST_SYSTEM_CONN_NAME}] not in ${PODMAN_TUI_CONFIG_FILE}"
 }

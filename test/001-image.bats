@@ -67,7 +67,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "${TEST_NAME}_image_imported"
-    podman_tui_send_inputs "Tab" 
+    podman_tui_send_inputs "Tab"
     podman_tui_send_inputs "localhost/${TEST_NAME}_image_imported:latest"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 6
@@ -105,7 +105,7 @@ load helpers_tui
 
 @test "image diff" {
     image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
-   
+
     # switch to images view
     # select busybox image from list
     # select diff command from image commands dialog
@@ -140,7 +140,7 @@ load helpers_tui
 @test "image inspect" {
     image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
     image_id=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $4}')
-    
+
     # switch to images view
     # select busybox image from list
     # select inspect command from image commands dialog
@@ -228,4 +228,3 @@ load helpers_tui
     run_helper podman image ls --format "{{ .Repository }}" --filter "reference=busybox"
     assert "$output" == "" "expected at least busybox image removal"
 }
-

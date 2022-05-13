@@ -9,11 +9,11 @@
 
 ## Building From Source
 
-podman-tui is using go version >= 1.17. 
+podman-tui is using go version >= 1.17.
   1. Clone the repo
   2. Install [dependencies](./CONTRIBUTING.md#prerequisite-before-build)
   3. Build binaries (Linux and Windows)
-     
+
      ```shell
      $ make all
      ```

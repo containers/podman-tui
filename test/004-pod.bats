@@ -11,7 +11,7 @@ load helpers_tui
     podman network rm $TEST_POD_NETWORK_NAME || echo done
     podman image pull pause:3.5 || echo done
     podman network create $TEST_POD_NETWORK_NAME || echo done
-    
+
     net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_POD_NETWORK_NAME" | awk '{print $1}')
     # switch to pods view
     # select create command from pod commands dialog
@@ -138,7 +138,7 @@ load helpers_tui
 
 @test "pod inspect" {
     pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-    
+
     # switch to pods view
     # select test pod from list
     # select inspect command from pod commands dialog
@@ -176,7 +176,7 @@ load helpers_tui
     podman pod start $TEST_POD_NAME || echo done
     podman pod stop $TEST_POD_NAME || echo done
     sleep 2
-    
+
     # switch to pods view
     # select prune command from pod commands dialog
     # confirm the operation on warnings dialog

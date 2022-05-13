@@ -45,4 +45,3 @@ BASH
     config.vm.provision "shell", inline: "chown -R vagrant.vagrant /home/vagrant/go"
 
 end
-

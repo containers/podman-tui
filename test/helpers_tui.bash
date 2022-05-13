@@ -38,7 +38,7 @@ function podman_tui_set_view() {
     run_helper tmux send-keys -t $TMUX_SESSION F6;;
   "networks")
     run_helper tmux send-keys -t $TMUX_SESSION F7;;
-  esac   
+  esac
 }
 
 ################
@@ -63,7 +63,7 @@ function podman_tui_send_inputs() {
   do
     run_helper tmux send-keys -t $TMUX_SESSION "$key"
   done
-    
+
 }
 
 ################
@@ -99,7 +99,7 @@ function podman_tui_select_image_cmd() {
   esac
 
   podman_tui_select_menu $menu_index
-  
+
 }
 
 ################

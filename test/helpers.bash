@@ -22,13 +22,13 @@ function setup() {
 EOF
 
     # start podman socket
-    if [ ! -f "${PODMAN_TUI}" ] ; then 
+    if [ ! -f "${PODMAN_TUI}" ] ; then
         die "$PODMAN_TUI binary not found"
     else
         systemctl start podman.socket
         # create tmux session
         tmux_sessions=$(tmux list-sessions | grep "$TMUX_SESSION:" 2> /dev/null || echo -e "\c")
-        if [ "${tmux_sessions}" != "" ] ; then 
+        if [ "${tmux_sessions}" != "" ] ; then
             tmux kill-session -t $TMUX_SESSION
         fi
         /bin/rm -rf ${PODMAN_TUI_LOG}

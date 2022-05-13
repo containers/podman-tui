@@ -8,7 +8,7 @@ load helpers_tui
 
 @test "network create" {
     podman network rm $TEST_NETWORK_NAME || echo done
-    
+
     # switch to networks view
     # select create command from network commands dialog
     # fillout create dialog fields and press enter
@@ -28,7 +28,7 @@ load helpers_tui
 
 @test "network inspect" {
     net_index=$(podman network ls -q | nl -v 0 | grep "$TEST_NETWORK_NAME" | awk '{print $1}')
-    
+
     # switch to networks view
     # select test network from list
     # select inspect command from network commands dialog
