@@ -1,9 +1,10 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.hostname = "fedora35"
-    config.vm.box = "fedora/35-cloud-base"
-    config.vm.box_version = "35.20211026.0"
+    config.vm.hostname = "fedora36"
+    config.vm.box = "fedora/36-cloud-base"
+    config.vm.box_version = "36-20220504.1"
+
     config.vm.provision "shell", inline: "mkdir -p /home/vagrant/go"
     config.vm.synced_folder ".", "/home/vagrant/go/src/podman-tui",
         type: "nfs",
@@ -15,33 +16,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         domain.cpus = 2
     end
 
-    install_go_env = <<-BASH
-set -e
-if [ ! -d "/usr/local/go" ]; then
-    cd /tmp && wget https://golang.org/dl/go1.17.3.linux-amd64.tar.gz
-    cd /usr/local
-    tar xvzf /tmp/go1.17.3.linux-amd64.tar.gz
-    echo 'export GOPATH=/home/vagrant/go' >> /home/vagrant/.bashrc
-    echo 'export GOROOT=/usr/local/go' >> /home/vagrant/.bashrc
-    echo 'export GOBIN=/home/vagrant/go/bin' >> /home/vagrant/.bashrc
-    echo 'export GOPRIVATE=github.com/containers/podman-tui' >> /home/vagrant/.bashrc
-    echo 'export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin' >> /home/vagrant/.bashrc
-fi
-export GOPATH=/home/vagrant/go
-export GOBIN=/home/vagrant/go/bin
-export GOROOT=/usr/local/go
-export GOPRIVATE=github.com/containers/podman-tui
-export PATH=/usr/local/go/bin:$PATH:$GOPATH/bin
+    setup_env = <<-BASH
+dnf -y update
+dnf -y install glibc-static git-core wget gcc make bats tmux rpkg go-rpm-macros python3-pip
 BASH
 
-    install_podman_env = <<-BASH
+    setup_go = <<-BASH
+dnf -y install golang golint
+echo 'export GOPATH=/home/vagrant/go' >> /home/vagrant/.bashrc
+echo 'export GOBIN=/home/vagrant/go/bin' >> /home/vagrant/.bashrc
+echo 'export PATH=$PATH:$GOPATH/bin' >> /home/vagrant/.bashrc
+mkdir /home/vagrant/go/bin
+BASH
+
+    setup_podman = <<-BASH
 dnf -y install podman
-dnf install -y btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel
+dnf install -y btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel shadow-utils-subid-devel
 BASH
 
-    config.vm.provision "shell", inline: "dnf -y install git-core wget gcc make bats tmux golint"
-    config.vm.provision "shell", inline: install_go_env
-    config.vm.provision "shell", inline: install_podman_env
+    config.vm.provision "shell", inline: setup_env
+    config.vm.provision "shell", inline: setup_go
+    config.vm.provision "shell", inline: setup_podman
     config.vm.provision "shell", inline: "chown -R vagrant.vagrant /home/vagrant/go"
 
 end
