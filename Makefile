@@ -1,12 +1,18 @@
 PKG_PATH = "github.com/containers/podman-tui"
-COVERAGE_PATH ?= .coverage
 GO := go
+FIRST_GOPATH := $(firstword $(subst :, ,$(GOPATH)))
+GOPKGDIR := $(FIRST_GOPATH)/src/$(PKG_PATH)
+GOPKGBASEDIR ?= $(shell dirname "$(GOPKGDIR)")
 GOBIN := $(shell $(GO) env GOBIN)
+BUILDFLAGS := -mod=vendor $(BUILDFLAGS)
+COVERAGE_PATH ?= .coverage
 TARGET = podman-tui
 BIN = ./bin
 DESTDIR = /usr/bin
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo -Z)
+PKG_MANAGER ?= $(shell command -v dnf yum|head -n1)
+PRE_COMMIT = $(shell command -v bin/venv/bin/pre-commit ~/.local/bin/pre-commit pre-commit | head -n1)
 
 .PHONY: default
 default: all
@@ -22,13 +28,13 @@ binary: $(TARGET)  ## Build podman-tui binary
 $(TARGET): $(SRC)
 	@mkdir -p $(BIN)
 	@echo "running go build"
-	@go build -o $(BIN)/$(TARGET)
+	$(GO) build $(BUILDFLAGS) -o $(BIN)/$(TARGET)
 
 .PHONY: binary-win
 binary-win:  ## Build podman-tui.exe windows binary
 	@mkdir -p $(BIN)/windows/
 	@echo "running go build for windows"
-	@env GOOS=windows  GOARCH=amd64 go build -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
+	@env GOOS=windows  GOARCH=amd64 go build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
 
 .PHONY: clean
 clean:
@@ -42,16 +48,32 @@ install:    ## Install podman-tui binary
 uninstall:  ## Uninstall podman-tui binary
 	@rm -f $(DESTDIR)/$(TARGET)
 
-.PHONY: validate
-validate:   ## Validate podman-tui code (fmt, lint, ...)
-	@echo "running gofmt"
-	@test -z "$(shell gofmt -l $(SRC) | tee /dev/stderr | tr '\n' ' ')" || echo "[WARN] Fix formatting issues with 'make fmt'"
+#=================================================
+# Required tools installation tartgets
+#=================================================
 
-	@echo "running golint"
-	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
+.PHONY: install.tools
+install.tools: .install.ginkgo .install.bats .install.pre-commit ## Install needed tools
 
-	@echo "running go vet"
-	@go vet ../$(TARGET)
+.PHONY: .install.ginkgo
+.install.ginkgo: .gopathok
+	if [ ! -x "$(GOBIN)/ginkgo" ]; then \
+		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.1.4 ; \
+	fi
+
+.PHONY: .install.bats
+.install.bats:
+	sudo ${PKG_MANAGER} -y install bats
+
+.PHONY: .install.pre-commit
+.install.pre-commit:
+	if [ -z "$(PRE_COMMIT)" ]; then \
+		python3 -m pip install --user pre-commit; \
+	fi
+
+#=================================================
+# Testing (units, functionality, ...) targets
+#=================================================
 
 .PHONY: test
 test: test-unit test-functionality
@@ -75,8 +97,44 @@ test-unit: ## Run unit tests
 test-functionality: ## Run functionality tests
 	@bats test/
 
-.PHONY: fmt
-fmt:   ## Run gofmt
+.PHONY: package
+package:  ## Build rpm package
+	rpkg local
+
+.PHONY: package-install
+package-install: package  ## Install rpm package
+	sudo ${PKG_MANAGER} -y install ${HOME}/rpmbuild/RPMS/*/*.rpm
+	/usr/bin/podman-tui version
+
+#=================================================
+# Linting/Formatting/Code Validation targets
+#=================================================
+
+.gopathok:
+ifeq ("$(wildcard $(GOPKGDIR))","")
+	mkdir -p "$(GOPKGBASEDIR)"
+	ln -sfn "$(CURDIR)" "$(GOPKGDIR)"
+endif
+
+.PHONY: validate
+validate: gofmt lint pre-commit  ## Validate podman-tui code (fmt, lint, ...)
+
+.PHONY: lint
+lint: ## Run golint and pre-commit
+	@echo "running golint"
+	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
+
+
+.PHONY: pre-commit
+pre-commit:   ## Run pre-commit
+ifeq ($(PRE_COMMIT),)
+	@echo "FATAL: pre-commit was not found, make .install.pre-commit to installing it." >&2
+	@exit 2
+endif
+	$(PRE_COMMIT) run -a
+
+.PHONY: gofmt
+gofmt:   ## Run gofmt
 	@echo -e "gofmt check and fix"
 	@gofmt -w $(SRC)
 

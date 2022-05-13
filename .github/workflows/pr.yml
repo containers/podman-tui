@@ -5,8 +5,6 @@ on:
 jobs:
   commit:
     runs-on: ubuntu-latest
-    # Only check commits on pull requests.
-    if: github.event_name == 'pull_request'
     steps:
       - name: get pr commits
         id: 'get-pr-commits'
@@ -25,3 +23,20 @@ jobs:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^.{0,72}(\n.*)*$'
           error: 'Subject too long (max 72)'
+
+  codespell:
+    name: codespell check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          skip: ./.git,./vendor,*_test.go,go.sum,go.mod
+
+  goreportcard:
+    name: update reportcard
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: creekorful/goreportcard-action@v1.0
