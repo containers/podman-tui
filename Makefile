@@ -34,15 +34,15 @@ binary-win:  ## Build podman-tui.exe windows binary
 clean:
 	@rm -rf $(BIN)
 
-.PHONY: install   
+.PHONY: install
 install:    ## Install podman-tui binary
 	@install ${SELINUXOPT} -D -m0755 $(BIN)/$(TARGET) $(DESTDIR)/$(TARGET)
 
-.PHONY: uninstall 
+.PHONY: uninstall
 uninstall:  ## Uninstall podman-tui binary
 	@rm -f $(DESTDIR)/$(TARGET)
 
-.PHONY: validate  
+.PHONY: validate
 validate:   ## Validate podman-tui code (fmt, lint, ...)
 	@echo "running gofmt"
 	@test -z "$(shell gofmt -l $(SRC) | tee /dev/stderr | tr '\n' ' ')" || echo "[WARN] Fix formatting issues with 'make fmt'"
@@ -75,7 +75,7 @@ test-unit: ## Run unit tests
 test-functionality: ## Run functionality tests
 	@bats test/
 
-.PHONY: fmt      
+.PHONY: fmt
 fmt:   ## Run gofmt
 	@echo -e "gofmt check and fix"
 	@gofmt -w $(SRC)
@@ -84,7 +84,7 @@ _HLP_TGTS_RX = '^[[:print:]]+:.*?\#\# .*$$'
 _HLP_TGTS_CMD = grep -E $(_HLP_TGTS_RX) $(MAKEFILE_LIST)
 _HLP_TGTS_LEN = $(shell $(_HLP_TGTS_CMD) | cut -d : -f 1 | wc -L)
 _HLPFMT = "%-$(_HLP_TGTS_LEN)s %s\n"
-.PHONY: help   
+.PHONY: help
 help: ## Print listing of key targets with their descriptions
 	@printf $(_HLPFMT) "Target:" "Description:"
 	@printf $(_HLPFMT) "--------------" "--------------------"

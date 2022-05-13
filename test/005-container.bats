@@ -12,9 +12,9 @@ load helpers_tui
     podman container rm -f ${TEST_CONTAINER_NAME}_renamed || echo done
     podman network rm $TEST_CONTAINER_NETWORK_NAME || echo done
     podman volume rm $TEST_CONTAINER_VOLUME_NAME || echo done
-    
+
     httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
-    if [ "${httpd_image}" == "" ] ; then 
+    if [ "${httpd_image}" == "" ] ; then
         podman image pull docker.io/library/httpd
     fi
 
@@ -34,13 +34,13 @@ load helpers_tui
     # select create command from container commands dialog
     podman_tui_set_view "containers"
     podman_tui_select_container_cmd "create"
-    
+
     # fillout name field
     # select image from dropdown widget
     # select pod from dropdown widget
     # fillout label field
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
-    podman_tui_send_inputs "Down" 
+    podman_tui_send_inputs "Down"
     podman_tui_select_item $image_index
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs "Down"
@@ -57,7 +57,7 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab"
     sleep 1
-    
+
     # switch to "ports settings" create view
     # fillout "publish ports" field
     podman_tui_send_inputs "Tab" "Down" "Tab"
@@ -94,7 +94,7 @@ load helpers_tui
     host_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $1}')
     cnt_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $2}')
     cnt_port_str="$host_port->$cnt_port/tcp"
-    
+
     cnt_security_opt=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .HostConfig.SecurityOpt }}")
 
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
