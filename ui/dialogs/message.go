@@ -37,11 +37,12 @@ func NewMessageDialog(text string) *MessageDialog {
 	bgColor := utils.Styles.MessageDialog.BgColor
 	terminalBgColor := utils.Styles.MessageDialog.Terminal.BgColor
 	terminalFgColor := utils.Styles.MessageDialog.Terminal.FgColor
+	terminalBorderColor := utils.Styles.MessageDialog.Terminal.BorderColor
 	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
 
 	dialog.textview.SetTextColor(terminalFgColor)
 	dialog.textview.SetBackgroundColor(terminalBgColor)
-	dialog.textview.SetBorderColor(terminalFgColor)
+	dialog.textview.SetBorderColor(terminalBorderColor)
 	dialog.textview.SetBorder(true)
 
 	// textview layout

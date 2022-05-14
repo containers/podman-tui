@@ -5,13 +5,12 @@
 
 Terminal user interface for Podman v4.
 
-![Screenshot](./docs/images/podman-tui.gif)
+![Screenshot](./docs/podman-tui.gif)
 
 - [**Overview**](#overview)
 - [**Installation**](#installation)
 - [**PreRun Checks**](#prerun-checks)
 - [**Key Bindings**](#key-bindings)
-- [**Communication**](#communication)
 - [**Code of Conduct**](#code-of-conduct)
 - [**License**](#license)
 
@@ -42,9 +41,6 @@ Building from source (Linux, Windows) or installing packaged versions are detail
 
 * podman-tui uses 256 colors terminal mode on `Nix` system and standard ANSI colors on `Windows` system.
 
-  | Gnome Terminal | Powershell Terminal |
-  | :------------: | :-----------------: |
-  | <img src="./docs/images/podman-tui-linux.png" width="250" height="150"></img> | <img src="./docs/images/podman-tui-windows.png" width="250" height="150"></img> |
 
 ## Key Bindings
 
