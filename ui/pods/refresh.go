@@ -19,7 +19,7 @@ func (pods *Pods) refresh() {
 
 	for i := 0; i < len(pods.headers); i++ {
 		pods.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(pods.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(pods.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

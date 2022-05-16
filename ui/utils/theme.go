@@ -103,8 +103,9 @@ type topDialog struct {
 }
 
 type confirmDialog struct {
-	BgColor tcell.Color
-	FgColor tcell.Color
+	BgColor     tcell.Color
+	FgColor     tcell.Color
+	ButtonColor tcell.Color
 }
 
 type imageSearchDialog struct {
@@ -180,8 +181,9 @@ type containerStatsDialog struct {
 }
 
 type terminal struct {
-	BgColor tcell.Color
-	FgColor tcell.Color
+	BgColor     tcell.Color
+	FgColor     tcell.Color
+	BorderColor tcell.Color
 }
 
 type podCreateDialog struct {
@@ -190,8 +192,9 @@ type podCreateDialog struct {
 }
 
 type podStatsDialog struct {
-	BgColor tcell.Color
-	FgColor tcell.Color
+	BgColor         tcell.Color
+	FgColor         tcell.Color
+	ResultHeaderRow headerRow
 }
 
 type dropdownStyle struct {
@@ -243,4 +246,5 @@ type errorDialog struct {
 	HeaderFgColor tcell.Color
 	BgColor       tcell.Color
 	FgColor       tcell.Color
+	ButtonColor   tcell.Color
 }

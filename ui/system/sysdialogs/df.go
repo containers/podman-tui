@@ -156,7 +156,7 @@ func (d *DfDialog) initTable() {
 	// add headers
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(1).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

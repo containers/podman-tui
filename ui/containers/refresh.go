@@ -18,7 +18,7 @@ func (cnt *Containers) refresh() {
 	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
 	for i := 0; i < len(cnt.headers); i++ {
 		cnt.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(cnt.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

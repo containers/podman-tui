@@ -69,8 +69,9 @@ var Styles = theme{
 		},
 	},
 	ConfirmDialog: confirmDialog{
-		BgColor: tcell.ColorPink,
-		FgColor: tcell.ColorWhite,
+		BgColor:     tcell.ColorPink,
+		FgColor:     tcell.ColorWhite,
+		ButtonColor: tcell.ColorPurple,
 	},
 	ImageSearchDialog: imageSearchDialog{
 		BgColor:                tcell.ColorPink,
@@ -105,8 +106,9 @@ var Styles = theme{
 		FgColor:      tcell.ColorWhite,
 		PrgCellColor: tcell.ColorOrange,
 		Terminal: terminal{
-			BgColor: tview.Styles.PrimitiveBackgroundColor,
-			FgColor: tview.Styles.PrimaryTextColor,
+			BorderColor: tview.Styles.PrimaryTextColor,
+			BgColor:     tview.Styles.PrimitiveBackgroundColor,
+			FgColor:     tview.Styles.PrimaryTextColor,
 		},
 	},
 	ImageSaveDialog: imageSaveDialog{
@@ -134,8 +136,9 @@ var Styles = theme{
 		FgColor:       tcell.ColorWhite,
 		HeaderBgColor: tcell.ColorPurple,
 		Terminal: terminal{
-			BgColor: tcell.NewRGBColor(0, 0, 0),
-			FgColor: tcell.NewRGBColor(255, 255, 255),
+			BorderColor: tview.Styles.PrimaryTextColor,
+			BgColor:     tcell.NewRGBColor(0, 0, 0),
+			FgColor:     tcell.NewRGBColor(255, 255, 255),
 		},
 	},
 	ContainerStatsDialog: containerStatsDialog{
@@ -152,6 +155,10 @@ var Styles = theme{
 	PodStatsDialog: podStatsDialog{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
+		ResultHeaderRow: headerRow{
+			FgColor: tcell.ColorWhite,
+			BgColor: tcell.ColorPink,
+		},
 	},
 	DropdownStyle: dropdownStyle{
 		Unselected: tcell.StyleDefault.Background(tcell.ColorFuchsia).Foreground(tcell.ColorBlack),
@@ -161,8 +168,9 @@ var Styles = theme{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		EventViewer: terminal{
-			BgColor: tview.Styles.PrimitiveBackgroundColor,
-			FgColor: tview.Styles.PrimaryTextColor,
+			BorderColor: tview.Styles.PrimaryTextColor,
+			BgColor:     tview.Styles.PrimitiveBackgroundColor,
+			FgColor:     tview.Styles.PrimaryTextColor,
 		},
 	},
 	ConnectionAddDialog: connectionAddDialog{
@@ -181,8 +189,9 @@ var Styles = theme{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 		Terminal: terminal{
-			BgColor: tview.Styles.PrimitiveBackgroundColor,
-			FgColor: tview.Styles.PrimaryTextColor,
+			BorderColor: tview.Styles.PrimaryTextColor,
+			BgColor:     tview.Styles.PrimitiveBackgroundColor,
+			FgColor:     tview.Styles.PrimaryTextColor,
 		},
 	},
 	ButtonPrimitive: buttonPrimitive{
@@ -202,5 +211,6 @@ var Styles = theme{
 		HeaderFgColor: tcell.ColorOrangeRed,
 		BgColor:       tcell.ColorRed,
 		FgColor:       tcell.ColorWhite,
+		ButtonColor:   tcell.ColorPurple,
 	},
 }

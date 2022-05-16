@@ -41,10 +41,12 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	bgColor := utils.Styles.ImageBuildPrgDialog.BgColor
 	outputBgColor := utils.Styles.ImageBuildPrgDialog.Terminal.BgColor
 	outputFgColor := utils.Styles.ImageBuildPrgDialog.Terminal.FgColor
+	buildPrgBorderColor := utils.Styles.ImageBuildPrgDialog.Terminal.BorderColor
 	prgCellColor := utils.Styles.ImageBuildPrgDialog.PrgCellColor
 
 	// progressbar
 	buildPrgDialog.progressBar.SetBorder(true)
+	buildPrgDialog.progressBar.SetBorderColor(buildPrgBorderColor)
 	buildPrgDialog.progressBar.SetPgBgColor(prgCellColor)
 
 	// output

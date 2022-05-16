@@ -246,6 +246,10 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerNoNewPrivField.SetLabel("No new privileges ")
 	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
 	containerDialog.containerNoNewPrivField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
+	containerDialog.containerNoNewPrivField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNoNewPrivField.SetChecked(false)
+	containerDialog.containerNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// networking setup page
 	networkingPageLabelWidth := 13

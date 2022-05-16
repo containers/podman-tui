@@ -214,6 +214,9 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podNoNewPrivField.SetLabel("No new privileges ")
 	podDialog.podNoNewPrivField.SetBackgroundColor(bgColor)
 	podDialog.podNoNewPrivField.SetLabelColor(tcell.ColorWhite)
+	podDialog.podNoNewPrivField.SetBackgroundColor(bgColor)
+	podDialog.podNoNewPrivField.SetLabelColor(fgColor)
+	podDialog.podNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// DNS setup page
 	dnsPageLabelWidth := 16

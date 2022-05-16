@@ -83,8 +83,10 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 
 	// terminal screen
 	terminalBgColor := utils.Styles.ContainerExecTerminalDialog.Terminal.BgColor
+	terminalBorderColor := utils.Styles.ContainerExecTerminalDialog.Terminal.BorderColor
 	dialog.terminalScreen.SetBackgroundColor(terminalBgColor)
 	dialog.terminalScreen.SetBorder(true)
+	dialog.terminalScreen.SetBorderColor(terminalBorderColor)
 
 	// form fields
 	dialog.form = tview.NewForm().

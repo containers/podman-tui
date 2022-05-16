@@ -27,7 +27,7 @@ func (nets *Networks) UpdateData() {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(nets.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).
@@ -74,7 +74,7 @@ func (nets *Networks) ClearData() {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(nets.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

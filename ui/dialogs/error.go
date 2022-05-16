@@ -26,7 +26,7 @@ func NewErrorDialog() *ErrorDialog {
 		modal:   tview.NewModal().SetBackgroundColor(bgColor).AddButtons([]string{"OK"}),
 		display: false,
 	}
-	dialog.modal.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.modal.SetButtonBackgroundColor(utils.Styles.ErrorDialog.ButtonColor)
 
 	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		dialog.Hide()

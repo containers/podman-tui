@@ -37,6 +37,7 @@ func NewEventDialog() *EventsDialog {
 	bgColor := utils.Styles.EventsDialog.BgColor
 	textviewBgColor := utils.Styles.EventsDialog.EventViewer.BgColor
 	textviewFgColor := utils.Styles.EventsDialog.EventViewer.FgColor
+	textviewBorderColor := utils.Styles.EventsDialog.EventViewer.BorderColor
 	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
 
 	// text view
@@ -47,7 +48,7 @@ func NewEventDialog() *EventsDialog {
 
 	eventsDialog.textview.SetTextColor(textviewFgColor)
 	eventsDialog.textview.SetBackgroundColor(textviewBgColor)
-	eventsDialog.textview.SetBorderColor(textviewFgColor)
+	eventsDialog.textview.SetBorderColor(textviewBorderColor)
 	eventsDialog.textview.SetBorder(true)
 
 	// form

@@ -378,8 +378,8 @@ func (d *PodStatsDialog) getAllPodIDs() []string {
 
 func (d *PodStatsDialog) initTableUI() {
 	var tableHeaders = []string{"POD ID", "CID", "NAME", "CPU %", "MEM USAGE / LIMIT", "MEM %", "NET IO", "BLOCK IO", "PIDS"}
-	headerBgColor := utils.Styles.PodStatsDialog.BgColor
-	headerFgColor := utils.Styles.PodStatsDialog.FgColor
+	headerBgColor := utils.Styles.PodStatsDialog.ResultHeaderRow.BgColor
+	headerFgColor := utils.Styles.PodStatsDialog.ResultHeaderRow.FgColor
 	d.table.Clear()
 	for index, header := range tableHeaders {
 		headerItem := fmt.Sprintf("[::b]%s[::-]", header)

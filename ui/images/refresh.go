@@ -18,7 +18,7 @@ func (img *Images) refresh() {
 	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
 	for i := 0; i < len(img.headers); i++ {
 		img.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(img.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

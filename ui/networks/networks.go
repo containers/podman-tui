@@ -61,7 +61,7 @@ func NewNetworks() *Networks {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(nets.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
 				SetExpansion(1).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

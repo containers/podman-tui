@@ -48,7 +48,7 @@ func NewConfirmDialog() *ConfirmDialog {
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(utils.Styles.ConfirmDialog.ButtonColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
