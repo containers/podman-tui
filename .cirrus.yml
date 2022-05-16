@@ -1,0 +1,123 @@
+---
+
+env:
+    DEST_BRANCH: "main"
+    CIRRUS_SHELL: "/bin/bash"
+
+timeout_in: 30m
+
+precommit_test_task:
+  name: "Precommit"
+  alias: precommit
+  only_if: $CIRRUS_PR != ''
+  container:
+    image: python:3.10
+  script: |
+    python3 -m pip install pre-commit
+    pre-commit run -a
+
+vendor_task:
+  name: "Vendoring"
+  alias: vendor
+  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  container:
+    image: golang:1.18
+  script: |
+    go mod tidy
+    go mod vendor
+    go mod verify
+    bash ./hack/tree_status.sh
+
+goreport_task:
+  name: "Go Report Card, Gofmt and Lint"
+  alias: goreport
+  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  container:
+    image: golang:1.18
+  script: |
+    bash hack/goreportcard.sh
+    go install -mod=mod golang.org/x/lint/golint
+    SRC=$(find . -type f -name '*.go' -not -path "./vendor/*")
+    for d in $(go list ./... | grep -v /vendor/); do $GOBIN/golint ${d}; done
+    gofmt -w ${SRC}
+
+unit_tests_task:
+  name: "Unit Tests"
+  alias: unit_tests
+  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  depends_on:
+    - vendor
+    - precommit
+    - goreport
+  container:
+    image: golang:1.18
+  script: |
+    go install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.1.4
+    $GOPATH/bin/ginkgo \
+      -r \
+      --skip-package test/ \
+      --cover \
+      --covermode atomic \
+      --coverprofile coverprofile \
+      --output-dir .coverage \
+      --succinct
+    go tool cover -html=.coverage/coverprofile -o .coverage/coverage.html
+    go tool cover -func=.coverage/coverprofile > .coverage/functions
+    cat .coverage/functions | sed -n 's/\(total:\).*\([0-9][0-9].[0-9]\)/\1 \2/p'
+
+functionality_tests_task:
+  name: "Functionality Tests"
+  alias: functionality_tests
+  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  depends_on:
+    - vendor
+    - precommit
+    - goreport
+  compute_engine_instance:
+    image_project: cirrus-images # GCP project
+    image: family/docker-kvm # family or a full image name.
+    platform: linux
+    cpu: 4 # optional. Defaults to 2 CPUs.
+    memory: 16G # optional. Defaults to 4G.
+    disk: 100 # optional. By default, uses the smallest disk size required by the image.
+    nested_virtualization: true # optional. Whether to enable Intel VT-x. Defaults to false.
+
+  # install vagrant and required packages
+  env_setup_script: |
+    apt-get update
+    apt-get install -y libvirt-daemon libvirt-daemon-system vagrant vagrant-libvirt
+    systemctl enable --now libvirtd
+    sed -i "s/domain.memory = 4096/domain.memory = 8192/" Vagrantfile
+    vagrant up --no-tty || vagrant up --no-tty
+    mkdir -p -m 0700 /root/.ssh
+    vagrant ssh-config >> /root/.ssh/config
+    ssh default "make -C /home/vagrant/go/src/podman-tui install.tools"
+
+  functionality_tests_script: |
+    ssh default << EOF
+    make -C /home/vagrant/go/src/podman-tui binary
+    sudo make -C /home/vagrant/go/src/podman-tui test-functionality
+    EOF
+
+build_package_task:
+  name: "Binaries and RPM Package"
+  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  depends_on:
+    - vendor
+    - precommit
+    - goreport
+  container:
+    image: fedora:36
+  script: |
+    sh hack/install_dep.sh
+    rpkg local
+    rpm -ivh /tmp/rpkg/podman-tui-*/x86_64/podman-tui-*.x86_64.rpm
+    rpm -qi podman-tui
+    mv /tmp/rpkg/podman-tui-*/x86_64/podman-tui-*.x86_64.rpm ./
+    make all
+    mv bin/podman-tui ./
+    mv bin/windows/podman-tui.exe ./
+  always:
+    binary_artifacts:
+      path: "*podman-tui*"
+      type: application/octet-stream
