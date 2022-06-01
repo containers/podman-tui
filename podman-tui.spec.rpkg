@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.4.0
+Version: 0.5.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -27,7 +27,7 @@ Source0: {{{ git_dir_pack }}}
 BuildRequires: btrfs-progs-devel
 %endif
 BuildRequires: gcc
-BuildRequires: golang >= 1.16.6
+BuildRequires: golang >= 1.18.2
 BuildRequires: glib2-devel
 BuildRequires: glibc-devel
 BuildRequires: glibc-static
@@ -66,7 +66,37 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Mar 27 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.4.0-dev-1
+* Thu Jun 02 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.5.0-dev-1
+
+* Thu Jun 02 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.4.0-1
+- new ui color theme
+- CI setup
+- update vagrant box to Fedora 36
+- pre-commit configuration and fixes
+- Bump github.com/docker/docker
+- Bump github.com/containers/storage from 1.40.2 to 1.41.0
+- doc update - install.md
+- pod/container top dialog ui update
+- image history dialog ui update
+- container stats dialog ui update
+- image search/pull dialog ui update
+- sort categories for pod/containers create and image build dialogs
+- code coverage for ui/dialogs package
+- Bump github.com/containers/podman/v4 from 4.0.3 to 4.1.0
+- Bump github.com/containers/buildah from 1.25.1 to 1.26.1
+- Bump github.com/containers/common from 0.47.5 to 0.48.0
+- Bump github.com/containers/storage from 1.40.0 to 1.40.2
+- Bump github.com/containers/storage from 1.39.0 to 1.40.0
+- exec terminal update (automatic resize and detach)
+- adding image tree command
+- adding security options fields to pod create dialog
+- adding container create security options fields
+- adding format and security options fields to image build dialog
+- doc update
+- windows support
+- removing unused connection dialog
+- fixing golint
+- removing image index from name field string search result
 
 * Sun Mar 27 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.3.0-1
 - Bump github.com/docker/docker
