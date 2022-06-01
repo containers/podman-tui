@@ -75,7 +75,7 @@ var _ = Describe("message dialog", Ordered, func() {
 	})
 
 	It("enter button selected", func() {
-		enterButton := "inital"
+		enterButton := "initial"
 		enterButtonWants := "enter selected"
 		enterFunc := func() {
 			enterButton = enterButtonWants
@@ -87,7 +87,7 @@ var _ = Describe("message dialog", Ordered, func() {
 	})
 
 	It("cancel button selected", func() {
-		cancelButton := "inital"
+		cancelButton := "initial"
 		cancelButtonWants := "cancel selected"
 		cancelFunc := func() {
 			cancelButton = cancelButtonWants

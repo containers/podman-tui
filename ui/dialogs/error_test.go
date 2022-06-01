@@ -42,7 +42,7 @@ var _ = Describe("error dialog", Ordered, func() {
 	})
 
 	It("enter button selected", func() {
-		enterButton := "inital"
+		enterButton := "initial"
 		enterButtonWants := "enter selected"
 		enterFunc := func() {
 			enterButton = enterButtonWants
