@@ -57,7 +57,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 	})
 
 	It("enter button selected", func() {
-		enterButton := "inital"
+		enterButton := "initial"
 		enterButtonWants := "enter selected"
 		enterFunc := func() {
 			enterButton = enterButtonWants
@@ -71,7 +71,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 	})
 
 	It("cancel button selected", func() {
-		cancelButton := "inital"
+		cancelButton := "initial"
 		cancelButtonWants := "cancel selected"
 		cancelFunc := func() {
 			cancelButton = cancelButtonWants
@@ -80,7 +80,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
 		app.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
-		cancelButton = "inital"
+		cancelButton = "initial"
 		confirmDialog.Display()
 		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))

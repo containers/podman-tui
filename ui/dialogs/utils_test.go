@@ -12,7 +12,7 @@ var _ = Describe("command dialog", Ordered, func() {
 	var sample3 string = "test\ntest\nabcdefghi"
 	var wants int = 9
 
-	Describe("get messsage width", func() {
+	Describe("get message width", func() {
 		It("sample1", func() {
 			Expect(getMessageWidth(sample1)).To(Equal(wants))
 		})
