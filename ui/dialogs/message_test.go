@@ -74,18 +74,6 @@ var _ = Describe("message dialog", Ordered, func() {
 		Expect(h1).To(Equal(hWants))
 	})
 
-	It("enter button selected", func() {
-		enterButton := "initial"
-		enterButtonWants := "enter selected"
-		enterFunc := func() {
-			enterButton = enterButtonWants
-		}
-		messageDialog.SetSelectedFunc(enterFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
-		Expect(enterButton).To(Equal(enterButtonWants))
-	})
-
 	It("cancel button selected", func() {
 		cancelButton := "initial"
 		cancelButtonWants := "cancel selected"

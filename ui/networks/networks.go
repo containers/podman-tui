@@ -82,9 +82,6 @@ func NewNetworks() *Networks {
 	})
 
 	// set message dialog functions
-	nets.messageDialog.SetSelectedFunc(func() {
-		nets.messageDialog.Hide()
-	})
 	nets.messageDialog.SetCancelFunc(func() {
 		nets.messageDialog.Hide()
 	})

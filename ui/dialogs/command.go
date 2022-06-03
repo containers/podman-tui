@@ -38,7 +38,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
-		AddButton("Enter", nil).
+		AddButton("Select", nil).
 		SetButtonsAlign(tview.AlignRight)
 
 	form.SetBackgroundColor(bgColor)

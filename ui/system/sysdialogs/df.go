@@ -19,12 +19,12 @@ const (
 // DfDialog is a simple dialog with disk usage result table
 type DfDialog struct {
 	*tview.Box
-	layout       *tview.Flex
-	table        *tview.Table
-	form         *tview.Form
-	display      bool
-	tableHeaders []string
-	doneHandler  func()
+	layout        *tview.Flex
+	table         *tview.Table
+	form          *tview.Form
+	display       bool
+	tableHeaders  []string
+	cancelHandler func()
 }
 
 // NewDfDialog returns new DfDialog primitive
@@ -43,7 +43,7 @@ func NewDfDialog() *DfDialog {
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
-		AddButton("Enter", nil).
+		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(buttonBgColor)
@@ -95,7 +95,7 @@ func (d *DfDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("disk usage dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
-			d.doneHandler()
+			d.cancelHandler()
 			return
 		}
 		// scroll between df items
@@ -140,9 +140,9 @@ func (d *DfDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// SetDoneFunc sets form button selected function
-func (d *DfDialog) SetDoneFunc(handler func()) *DfDialog {
-	d.doneHandler = handler
+// SetCancelFunc sets form cancel button selected function
+func (d *DfDialog) SetCancelFunc(handler func()) *DfDialog {
+	d.cancelHandler = handler
 	return d
 }
 

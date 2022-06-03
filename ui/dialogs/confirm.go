@@ -45,7 +45,7 @@ func NewConfirmDialog() *ConfirmDialog {
 
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
-		AddButton("Enter", nil).
+		AddButton("  OK  ", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(utils.Styles.ConfirmDialog.ButtonColor)

@@ -101,15 +101,12 @@ func NewPods() *Pods {
 	})
 
 	// set message dialog functions
-	pods.messageDialog.SetSelectedFunc(func() {
-		pods.messageDialog.Hide()
-	})
 	pods.messageDialog.SetCancelFunc(func() {
 		pods.messageDialog.Hide()
 	})
 
 	// set top dialog functions
-	pods.topDialog.SetDoneFunc(func() {
+	pods.topDialog.SetCancelFunc(func() {
 		pods.topDialog.Hide()
 	})
 	// set confirm dialogs functions

@@ -13,13 +13,13 @@ import (
 // TopDialog is a simple dialog with pod/container top result table
 type TopDialog struct {
 	*tview.Box
-	layout       *tview.Flex
-	table        *tview.Table
-	form         *tview.Form
-	display      bool
-	tableHeaders []string
-	results      [][]string
-	doneHandler  func()
+	layout        *tview.Flex
+	table         *tview.Table
+	form          *tview.Form
+	display       bool
+	tableHeaders  []string
+	results       [][]string
+	cancelHandler func()
 }
 
 // NewTopDialog returns new TopDialog primitive
@@ -40,7 +40,7 @@ func NewTopDialog() *TopDialog {
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
-		AddButton("Enter", nil).
+		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
@@ -97,7 +97,7 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("top dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
-			d.doneHandler()
+			d.cancelHandler()
 			return
 		}
 		// scroll between top items
@@ -145,9 +145,9 @@ func (d *TopDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// SetDoneFunc sets form button selected function
-func (d *TopDialog) SetDoneFunc(handler func()) *TopDialog {
-	d.doneHandler = handler
+// SetCancelFunc sets form button selected function
+func (d *TopDialog) SetCancelFunc(handler func()) *TopDialog {
+	d.cancelHandler = handler
 	return d
 }
 

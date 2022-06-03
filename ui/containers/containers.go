@@ -114,11 +114,10 @@ func NewContainers() *Containers {
 	containers.cmdInputDialog.SetSelectedFunc(containers.cmdInputDialog.Hide)
 
 	// set message dialog functions
-	containers.messageDialog.SetSelectedFunc(containers.messageDialog.Hide)
 	containers.messageDialog.SetCancelFunc(containers.messageDialog.Hide)
 
 	// set container top dialog functions
-	containers.topDialog.SetDoneFunc(containers.topDialog.Hide)
+	containers.topDialog.SetCancelFunc(containers.topDialog.Hide)
 
 	// set confirm dialogs functions
 	containers.confirmDialog.SetSelectedFunc(func() {
@@ -146,7 +145,7 @@ func NewContainers() *Containers {
 	containers.execDialog.SetExecFunc(containers.exec)
 
 	// set exec terminal dialog functions
-	containers.execTerminalDialog.SetDoneFunc(containers.execTerminalDialog.Hide)
+	containers.execTerminalDialog.SetCancelFunc(containers.execTerminalDialog.Hide)
 
 	// set exec terminal fast refresh
 	containers.execTerminalDialog.SetFastRefreshHandler(func() {

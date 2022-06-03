@@ -55,7 +55,7 @@ var _ = Describe("top dialog", Ordered, func() {
 		enterFunc := func() {
 			enterButton = enterButtonWants
 		}
-		topDialog.SetDoneFunc(enterFunc)
+		topDialog.SetCancelFunc(enterFunc)
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		app.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))

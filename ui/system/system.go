@@ -118,9 +118,6 @@ func NewSystem() *System {
 	})
 
 	// set message dialog functions
-	sys.messageDialog.SetSelectedFunc(func() {
-		sys.messageDialog.Hide()
-	})
 	sys.messageDialog.SetCancelFunc(func() {
 		sys.messageDialog.Hide()
 	})
@@ -131,7 +128,7 @@ func NewSystem() *System {
 	})
 
 	// set disk usage function
-	sys.dfDialog.SetDoneFunc(func() {
+	sys.dfDialog.SetCancelFunc(func() {
 		sys.dfDialog.Hide()
 	})
 
