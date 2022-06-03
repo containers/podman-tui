@@ -14,11 +14,18 @@ SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo
 PKG_MANAGER ?= $(shell command -v dnf yum|head -n1)
 PRE_COMMIT = $(shell command -v bin/venv/bin/pre-commit ~/.local/bin/pre-commit pre-commit | head -n1)
 
+# Default to the native OS type and architecture unless otherwise specified
+NATIVE_GOOS := $(shell env -u GOOS $(GO) env GOOS)
+GOOS ?= $(call err_if_empty,NATIVE_GOOS)
+# Default to the native architecture type
+NATIVE_GOARCH := $(shell env -u GOARCH $(GO) env GOARCH)
+GOARCH ?= $(NATIVE_GOARCH)
+
 .PHONY: default
 default: all
 
 .PHONY: all
-all: binary binary-win
+all: binary binary-win binary-darwin
 
 .PHONY: binary
 binary: $(TARGET)  ## Build podman-tui binary
@@ -34,7 +41,13 @@ $(TARGET): $(SRC)
 binary-win:  ## Build podman-tui.exe windows binary
 	@mkdir -p $(BIN)/windows/
 	@echo "running go build for windows"
-	@env GOOS=windows  GOARCH=amd64 go build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
+	@env CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) go build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
+
+.PHONY: binary-darwin
+binary-darwin: ## Build podman-tui for darwin
+	@mkdir -p $(BIN)/darwin/
+	@echo "running go build for darwin"
+	@env CGO_ENABLED=0 GOOS=darwin GOARCH=$(GOARCH) go build $(BUILDFLAGS) -o $(BIN)/darwin/$(TARGET) -tags "containers_image_openpgp darwin remote"
 
 .PHONY: clean
 clean:
