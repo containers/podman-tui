@@ -18,7 +18,6 @@ type MessageDialog struct {
 	display       bool
 	message       string
 	cancelHandler func()
-	selectHandler func()
 }
 
 // NewMessageDialog returns new message dialog primitive
@@ -52,7 +51,7 @@ func NewMessageDialog(text string) *MessageDialog {
 	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	dialog.form = tview.NewForm().
-		AddButton("Enter", nil).
+		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 
 	dialog.form.SetBackgroundColor(bgColor)
@@ -163,7 +162,7 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 			return
 		}
 		if event.Key() == tcell.KeyEnter {
-			d.selectHandler()
+			d.cancelHandler()
 			return
 		}
 		if event.Key() == tcell.KeyTab {
@@ -178,14 +177,6 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 			return
 		}
 	})
-}
-
-// SetSelectedFunc sets form enter button selected function
-func (d *MessageDialog) SetSelectedFunc(handler func()) *MessageDialog {
-	d.selectHandler = handler
-	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-	enterButton.SetSelectedFunc(handler)
-	return d
 }
 
 // SetCancelFunc sets form cancel button selected function

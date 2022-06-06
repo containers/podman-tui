@@ -35,7 +35,7 @@ type ContainerExecTerminalDialog struct {
 	label              *tview.TextView
 	terminalScreen     *tview.Box
 	form               *tview.Form
-	doneHandler        func()
+	cancelHandler      func()
 	fastRefreshHandler func()
 	display            bool
 	state              state
@@ -90,7 +90,7 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 
 	// form fields
 	dialog.form = tview.NewForm().
-		AddButton("Close", nil).
+		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
@@ -194,7 +194,7 @@ func (d *ContainerExecTerminalDialog) Focus(delegate func(p tview.Primitive)) {
 				return nil
 			}
 			if event.Key() == tcell.KeyEnter {
-				d.doneHandler()
+				d.cancelHandler()
 				return nil
 			}
 			return event
@@ -273,9 +273,9 @@ func (d *ContainerExecTerminalDialog) Draw(screen tcell.Screen) {
 
 }
 
-// SetDoneFunc sets form close button selected function
-func (d *ContainerExecTerminalDialog) SetDoneFunc(handler func()) *ContainerExecTerminalDialog {
-	d.doneHandler = handler
+// SetCancelFunc sets form close button selected function
+func (d *ContainerExecTerminalDialog) SetCancelFunc(handler func()) *ContainerExecTerminalDialog {
+	d.cancelHandler = handler
 	closeButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	closeButton.SetSelectedFunc(handler)
 	return d

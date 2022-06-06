@@ -6,7 +6,7 @@ To run the tests locally in your sandbox, you can use one of these methods:
 
 ```shell
 $ make binary                    # build podman-tui binary
-$ sudo make test                 # run all the tests
+$ sudo make test-functionality   # run all the tests
 $ sudo bats test/001-image.bats  # runs just the specified test
 ```
 

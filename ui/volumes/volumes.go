@@ -87,9 +87,6 @@ func NewVolumes() *Volumes {
 	})
 
 	// set message dialog functions
-	vols.messageDialog.SetSelectedFunc(func() {
-		vols.messageDialog.Hide()
-	})
 	vols.messageDialog.SetCancelFunc(func() {
 		vols.messageDialog.Hide()
 	})

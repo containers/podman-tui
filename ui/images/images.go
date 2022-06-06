@@ -102,10 +102,6 @@ func NewImages() *Images {
 	images.table = imgTable
 
 	// set message dialog functions
-	images.messageDialog.SetSelectedFunc(func() {
-		images.messageDialog.Hide()
-	})
-
 	images.messageDialog.SetCancelFunc(func() {
 		images.messageDialog.Hide()
 	})

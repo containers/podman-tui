@@ -48,7 +48,7 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
-		AddButton("Enter", nil).
+		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)

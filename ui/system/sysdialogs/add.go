@@ -78,7 +78,7 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 	// form
 	connDialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
-		AddButton("Add", nil).
+		AddButton(" Add ", nil).
 		SetButtonsAlign(tview.AlignRight)
 	connDialog.form.SetBackgroundColor(bgColor)
 	connDialog.form.SetButtonBackgroundColor(buttonBackBgColor)
