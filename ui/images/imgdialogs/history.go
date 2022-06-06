@@ -118,7 +118,7 @@ func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus
 func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := len(d.results) + dialogs.DialogFormHeight + 3
+	dHeight := len(d.results) + dialogs.DialogFormHeight + 5
 
 	if dHeight > height {
 		dHeight = height
@@ -169,7 +169,7 @@ func (d *ImageHistoryDialog) initTable() {
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
-				SetExpansion(0).
+				SetExpansion(1).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).
 				SetAlign(tview.AlignLeft).
