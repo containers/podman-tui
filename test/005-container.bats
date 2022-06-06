@@ -105,6 +105,26 @@ load helpers_tui
 
 }
 
+@test "container commit" {
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+
+    # switch to containers view
+    # select container from the list
+    # select commit command from container commands dialog
+    # fillout image input field
+    # go to commit button and press enter
+    podman_tui_set_view "containers"
+    podman_tui_select_item $container_index
+    podman_tui_select_container_cmd "commit"
+
+    podman_tui_send_inputs $TEST_CONTAINER_COMMIT_IMAGE_NAME
+    podman_tui_send_inputs Tab Tab Tab Tab Tab Tab Tab
+    podman_tui_send_inputs Tab Enter
+    sleep 2
+    run_helper podman image ls ${TEST_CONTAINER_COMMIT_IMAGE_NAME} --format "{{ .Repository }}"
+    assert "$output" =~ "localhost/${TEST_CONTAINER_COMMIT_IMAGE_NAME}" "expected image"
+}
+
 @test "container start" {
     container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 

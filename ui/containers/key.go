@@ -78,6 +78,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
+		// container commit dialog handler
+		if cnt.commitDialog.HasFocus() {
+			if cntCommitDialogHandler := cnt.commitDialog.InputHandler(); cntCommitDialogHandler != nil {
+				cntCommitDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if cnt.table.HasFocus() {
 			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()

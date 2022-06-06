@@ -12,6 +12,8 @@ import (
 
 func (cnt *Containers) runCommand(cmd string) {
 	switch cmd {
+	case "commit":
+		cnt.preCommit()
 	case "create":
 		cnt.createDialog.Display()
 	case "diff":
@@ -52,6 +54,37 @@ func (cnt *Containers) displayError(title string, err error) {
 	cnt.errorDialog.SetTitle(title)
 	cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 	cnt.errorDialog.Display()
+}
+
+func (cnt *Containers) preCommit() {
+	if cnt.selectedID == "" {
+		cnt.displayError("", fmt.Errorf("there is no container to perform commit command"))
+		return
+	}
+	cntID, cntName := cnt.getSelectedItem()
+	cnt.commitDialog.SetContainerInfo(cntID, cntName)
+	cnt.commitDialog.Display()
+}
+
+func (cnt *Containers) commit() {
+	commitOpts := cnt.commitDialog.GetContainerCommitOptions()
+	cnt.commitDialog.Hide()
+	cnt.progressDialog.SetTitle("container commit in progress")
+	cnt.progressDialog.Display()
+	cntCommit := func() {
+		response, err := containers.Commit(cnt.selectedID, commitOpts)
+		if err != nil {
+			cnt.progressDialog.Hide()
+			title := fmt.Sprintf("CONTAINER (%s) COMMIT ERROR", cnt.selectedID)
+			cnt.displayError(title, err)
+			return
+		}
+		cnt.progressDialog.Hide()
+		cnt.messageDialog.SetTitle("podman container commit")
+		cnt.messageDialog.SetText(response)
+		cnt.messageDialog.Display()
+	}
+	go cntCommit()
 }
 
 func (cnt *Containers) stats() {

@@ -29,6 +29,7 @@ type Containers struct {
 	execDialog         *cntdialogs.ContainerExecDialog
 	execTerminalDialog *cntdialogs.ContainerExecTerminalDialog
 	statsDialog        *cntdialogs.ContainerStatsDialog
+	commitDialog       *cntdialogs.ContainerCommitDialog
 	containersList     containerListReport
 	selectedID         string
 	selectedName       string
@@ -57,10 +58,12 @@ func NewContainers() *Containers {
 		execDialog:         cntdialogs.NewContainerExecDialog(),
 		execTerminalDialog: cntdialogs.NewContainerExecTerminalDialog(),
 		statsDialog:        cntdialogs.NewContainerStatsDialog(),
+		commitDialog:       cntdialogs.NewContainerCommitDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
 	containers.cmdDialog = dialogs.NewCommandDialog([][]string{
+		{"commit", "create an image from a container's changes"},
 		{"create", "create a new container but do not start"},
 		{"diff", "inspect changes to the selected container's file systems"},
 		{"exec", "execute the specified command inside a running container"},
@@ -155,6 +158,10 @@ func NewContainers() *Containers {
 	// set stats dialogs functions
 	containers.statsDialog.SetDoneFunc(containers.statsDialog.Hide)
 
+	// set commit dialog functions
+	containers.commitDialog.SetCommitFunc(containers.commit)
+	containers.commitDialog.SetCancelFunc(containers.commitDialog.Hide)
+
 	return containers
 }
 
@@ -183,6 +190,9 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.execTerminalDialog.HasFocus() || cnt.statsDialog.HasFocus() {
 		return true
 	}
+	if cnt.commitDialog.HasFocus() {
+		return true
+	}
 	return cnt.Box.HasFocus()
 }
 
@@ -203,7 +213,7 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
-	if cnt.execTerminalDialog.HasFocus() {
+	if cnt.execTerminalDialog.HasFocus() || cnt.commitDialog.HasFocus() {
 		return true
 	}
 	return false
@@ -261,6 +271,11 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		delegate(cnt.statsDialog)
 		return
 	}
+	// commit dialog
+	if cnt.commitDialog.IsDisplay() {
+		delegate(cnt.commitDialog)
+		return
+	}
 
 	delegate(cnt.table)
 }
@@ -316,5 +331,8 @@ func (cnt *Containers) HideAllDialogs() {
 	}
 	if cnt.statsDialog.IsDisplay() {
 		cnt.statsDialog.Hide()
+	}
+	if cnt.commitDialog.IsDisplay() {
+		cnt.commitDialog.Hide()
 	}
 }
