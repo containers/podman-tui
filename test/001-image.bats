@@ -52,8 +52,8 @@ load helpers_tui
 }
 
 @test "image import" {
-    podman image rm busybox || echo done
-
+    /bin/rm -rf ${TEST_IMAGE_SAVE_PATH} || echo done
+    podman image save -o ${TEST_IMAGE_SAVE_PATH} busybox:latest || echo done
     # switch to images view
     # select import command from images commands dialog
     # fillout import path field
