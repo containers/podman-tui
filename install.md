@@ -2,34 +2,45 @@
 
 - [**Building From Source**](#building-from-source)
 - [**Installing Packaged Versions**](#installing-packaged-versions)
-  - [**Arch Linux (AUR)**](#arch-linux-aur)
   - [**Fedora**](#fedora)
+  - [**Arch Linux (AUR)**](#arch-linux-aur)
 - [**Configuration Files**](#configurations-files)
-
 
 ## Building From Source
 
 podman-tui is using go version >= 1.17.
   1. Clone the repo
   2. Install [dependencies](./CONTRIBUTING.md#prerequisite-before-build)
-  3. Build binaries (Linux and Windows)
+  3. Build binaries
+      * Linux:
 
-     ```shell
-     $ make all
-     ```
+        ```shell
+        $ make binary
+        ```
+      * Windows:
+
+        ```shell
+        $ make binary-win
+        ```
+
+      * MacOS:
+
+        ```shell
+        $ make binary-darwin
+        ```
 
 ## Installing Packaged Versions
-
-### Arch Linux (AUR)
-
-```shell
-$ yay -S podman-tui
-```
 
 ### Fedora
 
 ```
 $ sudo dnf -y install podman-tui
+```
+
+### Arch Linux (AUR)
+
+```shell
+$ yay -S podman-tui
 ```
 
 ## Configuration Files

@@ -21,7 +21,7 @@ It is using [podman go bindings](https://github.com/containers/podman/tree/main/
 
 ## Installation
 
-Building from source (Linux, Windows) or installing packaged versions are detailed in [install guide](install.md).
+Building from source (Linux, Windows and MacOS) or installing packaged versions are detailed in [install guide](install.md).
 
 ## PreRun Checks
 
