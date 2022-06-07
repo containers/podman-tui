@@ -254,7 +254,7 @@ github.com/containers/storage/pkg/tarlog
 github.com/containers/storage/pkg/truncindex
 github.com/containers/storage/pkg/unshare
 github.com/containers/storage/types
-# github.com/coreos/go-systemd/v22 v22.3.2
+# github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534
 ## explicit; go 1.12
 github.com/coreos/go-systemd/v22/dbus
 github.com/coreos/go-systemd/v22/internal/dlopen
@@ -441,6 +441,12 @@ github.com/lucasb-eyer/go-colorful
 github.com/manifoldco/promptui
 github.com/manifoldco/promptui/list
 github.com/manifoldco/promptui/screenbuf
+# github.com/mattn/go-colorable v0.1.12
+## explicit; go 1.13
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.14
+## explicit; go 1.12
+github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.13
 ## explicit; go 1.9
 github.com/mattn/go-runewidth
@@ -568,7 +574,7 @@ github.com/rivo/tview
 # github.com/rivo/uniseg v0.2.0
 ## explicit; go 1.12
 github.com/rivo/uniseg
-# github.com/rs/zerolog v1.26.1
+# github.com/rs/zerolog v1.27.0
 ## explicit; go 1.15
 github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
