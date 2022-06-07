@@ -19,8 +19,8 @@ var Styles = theme{
 		},
 	},
 	InfoBar: infoBar{
-		ItemFgColor:  tcell.ColorLightSlateGray,
-		ValueFgColor: tcell.ColorFloralWhite,
+		ItemFgColor:  tcell.ColorSilver,
+		ValueFgColor: tcell.ColorWhiteSmoke,
 		ProgressBar: progressBar{
 			FgColor:       tcell.ColorWhite,
 			BarEmptyColor: tcell.ColorWhite,
@@ -41,7 +41,7 @@ var Styles = theme{
 		BorderColor:   tcell.ColorMediumPurple,
 		BgColor:       tview.Styles.PrimitiveBackgroundColor,
 		FgColor:       tcell.ColorWhiteSmoke,
-		HeaderFgColor: tcell.ColorLightSlateGray,
+		HeaderFgColor: tcell.ColorSilver,
 	},
 	ConnectionProgressDialog: connectionProgressDialog{
 		BgColor:     tcell.ColorMediumPurple,
