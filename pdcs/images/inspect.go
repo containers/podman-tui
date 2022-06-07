@@ -1,8 +1,6 @@
 package images
 
 import (
-	"strings"
-
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/images"
@@ -17,19 +15,13 @@ func Inspect(id string) (string, error) {
 	if err != nil {
 		return report, err
 	}
-	response, err := images.List(conn, new(images.ListOptions).WithAll(true))
+	response, err := images.GetImage(conn, id, new(images.GetOptions))
 	if err != nil {
 		return report, err
 	}
-
-	for index, imgSumm := range response {
-		if strings.Index(imgSumm.ID, id) == 0 {
-			report, err = utils.GetJSONOutput(response[index])
-			if err != nil {
-				return report, err
-			}
-		}
-
+	report, err = utils.GetJSONOutput(response.ImageData)
+	if err != nil {
+		return report, err
 	}
 	log.Debug().Msgf("pdcs: %s", report)
 	return report, nil
