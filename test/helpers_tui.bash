@@ -10,6 +10,7 @@ TEST_CONTAINER_NAME="${TEST_NAME}_container01"
 TEST_CONTAINER_POD_NAME="${TEST_NAME}_container01_pod"
 TEST_CONTAINER_NETWORK_NAME="${TEST_NAME}_container01_net"
 TEST_CONTAINER_VOLUME_NAME="${TEST_NAME}_container01_vol"
+TEST_CONTAINER_COMMIT_IMAGE_NAME="${TEST_NAME}_commited_image"
 TEST_CONTAINER_PORT="8888:80"
 TEST_LABEL_NAME="test"
 TEST_LABEL_VALUE="$TEST_NAME"
@@ -182,37 +183,39 @@ function podman_tui_select_container_cmd() {
   local menu_index=0
 
   case $1 in
-  "create")
+  "commit")
     menu_index=0;;
-  "diff")
+  "create")
     menu_index=1;;
-  "exec")
+  "diff")
     menu_index=2;;
-  "inspect")
+  "exec")
     menu_index=3;;
-  "kill")
+  "inspect")
     menu_index=4;;
-  "logs")
+  "kill")
     menu_index=5;;
-  "pause")
+  "logs")
     menu_index=6;;
-  "port")
+  "pause")
     menu_index=7;;
-  "prune")
+  "port")
     menu_index=8;;
-  "rename")
+  "prune")
     menu_index=9;;
-  "remove")
+  "rename")
     menu_index=10;;
-  "start")
+  "remove")
     menu_index=11;;
-  # index 12 stats
+  "start")
+    menu_index=12;;
+  # index 13 stats
   "stop")
-    menu_index=13;;
-  "top")
     menu_index=14;;
-  "unpause")
+  "top")
     menu_index=15;;
+  "unpause")
+    menu_index=16;;
   esac
 
   podman_tui_select_menu $menu_index

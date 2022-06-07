@@ -148,6 +148,10 @@ var Styles = theme{
 		BgColor:                tcell.ColorPink,
 		FgColor:                tcell.ColorWhite,
 	},
+	ContainerCommitDialog: containerCommitDialog{
+		BgColor: tcell.ColorPink,
+		FgColor: tcell.ColorWhite,
+	},
 	PodCreateDialog: podCreateDialog{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
