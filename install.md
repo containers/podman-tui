@@ -2,8 +2,8 @@
 
 - [**Building From Source**](#building-from-source)
 - [**Installing Packaged Versions**](#installing-packaged-versions)
-  - [**Fedora**](#fedora)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
+  - [**Fedora**](#fedora)
 - [**Configuration Files**](#configurations-files)
 
 ## Building From Source
@@ -31,16 +31,16 @@ podman-tui is using go version >= 1.17.
 
 ## Installing Packaged Versions
 
-### Fedora
-
-```
-$ sudo dnf -y install podman-tui
-```
-
 ### Arch Linux (AUR)
 
 ```shell
 $ yay -S podman-tui
+```
+
+### Fedora
+
+```
+$ sudo dnf -y install podman-tui
 ```
 
 ## Configuration Files
