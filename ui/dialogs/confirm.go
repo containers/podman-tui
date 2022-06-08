@@ -127,10 +127,9 @@ func (d *ConfirmDialog) setRect() {
 		d.height = maxHeight
 		layoutHeight = d.height - DialogFormHeight - 2
 	}
-
 	if maxHeight > d.height {
 		emptyHeight := (maxHeight - d.height) / 2
-		d.y = d.y + emptyHeight - DialogPadding
+		d.y = d.y + emptyHeight
 
 	}
 
@@ -141,10 +140,9 @@ func (d *ConfirmDialog) setRect() {
 			d.width = messageWidth + 2
 		}
 	}
-
 	if maxWidth > d.width {
 		emptyWidth := (maxWidth - d.width) / 2
-		d.x = d.x + emptyWidth + DialogPadding
+		d.x = d.x + emptyWidth
 	}
 
 	d.layout.Clear()
