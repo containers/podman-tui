@@ -482,6 +482,21 @@ func (d *ContainerCreateDialog) HasFocus() bool {
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
+// dropdownHasFocus returns true if container create dialog dropdown primitives
+// has focus
+func (d *ContainerCreateDialog) dropdownHasFocus() bool {
+	if d.containerImageField.HasFocus() || d.containerPodField.HasFocus() {
+		return true
+	}
+	if d.containerVolumeField.HasFocus() || d.containerImageVolumeField.HasFocus() {
+		return true
+	}
+	if d.containerNetworkField.HasFocus() {
+		return true
+	}
+	return false
+}
+
 // Focus is called when this primitive receives focus
 func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
@@ -612,7 +627,7 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container create dialog: event %v received", event)
-		if event.Key() == tcell.KeyEsc {
+		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
 			d.cancelHandler()
 			return
 		}
