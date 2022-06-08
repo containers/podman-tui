@@ -432,6 +432,12 @@ func (d *PodCreateDialog) HasFocus() bool {
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
+// dropdownHasFocus returns true if pod create dialog dropdown primitives
+// has focus
+func (d *PodCreateDialog) dropdownHasFocus() bool {
+	return d.podNetworkField.HasFocus()
+}
+
 // Focus is called when this primitive receives focus
 func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
@@ -529,7 +535,7 @@ func (d *PodCreateDialog) initCustomInputHanlers() {
 func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("pod create dialog: event %v received", event)
-		if event.Key() == tcell.KeyEsc {
+		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
 			d.cancelHandler()
 			return
 		}
