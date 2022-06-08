@@ -19,6 +19,7 @@ type theme struct {
 	ImageBuildDialog            imageBuildDialog
 	ImageBuildPrgDialog         imageBuildPrgDialog
 	ImageSaveDialog             imageSaveDialog
+	ImagePushDialog             imagePushDialog
 	VolumeCreateDialog          volumeCreateDialog
 	NetworkCreateDialog         networkCreateDialog
 	ContainerCreateDialog       containerCreateDialog
@@ -143,6 +144,11 @@ type imageBuildPrgDialog struct {
 }
 
 type imageSaveDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type imagePushDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
 }

@@ -74,6 +74,7 @@ podman-tui uses following keyboard keys for different actions:
 
 | COMMAND  | DESCRIPTION |
 | -------- | ----------- |
+| commit   | create an image from a container's changes
 | create   | create a new container but do not start
 | diff     | inspect changes to the selected container's file systems
 | exec     | execute the specified command inside a running container
@@ -110,6 +111,7 @@ podman-tui uses following keyboard keys for different actions:
 | import       | create a container image from a tarball
 | inspect      | display the configuration of the selected image
 | prune        | remove all unused images
+| push         | push a source image to a specified destination
 | rm           | removes the selected  image from local storage
 | search/pull  | search and pull image from registry
 | save         | save an image to docker-archive or oci-archive
