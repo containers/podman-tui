@@ -185,8 +185,8 @@ var Styles = theme{
 		BgColor: tcell.ColorMediumPurple,
 		FgColor: tcell.ColorDimGray,
 		HeaderRow: headerRow{
-			FgColor: tcell.ColorDarkMagenta,
-			BgColor: tcell.ColorMediumPurple,
+			FgColor: tcell.ColorWhite,
+			BgColor: tcell.ColorRebeccaPurple,
 		},
 	},
 	MessageDialog: messageDialog{
