@@ -24,6 +24,8 @@ func (img *Images) runCommand(cmd string) {
 		img.inspect()
 	case "prune":
 		img.cprune()
+	case "push":
+		img.cpush()
 	case "rm":
 		img.rm()
 	case "save":
@@ -172,6 +174,35 @@ func (img *Images) prune() {
 		}
 	}
 	go prune()
+}
+
+func (img *Images) cpush() {
+	id, name := img.getSelectedItem()
+	if id == "" {
+		img.displayError("", fmt.Errorf("there is no image to push"))
+		return
+	}
+	img.pushDialog.SetImageInfo(id, name)
+	img.pushDialog.Display()
+}
+
+func (img *Images) push() {
+	pushOptions := img.pushDialog.GetImagePushOptions()
+	img.pushDialog.Hide()
+	img.progressDialog.SetTitle("image push in progress")
+	img.progressDialog.Display()
+
+	push := func() {
+		if err := images.Push(img.selectedID, pushOptions); err != nil {
+			img.progressDialog.Hide()
+			title := fmt.Sprintf("IMAGE (%s) PUSH ERROR", img.selectedID)
+			img.displayError(title, err)
+			return
+		}
+		img.progressDialog.Hide()
+	}
+	go push()
+
 }
 
 func (img *Images) rm() {

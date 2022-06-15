@@ -115,6 +115,10 @@ var Styles = theme{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
+	ImagePushDialog: imagePushDialog{
+		BgColor: tcell.ColorPink,
+		FgColor: tcell.ColorWhite,
+	},
 	VolumeCreateDialog: volumeCreateDialog{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,

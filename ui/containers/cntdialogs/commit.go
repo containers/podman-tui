@@ -391,7 +391,7 @@ func (d *ContainerCommitDialog) SetCancelFunc(handler func()) *ContainerCommitDi
 	return d
 }
 
-// SetImageInfo sets selected container ID and name in commit dialog
+// SetContainerInfo sets selected container ID and name in commit dialog
 func (d *ContainerCommitDialog) SetContainerInfo(id string, name string) {
 	containerInfo := fmt.Sprintf("Container: %s (%s)", id, name)
 	d.cntInfo.SetText(containerInfo)
