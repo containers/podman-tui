@@ -21,7 +21,7 @@ require (
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 	github.com/rs/zerolog v1.27.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 )
 
