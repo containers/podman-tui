@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 0.5.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -66,7 +66,26 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Thu Jun 02 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.5.0-dev-1
+* Sat Jul 02 2022 Navid Yaghoobi <navidys@fedoraproject.org> 0.5.0-1
+- feature - image push
+- feature - container commit
+- using images.GetImage function for image inspect
+- show confirmation dialog in the center of different views
+- disk usage dialog table headers color update
+- Esc key shall not close dialogs if its dropdown widgets has focus
+- infobar + help color update for headers
+- image history dialog update
+- update button labels based on their function
+- code coverage for network and volume create dialogs
+- code coverage for ui/utils
+- makefile update - darwin build
+- docs: adding templates for bug report and features
+- docs: adding security policy
+- docs: Mac build
+- Bump github.com/containers/podman/v4 from 4.1.0 to 4.1.1
+- Bump github.com/docker/docker
+- Bump github.com/rs/zerolog from 1.26.1 to 1.27.0
+- Bump github.com/spf13/cobra from 1.4.0 to 1.5.0
 
 * Thu Jun 02 2022 Navid Yaghoobi <n.yaghoobi.s@gmail.com> 0.4.0-1
 - new ui color theme
