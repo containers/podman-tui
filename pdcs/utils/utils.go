@@ -10,23 +10,25 @@ import (
 	"github.com/docker/go-units"
 )
 
-// SizeToStr converts size to human readable format
+// SizeToStr converts size to human readable format.
 func SizeToStr(size int64) string {
-	return units.HumanSizeWithPrecision(float64(size), 3)
+	return units.HumanSizeWithPrecision(float64(size), 3) // nolint:gomnd
 }
 
-// CreatedToStr converts duration to human readable format
+// CreatedToStr converts duration to human readable format.
 func CreatedToStr(duration int64) string {
 	created := time.Unix(duration, 0).UTC()
+
 	return units.HumanDuration(time.Since(created)) + " ago"
 }
 
-// PrintJSON convert data interface to json string
+// PrintJSON convert data interface to json string.
 func PrintJSON(data []interface{}) (string, error) {
 	buf, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return "", err
 	}
+
 	return string(buf), nil
 }
 
@@ -34,18 +36,22 @@ func PrintJSON(data []interface{}) (string, error) {
 
 // PortsToString converts the ports used to a string of the from "port1, port2"
 // and also groups a continuous list of ports into a readable format.
-// The format is IP:HostPort(-Range)->ContainerPort(-Range)/Proto
+// The format is IP:HostPort(-Range)->ContainerPort(-Range)/Proto.
 func PortsToString(ports []types.PortMapping) string {
 	if len(ports) == 0 {
 		return ""
 	}
+
 	sb := &strings.Builder{}
+
 	for _, port := range ports {
 		hostIP := port.HostIP
 		if hostIP == "" {
 			hostIP = "0.0.0.0"
 		}
+
 		protocols := strings.Split(port.Protocol, ",")
+
 		for _, protocol := range protocols {
 			if port.Range > 1 {
 				fmt.Fprintf(sb, "%s:%d-%d->%d-%d/%s, ",
@@ -58,7 +64,9 @@ func PortsToString(ports []types.PortMapping) string {
 			}
 		}
 	}
+
 	display := sb.String()
+
 	// make sure to trim the last ", " of the string
 	return display[:len(display)-2]
 }
