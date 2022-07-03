@@ -69,7 +69,7 @@ uninstall:  ## Uninstall podman-tui binary
 install.tools: .install.ginkgo .install.bats .install.pre-commit ## Install needed tools
 
 .PHONY: .install.ginkgo
-.install.ginkgo: .gopathok
+.install.ginkgo:
 	if [ ! -x "$(GOBIN)/ginkgo" ]; then \
 		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.1.4 ; \
 	fi
@@ -83,6 +83,14 @@ install.tools: .install.ginkgo .install.bats .install.pre-commit ## Install need
 	if [ -z "$(PRE_COMMIT)" ]; then \
 		python3 -m pip install --user pre-commit; \
 	fi
+
+.PHONY: .install.golangci-lint
+.install.golangci-lint:
+	VERSION=1.46.2 ./hack/install_golangci.sh
+
+.PHONY: .install.codespell
+.install.codespell:
+	sudo ${PKG_MANAGER} -y install codespell
 
 #=================================================
 # Testing (units, functionality, ...) targets
@@ -122,12 +130,6 @@ package-install: package  ## Install rpm package
 #=================================================
 # Linting/Formatting/Code Validation targets
 #=================================================
-
-.gopathok:
-ifeq ("$(wildcard $(GOPKGDIR))","")
-	mkdir -p "$(GOPKGBASEDIR)"
-	ln -sfn "$(CURDIR)" "$(GOPKGDIR)"
-endif
 
 .PHONY: validate
 validate: gofmt lint pre-commit  ## Validate podman-tui code (fmt, lint, ...)
