@@ -7,7 +7,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-//UtilModeGauge represents utilisation mode gauge permitive.
+// UtilModeGauge represents utilisation mode gauge permitive.
 type UtilModeGauge struct {
 	*tview.Box
 	// pc percentage value
@@ -34,9 +34,9 @@ type UtilModeGauge struct {
 func NewUtilModeGauge() *UtilModeGauge {
 	gauge := &UtilModeGauge{
 		Box:        tview.NewBox(),
-		pc:         0.00,
-		warnPc:     60.00,
-		critPc:     85.00,
+		pc:         gaugeMinPc,
+		warnPc:     gaugeWarnPc,
+		critPc:     gaugeCritPc,
 		warnColor:  tcell.ColorOrange,
 		critColor:  tcell.ColorRed,
 		okColor:    tcell.ColorGreen,
@@ -44,6 +44,7 @@ func NewUtilModeGauge() *UtilModeGauge {
 		labelColor: tview.Styles.PrimaryTextColor,
 		label:      "",
 	}
+
 	return gauge
 }
 
@@ -57,21 +58,21 @@ func (g *UtilModeGauge) SetLabel(label string) {
 	g.label = label
 }
 
-// SetLabelColor sets label text color
+// SetLabelColor sets label text color.
 func (g *UtilModeGauge) SetLabelColor(color tcell.Color) {
 	g.labelColor = color
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (g *UtilModeGauge) Focus(delegate func(p tview.Primitive)) {
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (g *UtilModeGauge) HasFocus() bool {
 	return g.Box.HasFocus()
 }
 
-// GetRect return primitive current rect
+// GetRect return primitive current rect.
 func (g *UtilModeGauge) GetRect() (int, int, int, int) {
 	return g.Box.GetRect()
 }
@@ -81,14 +82,14 @@ func (g *UtilModeGauge) SetRect(x, y, width, height int) {
 	g.Box.SetRect(x, y, width, height)
 }
 
-// SetValue update the gauge progress
+// SetValue update the gauge progress.
 func (g *UtilModeGauge) SetValue(value float64) {
-	if value <= 100.00 {
+	if value <= float64(gaugeMaxPc) {
 		g.pc = value
 	}
 }
 
-// GetValue returns current gauge value
+// GetValue returns current gauge value.
 func (g *UtilModeGauge) GetValue() float64 {
 	return g.pc
 }
@@ -100,37 +101,42 @@ func (g *UtilModeGauge) Draw(screen tcell.Screen) {
 	labelPCWidth := 7
 	labelWidth := len(g.label)
 	barWidth := width - labelPCWidth - labelWidth
+
 	for i := 0; i < barWidth; i++ {
 		for j := 0; j < height; j++ {
 			value := float64(i * 100 / barWidth)
 			color := g.getBarColor(value)
+
 			if value > g.pc {
 				color = g.emptyColor
 			}
 
 			tview.Print(screen, prgCell, x+labelWidth+i, y+j, 1, tview.AlignCenter, color)
 		}
-
 	}
 	// draw label
-	tY := y + (height / 2)
+	tY := y + (height / emptySpaceParts)
 	if labelWidth > 0 {
 		tview.Print(screen, g.label, x, tY, labelWidth, tview.AlignLeft, g.labelColor)
 	}
 
 	// draw percentage text
-	tview.Print(screen, fmt.Sprintf("%6.2f%%", g.pc), x+barWidth+labelWidth, tY, labelPCWidth, tview.AlignLeft, tview.Styles.PrimaryTextColor)
-
+	tview.Print(screen, fmt.Sprintf("%6.2f%%", g.pc),
+		x+barWidth+labelWidth,
+		tY,
+		labelPCWidth,
+		tview.AlignLeft,
+		tview.Styles.PrimaryTextColor)
 }
 
-// SetWarnPercentage sets warning percentage start range
+// SetWarnPercentage sets warning percentage start range.
 func (g *UtilModeGauge) SetWarnPercentage(percentage float64) {
 	if percentage > 0 && percentage < 100 {
 		g.warnPc = percentage
 	}
 }
 
-// SetCritPercentage sets critical percentage start range
+// SetCritPercentage sets critical percentage start range.
 func (g *UtilModeGauge) SetCritPercentage(percentage float64) {
 	if percentage > 0 && percentage < 100 && percentage > g.warnPc {
 		g.critPc = percentage
@@ -138,11 +144,11 @@ func (g *UtilModeGauge) SetCritPercentage(percentage float64) {
 }
 
 func (g *UtilModeGauge) getBarColor(percentage float64) tcell.Color {
-
 	if percentage < g.warnPc {
 		return g.okColor
 	} else if percentage < g.critPc {
 		return g.warnColor
 	}
+
 	return g.critColor
 }

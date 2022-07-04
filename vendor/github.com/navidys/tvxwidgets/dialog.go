@@ -7,7 +7,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-// represents dialog type
+// represents dialog type.
 const (
 	InfoDialog = 0 + iota
 	ErrorDailog
@@ -68,7 +68,7 @@ func NewMessageDialog(dtype int) *MessageDialog {
 	return dialog
 }
 
-// SetBorder sets dialogs border - no effect always true
+// SetBorder sets dialogs border - no effect always true.
 func (d *MessageDialog) SetBorder(status bool) {}
 
 // SetType sets dialog type to info or error.
@@ -84,7 +84,7 @@ func (d *MessageDialog) SetTitle(title string) {
 	d.layout.SetTitle(title)
 }
 
-// SetBackgroundColor sets dialog background color
+// SetBackgroundColor sets dialog background color.
 func (d *MessageDialog) SetBackgroundColor(color tcell.Color) {
 	d.bgColor = color
 	d.setColor()
@@ -97,15 +97,14 @@ func (d *MessageDialog) SetMessage(message string) {
 	d.textview.SetText(d.message)
 	d.textview.ScrollToBeginning()
 	d.setRect()
-
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *MessageDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *MessageDialog) HasFocus() bool {
 	return d.form.HasFocus()
 }
@@ -132,52 +131,58 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgDn {
+		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { // nolint:lll
 			if textHandler := d.textview.InputHandler(); textHandler != nil {
 				textHandler(event, setFocus)
+
 				return
 			}
 		}
 		if formHandler := d.form.InputHandler(); formHandler != nil {
 			formHandler(event, setFocus)
+
 			return
 		}
 	})
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
-	return d.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) {
+func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { // nolint:lll
+	return d.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { // nolint:lll,nonamedreturns
 		// Pass mouse events on to the form.
 		consumed, capture = d.form.MouseHandler()(action, event, setFocus)
 		if !consumed && action == tview.MouseLeftClick && d.InRect(event.Position()) {
 			setFocus(d)
 			consumed = true
 		}
-		return
+
+		return consumed, capture
 	})
 }
 
 // SetDoneFunc sets callback function for when user clicked on
-// the the button or presses "enter" or "esc"
+// the the button or presses "enter" or "esc".
 func (d *MessageDialog) SetDoneFunc(handler func()) *MessageDialog {
 	d.doneHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }
 
 func (d *MessageDialog) setColor() {
 	var bgColor tcell.Color
+
 	switch d.messageType {
 	case InfoDialog:
 		bgColor = d.bgColor
 	case ErrorDailog:
 		bgColor = tcell.ColorOrangeRed
 	}
+
 	d.form.SetBackgroundColor(bgColor)
 	d.textview.SetBackgroundColor(bgColor)
 	d.layout.SetBackgroundColor(bgColor)
@@ -185,31 +190,31 @@ func (d *MessageDialog) setColor() {
 
 func (d *MessageDialog) setRect() {
 	maxHeight := d.height
-	maxWidth := d.width
+	maxWidth := d.width // nolint:ifshort
 	messageHeight := len(strings.Split(d.message, "\n"))
 	messageWidth := getMessageWidth(d.message)
 
 	layoutHeight := messageHeight
 
 	if maxHeight > layoutHeight+dialogFormHeight {
-		d.height = layoutHeight + dialogFormHeight + 2
+		d.height = layoutHeight + dialogFormHeight + dialogPadding
 	} else {
 		d.height = maxHeight
-		layoutHeight = d.height - dialogFormHeight - 2
+		layoutHeight = d.height - dialogFormHeight - dialogPadding
 	}
 
 	if maxHeight > d.height {
-		emptyHeight := (maxHeight - d.height) / 2
-		d.y = d.y + emptyHeight
-
+		emptyHeight := (maxHeight - d.height) / emptySpaceParts
+		d.y += emptyHeight
 	}
 
 	if d.width > messageWidth {
-		d.width = messageWidth + 2
+		d.width = messageWidth + dialogPadding
 	}
+
 	if maxWidth > d.width {
-		emptyWidth := (maxWidth - d.width) / 2
-		d.x = d.x + emptyWidth
+		emptyWidth := (maxWidth - d.width) / emptySpaceParts
+		d.x += emptyWidth
 	}
 
 	d.layout.Clear()

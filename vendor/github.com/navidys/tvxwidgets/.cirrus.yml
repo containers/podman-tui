@@ -1,0 +1,50 @@
+---
+
+env:
+    DEST_BRANCH: "main"
+    CIRRUS_SHELL: "/bin/bash"
+
+timeout_in: 30m
+
+# Run on PRs and main branch post submit only. Don't run tests when tagging.
+only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
+
+clone_script: &full_clone |
+  if [ -z "$CIRRUS_PR" ]; then
+    git clone --recursive --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  else
+    git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+    git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  fi
+
+precommit_test_task:
+  name: "Precommit"
+  alias: precommit
+  clone_script: *full_clone
+  container:
+    image: python:3.10
+  script: |
+    python3 -m pip install pre-commit
+    pre-commit run -a
+
+gofmt_task:
+  name: "Gofmt"
+  alias: gofmt
+  clone_script: *full_clone
+  container:
+    image: golang:1.18
+  script: |
+    SRC=$(find . -type f -name '*.go' -not -path "./vendor/*")
+    gofmt -w ${SRC}
+
+golangci_lint_task:
+  name: "Golangci-lint"
+  alias: lint
+  clone_script: *full_clone
+  container:
+    image: golang:1.18
+  script: |
+    make .install.golangci-lint
+    make lint

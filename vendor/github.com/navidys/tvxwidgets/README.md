@@ -4,7 +4,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/navidys/tvxwidgets)](https://pkg.go.dev/github.com/navidys/tvxwidgets)
 [![Go Report](https://img.shields.io/badge/go%20report-A%2B-brightgreen.svg)](https://goreportcard.com/report/github.com/navidys/tvxwidgets)
 
-tvxwidgets provides extra widgets for [tview](https://github.com/rivo/tview).  
+tvxwidgets provides extra widgets for [tview](https://github.com/rivo/tview).
 `NOTE:` The project is at its early stages and under development, feel free to contribute and report bugs.
 
 ![Screenshot](demo.gif)
@@ -56,9 +56,3 @@ func main() {
 * percentage mode gauge
 * utilisation mode gauge
 * message dialog (info and error)
-
-under development:
-
-* context menu
-* stack view
-* ...
