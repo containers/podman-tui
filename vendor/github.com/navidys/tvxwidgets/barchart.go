@@ -9,9 +9,11 @@ import (
 
 const (
 	barChartYAxisLabelWidth = 2
+	barGap                  = 2
+	barWidth                = 3
 )
 
-// BarChartItem represents a single bar in bar chart
+// BarChartItem represents a single bar in bar chart.
 type BarChartItem struct {
 	label string
 	value int
@@ -29,7 +31,7 @@ type BarChart struct {
 	barGap int
 	// barWidth width of bars
 	barWidth int
-	//hasBorder true if primitive has border
+	// hasBorder true if primitive has border
 	hasBorder bool
 }
 
@@ -37,13 +39,14 @@ type BarChart struct {
 func NewBarChart() *BarChart {
 	chart := &BarChart{
 		Box:      tview.NewBox(),
-		barGap:   2,
-		barWidth: 3,
+		barGap:   barGap,
+		barWidth: barWidth,
 	}
+
 	return chart
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (c *BarChart) Focus(delegate func(p tview.Primitive)) {
 	delegate(c.Box)
 }
@@ -54,16 +57,19 @@ func (c *BarChart) HasFocus() bool {
 }
 
 // Draw draws this primitive onto the screen.
-func (c *BarChart) Draw(screen tcell.Screen) {
+func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 	style := tcell.StyleDefault
 	style = style.Foreground(tview.Styles.BorderColor).Background(tview.Styles.PrimitiveBackgroundColor)
+
 	c.Box.DrawForSubclass(screen, c)
+
 	x, y, width, height := c.Box.GetInnerRect()
-	//log.Printf("%d %d %d %d", x, y, width, height)
+	// log.Printf("%d %d %d %d", x, y, width, height)
 	maxValY := y + 1
-	xAxisStartY := y + height - 2
-	barStartY := y + height - 3
+	xAxisStartY := y + height - 2 // nolint:gomnd
+	barStartY := y + height - 3   // nolint:gomnd
 	borderPadding := 0
+
 	if c.hasBorder {
 		borderPadding = 1
 	}
@@ -71,6 +77,7 @@ func (c *BarChart) Draw(screen tcell.Screen) {
 	c.initMaxValue()
 	maxValueSr := fmt.Sprintf("%d", c.maxVal)
 	maxValLenght := len(maxValueSr) + 1
+
 	if maxValLenght < barChartYAxisLabelWidth {
 		maxValLenght = barChartYAxisLabelWidth
 	}
@@ -94,6 +101,7 @@ func (c *BarChart) Draw(screen tcell.Screen) {
 	startX := x + maxValLenght + c.barGap
 	labelY := y + height - 1
 	valueMaxHeight := barStartY - maxValY
+
 	for _, item := range c.bars {
 		if startX > x+width {
 			return
@@ -106,15 +114,16 @@ func (c *BarChart) Draw(screen tcell.Screen) {
 		// bar style
 		bStyle := style.Foreground(item.color)
 		barHeight := c.getHeight(valueMaxHeight, item.value)
+
 		for k := 0; k < barHeight; k++ {
 			for l := 0; l < c.barWidth; l++ {
 				tview.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, '\u2588', bStyle)
 			}
-
 		}
 		// bar value
 		vSt := fmt.Sprintf("%d", item.value)
 		vRune := []rune(vSt)
+
 		for i := 0; i < len(vRune); i++ {
 			tview.PrintJoinedSemigraphics(screen, startX+i, barStartY-barHeight, vRune[i], bStyle)
 		}
@@ -127,16 +136,15 @@ func (c *BarChart) Draw(screen tcell.Screen) {
 
 		startX = startX + c.barGap + rWidth
 	}
-
 }
 
-// SetBorder sets border for this primitive
+// SetBorder sets border for this primitive.
 func (c *BarChart) SetBorder(status bool) {
 	c.hasBorder = status
 	c.Box.SetBorder(status)
 }
 
-// GetRect return primitive current rect
+// GetRect return primitive current rect.
 func (c *BarChart) GetRect() (int, int, int, int) {
 	return c.Box.GetRect()
 }
@@ -146,7 +154,7 @@ func (c *BarChart) SetRect(x, y, width, height int) {
 	c.Box.SetRect(x, y, width, height)
 }
 
-// SetMaxValue sets maximum value of bars
+// SetMaxValue sets maximum value of bars.
 func (c *BarChart) SetMaxValue(max int) {
 	c.maxVal = max
 }
@@ -160,7 +168,7 @@ func (c *BarChart) AddBar(label string, value int, color tcell.Color) {
 	})
 }
 
-// SetBarValue sets bar values
+// SetBarValue sets bar values.
 func (c *BarChart) SetBarValue(name string, value int) {
 	for i := 0; i < len(c.bars); i++ {
 		if c.bars[i].label == name {
@@ -170,12 +178,12 @@ func (c *BarChart) SetBarValue(name string, value int) {
 }
 
 func (c *BarChart) getHeight(maxHeight int, value int) int {
-	height := 0
-
 	if value >= c.maxVal {
 		return maxHeight
 	}
-	height = (value * maxHeight) / c.maxVal
+
+	height := (value * maxHeight) / c.maxVal
+
 	return height
 }
 
