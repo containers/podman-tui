@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// DfSummary implements df summary report
+// DfSummary implements df summary report.
 type DfSummary struct {
 	rType       string
 	total       int
@@ -20,7 +20,7 @@ type DfSummary struct {
 }
 
 // DiskUsage returns information about image, container, and volume disk
-// consumption
+// consumption.
 func DiskUsage() ([]*DfSummary, error) {
 	log.Debug().Msgf("pdcs: podman system disk usage")
 
@@ -39,22 +39,26 @@ func DiskUsage() ([]*DfSummary, error) {
 	return dfreport, nil
 }
 
-func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary {
+func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary { // nolint:funlen
 	var (
 		dfSummaries       []*DfSummary
 		active            int
 		size, reclaimable int64
 	)
+
 	// Images
 	for _, i := range reports.Images {
 		if i.Containers > 0 {
 			active++
 		}
+
 		size += i.Size
+
 		if i.Containers < 1 {
 			reclaimable += i.Size
 		}
 	}
+
 	imageSummary := DfSummary{
 		rType:       "Images",
 		total:       len(reports.Images),
@@ -69,14 +73,17 @@ func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary {
 		conActive               int
 		conSize, conReclaimable int64
 	)
+
 	for _, c := range reports.Containers {
 		if c.Status == "running" {
 			conActive++
 		} else {
 			conReclaimable += c.RWSize
 		}
+
 		conSize += c.RWSize
 	}
+
 	containerSummary := DfSummary{
 		rType:       "Containers",
 		total:       len(reports.Containers),
@@ -97,6 +104,7 @@ func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary {
 		volumesSize += v.Size
 		volumesReclaimable += v.ReclaimableSize
 	}
+
 	volumeSummary := DfSummary{
 		rType:       "Local Volumes",
 		total:       len(reports.Volumes),
@@ -114,23 +122,24 @@ func (dfsum *DfSummary) Type() string {
 	return dfsum.rType
 }
 
-// Total returns total value of df summary
+// Total returns total value of df summary.
 func (dfsum *DfSummary) Total() string {
 	return fmt.Sprintf("%d", dfsum.total)
 }
 
-// Active returns active value of df summary
+// Active returns active value of df summary.
 func (dfsum *DfSummary) Active() string {
 	return fmt.Sprintf("%d", dfsum.active)
 }
 
-// Size returns size value of df summary
+// Size returns size value of df summary.
 func (dfsum *DfSummary) Size() string {
 	return units.HumanSize(float64(dfsum.size))
 }
 
-// Reclaimable returns reclaimable value of df summary
+// Reclaimable returns reclaimable value of df summary.
 func (dfsum *DfSummary) Reclaimable() string {
-	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100
+	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100 // nolint:gomnd
+
 	return fmt.Sprintf("%s (%d%%)", units.HumanSize(float64(dfsum.reclaimable)), percent)
 }

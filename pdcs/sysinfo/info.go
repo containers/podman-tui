@@ -8,10 +8,12 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Info returns podman system information
+// Info returns podman system information.
 func Info() (string, error) {
 	log.Debug().Msgf("pdcs: podman system info")
+
 	var report string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
@@ -24,8 +26,9 @@ func Info() (string, error) {
 
 	b, err := json.MarshalIndent(sysInfo, "", "  ")
 	if err != nil {
-		return report, nil
+		return report, err
 	}
+
 	report = string(b)
 
 	return report, nil

@@ -6,7 +6,7 @@ import (
 	"github.com/containers/podman/v4/pkg/domain/entities"
 )
 
-// Events returns libpod events
+// Events returns libpod events.
 func Events(eventChan chan entities.Event, cancelChan chan bool) error {
 	conn, err := registry.GetConnection()
 	if err != nil {
