@@ -7,15 +7,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Inspect inspects the specified network
+// Inspect inspects the specified network.
 func Inspect(id string) (string, error) {
 	log.Debug().Msgf("pdcs: podman network inspect %s", id)
 
 	var report string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := network.Inspect(conn, id, new(network.InspectOptions))
 	if err != nil {
 		return report, err
@@ -27,5 +29,6 @@ func Inspect(id string) (string, error) {
 	}
 
 	log.Debug().Msgf("pdcs: %s", report)
+
 	return report, nil
 }

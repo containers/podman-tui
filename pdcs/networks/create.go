@@ -44,25 +44,30 @@ func Create(opts CreateOptions) (types.Network, error) {
 		IPv6Enabled: opts.IPv6,
 	}
 
-	if len(opts.Subnets) > 0 {
+	if len(opts.Subnets) > 0 { // nolint:nestif
 		for i := range opts.Subnets {
 			subnet, err := types.ParseCIDR(opts.Subnets[i])
 			if err != nil {
 				return report, err
 			}
+
 			s := types.Subnet{
 				Subnet: subnet,
 			}
+
 			if len(opts.IPRanges) > i {
 				leaseRange, err := parseRange(opts.IPRanges[i])
 				if err != nil {
 					return report, err
 				}
+
 				s.LeaseRange = leaseRange
 			}
+
 			if len(opts.Gateways) > i {
 				s.Gateway = net.ParseIP(opts.Gateways[i])
 			}
+
 			createOptions.Subnets = append(createOptions.Subnets, s)
 		}
 	}
@@ -80,8 +85,8 @@ func Create(opts CreateOptions) (types.Network, error) {
 	if err != nil {
 		return report, err
 	}
-	return report, nil
 
+	return report, nil
 }
 
 // DefaultNetworkDriver returns default network driver name.
@@ -99,10 +104,12 @@ func parseRange(iprange string) (*types.LeaseRange, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get first ip in range")
 	}
+
 	lastIP, err := util.LastIPInSubnet(subnet)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get last ip in range")
 	}
+
 	return &types.LeaseRange{
 		StartIP: startIP,
 		EndIP:   lastIP,
