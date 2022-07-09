@@ -66,7 +66,7 @@ uninstall:  ## Uninstall podman-tui binary
 #=================================================
 
 .PHONY: install.tools
-install.tools: .install.ginkgo .install.bats .install.pre-commit ## Install needed tools
+install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codespell ## Install needed tools
 
 .PHONY: .install.ginkgo
 .install.ginkgo:
@@ -139,7 +139,6 @@ lint: ## Run golint and pre-commit
 	@echo "running golint"
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
 
-
 .PHONY: pre-commit
 pre-commit:   ## Run pre-commit
 ifeq ($(PRE_COMMIT),)
@@ -152,6 +151,11 @@ endif
 gofmt:   ## Run gofmt
 	@echo -e "gofmt check and fix"
 	@gofmt -w $(SRC)
+
+.PHONY: codespell
+codespell: ## Run codespell
+	@echo "running codespell"
+	@codespell -S ./vendor,go.mod,go.sum,./.git,*_test.go
 
 _HLP_TGTS_RX = '^[[:print:]]+:.*?\#\# .*$$'
 _HLP_TGTS_CMD = grep -E $(_HLP_TGTS_RX) $(MAKEFILE_LIST)
