@@ -10,18 +10,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// History returns history of an image
+// History returns history of an image.
 func History(id string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman image history %s", id)
+
 	var report [][]string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := images.History(conn, id, new(images.HistoryOptions))
 	if err != nil {
 		return report, err
 	}
+
 	for i := 0; i < len(response); i++ {
 		report = append(report, []string{
 			response[i].ID,
@@ -31,6 +35,8 @@ func History(id string) ([][]string, error) {
 			response[i].Comment,
 		})
 	}
+
 	log.Debug().Msgf("pdcs: %v", report)
+
 	return report, nil
 }

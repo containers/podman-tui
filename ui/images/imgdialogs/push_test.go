@@ -174,7 +174,7 @@ var _ = Describe("image push", Ordered, func() {
 
 		// get and check push options
 		pushOptions := imagePushDialog.GetImagePushOptions()
-		Expect(pushOptions.Desitnation).To(Equal(opts.Description))
+		Expect(pushOptions.Destination).To(Equal(opts.Description))
 		Expect(pushOptions.Format).To(Equal(opts.Format))
 		Expect(pushOptions.Compress).To(Equal(opts.Compress))
 		Expect(pushOptions.SkipTLSVerify).To(Equal(opts.SkipTLSVeerify))
