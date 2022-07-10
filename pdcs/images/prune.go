@@ -7,19 +7,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Prune removes all un used specified images
+// Prune removes all un used specified images.
 func Prune() error {
 	log.Debug().Msgf("pdcs: podman image prune")
+
 	var errReport []error
 
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}
+
 	response, err := images.Prune(conn, new(images.PruneOptions).WithAll(true))
 	if err != nil {
-		return nil
+		return err
 	}
+
 	for _, r := range response {
 		if r.Err != nil {
 			errReport = append(errReport, r.Err)

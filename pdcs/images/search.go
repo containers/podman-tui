@@ -8,14 +8,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Search search repostiroy for images matche the search term
+// Search search repostiroy for images matche the search term.
 func Search(term string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman image search %s", term)
-	var report [][]string
+
+	report := make([][]string, 0)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := images.Search(conn, term, new(images.SearchOptions))
 	if err != nil {
 		return report, err
@@ -30,8 +33,9 @@ func Search(term string) ([][]string, error) {
 			sReport.Official,
 			sReport.Automated,
 		})
-
 	}
+
 	log.Debug().Msgf("pdcs: %s", report)
+
 	return report, nil
 }

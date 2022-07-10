@@ -7,22 +7,25 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ImageBuildOptions image build options
+// ImageBuildOptions image build options.
 type ImageBuildOptions struct {
 	ContainerFiles []string
 	BuildOptions   entities.BuildOptions
 }
 
-// Build creates an image using a containerfile reference
+// Build creates an image using a containerfile reference.
 func Build(opts ImageBuildOptions) (string, error) {
 	log.Debug().Msgf("pdcs: podman image build %v", opts)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return "", err
 	}
+
 	response, err := images.Build(conn, opts.ContainerFiles, opts.BuildOptions)
 	if err != nil {
 		return "", err
 	}
+
 	return response.ID, nil
 }

@@ -6,9 +6,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ImagePushOptions image push options
+// ImagePushOptions image push options.
 type ImagePushOptions struct {
-	Desitnation   string
+	Destination   string
 	Compress      bool
 	Format        string
 	SkipTLSVerify bool
@@ -17,7 +17,7 @@ type ImagePushOptions struct {
 	Password      string
 }
 
-// Push push a source image to a specified destination
+// Push push a source image to a specified destination.
 func Push(id string, opts ImagePushOptions) error {
 	log.Debug().Msgf("pdcs: podman image push %s", id)
 
@@ -25,6 +25,7 @@ func Push(id string, opts ImagePushOptions) error {
 	if err != nil {
 		return err
 	}
+
 	pushOptions := new(images.PushOptions)
 	pushOptions.WithCompress(opts.Compress)
 	pushOptions.WithFormat(opts.Format)
@@ -33,5 +34,5 @@ func Push(id string, opts ImagePushOptions) error {
 	pushOptions.WithUsername(opts.Username)
 	pushOptions.WithPassword(opts.Password)
 
-	return images.Push(conn, id, opts.Desitnation, pushOptions)
+	return images.Push(conn, id, opts.Destination, pushOptions)
 }

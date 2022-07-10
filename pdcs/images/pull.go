@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Pull pulls image from registry
+// Pull pulls image from registry.
 func Pull(name string) error {
 	log.Debug().Msgf("pdcs: podman image pull %s", name)
 
@@ -14,6 +14,7 @@ func Pull(name string) error {
 	if err != nil {
 		return err
 	}
+
 	_, err = images.Pull(conn, name, new(images.PullOptions).WithQuiet(true))
 	if err != nil {
 		return err

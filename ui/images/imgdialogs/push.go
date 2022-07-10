@@ -404,7 +404,7 @@ func (d *ImagePushDialog) SetImageInfo(id string, name string) {
 func (d *ImagePushDialog) GetImagePushOptions() images.ImagePushOptions {
 	var opts images.ImagePushOptions
 
-	opts.Desitnation = strings.TrimSpace(d.destination.GetText())
+	opts.Destination = strings.TrimSpace(d.destination.GetText())
 	_, format := d.format.GetCurrentOption()
 	format = strings.TrimSpace(format)
 	opts.Format = format
