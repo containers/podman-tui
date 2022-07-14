@@ -5,7 +5,7 @@ import (
 	"github.com/containers/podman/v4/pkg/bindings/system"
 )
 
-// SystemInfo implements system information data
+// SystemInfo implements system information data.
 type SystemInfo struct {
 	Hostname       string
 	OS             string
@@ -19,7 +19,7 @@ type SystemInfo struct {
 	ConmonVersion  string
 }
 
-// SysInfo returns basic system information
+// SysInfo returns basic system information.
 func SysInfo() (*SystemInfo, error) {
 	info := &SystemInfo{}
 
@@ -27,6 +27,7 @@ func SysInfo() (*SystemInfo, error) {
 	if err != nil {
 		return info, err
 	}
+
 	response, err := system.Info(conn, nil)
 	if err != nil {
 		return info, err
@@ -38,8 +39,8 @@ func SysInfo() (*SystemInfo, error) {
 	info.Kernel = response.Host.Kernel
 	memUsed := response.Host.MemTotal - response.Host.MemFree
 	swapUsed := response.Host.SwapTotal - response.Host.SwapFree
-	info.MemUsagePC = float64(memUsed*100) / float64(response.Host.MemTotal)
-	info.SwapUsagePC = float64(swapUsed*100) / float64(response.Host.SwapTotal)
+	info.MemUsagePC = float64(memUsed*100) / float64(response.Host.MemTotal)    // nolint:gomnd
+	info.SwapUsagePC = float64(swapUsed*100) / float64(response.Host.SwapTotal) // nolint:gomnd
 
 	info.Runtime = response.Host.OCIRuntime.Version
 	info.BuildahVersion = response.Host.BuildahVersion

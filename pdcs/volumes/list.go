@@ -9,7 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// List returns list of volumes
+// List returns list of volumes.
 func List() ([]*entities.VolumeListReport, error) {
 	log.Debug().Msg("pdcs: podman volume ls")
 
@@ -17,12 +17,15 @@ func List() ([]*entities.VolumeListReport, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	response, err := volumes.List(conn, new(volumes.ListOptions))
 	if err != nil {
 		return nil, err
 	}
+
 	sort.Sort(volumeListSortedName{response})
 	log.Debug().Msgf("pdcs: %v", response)
+
 	return response, nil
 }
 

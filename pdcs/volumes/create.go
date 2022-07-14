@@ -19,23 +19,26 @@ type CreateOptions struct {
 // Create creates a new volume.
 func Create(opts CreateOptions) (string, error) {
 	log.Debug().Msgf("pdcs: podman volume create %v", opts)
-	var (
-		report string
-	)
+
+	var report string
+
 	volCreateOptions := entities.VolumeCreateOptions{
 		Name:    opts.Name,
 		Label:   opts.Labels,
 		Driver:  opts.Driver,
 		Options: opts.DriverOptions,
 	}
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := volumes.Create(conn, volCreateOptions, &volumes.CreateOptions{})
 	if err != nil {
 		return report, err
 	}
+
 	report, err = utils.GetJSONOutput(response)
 	if err != nil {
 		return report, err

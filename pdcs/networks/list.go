@@ -9,19 +9,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-//List returns list of podman networks
+// List returns list of podman networks.
 func List() ([][]string, error) {
 	log.Debug().Msg("pdcs: podman network ls")
 
-	var report [][]string
+	report := make([][]string, 0)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := network.List(conn, new(network.ListOptions))
 	if err != nil {
 		return report, err
 	}
+
 	sort.Sort(netListSortedName{response})
 
 	for _, item := range response {
