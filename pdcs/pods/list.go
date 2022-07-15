@@ -9,21 +9,25 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// List returns list of pods
+// List returns list of pods.
 func List() ([]*entities.ListPodsReport, error) {
 	log.Debug().Msg("pdcs: podman pod ls")
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
 	}
+
 	response, err := pods.List(conn, new(pods.ListOptions))
 	if err != nil {
 		return nil, err
 	}
-	sort.Sort(podPsSortedName{response})
-	log.Debug().Msgf("pdcs: %v", response)
-	return response, nil
 
+	sort.Sort(podPsSortedName{response})
+
+	log.Debug().Msgf("pdcs: %v", response)
+
+	return response, nil
 }
 
 type lprSort []*entities.ListPodsReport

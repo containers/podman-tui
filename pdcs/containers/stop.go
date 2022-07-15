@@ -6,9 +6,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Stop starts a container
+// Stop starts a container.
 func Stop(id string) error {
 	log.Debug().Msgf("pdcs: podman container stop %s", id)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return err

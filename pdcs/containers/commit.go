@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// CntCommitOptions contaienrs commit options
+// CntCommitOptions contaienrs commit options.
 type CntCommitOptions struct {
 	Author  string
 	Changes []string
@@ -19,9 +19,10 @@ type CntCommitOptions struct {
 	Image   string
 }
 
-// Commit creates an image from a container's changes
+// Commit creates an image from a container's changes.
 func Commit(id string, opts CntCommitOptions) (string, error) {
 	log.Debug().Msgf("pdcs: podman container commit %s", id)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return "", err
@@ -33,13 +34,14 @@ func Commit(id string, opts CntCommitOptions) (string, error) {
 	commitOpts.WithComment(opts.Message)
 	commitOpts.WithPause(opts.Pause)
 	commitOpts.WithSquash(opts.Squash)
-
 	imageRepoTag := strings.Split(opts.Image, ":")
 	commitOpts.WithRepo(imageRepoTag[0])
+
 	if len(imageRepoTag) > 1 {
 		commitOpts.WithTag(imageRepoTag[1])
 	}
 
 	response, err := containers.Commit(conn, id, commitOpts)
+
 	return response.ID, err
 }

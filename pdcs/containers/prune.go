@@ -8,25 +8,28 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Prune removes all non running containers
+// Prune removes all non running containers.
 func Prune() ([]string, error) {
 	log.Debug().Msgf("pdcs: podman container purne")
+
 	var report []string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := containers.Prune(conn, new(containers.PruneOptions))
 	if err != nil {
 		return report, err
 	}
+
 	for _, r := range response {
-		respData := ""
 		if r.Err != nil {
-			respData = fmt.Sprintf("error removing %s: %s", r.Id, r.Err.Error())
+			respData := fmt.Sprintf("error removing %s: %s", r.Id, r.Err.Error())
 			report = append(report, respData)
 		}
-
 	}
+
 	return report, nil
 }

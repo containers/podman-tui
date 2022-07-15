@@ -1,16 +1,17 @@
 package pods
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/pods"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/errorhandling"
 	"github.com/containers/podman/v4/pkg/specgen"
 	"github.com/containers/podman/v4/pkg/util"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
 
@@ -34,16 +35,19 @@ type CreateOptions struct {
 }
 
 // Create creates a new pod.
-func Create(opts CreateOptions) error {
+func Create(opts CreateOptions) error { // nolint:cyclop
 	log.Debug().Msgf("pdcs: podman pod create %v", opts)
+
 	var (
-		errList  []error
+		errList  = make([]error, 0)
 		networks = make(map[string]types.PerNetworkOptions)
 	)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return err
 	}
+
 	podSpecGenerator := specgen.NewPodSpecGenerator()
 	podSpecGenerator.Name = opts.Name
 	podSpecGenerator.Labels = opts.Labels
@@ -55,8 +59,8 @@ func Create(opts CreateOptions) error {
 	podSpecGenerator.InfraImage = opts.InfraImage
 	podSpecGenerator.Hostname = opts.Hostname
 	podSpecGenerator.HostAdd = opts.HostToIP
-
 	podSpecGenerator.Networks = make(map[string]types.PerNetworkOptions)
+
 	var perNetworkOpt types.PerNetworkOptions
 
 	if opts.MacAddress != "" {
@@ -66,30 +70,36 @@ func Create(opts CreateOptions) error {
 		} else {
 			perNetworkOpt.StaticMAC = types.HardwareAddr(mac)
 		}
-
 	}
+
 	if opts.IPAddress != "" {
 		addr := net.ParseIP(opts.IPAddress)
 		if addr != nil {
 			perNetworkOpt.StaticIPs = []net.IP{addr}
 		} else {
-			errList = append(errList, fmt.Errorf("invalid ip address: %s", opts.IPAddress))
+			errList = append(errList, errors.Wrap(utils.ErrInvalidIPAddress, opts.IPAddress))
 		}
 	}
+
 	if opts.Network != "" {
 		networks[opts.Network] = perNetworkOpt
 	}
+
 	podSpecGenerator.Networks = networks
 
 	var dnsServers []net.IP
+
 	for _, d := range opts.DNSServer {
 		addr := net.ParseIP(d)
 		if addr != nil {
 			dnsServers = append(dnsServers, addr)
+
 			continue
 		}
-		errList = append(errList, fmt.Errorf("invalid dns server: %s", d))
+
+		errList = append(errList, errors.Wrap(utils.ErrInvalidDNSAddress, d))
 	}
+
 	if len(dnsServers) > 0 {
 		podSpecGenerator.DNSServer = dnsServers
 	}
@@ -116,11 +126,13 @@ func Create(opts CreateOptions) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 // DefaultPodInfraImage returns default infra container image.
 func DefaultPodInfraImage() string {
 	containerConfig := util.DefaultContainerConfig()
+
 	return containerConfig.Engine.InfraImage
 }

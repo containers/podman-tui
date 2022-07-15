@@ -6,9 +6,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Rename renames existing container's name
+// Rename renames existing container's name.
 func Rename(id string, name string) error {
 	log.Debug().Msgf("pdcs: podman container rename %s -> %s", id, name)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return err

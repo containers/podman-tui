@@ -9,15 +9,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Top returns running processes on the container
+// Top returns running processes on the container.
 func Top(id string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman container top %s", id)
+
 	var report [][]string
 
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := containers.Top(conn, id, new(containers.TopOptions))
 	if err != nil {
 		return report, err
@@ -43,5 +45,6 @@ func Top(id string) ([][]string, error) {
 	}
 
 	log.Debug().Msgf("pdcs: %v", report)
+
 	return report, nil
 }
