@@ -7,14 +7,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Inspect inspects the specified pod
+// Inspect inspects the specified pod.
 func Inspect(id string) (string, error) {
 	log.Debug().Msgf("pdcs: podman pod inspect %s", id)
+
 	var report string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := pods.Inspect(conn, id, new(pods.InspectOptions))
 	if err != nil {
 		return report, err
@@ -26,5 +29,6 @@ func Inspect(id string) (string, error) {
 	}
 
 	log.Debug().Msgf("pdcs: %s", report)
+
 	return report, nil
 }

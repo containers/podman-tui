@@ -6,17 +6,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Logs returns container's log
+// Logs returns container's log.
 func Logs(id string) ([]string, error) {
 	var logs []string
+
+	logsBuffer := 20
+
 	log.Debug().Msgf("pdcs: podman container logs %s", id)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return logs, err
 	}
+
 	done := make(chan bool)
-	logout := make(chan string, 20)
-	logerr := make(chan string, 20)
+	logout := make(chan string, logsBuffer)
+	logerr := make(chan string, logsBuffer)
 
 	logAppender := func() {
 		for {
@@ -34,13 +39,14 @@ func Logs(id string) ([]string, error) {
 	go logAppender()
 
 	options := new(containers.LogOptions).WithFollow(false)
+
 	err = containers.Logs(conn, id, options, logout, logerr)
 	if err != nil {
 		return logs, err
 	}
 	done <- true
-	//logs = append(logs, <-logout)
-	//logs = append(logs, <-logerr)
+	// logs = append(logs, <-logout)
+	// logs = append(logs, <-logerr)
 
 	return logs, nil
 }

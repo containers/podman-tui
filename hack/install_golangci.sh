@@ -9,7 +9,7 @@ function install() {
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$VERSION
 }
 
-BIN="./bin/golangci-lint"
+BIN="$GOBIN/golangci-lint"
 if [ ! -x "$BIN" ]; then
 	install
 else

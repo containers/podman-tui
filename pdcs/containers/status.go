@@ -6,9 +6,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Status returns status of a container
+// Status returns status of a container.
 func Status(id string) (string, error) {
 	log.Debug().Msg("pdcs: podman container ls")
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return "", err
@@ -16,13 +17,17 @@ func Status(id string) (string, error) {
 
 	filter := make(map[string][]string)
 	filter["id"] = []string{id}
+
 	response, err := containers.List(conn, new(containers.ListOptions).WithFilters(filter))
 	if err != nil {
 		return "", err
 	}
+
 	if len(response) == 0 {
 		return "", err
 	}
+
 	log.Debug().Msgf("pdcs: %v", response)
+
 	return response[0].State, nil
 }

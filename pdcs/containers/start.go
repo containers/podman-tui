@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Start starts a container
+// Start starts a container.
 func Start(id string) error {
 	log.Debug().Msgf("pdcs: podman container start %s", id)
 

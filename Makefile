@@ -135,9 +135,9 @@ package-install: package  ## Install rpm package
 validate: gofmt lint pre-commit  ## Validate podman-tui code (fmt, lint, ...)
 
 .PHONY: lint
-lint: ## Run golint and pre-commit
-	@echo "running golint"
-	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
+lint: ## Run golangci-lint
+	@echo "running golangci-lint"
+	$(GOBIN)/golangci-lint run
 
 .PHONY: pre-commit
 pre-commit:   ## Run pre-commit

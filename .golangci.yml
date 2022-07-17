@@ -1,0 +1,30 @@
+run:
+  deadline: 5m
+  skip-dirs:
+    - app
+    - cmd
+    - config
+    - system
+    - ui
+linters:
+  enable-all: true
+  disable:
+    - gochecknoglobals
+    - exhaustruct
+    - varnamelen
+    - gochecknoinits
+    - wrapcheck
+    - execinquery
+    - funlen
+    # deprecated
+    - golint
+    - maligned
+    - interfacer
+    - scopelint
+    - exhaustivestruct
+linters-settings:
+  errcheck:
+    check-blank: false
+    ignore: fmt:.*
+  nolintlint:
+    require-specific: true

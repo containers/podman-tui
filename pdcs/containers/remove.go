@@ -11,15 +11,19 @@ import (
 // Remove removes the container.
 func Remove(id string) ([]string, error) {
 	log.Debug().Msgf("pdcs: podman container remove %s", id)
+
 	var report []string
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return report, err
 	}
+
 	response, err := containers.Remove(conn, id, new(containers.RemoveOptions))
 	if err != nil {
 		return report, err
 	}
+
 	for _, rmRept := range response {
 		if rmRept != nil {
 			if rmRept.Err != nil {
@@ -28,5 +32,6 @@ func Remove(id string) ([]string, error) {
 			}
 		}
 	}
+
 	return report, err
 }

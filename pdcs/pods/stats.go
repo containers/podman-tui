@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Stats sort options
+// Stats sort options.
 const (
 	StatSortByPodID = 0 + iota
 	StatSortByContainerName
@@ -19,12 +19,12 @@ const (
 	StatSortByMemPerc
 )
 
-// StatReporter implements pod stats metrics
+// StatReporter implements pod stats metrics.
 type StatReporter struct {
 	entities.PodStatsReport
 }
 
-// StatsOptions pod stats query option
+// StatsOptions pod stats query option.
 type StatsOptions struct {
 	IDs    []string
 	SortBy int
@@ -33,21 +33,25 @@ type StatsOptions struct {
 // Stats returns resource-usage statistics of a pod.
 func Stats(opts *StatsOptions) ([]StatReporter, error) {
 	log.Debug().Msgf("pdcs: podman pods stats %v", *opts)
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
 	}
+
 	statReport, err := pods.Stats(conn, opts.IDs, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	report := sortStats(statReport, opts.SortBy)
+
 	return report, nil
 }
 
 func sortStats(podSReport []*entities.PodStatsReport, sortBy int) []StatReporter {
 	report := make([]StatReporter, 0, len(podSReport))
+
 	for _, item := range podSReport {
 		var reporterItem StatReporter
 		reporterItem.Pod = item.Pod
@@ -61,7 +65,9 @@ func sortStats(podSReport []*entities.PodStatsReport, sortBy int) []StatReporter
 		reporterItem.PIDS = item.PIDS
 		report = append(report, reporterItem)
 	}
+
 	sort.Slice(report, sortFunc(sortBy, report))
+
 	return report
 }
 
@@ -97,6 +103,7 @@ func (sreport StatReporter) memPerc() float64 {
 
 func percentageToFloat(text string) float64 {
 	text = strings.ReplaceAll(text, "%", "")
-	value, _ := strconv.ParseFloat(text, 64)
+	value, _ := strconv.ParseFloat(text, 64) // nolint:gomnd
+
 	return value
 }

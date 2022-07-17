@@ -9,9 +9,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// List returns list of containers information
+// List returns list of containers information.
 func List() ([]entities.ListContainer, error) {
 	log.Debug().Msg("pdcs: podman container ls")
+
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return nil, err
@@ -21,8 +22,11 @@ func List() ([]entities.ListContainer, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	sort.Sort(containerListSortedName{response})
+
 	log.Debug().Msgf("pdcs: %v", response)
+
 	return response, nil
 }
 

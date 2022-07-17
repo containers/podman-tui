@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Port retrurn ports mapping of the container
+// Port retrurn ports mapping of the container.
 func Port(id string) ([]string, error) {
 	log.Debug().Msgf("pdcs: podman container port %s", id)
 
@@ -20,17 +20,21 @@ func Port(id string) ([]string, error) {
 	if err != nil {
 		return report, err
 	}
+
 	filters := make(map[string][]string)
 	filters["id"] = []string{id}
+
 	response, err := containers.List(conn, new(containers.ListOptions).WithFilters(filters))
 	if err != nil {
 		return report, err
 	}
+
 	if len(response) > 0 {
 		report = strings.Split(conReporter{response[0]}.ports(), ",")
 	}
 
 	log.Debug().Msgf("pdcs: %v", report)
+
 	return report, nil
 }
 
@@ -42,5 +46,6 @@ func (con conReporter) ports() string {
 	if len(con.ListContainer.Ports) < 1 {
 		return ""
 	}
+
 	return utils.PortsToString(con.ListContainer.Ports)
 }
