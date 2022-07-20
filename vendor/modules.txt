@@ -580,7 +580,7 @@ github.com/rs/zerolog
 github.com/rs/zerolog/internal/cbor
 github.com/rs/zerolog/internal/json
 github.com/rs/zerolog/log
-# github.com/sirupsen/logrus v1.8.1
+# github.com/sirupsen/logrus v1.9.0
 ## explicit; go 1.13
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v1.5.0
@@ -677,7 +677,7 @@ golang.org/x/net/trace
 ## explicit
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.0.0-20220422013727-9388b58f7150
+# golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/execabs
