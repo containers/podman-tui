@@ -3,7 +3,7 @@ module github.com/containers/podman-tui
 go 1.17
 
 require (
-	github.com/BurntSushi/toml v1.1.0
+	github.com/BurntSushi/toml v1.2.0
 	github.com/containers/buildah v1.26.2
 	github.com/containers/common v0.48.0
 	github.com/containers/podman/v4 v4.1.1
