@@ -108,21 +108,21 @@ var _ = Describe("image push", Ordered, func() {
 
 	It("get push options", func() {
 		opts := struct {
-			Description    string
-			Compress       bool
-			Format         string
-			SkipTLSVeerify bool
-			Username       string
-			Password       string
-			Authfile       string
+			Description   string
+			Compress      bool
+			Format        string
+			SkipTLSVerify bool
+			Username      string
+			Password      string
+			Authfile      string
 		}{
-			Description:    "a", // (256,97,0)
-			Format:         "v2v2",
-			Compress:       true,
-			SkipTLSVeerify: true,
-			Username:       "c", // (256,99,0)
-			Password:       "d", // (256,100,0)
-			Authfile:       "e", // (256,101,0)
+			Description:   "a", // (256,97,0)
+			Format:        "v2v2",
+			Compress:      true,
+			SkipTLSVerify: true,
+			Username:      "c", // (256,99,0)
+			Password:      "d", // (256,100,0)
+			Authfile:      "e", // (256,101,0)
 		}
 
 		imagePushDialog.Hide()
@@ -177,7 +177,7 @@ var _ = Describe("image push", Ordered, func() {
 		Expect(pushOptions.Destination).To(Equal(opts.Description))
 		Expect(pushOptions.Format).To(Equal(opts.Format))
 		Expect(pushOptions.Compress).To(Equal(opts.Compress))
-		Expect(pushOptions.SkipTLSVerify).To(Equal(opts.SkipTLSVeerify))
+		Expect(pushOptions.SkipTLSVerify).To(Equal(opts.SkipTLSVerify))
 		Expect(pushOptions.Username).To(Equal(opts.Username))
 		Expect(pushOptions.Password).To(Equal(opts.Password))
 		Expect(pushOptions.AuthFile).To(Equal(opts.Authfile))
@@ -186,5 +186,4 @@ var _ = Describe("image push", Ordered, func() {
 	AfterAll(func() {
 		app.Stop()
 	})
-
 })
