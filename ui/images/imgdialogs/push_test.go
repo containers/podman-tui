@@ -135,9 +135,9 @@ var _ = Describe("image push", Ordered, func() {
 		app.Draw()
 		// compress field
 		imagePushDialog.setFocusElement()
+		app.SetFocus(imagePushDialog)
 		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
-		app.SetFocus(imagePushDialog)
 		app.Draw()
 		// format dropdown
 		imagePushDialog.setFocusElement()
@@ -149,9 +149,9 @@ var _ = Describe("image push", Ordered, func() {
 		app.Draw()
 		// skip TLS verify field
 		imagePushDialog.setFocusElement()
+		app.SetFocus(imagePushDialog)
 		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
-		app.SetFocus(imagePushDialog)
 		app.Draw()
 		// username field
 		imagePushDialog.setFocusElement()
