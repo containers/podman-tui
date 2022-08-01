@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/BurntSushi/toml v1.2.0
 	github.com/containers/buildah v1.26.2
-	github.com/containers/common v0.49.0
+	github.com/containers/common v0.49.1
 	github.com/containers/podman/v4 v4.1.1
 	github.com/containers/storage v1.42.0
 	github.com/docker/distribution v2.8.1+incompatible
