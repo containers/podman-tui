@@ -49,6 +49,9 @@ github.com/beorn7/perks/quantile
 # github.com/blang/semver v3.5.1+incompatible
 ## explicit
 github.com/blang/semver
+# github.com/blang/semver/v4 v4.0.0
+## explicit; go 1.14
+github.com/blang/semver/v4
 # github.com/cespare/xxhash/v2 v2.1.2
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
@@ -182,7 +185,7 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/containers/podman/v4 v4.1.1
+# github.com/containers/podman/v4 v4.2.0
 ## explicit; go 1.16
 github.com/containers/podman/v4/cmd/podman/parse
 github.com/containers/podman/v4/libpod/define
@@ -218,7 +221,6 @@ github.com/containers/podman/v4/pkg/terminal
 github.com/containers/podman/v4/pkg/timetype
 github.com/containers/podman/v4/pkg/trust
 github.com/containers/podman/v4/pkg/util
-github.com/containers/podman/v4/utils
 github.com/containers/podman/v4/version
 # github.com/containers/psgo v1.7.2
 ## explicit; go 1.14
@@ -831,7 +833,7 @@ google.golang.org/grpc/serviceconfig
 google.golang.org/grpc/stats
 google.golang.org/grpc/status
 google.golang.org/grpc/tap
-# google.golang.org/protobuf v1.28.0
+# google.golang.org/protobuf v1.28.1
 ## explicit; go 1.11
 google.golang.org/protobuf/encoding/protojson
 google.golang.org/protobuf/encoding/prototext

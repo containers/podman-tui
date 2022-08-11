@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -28,7 +29,6 @@ import (
 	"github.com/docker/go-units"
 	"github.com/hashicorp/go-multierror"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -65,6 +65,14 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 		params.Set("annotations", l)
 	}
 
+	if cppflags := options.CPPFlags; len(cppflags) > 0 {
+		l, err := jsoniter.MarshalToString(cppflags)
+		if err != nil {
+			return nil, err
+		}
+		params.Set("cppflags", l)
+	}
+
 	if options.AllPlatforms {
 		params.Add("allplatforms", "1")
 	}
@@ -72,6 +80,13 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	params.Add("t", options.Output)
 	for _, tag := range options.AdditionalTags {
 		params.Add("t", tag)
+	}
+	if additionalBuildContexts := options.AdditionalBuildContexts; len(additionalBuildContexts) > 0 {
+		additionalBuildContextMap, err := jsoniter.Marshal(additionalBuildContexts)
+		if err != nil {
+			return nil, err
+		}
+		params.Set("additionalbuildcontexts", string(additionalBuildContextMap))
 	}
 	if buildArgs := options.Args; len(buildArgs) > 0 {
 		bArgs, err := jsoniter.MarshalToString(buildArgs)
@@ -155,6 +170,11 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	} else {
 		params.Set("rm", "0")
 	}
+	if options.CommonBuildOpts.OmitHistory {
+		params.Set("omithistory", "1")
+	} else {
+		params.Set("omithistory", "0")
+	}
 	if len(options.From) > 0 {
 		params.Set("from", options.From)
 	}
@@ -203,6 +223,15 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	}
 	if len(options.Manifest) > 0 {
 		params.Set("manifest", options.Manifest)
+	}
+	if options.CacheFrom != nil {
+		params.Set("cachefrom", options.CacheFrom.String())
+	}
+	if options.CacheTo != nil {
+		params.Set("cacheto", options.CacheTo.String())
+	}
+	if int64(options.CacheTTL) != 0 {
+		params.Set("cachettl", options.CacheTTL.String())
 	}
 	if memSwap := options.CommonBuildOpts.MemorySwap; memSwap > 0 {
 		params.Set("memswap", strconv.Itoa(int(memSwap)))
@@ -523,14 +552,14 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 
 		if err := dec.Decode(&s); err != nil {
 			if errors.Is(err, io.ErrUnexpectedEOF) {
-				return nil, errors.Wrap(err, "server probably quit")
+				return nil, fmt.Errorf("server probably quit: %w", err)
 			}
 			// EOF means the stream is over in which case we need
 			// to have read the id.
 			if errors.Is(err, io.EOF) && id != "" {
 				break
 			}
-			return &entities.BuildReport{ID: id}, errors.Wrap(err, "decoding stream")
+			return &entities.BuildReport{ID: id}, fmt.Errorf("decoding stream: %w", err)
 		}
 
 		switch {
@@ -554,11 +583,11 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 	pm, err := fileutils.NewPatternMatcher(excludes)
 	if err != nil {
-		return nil, errors.Wrapf(err, "error processing excludes list %v", excludes)
+		return nil, fmt.Errorf("error processing excludes list %v: %w", excludes, err)
 	}
 
 	if len(sources) == 0 {
-		return nil, errors.New("No source(s) provided for build")
+		return nil, errors.New("no source(s) provided for build")
 	}
 
 	pr, pw := io.Pipe()
@@ -601,9 +630,9 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 				}
 				name := filepath.ToSlash(strings.TrimPrefix(path, s+string(filepath.Separator)))
 
-				excluded, err := pm.Matches(name) // nolint:staticcheck
+				excluded, err := pm.Matches(name) //nolint:staticcheck
 				if err != nil {
-					return errors.Wrapf(err, "error checking if %q is excluded", name)
+					return fmt.Errorf("error checking if %q is excluded: %w", name, err)
 				}
 				if excluded {
 					// Note: filepath.SkipDir is not possible to use given .dockerignore semantics.
@@ -706,7 +735,7 @@ func parseDockerignore(root string) ([]string, error) {
 		var dockerIgnoreErr error
 		ignore, dockerIgnoreErr = ioutil.ReadFile(filepath.Join(root, ".dockerignore"))
 		if dockerIgnoreErr != nil && !os.IsNotExist(dockerIgnoreErr) {
-			return nil, errors.Wrapf(err, "error reading .containerignore: '%s'", root)
+			return nil, fmt.Errorf("error reading .containerignore: '%s': %w", root, err)
 		}
 	}
 	rawexcludes := strings.Split(string(ignore), "\n")

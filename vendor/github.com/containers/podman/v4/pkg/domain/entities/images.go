@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"io"
 	"net/url"
 	"time"
 
@@ -46,14 +47,14 @@ type Image struct {
 	HealthCheck   *manifest.Schema2HealthConfig `json:",omitempty"`
 }
 
-func (i *Image) Id() string { // nolint
+func (i *Image) Id() string { //nolint:revive,stylecheck
 	return i.ID
 }
 
 // swagger:model LibpodImageSummary
 type ImageSummary struct {
 	ID          string `json:"Id"`
-	ParentId    string // nolint
+	ParentId    string //nolint:revive,stylecheck
 	RepoTags    []string
 	RepoDigests []string
 	Created     int64
@@ -66,13 +67,12 @@ type ImageSummary struct {
 	Dangling    bool `json:",omitempty"`
 
 	// Podman extensions
-	Names        []string `json:",omitempty"`
-	Digest       string   `json:",omitempty"`
-	ConfigDigest string   `json:",omitempty"`
-	History      []string `json:",omitempty"`
+	Names   []string `json:",omitempty"`
+	Digest  string   `json:",omitempty"`
+	History []string `json:",omitempty"`
 }
 
-func (i *ImageSummary) Id() string { // nolint
+func (i *ImageSummary) Id() string { //nolint:revive,stylecheck
 	return i.ID
 }
 
@@ -193,8 +193,7 @@ type ImagePushOptions struct {
 	// image. Default is manifest type of source, with fallbacks.
 	// Ignored for remote calls.
 	Format string
-	// Quiet can be specified to suppress pull progress when pulling.  Ignored
-	// for remote calls.
+	// Quiet can be specified to suppress push progress when pushing.
 	Quiet bool
 	// Rm indicates whether to remove the manifest list if push succeeds
 	Rm bool
@@ -206,12 +205,33 @@ type ImagePushOptions struct {
 	// SignBy adds a signature at the destination using the specified key.
 	// Ignored for remote calls.
 	SignBy string
+	// SignPassphrase, if non-empty, specifies a passphrase to use when signing
+	// with the key ID from SignBy.
+	SignPassphrase string
+	// SignBySigstorePrivateKeyFile, if non-empty, asks for a signature to be added
+	// during the copy, using a sigstore private key file at the provided path.
+	// Ignored for remote calls.
+	SignBySigstorePrivateKeyFile string
+	// SignSigstorePrivateKeyPassphrase is the passphrase to use when signing with
+	// SignBySigstorePrivateKeyFile.
+	SignSigstorePrivateKeyPassphrase []byte
 	// SkipTLSVerify to skip HTTPS and certificate verification.
 	SkipTLSVerify types.OptionalBool
 	// Progress to get progress notifications
 	Progress chan types.ProgressProperties
 	// CompressionFormat is the format to use for the compression of the blobs
 	CompressionFormat string
+	// Writer is used to display copy information including progress bars.
+	Writer io.Writer
+}
+
+// ImagePushReport is the response from pushing an image.
+// Currently only used in the remote API.
+type ImagePushReport struct {
+	// Stream used to provide push progress
+	Stream string `json:"stream,omitempty"`
+	// Error contains text of errors from pushing
+	Error string `json:"error,omitempty"`
 }
 
 // ImageSearchOptions are the arguments for searching images.
@@ -291,7 +311,7 @@ type ImageImportOptions struct {
 }
 
 type ImageImportReport struct {
-	Id string // nolint
+	Id string //nolint:revive,stylecheck
 }
 
 // ImageSaveOptions provide options for saving images.
@@ -326,6 +346,8 @@ type ImageScpOptions struct {
 	Image string `json:"image,omitempty"`
 	// User is used in conjunction with Transfer to determine if a valid user was given to save from/load into
 	User string `json:"user,omitempty"`
+	// Tag is the name to be used for the image on the destination
+	Tag string `json:"tag,omitempty"`
 }
 
 // ImageScpConnections provides the ssh related information used in remote image transfer
@@ -398,8 +420,7 @@ type ImageUnmountOptions struct {
 
 // ImageMountReport describes the response from image mount
 type ImageMountReport struct {
-	Err          error
-	Id           string // nolint
+	Id           string //nolint:revive,stylecheck
 	Name         string
 	Repositories []string
 	Path         string
@@ -408,5 +429,5 @@ type ImageMountReport struct {
 // ImageUnmountReport describes the response from umounting an image
 type ImageUnmountReport struct {
 	Err error
-	Id  string // nolint
+	Id  string //nolint:revive,stylecheck
 }

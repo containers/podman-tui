@@ -107,6 +107,21 @@ func (o *PushOptions) GetSkipTLSVerify() bool {
 	return *o.SkipTLSVerify
 }
 
+// WithRemoveSignatures set field RemoveSignatures to given value
+func (o *PushOptions) WithRemoveSignatures(value bool) *PushOptions {
+	o.RemoveSignatures = &value
+	return o
+}
+
+// GetRemoveSignatures returns value of field RemoveSignatures
+func (o *PushOptions) GetRemoveSignatures() bool {
+	if o.RemoveSignatures == nil {
+		var z bool
+		return z
+	}
+	return *o.RemoveSignatures
+}
+
 // WithUsername set field Username to given value
 func (o *PushOptions) WithUsername(value string) *PushOptions {
 	o.Username = &value
@@ -120,4 +135,19 @@ func (o *PushOptions) GetUsername() string {
 		return z
 	}
 	return *o.Username
+}
+
+// WithQuiet set field Quiet to given value
+func (o *PushOptions) WithQuiet(value bool) *PushOptions {
+	o.Quiet = &value
+	return o
+}
+
+// GetQuiet returns value of field Quiet
+func (o *PushOptions) GetQuiet() bool {
+	if o.Quiet == nil {
+		var z bool
+		return z
+	}
+	return *o.Quiet
 }

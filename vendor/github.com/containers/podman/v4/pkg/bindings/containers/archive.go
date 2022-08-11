@@ -2,6 +2,7 @@ package containers
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -9,7 +10,6 @@ import (
 	"github.com/containers/podman/v4/pkg/bindings"
 	"github.com/containers/podman/v4/pkg/copy"
 	"github.com/containers/podman/v4/pkg/domain/entities"
-	"github.com/pkg/errors"
 )
 
 // Stat checks if the specified path is on the container.  Note that the stat
@@ -55,8 +55,6 @@ func CopyFromArchive(ctx context.Context, nameOrID string, path string, reader i
 }
 
 // CopyFromArchiveWithOptions copy files into container
-//
-// FIXME: remove this function and make CopyFromArchive accept the option as the last parameter in podman 4.0
 func CopyFromArchiveWithOptions(ctx context.Context, nameOrID string, path string, reader io.Reader, options *CopyOptions) (entities.ContainerCopyFunc, error) {
 	conn, err := bindings.GetClient(ctx)
 	if err != nil {
