@@ -13,6 +13,8 @@ type RemoveOptions struct {
 	Force *bool
 	// Ignore if a specified image does not exist and do not throw an error.
 	Ignore *bool
+	// Confirms if given name is a manifest list and removes it, otherwise returns error.
+	LookupManifest *bool
 }
 
 //go:generate go run ../generator/generator.go DiffOptions
@@ -127,8 +129,12 @@ type PushOptions struct {
 	Password *string
 	// SkipTLSVerify to skip HTTPS and certificate verification.
 	SkipTLSVerify *bool
+	// RemoveSignatures Discard any pre-existing signatures in the image.
+	RemoveSignatures *bool
 	// Username for authenticating against the registry.
 	Username *string
+	// Quiet can be specified to suppress progress when pushing.
+	Quiet *bool
 }
 
 //go:generate go run ../generator/generator.go SearchOptions
@@ -185,4 +191,9 @@ type BuildOptions struct {
 //go:generate go run ../generator/generator.go ExistsOptions
 // ExistsOptions are optional options for checking if an image exists
 type ExistsOptions struct {
+}
+
+type ScpOptions struct {
+	Quiet       *bool
+	Destination *string
 }

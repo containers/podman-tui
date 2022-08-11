@@ -259,9 +259,7 @@ type HealthCheckLog struct {
 // as possible from the spec and container config.
 // Some things cannot be inferred. These will be populated by spec annotations
 // (if available).
-// Field names are fixed for compatibility and cannot be changed.
-// As such, silence lint warnings about them.
-//nolint
+//nolint:revive,stylecheck // Field names are fixed for compatibility and cannot be changed.
 type InspectContainerHostConfig struct {
 	// Binds contains an array of user-added mounts.
 	// Both volume mounts and named volumes are included.
@@ -508,8 +506,8 @@ type InspectContainerHostConfig struct {
 	// CpuRealtimeRuntime is the length of time (in microseconds) allocated
 	// for realtime tasks within every CpuRealtimePeriod.
 	CpuRealtimeRuntime int64 `json:"CpuRealtimeRuntime"`
-	// CpusetCpus is the is the set of CPUs that the container will execute
-	// on. Formatted as `0-3` or `0,2`. Default (if unset) is all CPUs.
+	// CpusetCpus is the set of CPUs that the container will execute on.
+	// Formatted as `0-3` or `0,2`. Default (if unset) is all CPUs.
 	CpusetCpus string `json:"CpusetCpus"`
 	// CpusetMems is the set of memory nodes the container will use.
 	// Formatted as `0-3` or `0,2`. Default (if unset) is all memory nodes.
@@ -546,7 +544,7 @@ type InspectContainerHostConfig struct {
 	OomKillDisable bool `json:"OomKillDisable"`
 	// Init indicates whether the container has an init mounted into it.
 	Init bool `json:"Init,omitempty"`
-	// PidsLimit is the maximum number of PIDs what may be created within
+	// PidsLimit is the maximum number of PIDs that may be created within
 	// the container. 0, the default, indicates no limit.
 	PidsLimit int64 `json:"PidsLimit"`
 	// Ulimits is a set of ulimits that will be set within the container.
@@ -683,6 +681,7 @@ type InspectContainerData struct {
 	NetworkSettings *InspectNetworkSettings     `json:"NetworkSettings"`
 	Namespace       string                      `json:"Namespace"`
 	IsInfra         bool                        `json:"IsInfra"`
+	IsService       bool                        `json:"IsService"`
 	Config          *InspectContainerConfig     `json:"Config"`
 	HostConfig      *InspectContainerHostConfig `json:"HostConfig"`
 }

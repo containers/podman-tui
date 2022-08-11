@@ -6,6 +6,7 @@ package events
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -16,7 +17,6 @@ import (
 	"github.com/containers/podman/v4/pkg/util"
 	"github.com/containers/storage/pkg/lockfile"
 	"github.com/nxadm/tail"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sys/unix"
 )
@@ -90,7 +90,7 @@ func (e EventLogFile) Read(ctx context.Context, options ReadOptions) error {
 	defer close(options.EventChannel)
 	filterMap, err := generateEventFilters(options.Filters, options.Since, options.Until)
 	if err != nil {
-		return errors.Wrapf(err, "failed to parse event filters")
+		return fmt.Errorf("failed to parse event filters: %w", err)
 	}
 	t, err := e.getTail(options)
 	if err != nil {
@@ -108,23 +108,19 @@ func (e EventLogFile) Read(ctx context.Context, options ReadOptions) error {
 			}
 		}()
 	}
-	funcDone := make(chan bool)
-	copy := true
-	go func() {
-		select {
-		case <-funcDone:
-			// Do nothing
-		case <-ctx.Done():
-			copy = false
-			t.Kill(errors.New("hangup by client"))
-		}
-	}()
-	for line := range t.Lines {
+	var line *tail.Line
+	var ok bool
+	for {
 		select {
 		case <-ctx.Done():
 			// the consumer has cancelled
+			t.Kill(errors.New("hangup by client"))
 			return nil
-		default:
+		case line, ok = <-t.Lines:
+			if !ok {
+				// channel was closed
+				return nil
+			}
 			// fallthrough
 		}
 
@@ -136,14 +132,12 @@ func (e EventLogFile) Read(ctx context.Context, options ReadOptions) error {
 		case Image, Volume, Pod, System, Container, Network:
 		//	no-op
 		default:
-			return errors.Errorf("event type %s is not valid in %s", event.Type.String(), e.options.LogFilePath)
+			return fmt.Errorf("event type %s is not valid in %s", event.Type.String(), e.options.LogFilePath)
 		}
-		if copy && applyFilters(event, filterMap) {
+		if applyFilters(event, filterMap) {
 			options.EventChannel <- event
 		}
 	}
-	funcDone <- true
-	return nil
 }
 
 // String returns a string representation of the logger

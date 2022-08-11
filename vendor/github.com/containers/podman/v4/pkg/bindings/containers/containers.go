@@ -2,6 +2,8 @@ package containers
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,8 +14,6 @@ import (
 	"github.com/containers/podman/v4/pkg/bindings"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/domain/entities/reports"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -25,7 +25,7 @@ var (
 // the most recent number of containers.  The pod and size booleans indicate that pod information and rootfs
 // size information should also be included.  Finally, the sync bool synchronizes the OCI runtime and
 // container state.
-func List(ctx context.Context, options *ListOptions) ([]entities.ListContainer, error) { // nolint:typecheck
+func List(ctx context.Context, options *ListOptions) ([]entities.ListContainer, error) {
 	if options == nil {
 		options = new(ListOptions)
 	}
@@ -201,7 +201,6 @@ func Start(ctx context.Context, nameOrID string, options *StartOptions) error {
 	if options == nil {
 		options = new(StartOptions)
 	}
-	logrus.Infof("Going to start container %q", nameOrID)
 	conn, err := bindings.GetClient(ctx)
 	if err != nil {
 		return err
@@ -339,7 +338,7 @@ func Unpause(ctx context.Context, nameOrID string, options *UnpauseOptions) erro
 // Wait blocks until the given container reaches a condition. If not provided, the condition will
 // default to stopped.  If the condition is stopped, an exit code for the container will be provided. The
 // nameOrID can be a container name or a partial/full ID.
-func Wait(ctx context.Context, nameOrID string, options *WaitOptions) (int32, error) { // nolint
+func Wait(ctx context.Context, nameOrID string, options *WaitOptions) (int32, error) {
 	if options == nil {
 		options = new(WaitOptions)
 	}
@@ -449,7 +448,7 @@ func ContainerInit(ctx context.Context, nameOrID string, options *InitOptions) e
 	defer response.Body.Close()
 
 	if response.StatusCode == http.StatusNotModified {
-		return errors.Wrapf(define.ErrCtrStateInvalid, "container %s has already been created in runtime", nameOrID)
+		return fmt.Errorf("container %s has already been created in runtime: %w", nameOrID, define.ErrCtrStateInvalid)
 	}
 	return response.Process(nil)
 }
