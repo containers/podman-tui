@@ -127,6 +127,10 @@ var Styles = theme{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,
 	},
+	NetworkConnectDialog: networkConnectDialog{
+		BgColor: tcell.ColorPink,
+		FgColor: tcell.ColorWhite,
+	},
 	ContainerCreateDialog: containerCreateDialog{
 		BgColor: tcell.ColorPink,
 		FgColor: tcell.ColorWhite,

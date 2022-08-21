@@ -6,6 +6,29 @@
 load helpers
 load helpers_tui
 
+@test "network connect" {
+    podman network rm $TEST_NETWORK_CONNECT || echo done
+    podman container rm -f $TEST_CONTAINER_NAME || echo done
+    podman container create --name $TEST_CONTAINER_NAME docker.io/library/busybox || echo done
+    podman network create $TEST_NETWORK_CONNECT || echo done
+    # switch to networks view
+    # select connect command from network commands dialog
+    # select container
+    # select connect button
+
+    podman_tui_set_view "networks"
+    podman_tui_select_network_cmd "connect"
+    sleep 2
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs $TEST_NETWORK_CONNECT_ALIAS
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Enter"
+
+    run_helper podman container inspect $TEST_CONTAINER_NAME  --format "{{ .NetworkSettings.Networks.$TEST_NETWORK_CONNECT }}"
+    assert "$output" =~ "$TEST_NETWORK_CONNECT_ALIAS" "expected $TEST_NETWORK_CONNECT_ALIAS to be in the list of aliases"
+
+}
+
 @test "network create" {
     podman network rm $TEST_NETWORK_NAME || echo done
 

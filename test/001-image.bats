@@ -46,6 +46,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH "Tab"
     podman_tui_send_inputs "Space" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Enter"
+    sleep 6
 
     run_helper ls ${TEST_IMAGE_SAVE_PATH} 2> /dev/null
     assert "$output" == "$TEST_IMAGE_SAVE_PATH" "expected $TEST_IMAGE_SAVE_PATH exists"

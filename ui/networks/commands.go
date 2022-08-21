@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/rs/zerolog/log"
 )
 
 func (nets *Networks) runCommand(cmd string) {
 	switch cmd {
+	case "connect":
+		nets.cconnect()
 	case "create":
 		nets.createDialog.Display()
 	case "inspect":
@@ -28,6 +31,57 @@ func (nets *Networks) displayError(title string, err error) {
 	nets.errorDialog.Display()
 }
 
+func (nets *Networks) cconnect() {
+	if nets.selectedID == "" {
+		nets.displayError("", fmt.Errorf("there is no network to connect"))
+		return
+	}
+
+	initData := func() {
+		nets.progressDialog.SetTitle("podman network connect")
+		nets.progressDialog.Display()
+
+		cntListReport, err := containers.List()
+		if err != nil {
+			nets.progressDialog.Hide()
+			nets.displayError("NETWORK CONNECT ERROR", err)
+
+			return
+		}
+		_, netName := nets.getSelectedItem()
+
+		nets.connectDialog.SetNetworkInfo(netName)
+		nets.connectDialog.SetContainers(cntListReport)
+		nets.progressDialog.Hide()
+		nets.connectDialog.Display()
+	}
+
+	go initData()
+
+}
+
+func (nets *Networks) connect() {
+
+	connectOptions := nets.connectDialog.GetConnectOptions()
+
+	connect := func() {
+		nets.connectDialog.Hide()
+		nets.progressDialog.SetTitle("podman network connect")
+		nets.progressDialog.Display()
+
+		if err := networks.Connect(connectOptions); err != nil {
+			nets.progressDialog.Hide()
+			nets.displayError("NETWORK CONNECT ERROR", err)
+
+			return
+		}
+		nets.progressDialog.Hide()
+	}
+
+	go connect()
+
+}
+
 func (nets *Networks) create() {
 	createOpts := nets.createDialog.NetworkCreateOptions()
 	createdNetwork, err := networks.Create(createOpts)
@@ -40,7 +94,6 @@ func (nets *Networks) create() {
 	nets.messageDialog.SetTitle("podman network create")
 	nets.messageDialog.SetText(netInfo)
 	nets.messageDialog.Display()
-
 }
 
 func (nets *Networks) inspect() {

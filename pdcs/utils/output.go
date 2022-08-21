@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-// GetJSONOutput covnerts interface to json output.
+// GetJSONOutput converts interface to json output.
 func GetJSONOutput(v interface{}) (string, error) {
 	result := ""
 
