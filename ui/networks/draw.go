@@ -32,6 +32,15 @@ func (nets *Networks) Draw(screen tcell.Screen) {
 		nets.createDialog.Draw(screen)
 		return
 	}
+
+	// connect dialog dialog
+	if nets.connectDialog.IsDisplay() {
+		nets.connectDialog.SetRect(x, y, width, height)
+		nets.connectDialog.Draw(screen)
+
+		return
+	}
+
 	// message dialog
 	if nets.messageDialog.IsDisplay() {
 		nets.messageDialog.SetRect(x, y, width, height+1)

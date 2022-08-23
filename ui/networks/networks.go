@@ -22,6 +22,7 @@ type Networks struct {
 	cmdDialog      *dialogs.CommandDialog
 	messageDialog  *dialogs.MessageDialog
 	createDialog   *netdialogs.NetworkCreateDialog
+	connectDialog  *netdialogs.NetworkConnectDialog
 	selectedID     string
 	confirmData    string
 }
@@ -37,10 +38,11 @@ func NewNetworks() *Networks {
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		createDialog:   netdialogs.NewNetworkCreateDialog(),
+		connectDialog:  netdialogs.NewNetworkConnectDialog(),
 	}
 
 	nets.cmdDialog = dialogs.NewCommandDialog([][]string{
-		//{"connect", "connect a container to a network"},
+		{"connect", "connect a container to a network"},
 		{"create", "create a Podman CNI network"},
 		//{"disconnect", "disconnect a container from a network"},
 		{"inspect", "displays the raw CNI network configuration"},
@@ -107,6 +109,11 @@ func NewNetworks() *Networks {
 		nets.createDialog.Hide()
 		nets.create()
 	})
+
+	// set connect dialog functions
+	nets.connectDialog.SetCancelFunc(nets.connectDialog.Hide)
+	nets.connectDialog.SetConnectFunc(nets.connect)
+
 	return nets
 }
 
@@ -120,15 +127,19 @@ func (nets *Networks) HasFocus() bool {
 	if nets.table.HasFocus() || nets.errorDialog.HasFocus() {
 		return true
 	}
+
 	if nets.cmdDialog.HasFocus() || nets.messageDialog.IsDisplay() {
 		return true
 	}
+
 	if nets.progressDialog.HasFocus() || nets.confirmDialog.IsDisplay() {
 		return true
 	}
-	if nets.createDialog.HasFocus() {
+
+	if nets.createDialog.HasFocus() || nets.connectDialog.HasFocus() {
 		return true
 	}
+
 	return nets.Box.HasFocus()
 }
 
@@ -137,12 +148,19 @@ func (nets *Networks) SubDialogHasFocus() bool {
 	if nets.createDialog.HasFocus() || nets.errorDialog.HasFocus() {
 		return true
 	}
+
 	if nets.cmdDialog.HasFocus() || nets.messageDialog.IsDisplay() {
 		return true
 	}
+
 	if nets.progressDialog.HasFocus() || nets.confirmDialog.IsDisplay() {
 		return true
 	}
+
+	if nets.connectDialog.HasFocus() {
+		return true
+	}
+
 	return false
 }
 
@@ -173,22 +191,25 @@ func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 		delegate(nets.createDialog)
 		return
 	}
+
+	// connect dialog
+	if nets.connectDialog.IsDisplay() {
+		delegate(nets.connectDialog)
+		return
+	}
+
 	delegate(nets.table)
 }
 
-func (nets *Networks) getSelectedItem() string {
+func (nets *Networks) getSelectedItem() (string, string) {
 	if nets.table.GetRowCount() <= 1 {
-		return ""
+		return "", ""
 	}
 	row, _ := nets.table.GetSelection()
 	netID := nets.table.GetCell(row, 0).Text
 	netName := nets.table.GetCell(row, 1).Text
 
-	netIDorName := netID
-	if netIDorName == "" {
-		netIDorName = netName
-	}
-	return netIDorName
+	return netID, netName
 }
 
 // HideAllDialogs hides all sub dialogs
@@ -196,19 +217,28 @@ func (nets *Networks) HideAllDialogs() {
 	if nets.errorDialog.IsDisplay() {
 		nets.errorDialog.Hide()
 	}
+
 	if nets.progressDialog.IsDisplay() {
 		nets.progressDialog.Hide()
 	}
+
 	if nets.confirmDialog.IsDisplay() {
 		nets.confirmDialog.Hide()
 	}
+
 	if nets.cmdDialog.IsDisplay() {
 		nets.cmdDialog.Hide()
 	}
+
 	if nets.messageDialog.IsDisplay() {
 		nets.messageDialog.Hide()
 	}
+
 	if nets.createDialog.IsDisplay() {
 		nets.createDialog.Hide()
+	}
+
+	if nets.connectDialog.IsDisplay() {
+		nets.connectDialog.Hide()
 	}
 }

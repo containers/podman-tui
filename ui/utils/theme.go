@@ -22,6 +22,7 @@ type theme struct {
 	ImagePushDialog             imagePushDialog
 	VolumeCreateDialog          volumeCreateDialog
 	NetworkCreateDialog         networkCreateDialog
+	NetworkConnectDialog        networkConnectDialog
 	ContainerCreateDialog       containerCreateDialog
 	ContainerExecDialog         containerExecDialog
 	ContainerExecTerminalDialog containerExecTerminalDialog
@@ -162,6 +163,12 @@ type networkCreateDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
 }
+
+type networkConnectDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
 type containerCreateDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color

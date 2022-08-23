@@ -32,6 +32,14 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 				createDialogHandler(event, setFocus)
 			}
 		}
+
+		// connect dialog dialog handler
+		if nets.connectDialog.HasFocus() {
+			if connectDialogHandler := nets.connectDialog.InputHandler(); connectDialogHandler != nil {
+				connectDialogHandler(event, setFocus)
+			}
+		}
+
 		// confirm dialog handler
 		if nets.confirmDialog.HasFocus() {
 			if confirmDialogHandler := nets.confirmDialog.InputHandler(); confirmDialogHandler != nil {
@@ -46,7 +54,7 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 		}
 		// table handlers
 		if nets.table.HasFocus() {
-			nets.selectedID = nets.getSelectedItem()
+			nets.selectedID, _ = nets.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if nets.cmdDialog.GetCommandCount() <= 1 {
 					return

@@ -4,6 +4,8 @@ TEST_IMAGE_TAG_NAME="podman_tui_busybox_tag01"
 TEST_NAME="podman_tui_test"
 TEST_VOLUME_NAME="${TEST_NAME}_vol01"
 TEST_NETWORK_NAME="${TEST_NAME}_net01"
+TEST_NETWORK_CONNECT="net_connect_${TEST_NAME}"
+TEST_NETWORK_CONNECT_ALIAS="net_connect_alias"
 TEST_POD_NAME="${TEST_NAME}_pod01"
 TEST_POD_NETWORK_NAME="${TEST_NAME}_pod01_net"
 TEST_CONTAINER_NAME="${TEST_NAME}_container01"
@@ -130,14 +132,16 @@ function podman_tui_select_volume_cmd() {
 function podman_tui_select_network_cmd() {
   local menu_index=0
   case $1 in
-  "create")
+  "connect")
     menu_index=0;;
-  "inspect")
+  "create")
     menu_index=1;;
-  "prune")
+  "inspect")
     menu_index=2;;
-  "remove")
+  "prune")
     menu_index=3;;
+  "remove")
+    menu_index=4;;
   esac
 
   podman_tui_select_menu $menu_index
