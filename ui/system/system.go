@@ -85,8 +85,8 @@ func NewSystem() *System {
 
 	sys.cmdDialog = dialogs.NewCommandDialog([][]string{
 		{"add connection", "record destination for the Podman TUI service"},
-		{"connect", "connect to selected distination"},
-		{"disconnect", "disconnect from connected distination"},
+		{"connect", "connect to selected destination"},
+		{"disconnect", "disconnect from connected destination"},
 		{"disk usage", "display destination podman related disk usage"},
 		{"events", "display destination system events"},
 		{"info", "display destination podman system information"},
