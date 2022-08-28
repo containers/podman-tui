@@ -41,6 +41,14 @@ func (nets *Networks) Draw(screen tcell.Screen) {
 		return
 	}
 
+	// disconnect dialog dialog
+	if nets.disconnectDialog.IsDisplay() {
+		nets.disconnectDialog.SetRect(x, y, width, height)
+		nets.disconnectDialog.Draw(screen)
+
+		return
+	}
+
 	// message dialog
 	if nets.messageDialog.IsDisplay() {
 		nets.messageDialog.SetRect(x, y, width, height+1)

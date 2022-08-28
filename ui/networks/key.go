@@ -40,6 +40,13 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 			}
 		}
 
+		// disconnect dialog dialog handler
+		if nets.disconnectDialog.HasFocus() {
+			if disconnectDialogHandler := nets.disconnectDialog.InputHandler(); disconnectDialogHandler != nil {
+				disconnectDialogHandler(event, setFocus)
+			}
+		}
+
 		// confirm dialog handler
 		if nets.confirmDialog.HasFocus() {
 			if confirmDialogHandler := nets.confirmDialog.InputHandler(); confirmDialogHandler != nil {

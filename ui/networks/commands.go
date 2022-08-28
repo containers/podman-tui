@@ -15,6 +15,8 @@ func (nets *Networks) runCommand(cmd string) {
 		nets.cconnect()
 	case "create":
 		nets.createDialog.Display()
+	case "disconnect":
+		nets.cdisconnect()
 	case "inspect":
 		nets.inspect()
 	case "prune":
@@ -80,6 +82,54 @@ func (nets *Networks) connect() {
 
 	go connect()
 
+}
+
+func (nets *Networks) cdisconnect() {
+	if nets.selectedID == "" {
+		nets.displayError("", fmt.Errorf("there is no network to disconnect"))
+		return
+	}
+
+	initData := func() {
+		nets.progressDialog.SetTitle("podman network disconnect")
+		nets.progressDialog.Display()
+
+		cntListReport, err := containers.List()
+		if err != nil {
+			nets.progressDialog.Hide()
+			nets.displayError("NETWORK DISCONNECT ERROR", err)
+
+			return
+		}
+		_, netName := nets.getSelectedItem()
+
+		nets.disconnectDialog.SetNetworkInfo(netName)
+		nets.disconnectDialog.SetContainers(cntListReport)
+		nets.progressDialog.Hide()
+		nets.disconnectDialog.Display()
+	}
+
+	go initData()
+}
+
+func (nets *Networks) disconnect() {
+	disconnect := func() {
+		networkName, containerID := nets.disconnectDialog.GetDisconnectOptions()
+
+		nets.disconnectDialog.Hide()
+		nets.progressDialog.SetTitle("podman network disconnect")
+		nets.progressDialog.Display()
+
+		if err := networks.Disconnect(networkName, containerID); err != nil {
+			nets.progressDialog.Hide()
+			nets.displayError("NETWORK DISCONNECT ERROR", err)
+
+			return
+		}
+		nets.progressDialog.Hide()
+	}
+
+	go disconnect()
 }
 
 func (nets *Networks) create() {

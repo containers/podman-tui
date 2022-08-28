@@ -13,38 +13,40 @@ import (
 // Networks implemnents the Networks page primitive
 type Networks struct {
 	*tview.Box
-	title          string
-	headers        []string
-	table          *tview.Table
-	errorDialog    *dialogs.ErrorDialog
-	progressDialog *dialogs.ProgressDialog
-	confirmDialog  *dialogs.ConfirmDialog
-	cmdDialog      *dialogs.CommandDialog
-	messageDialog  *dialogs.MessageDialog
-	createDialog   *netdialogs.NetworkCreateDialog
-	connectDialog  *netdialogs.NetworkConnectDialog
-	selectedID     string
-	confirmData    string
+	title            string
+	headers          []string
+	table            *tview.Table
+	errorDialog      *dialogs.ErrorDialog
+	progressDialog   *dialogs.ProgressDialog
+	confirmDialog    *dialogs.ConfirmDialog
+	cmdDialog        *dialogs.CommandDialog
+	messageDialog    *dialogs.MessageDialog
+	createDialog     *netdialogs.NetworkCreateDialog
+	connectDialog    *netdialogs.NetworkConnectDialog
+	disconnectDialog *netdialogs.NetworkDisconnectDialog
+	selectedID       string
+	confirmData      string
 }
 
 // NewNetworks returns nets page view
 func NewNetworks() *Networks {
 	nets := &Networks{
-		Box:            tview.NewBox(),
-		title:          "networks",
-		headers:        []string{"id", "name", "driver"},
-		errorDialog:    dialogs.NewErrorDialog(),
-		progressDialog: dialogs.NewProgressDialog(),
-		confirmDialog:  dialogs.NewConfirmDialog(),
-		messageDialog:  dialogs.NewMessageDialog(""),
-		createDialog:   netdialogs.NewNetworkCreateDialog(),
-		connectDialog:  netdialogs.NewNetworkConnectDialog(),
+		Box:              tview.NewBox(),
+		title:            "networks",
+		headers:          []string{"id", "name", "driver"},
+		errorDialog:      dialogs.NewErrorDialog(),
+		progressDialog:   dialogs.NewProgressDialog(),
+		confirmDialog:    dialogs.NewConfirmDialog(),
+		messageDialog:    dialogs.NewMessageDialog(""),
+		createDialog:     netdialogs.NewNetworkCreateDialog(),
+		connectDialog:    netdialogs.NewNetworkConnectDialog(),
+		disconnectDialog: netdialogs.NewNetworkDisconnectDialog(),
 	}
 
 	nets.cmdDialog = dialogs.NewCommandDialog([][]string{
 		{"connect", "connect a container to a network"},
 		{"create", "create a Podman CNI network"},
-		//{"disconnect", "disconnect a container from a network"},
+		{"disconnect", "disconnect a container from a network"},
 		{"inspect", "displays the raw CNI network configuration"},
 		{"prune", "remove all unused networks"},
 		//{"reload", "reload the network for containers"},
@@ -114,6 +116,10 @@ func NewNetworks() *Networks {
 	nets.connectDialog.SetCancelFunc(nets.connectDialog.Hide)
 	nets.connectDialog.SetConnectFunc(nets.connect)
 
+	// set disconnect dialog functions
+	nets.disconnectDialog.SetCancelFunc(nets.disconnectDialog.Hide)
+	nets.disconnectDialog.SetDisconnectFunc(nets.disconnect)
+
 	return nets
 }
 
@@ -140,7 +146,11 @@ func (nets *Networks) HasFocus() bool {
 		return true
 	}
 
-	return nets.Box.HasFocus()
+	if nets.disconnectDialog.HasFocus() || nets.Box.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus
@@ -157,7 +167,7 @@ func (nets *Networks) SubDialogHasFocus() bool {
 		return true
 	}
 
-	if nets.connectDialog.HasFocus() {
+	if nets.connectDialog.HasFocus() || nets.disconnectDialog.HasFocus() {
 		return true
 	}
 
@@ -195,6 +205,12 @@ func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 	// connect dialog
 	if nets.connectDialog.IsDisplay() {
 		delegate(nets.connectDialog)
+		return
+	}
+
+	// disconnect dialog
+	if nets.disconnectDialog.IsDisplay() {
+		delegate(nets.disconnectDialog)
 		return
 	}
 
@@ -240,5 +256,9 @@ func (nets *Networks) HideAllDialogs() {
 
 	if nets.connectDialog.IsDisplay() {
 		nets.connectDialog.Hide()
+	}
+
+	if nets.disconnectDialog.IsDisplay() {
+		nets.disconnectDialog.Hide()
 	}
 }
