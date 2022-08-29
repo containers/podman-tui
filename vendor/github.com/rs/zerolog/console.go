@@ -74,6 +74,8 @@ type ConsoleWriter struct {
 	FormatFieldValue    Formatter
 	FormatErrFieldName  Formatter
 	FormatErrFieldValue Formatter
+
+	FormatExtra func(map[string]interface{}, *bytes.Buffer) error
 }
 
 // NewConsoleWriter creates and initializes a new ConsoleWriter.
@@ -128,10 +130,18 @@ func (w ConsoleWriter) Write(p []byte) (n int, err error) {
 
 	w.writeFields(evt, buf)
 
+	if w.FormatExtra != nil {
+		err = w.FormatExtra(evt, buf)
+		if err != nil {
+			return n, err
+		}
+	}
+
 	err = buf.WriteByte('\n')
 	if err != nil {
 		return n, err
 	}
+
 	_, err = buf.WriteTo(w.Out)
 	return len(p), err
 }
@@ -221,7 +231,7 @@ func (w ConsoleWriter) writeFields(evt map[string]interface{}, buf *bytes.Buffer
 		case json.Number:
 			buf.WriteString(fv(fValue))
 		default:
-			b, err := json.Marshal(fValue)
+			b, err := InterfaceMarshalFunc(fValue)
 			if err != nil {
 				fmt.Fprintf(buf, colorize("[error: %v]", colorRed, w.NoColor), err)
 			} else {
@@ -331,7 +341,7 @@ func consoleDefaultFormatTimestamp(timeFormat string, noColor bool) Formatter {
 			if err != nil {
 				t = tt
 			} else {
-				t = ts.Format(timeFormat)
+				t = ts.Local().Format(timeFormat)
 			}
 		case json.Number:
 			i, err := tt.Int64()
@@ -347,7 +357,7 @@ func consoleDefaultFormatTimestamp(timeFormat string, noColor bool) Formatter {
 					nsec = int64(time.Duration(i) * time.Microsecond)
 					sec = 0
 				}
-				ts := time.Unix(sec, nsec).UTC()
+				ts := time.Unix(sec, nsec)
 				t = ts.Format(timeFormat)
 			}
 		}
