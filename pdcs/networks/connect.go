@@ -19,7 +19,7 @@ type NetworkConnect struct {
 	Aliases    []string
 }
 
-// Connect connects a container to anetworks.
+// Connect connects a container to a network.
 func Connect(opts NetworkConnect) error {
 	log.Debug().Msgf("pdcs: podman network connect %v", opts)
 

@@ -60,11 +60,11 @@ var _ = Describe("network connect", Ordered, func() {
 		Expect(cancelAction).To(Equal(cancelWants))
 	})
 
-	It("create button selected", func() {
-		createWants := "create selected"
-		createAction := "create init"
+	It("connect button selected", func() {
+		connectWants := "connect selected"
+		connectAction := "connect init"
 		cancelFunc := func() {
-			createAction = createWants
+			connectAction = connectWants
 		}
 		netConnectDialog.SetConnectFunc(cancelFunc)
 		netConnectDialog.focusElement = netConnectFormFocus
@@ -73,7 +73,7 @@ var _ = Describe("network connect", Ordered, func() {
 		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
 		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netDialogApp.Draw()
-		Expect(createAction).To(Equal(createWants))
+		Expect(connectAction).To(Equal(connectWants))
 	})
 
 	It("set containers", func() {

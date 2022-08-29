@@ -29,6 +29,22 @@ load helpers_tui
 
 }
 
+@test "network disconnect" {
+    # switch to networks view
+    # select disconnect command from network commands dialog
+    # select container
+    # select disconnect button
+
+    podman_tui_set_view "networks"
+    podman_tui_select_network_cmd "disconnect"
+    sleep 2
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
+
+    run_helper podman container inspect $TEST_CONTAINER_NAME  --format "{{ .NetworkSettings.Networks.$TEST_NETWORK_CONNECT }}"
+    assert "$output" == "<no value>" "expected $TEST_NETWORK_CONNECT_ALIAS to be removed from container"
+
+}
+
 @test "network create" {
     podman network rm $TEST_NETWORK_NAME || echo done
 
