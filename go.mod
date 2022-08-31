@@ -19,7 +19,7 @@ require (
 	github.com/onsi/gomega v1.20.1
 	github.com/pkg/errors v0.9.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
-	github.com/rs/zerolog v1.27.0
+	github.com/rs/zerolog v1.28.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
