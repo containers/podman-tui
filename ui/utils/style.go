@@ -160,6 +160,10 @@ var Styles = theme{
 		BgColor: tcell.ColorMediumPurple,
 		FgColor: tcell.ColorWhite,
 	},
+	ContainerCheckpointDialog: containerCheckpointDialog{
+		BgColor: tcell.ColorMediumPurple,
+		FgColor: tcell.ColorWhite,
+	},
 	PodCreateDialog: podCreateDialog{
 		BgColor: tcell.ColorMediumPurple,
 		FgColor: tcell.ColorWhite,

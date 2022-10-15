@@ -28,6 +28,7 @@ type theme struct {
 	ContainerExecTerminalDialog containerExecTerminalDialog
 	ContainerStatsDialog        containerStatsDialog
 	ContainerCommitDialog       containerCommitDialog
+	ContainerCheckpointDialog   containerCheckpointDialog
 	PodStatsDialog              podStatsDialog
 	PodCreateDialog             podCreateDialog
 	DropdownStyle               dropdownStyle
@@ -180,6 +181,11 @@ type containerExecDialog struct {
 }
 
 type containerCommitDialog struct {
+	BgColor tcell.Color
+	FgColor tcell.Color
+}
+
+type containerCheckpointDialog struct {
 	BgColor tcell.Color
 	FgColor tcell.Color
 }

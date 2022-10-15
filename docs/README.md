@@ -58,7 +58,7 @@ podman-tui uses following keyboard keys for different actions:
 | COMMAND  | DESCRIPTION |
 | -------- | ----------- |
 | create   | create a new pod
-| inpsect  | display information describing the seleceted pod
+| inpsect  | display information describing the selected pod
 | kill     | send SIGTERM signal to containers in the pod
 | pause    | pause the selected pod
 | prune    | remove all stopped pods and their containers

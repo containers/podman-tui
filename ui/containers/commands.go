@@ -12,6 +12,8 @@ import (
 
 func (cnt *Containers) runCommand(cmd string) {
 	switch cmd {
+	case "checkpoint":
+		cnt.preCheckpoint()
 	case "commit":
 		cnt.preCommit()
 	case "create":
@@ -54,6 +56,43 @@ func (cnt *Containers) displayError(title string, err error) {
 	cnt.errorDialog.SetTitle(title)
 	cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 	cnt.errorDialog.Display()
+}
+
+func (cnt *Containers) preCheckpoint() {
+	if cnt.selectedID == "" {
+		cnt.displayError("", fmt.Errorf("there is no container to perform checkpoint command"))
+		return
+	}
+	cntID, cntName := cnt.getSelectedItem()
+	cnt.checkpointDialog.SetContainerInfo(cntID, cntName)
+	cnt.checkpointDialog.Display()
+}
+
+func (cnt *Containers) checkpoint() {
+	checkpointOptions := cnt.checkpointDialog.GetCheckpointOptions()
+
+	cnt.checkpointDialog.Hide()
+	cnt.progressDialog.SetTitle("container checkpoint in progress")
+	cnt.progressDialog.Display()
+
+	checkpoint := func() {
+		report, err := containers.Checkpoint(cnt.selectedID, checkpointOptions)
+		if err != nil {
+			title := fmt.Sprintf("CONTAINER (%s) CHECKPOINT ERROR", cnt.selectedID)
+
+			cnt.progressDialog.Hide()
+			cnt.displayError(title, err)
+
+			return
+		}
+
+		cnt.progressDialog.Hide()
+		cnt.messageDialog.SetTitle("podman container commit")
+		cnt.messageDialog.SetText(report)
+		cnt.messageDialog.Display()
+	}
+
+	go checkpoint()
 }
 
 func (cnt *Containers) preCommit() {
