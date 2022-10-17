@@ -7,7 +7,7 @@ import (
 	"github.com/containers/podman/v4/pkg/bindings"
 )
 
-// ErrConnectionNotSelected implements connection is not seleceted error.
+// ErrConnectionNotSelected implements connection is not selected error.
 var ErrConnectionNotSelected = errors.New("system connection not selected")
 
 // GetConnection returns connection to podman socket.

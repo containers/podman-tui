@@ -87,4 +87,11 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 		cnt.commitDialog.Draw(screen)
 		return
 	}
+
+	// checkpoint dialog
+	if cnt.checkpointDialog.IsDisplay() {
+		cnt.checkpointDialog.SetRect(x, y, width, height)
+		cnt.checkpointDialog.Draw(screen)
+		return
+	}
 }

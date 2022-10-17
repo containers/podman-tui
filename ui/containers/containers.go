@@ -30,6 +30,7 @@ type Containers struct {
 	execTerminalDialog *cntdialogs.ContainerExecTerminalDialog
 	statsDialog        *cntdialogs.ContainerStatsDialog
 	commitDialog       *cntdialogs.ContainerCommitDialog
+	checkpointDialog   *cntdialogs.ContainerCheckpointDialog
 	containersList     containerListReport
 	selectedID         string
 	selectedName       string
@@ -59,10 +60,12 @@ func NewContainers() *Containers {
 		execTerminalDialog: cntdialogs.NewContainerExecTerminalDialog(),
 		statsDialog:        cntdialogs.NewContainerStatsDialog(),
 		commitDialog:       cntdialogs.NewContainerCommitDialog(),
+		checkpointDialog:   cntdialogs.NewContainerCheckpointDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
 	containers.cmdDialog = dialogs.NewCommandDialog([][]string{
+		{"checkpoint", "checkpoints a running container"},
 		{"commit", "create an image from a container's changes"},
 		{"create", "create a new container but do not start"},
 		{"diff", "inspect changes to the selected container's file systems"},
@@ -162,6 +165,10 @@ func NewContainers() *Containers {
 	containers.commitDialog.SetCommitFunc(containers.commit)
 	containers.commitDialog.SetCancelFunc(containers.commitDialog.Hide)
 
+	// set checkpoint dialog functions
+	containers.checkpointDialog.SetCheckpointFunc(containers.checkpoint)
+	containers.checkpointDialog.SetCancelFunc(containers.checkpointDialog.Hide)
+
 	return containers
 }
 
@@ -190,7 +197,7 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.execTerminalDialog.HasFocus() || cnt.statsDialog.HasFocus() {
 		return true
 	}
-	if cnt.commitDialog.HasFocus() {
+	if cnt.commitDialog.HasFocus() || cnt.checkpointDialog.HasFocus() {
 		return true
 	}
 	return cnt.Box.HasFocus()
@@ -216,6 +223,11 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 	if cnt.execTerminalDialog.HasFocus() || cnt.commitDialog.HasFocus() {
 		return true
 	}
+
+	if cnt.checkpointDialog.HasFocus() {
+		return true
+	}
+
 	return false
 }
 
@@ -277,6 +289,12 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
+	// checkpoint dialog
+	if cnt.checkpointDialog.IsDisplay() {
+		delegate(cnt.checkpointDialog)
+		return
+	}
+
 	delegate(cnt.table)
 }
 
@@ -334,5 +352,9 @@ func (cnt *Containers) HideAllDialogs() {
 	}
 	if cnt.commitDialog.IsDisplay() {
 		cnt.commitDialog.Hide()
+	}
+
+	if cnt.checkpointDialog.IsDisplay() {
+		cnt.checkpointDialog.Hide()
 	}
 }

@@ -85,6 +85,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
+		// container checkpoint dialog handler
+		if cnt.checkpointDialog.HasFocus() {
+			if cntCheckpointDialogHandler := cnt.checkpointDialog.InputHandler(); cntCheckpointDialogHandler != nil {
+				cntCheckpointDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if cnt.table.HasFocus() {
 			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()

@@ -1,18 +1,19 @@
 # -*- bash -*-
 
 TEST_IMAGE_TAG_NAME="podman_tui_busybox_tag01"
-TEST_NAME="podman_tui_test"
+TEST_NAME="ptui_test"
 TEST_VOLUME_NAME="${TEST_NAME}_vol01"
 TEST_NETWORK_NAME="${TEST_NAME}_net01"
 TEST_NETWORK_CONNECT="net_connect_${TEST_NAME}"
 TEST_NETWORK_CONNECT_ALIAS="net_connect_alias"
 TEST_POD_NAME="${TEST_NAME}_pod01"
 TEST_POD_NETWORK_NAME="${TEST_NAME}_pod01_net"
-TEST_CONTAINER_NAME="${TEST_NAME}_container01"
-TEST_CONTAINER_POD_NAME="${TEST_NAME}_container01_pod"
-TEST_CONTAINER_NETWORK_NAME="${TEST_NAME}_container01_net"
-TEST_CONTAINER_VOLUME_NAME="${TEST_NAME}_container01_vol"
+TEST_CONTAINER_NAME="${TEST_NAME}_cnt01"
+TEST_CONTAINER_POD_NAME="${TEST_NAME}_cnt01_pod"
+TEST_CONTAINER_NETWORK_NAME="${TEST_NAME}_cnt01_net"
+TEST_CONTAINER_VOLUME_NAME="${TEST_NAME}_cnt01_vol"
 TEST_CONTAINER_COMMIT_IMAGE_NAME="${TEST_NAME}_commited_image"
+
 TEST_CONTAINER_PORT="8888:80"
 TEST_LABEL_NAME="test"
 TEST_LABEL_VALUE="$TEST_NAME"
@@ -191,39 +192,41 @@ function podman_tui_select_container_cmd() {
   local menu_index=0
 
   case $1 in
-  "commit")
+  "checkpoint")
     menu_index=0;;
-  "create")
+  "commit")
     menu_index=1;;
-  "diff")
+  "create")
     menu_index=2;;
-  "exec")
+  "diff")
     menu_index=3;;
-  "inspect")
+  "exec")
     menu_index=4;;
-  "kill")
+  "inspect")
     menu_index=5;;
-  "logs")
+  "kill")
     menu_index=6;;
-  "pause")
+  "logs")
     menu_index=7;;
-  "port")
+  "pause")
     menu_index=8;;
-  "prune")
+  "port")
     menu_index=9;;
-  "rename")
+  "prune")
     menu_index=10;;
-  "remove")
+  "rename")
     menu_index=11;;
-  "start")
+  "remove")
     menu_index=12;;
+  "start")
+    menu_index=13;;
   # index 13 stats
   "stop")
-    menu_index=14;;
-  "top")
     menu_index=15;;
-  "unpause")
+  "top")
     menu_index=16;;
+  "unpause")
+    menu_index=17;;
   esac
 
   podman_tui_select_menu $menu_index

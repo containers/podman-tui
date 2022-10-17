@@ -141,6 +141,31 @@ load helpers_tui
 
 }
 
+@test "container checkpoint" {
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+
+    # switch to containers view
+    # select test container from list
+    # select checkpoint command from container commands dialog
+    # fillout information
+    # go to checkpoint button and Enter
+
+    podman_tui_set_view "containers"
+    podman_tui_select_item $container_index
+    podman_tui_select_container_cmd "checkpoint"
+
+    podman_tui_send_inputs "${TEST_CONTAINER_NAME}_cpoint"
+    podman_tui_send_inputs "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Space" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
+
+    sleep 10
+
+    run_helper podman image ls --format "{{ .Repository }}"
+    assert "$output" =~ "localhost/${TEST_CONTAINER_NAME}_cpoint" "expected image to be created"
+
+}
+
 @test "container exec" {
     container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
