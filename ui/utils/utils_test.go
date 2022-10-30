@@ -37,10 +37,10 @@ var _ = Describe("utils", func() {
 			panic(err)
 		}
 
-		path01 := path.Join("/home", user.Username, "path01")
+		path01 := path.Join(user.HomeDir, "path01")
 		path01Wants := path01
 		path02 := "~/path02"
-		path02Wants := path.Join("/home", user.Username, "path02")
+		path02Wants := path.Join(user.HomeDir, "path02")
 
 		path01Resolv, err := ResolveHomeDir(path01)
 		Expect(path01Resolv).To(Equal(path01Wants))

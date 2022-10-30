@@ -114,6 +114,7 @@ var _ = Describe("network disconnect", Ordered, func() {
 		netDisconnectDialog.Display()
 		netDisconnectDialogApp.SetFocus(netDisconnectDialog)
 		netDisconnectDialogApp.Draw()
+		netDisconnectDialogApp.SetFocus(netDisconnectDialog)
 
 		netDisconnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTAB, 0, tcell.ModNone))
 		netDisconnectDialogApp.Draw()
