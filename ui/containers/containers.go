@@ -31,6 +31,7 @@ type Containers struct {
 	statsDialog        *cntdialogs.ContainerStatsDialog
 	commitDialog       *cntdialogs.ContainerCommitDialog
 	checkpointDialog   *cntdialogs.ContainerCheckpointDialog
+	restoreDialog      *cntdialogs.ContainerRestoreDialog
 	containersList     containerListReport
 	selectedID         string
 	selectedName       string
@@ -61,6 +62,7 @@ func NewContainers() *Containers {
 		statsDialog:        cntdialogs.NewContainerStatsDialog(),
 		commitDialog:       cntdialogs.NewContainerCommitDialog(),
 		checkpointDialog:   cntdialogs.NewContainerCheckpointDialog(),
+		restoreDialog:      cntdialogs.NewContainerRestoreDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
@@ -77,6 +79,7 @@ func NewContainers() *Containers {
 		{"port", "list port mappings for the selected container"},
 		{"prune", "remove all non running containers"},
 		{"rename", "rename the selected container"},
+		{"restore", "restores a container from a checkpoint"},
 		{"rm", "remove the selected container"},
 		{"start", "start the selected containers"},
 		{"stats", "display container resource usage statistics"},
@@ -169,6 +172,10 @@ func NewContainers() *Containers {
 	containers.checkpointDialog.SetCheckpointFunc(containers.checkpoint)
 	containers.checkpointDialog.SetCancelFunc(containers.checkpointDialog.Hide)
 
+	// set restore dialog functions
+	containers.restoreDialog.SetRestoreFunc(containers.restore)
+	containers.restoreDialog.SetCancelFunc(containers.restoreDialog.Hide)
+
 	return containers
 }
 
@@ -185,10 +192,10 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.cmdDialog.HasFocus() || cnt.progressDialog.HasFocus() {
 		return true
 	}
-	if cnt.topDialog.HasFocus() || cnt.messageDialog.IsDisplay() {
+	if cnt.topDialog.HasFocus() || cnt.messageDialog.HasFocus() {
 		return true
 	}
-	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.IsDisplay() {
+	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.HasFocus() {
 		return true
 	}
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
@@ -200,7 +207,12 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.commitDialog.HasFocus() || cnt.checkpointDialog.HasFocus() {
 		return true
 	}
-	return cnt.Box.HasFocus()
+
+	if cnt.restoreDialog.HasFocus() || cnt.Box.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus
@@ -211,10 +223,10 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 	if cnt.cmdDialog.HasFocus() || cnt.progressDialog.HasFocus() {
 		return true
 	}
-	if cnt.topDialog.HasFocus() || cnt.messageDialog.IsDisplay() {
+	if cnt.topDialog.HasFocus() || cnt.messageDialog.HasFocus() {
 		return true
 	}
-	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.IsDisplay() {
+	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.HasFocus() {
 		return true
 	}
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
@@ -224,7 +236,7 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 		return true
 	}
 
-	if cnt.checkpointDialog.HasFocus() {
+	if cnt.checkpointDialog.HasFocus() || cnt.restoreDialog.HasFocus() {
 		return true
 	}
 
@@ -295,6 +307,12 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
+	// restore dialog
+	if cnt.restoreDialog.IsDisplay() {
+		delegate(cnt.restoreDialog)
+		return
+	}
+
 	delegate(cnt.table)
 }
 
@@ -356,5 +374,9 @@ func (cnt *Containers) HideAllDialogs() {
 
 	if cnt.checkpointDialog.IsDisplay() {
 		cnt.checkpointDialog.Hide()
+	}
+
+	if cnt.restoreDialog.IsDisplay() {
+		cnt.restoreDialog.Hide()
 	}
 }

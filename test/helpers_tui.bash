@@ -9,6 +9,7 @@ TEST_NETWORK_CONNECT_ALIAS="net_connect_alias"
 TEST_POD_NAME="${TEST_NAME}_pod01"
 TEST_POD_NETWORK_NAME="${TEST_NAME}_pod01_net"
 TEST_CONTAINER_NAME="${TEST_NAME}_cnt01"
+TEST_CONTAINER_CHECKPOINT_NAME="${TEST_NAME}_checkpoint"
 TEST_CONTAINER_POD_NAME="${TEST_NAME}_cnt01_pod"
 TEST_CONTAINER_NETWORK_NAME="${TEST_NAME}_cnt01_net"
 TEST_CONTAINER_VOLUME_NAME="${TEST_NAME}_cnt01_vol"
@@ -216,17 +217,19 @@ function podman_tui_select_container_cmd() {
     menu_index=10;;
   "rename")
     menu_index=11;;
-  "remove")
+  "restore")
     menu_index=12;;
-  "start")
+  "remove")
     menu_index=13;;
-  # index 13 stats
+  "start")
+    menu_index=14;;
+  # index 15 stats
   "stop")
-    menu_index=15;;
-  "top")
     menu_index=16;;
-  "unpause")
+  "top")
     menu_index=17;;
+  "unpause")
+    menu_index=18;;
   esac
 
   podman_tui_select_menu $menu_index

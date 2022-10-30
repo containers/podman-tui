@@ -20,7 +20,19 @@ const (
 	HeavyRedCrossMark = "\u274C"
 	// RefreshInterval application refresh interval
 	RefreshInterval = 1000 * time.Millisecond
+	idLimit         = 12
 )
+
+// GetIDWithLimit return ID string with limited string characters
+func GetIDWithLimit(id string) string {
+	if len(id) > 0 {
+		if len(id) >= idLimit {
+			return id[:idLimit]
+		}
+	}
+
+	return id
+}
 
 // GetColorName returns convert tcell color to its name
 func GetColorName(color tcell.Color) string {

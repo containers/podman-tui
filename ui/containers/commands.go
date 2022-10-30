@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/containers"
+	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
 	bcontainers "github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
@@ -34,6 +35,8 @@ func (cnt *Containers) runCommand(cmd string) {
 		cnt.cprune()
 	case "rename":
 		cnt.rename()
+	case "restore":
+		cnt.preRestore()
 	case "port":
 		cnt.port()
 	case "rm":
@@ -56,6 +59,80 @@ func (cnt *Containers) displayError(title string, err error) {
 	cnt.errorDialog.SetTitle(title)
 	cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 	cnt.errorDialog.Display()
+}
+
+func (cnt *Containers) preRestore() {
+	var (
+		containersList [][]string
+		podsList       [][]string
+	)
+
+	cnt.progressDialog.SetTitle("operation in progress")
+	cnt.progressDialog.Display()
+
+	// get current containers
+	cntList, err := containers.List()
+	if err != nil {
+		cnt.progressDialog.Hide()
+		cnt.displayError("CONTAINER RESTORE ERROR", err)
+		return
+	}
+
+	for _, cnt := range cntList {
+		containersList = append(containersList, []string{
+			cnt.ID,
+			cnt.Names[0],
+		})
+	}
+
+	cnt.restoreDialog.SetContainers(containersList)
+
+	// get current pods
+	podList, err := pods.List()
+	if err != nil {
+		cnt.progressDialog.Hide()
+		cnt.displayError("CONTAINER RESTORE ERROR", err)
+		return
+	}
+
+	for _, pod := range podList {
+		podsList = append(podsList, []string{
+			pod.Id,
+			pod.Name,
+		})
+	}
+
+	cnt.restoreDialog.SetPods(podsList)
+
+	cnt.progressDialog.Hide()
+	cnt.restoreDialog.Display()
+}
+
+func (cnt *Containers) restore() {
+	restoreOptions := cnt.restoreDialog.GetRestoreOptions()
+
+	cnt.restoreDialog.Hide()
+	cnt.progressDialog.SetTitle("container restore in progress")
+	cnt.progressDialog.Display()
+
+	restore := func() {
+		report, err := containers.Restore(restoreOptions)
+		if err != nil {
+			title := fmt.Sprintf("CONTAINER (%s) RESTORE ERROR", cnt.selectedID)
+
+			cnt.progressDialog.Hide()
+			cnt.displayError(title, err)
+
+			return
+		}
+
+		cnt.progressDialog.Hide()
+		cnt.messageDialog.SetTitle("podman container restore")
+		cnt.messageDialog.SetText(report)
+		cnt.messageDialog.Display()
+	}
+
+	go restore()
 }
 
 func (cnt *Containers) preCheckpoint() {
@@ -87,7 +164,7 @@ func (cnt *Containers) checkpoint() {
 		}
 
 		cnt.progressDialog.Hide()
-		cnt.messageDialog.SetTitle("podman container commit")
+		cnt.messageDialog.SetTitle("podman container checkpoint")
 		cnt.messageDialog.SetText(report)
 		cnt.messageDialog.Display()
 	}
