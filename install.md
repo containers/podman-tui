@@ -10,8 +10,7 @@
 
 podman-tui is using go version >= 1.17.
   1. Clone the repo
-  2. Install [dependencies](./CONTRIBUTING.md#prerequisite-before-build)
-  3. Build binaries
+  2. Build binaries
       * Linux:
 
         ```shell

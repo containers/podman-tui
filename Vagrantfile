@@ -31,7 +31,6 @@ BASH
 
     setup_podman = <<-BASH
 dnf -y install podman
-dnf install -y btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel shadow-utils-subid-devel
 BASH
 
     config.vm.provision "shell", inline: setup_env
