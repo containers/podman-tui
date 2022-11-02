@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,10 +38,9 @@ func Push(ctx context.Context, source string, destination string, options *PushO
 	if err != nil {
 		return err
 	}
-	// SkipTLSVerify is special.  We need to delete the param added by
-	// toparams and change the key and flip the bool
+	// SkipTLSVerify is special.  It's not being serialized by ToParams()
+	// because we need to flip the boolean.
 	if options.SkipTLSVerify != nil {
-		params.Del("SkipTLSVerify")
 		params.Set("tlsVerify", strconv.FormatBool(!options.GetSkipTLSVerify()))
 	}
 	params.Set("destination", destination)
@@ -58,13 +56,18 @@ func Push(ctx context.Context, source string, destination string, options *PushO
 		return response.Process(err)
 	}
 
-	// Historically push writes status to stderr
-	writer := io.Writer(os.Stderr)
+	var writer io.Writer
 	if options.GetQuiet() {
-		writer = ioutil.Discard
+		writer = io.Discard
+	} else if progressWriter := options.GetProgressWriter(); progressWriter != nil {
+		writer = progressWriter
+	} else {
+		// Historically push writes status to stderr
+		writer = os.Stderr
 	}
 
 	dec := json.NewDecoder(response.Body)
+LOOP:
 	for {
 		var report entities.ImagePushReport
 		if err := dec.Decode(&report); err != nil {
@@ -76,7 +79,7 @@ func Push(ctx context.Context, source string, destination string, options *PushO
 
 		select {
 		case <-response.Request.Context().Done():
-			break
+			break LOOP
 		default:
 			// non-blocking select
 		}
