@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -87,6 +86,13 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 			return nil, err
 		}
 		params.Set("additionalbuildcontexts", string(additionalBuildContextMap))
+	}
+	if options.IDMappingOptions != nil {
+		idmappingsOptions, err := jsoniter.Marshal(options.IDMappingOptions)
+		if err != nil {
+			return nil, err
+		}
+		params.Set("idmappingoptions", string(idmappingsOptions))
 	}
 	if buildArgs := options.Args; len(buildArgs) > 0 {
 		bArgs, err := jsoniter.MarshalToString(buildArgs)
@@ -227,6 +233,14 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	if options.CacheFrom != nil {
 		params.Set("cachefrom", options.CacheFrom.String())
 	}
+
+	switch options.SkipUnusedStages {
+	case types.OptionalBoolTrue:
+		params.Set("skipunusedstages", "1")
+	case types.OptionalBoolFalse:
+		params.Set("skipunusedstages", "0")
+	}
+
 	if options.CacheTo != nil {
 		params.Set("cacheto", options.CacheTo.String())
 	}
@@ -388,11 +402,11 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	dontexcludes := []string{"!Dockerfile", "!Containerfile", "!.dockerignore", "!.containerignore"}
 	for _, c := range containerFiles {
 		if c == "/dev/stdin" {
-			content, err := ioutil.ReadAll(os.Stdin)
+			content, err := io.ReadAll(os.Stdin)
 			if err != nil {
 				return nil, err
 			}
-			tmpFile, err := ioutil.TempFile("", "build")
+			tmpFile, err := os.CreateTemp("", "build")
 			if err != nil {
 				return nil, err
 			}
@@ -458,7 +472,7 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 						if arr[0] == "src" {
 							// read specified secret into a tmp file
 							// move tmp file to tar and change secret source to relative tmp file
-							tmpSecretFile, err := ioutil.TempFile(options.ContextDirectory, "podman-build-secret")
+							tmpSecretFile, err := os.CreateTemp(options.ContextDirectory, "podman-build-secret")
 							if err != nil {
 								return nil, err
 							}
@@ -524,7 +538,7 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	if logrus.IsLevelEnabled(logrus.DebugLevel) {
 		if v, found := os.LookupEnv("PODMAN_RETAIN_BUILD_ARTIFACT"); found {
 			if keep, _ := strconv.ParseBool(v); keep {
-				t, _ := ioutil.TempFile("", "build_*_client")
+				t, _ := os.CreateTemp("", "build_*_client")
 				defer t.Close()
 				body = io.TeeReader(response.Body, t)
 			}
@@ -583,7 +597,7 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 	pm, err := fileutils.NewPatternMatcher(excludes)
 	if err != nil {
-		return nil, fmt.Errorf("error processing excludes list %v: %w", excludes, err)
+		return nil, fmt.Errorf("processing excludes list %v: %w", excludes, err)
 	}
 
 	if len(sources) == 0 {
@@ -632,7 +646,7 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 
 				excluded, err := pm.Matches(name) //nolint:staticcheck
 				if err != nil {
-					return fmt.Errorf("error checking if %q is excluded: %w", name, err)
+					return fmt.Errorf("checking if %q is excluded: %w", name, err)
 				}
 				if excluded {
 					// Note: filepath.SkipDir is not possible to use given .dockerignore semantics.
@@ -730,12 +744,12 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 }
 
 func parseDockerignore(root string) ([]string, error) {
-	ignore, err := ioutil.ReadFile(filepath.Join(root, ".containerignore"))
+	ignore, err := os.ReadFile(filepath.Join(root, ".containerignore"))
 	if err != nil {
 		var dockerIgnoreErr error
-		ignore, dockerIgnoreErr = ioutil.ReadFile(filepath.Join(root, ".dockerignore"))
+		ignore, dockerIgnoreErr = os.ReadFile(filepath.Join(root, ".dockerignore"))
 		if dockerIgnoreErr != nil && !os.IsNotExist(dockerIgnoreErr) {
-			return nil, fmt.Errorf("error reading .containerignore: '%s': %w", root, err)
+			return nil, err
 		}
 	}
 	rawexcludes := strings.Split(string(ignore), "\n")

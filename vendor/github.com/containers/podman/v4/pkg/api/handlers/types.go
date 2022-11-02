@@ -11,6 +11,7 @@ import (
 	dockerContainer "github.com/docker/docker/api/types/container"
 	dockerNetwork "github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
+	"github.com/opencontainers/runtime-spec/specs-go"
 )
 
 type AuthConfig struct {
@@ -62,6 +63,12 @@ type LibpodContainersRmReport struct {
 	// x-omitempty: true
 	// x-nullable: true
 	RmError string `json:"Err,omitempty"`
+}
+
+// UpdateEntities used to wrap the oci resource spec in a swagger model
+// swagger:model
+type UpdateEntities struct {
+	Resources *specs.LinuxResources
 }
 
 type Info struct {
@@ -127,6 +134,7 @@ type CreateContainerConfig struct {
 	dockerContainer.Config                                // desired container configuration
 	HostConfig             dockerContainer.HostConfig     // host dependent configuration for container
 	NetworkingConfig       dockerNetwork.NetworkingConfig // network configuration for container
+	EnvMerge               []string                       // preprocess env variables from image before injecting into containers
 	UnsetEnv               []string                       // unset specified default environment variables
 	UnsetEnvAll            bool                           // unset all default environment variables
 }
@@ -162,7 +170,7 @@ type ExecStartConfig struct {
 
 func ImageDataToImageInspect(ctx context.Context, l *libimage.Image) (*ImageInspect, error) {
 	options := &libimage.InspectOptions{WithParent: true, WithSize: true}
-	info, err := l.Inspect(context.Background(), options)
+	info, err := l.Inspect(ctx, options)
 	if err != nil {
 		return nil, err
 	}
