@@ -3,6 +3,8 @@ package registry
 import (
 	"context"
 	"errors"
+	"net/url"
+	"os"
 
 	"github.com/containers/podman/v4/pkg/bindings"
 )
@@ -18,13 +20,27 @@ func GetConnection() (context.Context, error) {
 
 	if pdcsRegistry.connContext == nil {
 		var (
-			conn context.Context
-			err  error
+			conn       context.Context
+			err        error
+			passPhrase string
 		)
+
+		dest := ConnectionURI()
+
+		connURI, err := url.Parse(dest)
+		if err != nil {
+			return nil, err
+		}
+
+		if v, found := os.LookupEnv("CONTAINER_PASSPHRASE"); found {
+			passPhrase = v
+		}
+
+		connURI.User = url.UserPassword(connURI.User.String(), passPhrase)
 
 		ctx := context.Background()
 		ctx, cancel := context.WithCancel(ctx)
-		conn, err = bindings.NewConnectionWithIdentity(ctx, ConnectionURI(), ConnectionIdentity())
+		conn, err = bindings.NewConnectionWithIdentity(ctx, connURI.String(), ConnectionIdentity(), false)
 
 		if err != nil {
 			cancel()

@@ -175,14 +175,14 @@ load helpers_tui
     # selec restore command from container commands dialog
     # filleout information
     # go to restire button and Enter
-    
+
     podman_tui_set_view "containers"
     podman_tui_select_container_cmd "restore"
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs ${TEST_CONTAINER_CHECKPOINT_NAME}_restore
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "~/${TEST_CONTAINER_CHECKPOINT_NAME}_dump.tar"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" 
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
 

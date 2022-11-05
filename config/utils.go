@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"time"
 
+	cntssh "github.com/containers/common/pkg/ssh"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/libpod/define"
-	"github.com/containers/podman/v4/pkg/terminal"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
@@ -116,7 +116,6 @@ func getUDS(uri *url.URL, iden string) (string, error) {
 // once the function validates the information it creates and returns an ssh.ClientConfig
 func validateAndConfigure(uri *url.URL, iden string) (*ssh.ClientConfig, error) {
 	var signers []ssh.Signer
-	passwd, passwdSet := uri.User.Password()
 	if iden != "" { // iden might be blank if coming from image scp or if no validation is needed
 		value := iden
 		passPhrase := ""
@@ -126,7 +125,7 @@ func validateAndConfigure(uri *url.URL, iden string) (*ssh.ClientConfig, error) 
 		if passPhrase == "" {
 			passPhrase = "_empty_pass_"
 		}
-		s, err := terminal.PublicKey(value, []byte(passPhrase))
+		s, err := cntssh.PublicKey(value, []byte(passPhrase))
 		if err != nil {
 			return nil, fmt.Errorf("%v failed to read identity %q, set 'CONTAINER_PASSPHRASE' variable if password is required", err, value)
 		}
@@ -170,9 +169,7 @@ func validateAndConfigure(uri *url.URL, iden string) (*ssh.ClientConfig, error) 
 			return uniq, nil
 		}))
 	}
-	if passwdSet { // if password authentication is given and valid, add to the list
-		authMethods = append(authMethods, ssh.Password(passwd))
-	}
+
 	tick, err := time.ParseDuration("40s")
 	if err != nil {
 		return nil, err
