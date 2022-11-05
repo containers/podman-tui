@@ -164,6 +164,10 @@ var Styles = theme{
 		BgColor: tcell.ColorMediumPurple,
 		FgColor: tcell.ColorWhite,
 	},
+	ContainerRestoreDialog: containerRestoreDialog{
+		BgColor: tcell.ColorMediumPurple,
+		FgColor: tcell.ColorWhite,
+	},
 	PodCreateDialog: podCreateDialog{
 		BgColor: tcell.ColorMediumPurple,
 		FgColor: tcell.ColorWhite,

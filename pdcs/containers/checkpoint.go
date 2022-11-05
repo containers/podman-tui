@@ -23,7 +23,7 @@ type CntCheckPointOptions struct {
 
 // Checkpoint a running container.
 func Checkpoint(id string, opts CntCheckPointOptions) (string, error) {
-	log.Debug().Msgf("pdcs: podman container precommit %s", id)
+	log.Debug().Msgf("pdcs: podman container checkpoint %s", id)
 
 	conn, err := registry.GetConnection()
 	if err != nil {
@@ -59,7 +59,7 @@ func Checkpoint(id string, opts CntCheckPointOptions) (string, error) {
 		return "", err
 	}
 
-	log.Error().Msgf("pdcs: checkout %s", report)
+	log.Debug().Msgf("pdcs: checkpoint %s", report)
 
 	return report, nil
 }

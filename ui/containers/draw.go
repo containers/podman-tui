@@ -94,4 +94,11 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 		cnt.checkpointDialog.Draw(screen)
 		return
 	}
+
+	// restore dialog
+	if cnt.restoreDialog.IsDisplay() {
+		cnt.restoreDialog.SetRect(x, y, width, height)
+		cnt.restoreDialog.Draw(screen)
+		return
+	}
 }

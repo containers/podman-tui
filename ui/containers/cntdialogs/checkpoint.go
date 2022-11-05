@@ -318,7 +318,7 @@ func (d *ContainerCheckpointDialog) Focus(delegate func(p tview.Primitive)) {
 // InputHandler returns input handler function for this primitive.
 func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("network connect dialog: event %v received", event)
+		log.Debug().Msgf("container checkpoint dialog: event %v received", event)
 
 		if event.Key() == utils.CloseDialogKey.Key {
 			d.cancelHandler()
@@ -453,9 +453,9 @@ func (d *ContainerCheckpointDialog) Draw(screen tcell.Screen) {
 // SetCheckpointFunc sets form checkpoint button selected function.
 func (d *ContainerCheckpointDialog) SetCheckpointFunc(handler func()) *ContainerCheckpointDialog {
 	d.checkpointHandler = handler
-	connectButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+	checkpointButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 
-	connectButton.SetSelectedFunc(handler)
+	checkpointButton.SetSelectedFunc(handler)
 
 	return d
 }
@@ -508,7 +508,13 @@ func (d *ContainerCheckpointDialog) GetCheckpointOptions() containers.CntCheckPo
 	var opts containers.CntCheckPointOptions
 
 	opts.CreateImage = strings.Trim(d.createImage.GetText(), " ")
-	opts.Export = strings.Trim(d.export.GetText(), " ")
+
+	exportPath := strings.Trim(d.export.GetText(), " ")
+	if strings.Index(exportPath, "~") == 0 {
+		exportPath, _ = utils.ResolveHomeDir(exportPath)
+	}
+	opts.Export = exportPath
+
 	opts.FileLocks = d.fileLock.IsChecked()
 	opts.IgnoreRootFs = d.ignoreRootFS.IsChecked()
 	opts.TCPEstablished = d.tcpEstablished.IsChecked()

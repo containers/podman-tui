@@ -120,7 +120,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_CONTAINER_COMMIT_IMAGE_NAME
     podman_tui_send_inputs Tab Tab Tab Tab Tab Tab Tab
     podman_tui_send_inputs Tab Enter
-    sleep 2
+    sleep 5
     run_helper podman image ls ${TEST_CONTAINER_COMMIT_IMAGE_NAME} --format "{{ .Repository }}"
     assert "$output" =~ "localhost/${TEST_CONTAINER_COMMIT_IMAGE_NAME}" "expected image"
 }
@@ -142,7 +142,10 @@ load helpers_tui
 }
 
 @test "container checkpoint" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
+    podman container create --name ${TEST_CONTAINER_CHECKPOINT_NAME} docker.io/library/httpd
+    podman container start ${TEST_CONTAINER_CHECKPOINT_NAME}
+
+    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_CHECKPOINT_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
@@ -154,16 +157,38 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "checkpoint"
 
-    podman_tui_send_inputs "${TEST_CONTAINER_NAME}_cpoint"
     podman_tui_send_inputs "Tab"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Space" "Tab"
+    podman_tui_send_inputs "~/${TEST_CONTAINER_CHECKPOINT_NAME}_dump.tar"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
 
     sleep 10
 
-    run_helper podman image ls --format "{{ .Repository }}"
-    assert "$output" =~ "localhost/${TEST_CONTAINER_NAME}_cpoint" "expected image to be created"
+    run_helper ls ~/${TEST_CONTAINER_CHECKPOINT_NAME}_dump.tar 2>/dev/null || echo -e '\c'
+    assert "$output" == "/root/${TEST_CONTAINER_CHECKPOINT_NAME}_dump.tar" "expected tar file to be created"
 
+}
+
+@test "containre restore" {
+    # switch to containers view
+    # selec restore command from container commands dialog
+    # filleout information
+    # go to restire button and Enter
+    
+    podman_tui_set_view "containers"
+    podman_tui_select_container_cmd "restore"
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs ${TEST_CONTAINER_CHECKPOINT_NAME}_restore
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "~/${TEST_CONTAINER_CHECKPOINT_NAME}_dump.tar"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" 
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
+
+    sleep 5
+    run_helper podman container ls --all --format "{{ .Names }}"
+    assert "$output" =~ "${TEST_CONTAINER_CHECKPOINT_NAME}_restore" "expected container to be restored"
 }
 
 @test "container exec" {

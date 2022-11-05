@@ -92,6 +92,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
+		// container restore dialog handler
+		if cnt.restoreDialog.HasFocus() {
+			if cntRestoreDialogHandler := cnt.restoreDialog.InputHandler(); cntRestoreDialogHandler != nil {
+				cntRestoreDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if cnt.table.HasFocus() {
 			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
