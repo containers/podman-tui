@@ -23,9 +23,6 @@ URL: %{git0}
 VCS: {{{ git_dir_vcs }}}
 Source0: {{{ git_dir_pack }}}
 
-%if 0%{?fedora} && ! 0%{?rhel}
-BuildRequires: btrfs-progs-devel
-%endif
 BuildRequires: gcc
 BuildRequires: golang >= 1.18.2
 BuildRequires: glib2-devel
@@ -34,9 +31,6 @@ BuildRequires: glibc-static
 BuildRequires: git-core
 BuildRequires: go-rpm-macros
 BuildRequires: make
-BuildRequires: gpgme-devel
-BuildRequires: device-mapper-devel
-BuildRequires: libassuan-devel
 %if 0%{?fedora} >= 35
 BuildRequires: shadow-utils-subid-devel
 %endif

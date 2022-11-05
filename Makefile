@@ -35,19 +35,19 @@ binary: $(TARGET)  ## Build podman-tui binary
 $(TARGET): $(SRC)
 	@mkdir -p $(BIN)
 	@echo "running go build"
-	$(GO) build $(BUILDFLAGS) -o $(BIN)/$(TARGET)
+	@env CGO_ENABLED=0 $(GO) build $(BUILDFLAGS) -o $(BIN)/$(TARGET) -tags "containers_image_openpgp remote"
 
 .PHONY: binary-win
 binary-win:  ## Build podman-tui.exe windows binary
 	@mkdir -p $(BIN)/windows/
 	@echo "running go build for windows"
-	@env CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) go build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
+	@env CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
 
 .PHONY: binary-darwin
 binary-darwin: ## Build podman-tui for darwin
 	@mkdir -p $(BIN)/darwin/
 	@echo "running go build for darwin"
-	@env CGO_ENABLED=0 GOOS=darwin GOARCH=$(GOARCH) go build $(BUILDFLAGS) -o $(BIN)/darwin/$(TARGET) -tags "containers_image_openpgp darwin remote"
+	@env CGO_ENABLED=0 GOOS=darwin GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/darwin/$(TARGET) -tags "containers_image_openpgp darwin remote"
 
 .PHONY: clean
 clean:

@@ -6,7 +6,6 @@ We'd love your contribtion on the project!
 
 * [Developer Certificate of Origin (DCO)](#developer_certificate_of_origin)
 * [Contributing to Podman TUI](#contributing-to-podman-tui)
-* [Missing Features](#missing-features)
 
 ## Developer Certificate of Origin
 
@@ -71,41 +70,20 @@ Usage: make <target>
 ...output...
 ```
 
-### Prerequisite before build
-
-You need install some dependencies before building a binary.
-
-#### Fedora
-
-  ```shell
-  $ sudo dnf install -y btrfs-progs-devel device-mapper-devel gpgme-devel libassuan-devel
-  ```
-
-#### Debian
-
-  ```shell
-  $ sudo apt-get -y install libgpgme-dev libbtrfs-dev libdevmapper-dev libassuan-dev pkg-config
-  ```
-
-### Validate, build binary and test your changes
+### Validation and codespell
 
 ```shell
+$ make codespell
 $ make validate
-$ make all
-$ ./bin/podman-tui
 ```
 
-## Missing Features
+### Unit and functionality tests
 
+```shell
+$ make binary
+$ make test-unit
+$ sudo make test-functionality
 ```
-* podman run
-* podman system reset
-* podman network connect
-* podman network disconnect
-* podman network reload
-* podman container attach/detach
-* cover more podman container create options
-* ...
 
 ```
 [0]: https://developercertificate.org/
