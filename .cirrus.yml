@@ -6,10 +6,23 @@ env:
 
 timeout_in: 30m
 
+# Run on PRs and main branch post submit only. Don't run tests when tagging.
+only_if: $CIRRUS_TAG == '' && ($CIRRUS_PR != '' || $CIRRUS_BRANCH == 'main')
+
+clone_script: &full_clone |
+  if [ -z "$CIRRUS_PR" ]; then
+    git clone --recursive --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  else
+    git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+    git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+    git reset --hard $CIRRUS_CHANGE_IN_REPO
+  fi
+
 precommit_test_task:
   name: "Precommit"
   alias: precommit
-  only_if: $CIRRUS_PR != ''
+  clone_script: *full_clone
   container:
     image: python:3.10
   script: |
@@ -19,7 +32,7 @@ precommit_test_task:
 vendor_task:
   name: "Vendoring"
   alias: vendor
-  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  clone_script: *full_clone
   container:
     image: golang:1.18
   script: |
@@ -28,26 +41,44 @@ vendor_task:
     go mod verify
     bash ./hack/tree_status.sh
 
+gofmt_task:
+  name: "Gofmt"
+  alias: gofmt
+  clone_script: *full_clone
+  container:
+    image: golang:1.18
+  script: |
+    SRC=$(find . -type f -name '*.go' -not -path "./vendor/*")
+    gofmt -w ${SRC}
+
+golangci_lint_task:
+  name: "Golangci-lint"
+  alias: lint
+  clone_script: *full_clone
+  container:
+    image: golang:1.18
+  script: |
+    make .install.golangci-lint
+    make lint
+
 goreport_task:
-  name: "Go Report Card, Gofmt and Lint"
+  name: "Go Report Card"
   alias: goreport
-  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  clone_script: *full_clone
   container:
     image: golang:1.18
   script: |
     bash hack/goreportcard.sh
-    go install -mod=mod golang.org/x/lint/golint
-    SRC=$(find . -type f -name '*.go' -not -path "./vendor/*")
-    for d in $(go list ./... | grep -v /vendor/); do $GOBIN/golint ${d}; done
-    gofmt -w ${SRC}
 
 unit_tests_task:
   name: "Unit Tests"
   alias: unit_tests
-  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  clone_script: *full_clone
   depends_on:
-    - vendor
     - precommit
+    - vendor
+    - gofmt
+    - lint
     - goreport
   container:
     image: golang:1.18
@@ -65,47 +96,21 @@ unit_tests_task:
     go tool cover -func=.coverage/coverprofile > .coverage/functions
     cat .coverage/functions | sed -n 's/\(total:\).*\([0-9][0-9].[0-9]\)/\1 \2/p'
 
-functionality_tests_task:
-  name: "Functionality Tests"
-  alias: functionality_tests
-  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
-  depends_on:
-    - vendor
-    - precommit
-    - goreport
-  compute_engine_instance:
-    image_project: cirrus-images # GCP project
-    image: family/docker-kvm # family or a full image name.
-    platform: linux
-    cpu: 4 # optional. Defaults to 2 CPUs.
-    memory: 16G # optional. Defaults to 4G.
-    disk: 100 # optional. By default, uses the smallest disk size required by the image.
-    nested_virtualization: true # optional. Whether to enable Intel VT-x. Defaults to false.
-
-  # install vagrant and required packages
-  env_setup_script: |
-    apt-get update
-    apt-get install -y libvirt-daemon libvirt-daemon-system vagrant vagrant-libvirt
-    systemctl enable --now libvirtd
-    sed -i "s/domain.memory = 4096/domain.memory = 8192/" Vagrantfile
-    vagrant up --no-tty || vagrant up --no-tty
-    mkdir -p -m 0700 /root/.ssh
-    vagrant ssh-config >> /root/.ssh/config
-    ssh default "make -C /home/vagrant/go/src/podman-tui install.tools"
-
-  functionality_tests_script: |
-    ssh default << EOF
-    make -C /home/vagrant/go/src/podman-tui binary
-    sudo make -C /home/vagrant/go/src/podman-tui test-functionality
-    EOF
-
 build_package_task:
   name: "Binaries and RPM Package"
-  only_if: $CIRRUS_CHANGE_TITLE !=~ '.*CI:DOCS.*' && $CIRRUS_PR != ''
+  clone_script: |
+    dnf -y install git-core
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --recursive --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone --recursive https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    fi
   depends_on:
-    - vendor
-    - precommit
-    - goreport
+    - unit_tests
+
   container:
     image: fedora:36
   script: |
@@ -115,8 +120,9 @@ build_package_task:
     rpm -qi podman-tui
     mv /tmp/rpkg/podman-tui-*/x86_64/podman-tui-*.x86_64.rpm ./
     make all
-    mv bin/podman-tui ./
-    mv bin/windows/podman-tui.exe ./
+    mv bin/podman-tui ./podman-tui-linux
+    mv bin/darwin/podman-tui ./podman-tui-darwin
+    mv bin/windows/podman-tui.exe ./podman-tui-windows.exe
   always:
     binary_artifacts:
       path: "*podman-tui*"
