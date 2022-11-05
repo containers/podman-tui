@@ -10,8 +10,9 @@ go install -mod=vendor ./vendor/github.com/client9/misspell/cmd/misspell
 go install ./cmd/goreportcard-cli
 cd ../
 rm -rf goreportcard
-output=$($GOPATH/bin/goreportcard-cli | tee /dev/stdout)
-echo $output | grep -q "A+"
+output=$($GOPATH/bin/goreportcard-cli | grep "Grade")
+echo $output
+echo $output | grep -wq 'A+'
 if [ $? -ne 0 ] ; then
 exit 1
 fi
