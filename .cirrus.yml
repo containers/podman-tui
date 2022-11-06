@@ -108,8 +108,6 @@ build_package_task:
       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
       git reset --hard $CIRRUS_CHANGE_IN_REPO
     fi
-  depends_on:
-    - unit_tests
 
   container:
     image: fedora:36

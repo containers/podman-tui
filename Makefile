@@ -66,7 +66,7 @@ uninstall:  ## Uninstall podman-tui binary
 #=================================================
 
 .PHONY: install.tools
-install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codespell ## Install needed tools
+install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codespell .install.golangci-lint ## Install needed tools
 
 .PHONY: .install.ginkgo
 .install.ginkgo:
@@ -137,7 +137,7 @@ validate: gofmt lint pre-commit  ## Validate podman-tui code (fmt, lint, ...)
 .PHONY: lint
 lint: ## Run golangci-lint
 	@echo "running golangci-lint"
-	$(GOBIN)/golangci-lint run
+	$(BIN)/golangci-lint run
 
 .PHONY: pre-commit
 pre-commit:   ## Run pre-commit

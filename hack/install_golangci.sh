@@ -4,12 +4,13 @@ die() { echo "${1:-No error message given} (from $(basename $0))"; exit 1; }
 
 [ -n "$VERSION" ] || die "\$VERSION is empty or undefined"
 
+BIN="./bin/golangci-lint"
+
 function install() {
     echo "Installing golangci-lint v$VERSION into $BIN"
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$VERSION
 }
 
-BIN="$GOBIN/golangci-lint"
 if [ ! -x "$BIN" ]; then
 	install
 else
