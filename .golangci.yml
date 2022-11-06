@@ -22,6 +22,7 @@ linters:
     - interfacer
     - scopelint
     - exhaustivestruct
+    - gomoddirectives
 linters-settings:
   errcheck:
     check-blank: false
