@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 0.7.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,7 +60,38 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Sep 11 2022 Navid Yaghoobi <navidys@fedoraproject.org> 0.7.0-dev-1
+* Sun Nov 06 2022 Navid Yaghoobi <navidys@fedoraproject.org> 0.7.0-1
+- New feature - container restore
+- New feature - container checkpoint
+- Cirrus + golangci update
+- Fix vendoring failure
+- Config and pdcs update for podman v4.3.0
+- Check for gha updates daily with dependabot
+- Static build support
+- Fix test failure for utils and network disconnect dialog
+- Bump github.com/containers/podman/v4 from 4.2.1 to 4.3.0
+- Bump github.com/containers/buildah from 1.27.2 to 1.28.0
+- Bump github.com/containers/common from 0.49.1 to 0.50.1
+- Bump actions/checkout from 2 to 3
+- Bump actions/stale from 1 to 6
+- Bump tim-actions/get-pr-commits from 1.1.0 to 1.2.0
+- Bump github.com/docker/docker from 20.10.20+incompatible to 20.10.21+incompatible
+- Bump github.com/onsi/gomega from 1.22.1 to 1.24.0
+- Bump github.com/spf13/cobra from 1.6.0 to 1.6.1
+- Bump github.com/BurntSushi/toml from 1.2.0 to 1.2.1
+- Bump github.com/onsi/ginkgo/v2 from 2.3.1 to 2.4.0
+- Bump github.com/docker/docker from 20.10.19+incompatible to 20.10.20+incompatible
+- Bump github.com/docker/docker from 20.10.18+incompatible to 20.10.19+incompatible
+- Bump github.com/onsi/ginkgo/v2 from 2.3.0 to 2.3.1
+- Bump github.com/onsi/gomega from 1.22.0 to 1.22.1
+- Bump github.com/onsi/ginkgo/v2 from 2.2.0 to 2.3.0
+- Bump github.com/onsi/gomega from 1.21.1 to 1.22.0
+- Bump github.com/spf13/cobra from 1.5.0 to 1.6.0
+- Bump github.com/onsi/gomega from 1.20.2 to 1.21.1
+- Bump github.com/containers/buildah from 1.27.1 to 1.27.2
+- Bump github.com/onsi/ginkgo/v2 from 2.1.6 to 2.2.0
+- Bump github.com/docker/docker  20.10.17+incompatible to 20.10.18+incompatible
+- Bump github.com/containers/buildah from 1.27.0 to 1.27.1
 
 * Sun Sep 11 2022 Navid Yaghoobi <navidys@fedoraproject.org> 0.6.0-1
 - new feature - network disconnect
