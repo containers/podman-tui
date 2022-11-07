@@ -56,3 +56,4 @@ func main() {
 * percentage mode gauge
 * utilisation mode gauge
 * message dialog (info and error)
+* spinner
