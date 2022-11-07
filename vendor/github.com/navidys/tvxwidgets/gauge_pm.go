@@ -32,6 +32,11 @@ func NewPercentageModeGauge() *PercentageModeGauge {
 // Draw draws this primitive onto the screen.
 func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 	g.Box.DrawForSubclass(screen, g)
+
+	if g.maxValue == 0 {
+		return
+	}
+
 	x, y, width, height := g.Box.GetInnerRect()
 	pcWidth := 3
 	pc := g.value * gaugeMaxPc / g.maxValue
@@ -123,6 +128,10 @@ func (g *PercentageModeGauge) Reset() {
 }
 
 func (g *PercentageModeGauge) progressBlock(max int) int {
+	if g.maxValue == 0 {
+		return g.maxValue
+	}
+
 	pc := g.value * gaugeMaxPc / g.maxValue
 	value := pc * max / gaugeMaxPc
 
