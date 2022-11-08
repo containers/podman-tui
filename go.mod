@@ -7,7 +7,7 @@ require (
 	github.com/containers/buildah v1.28.0
 	github.com/containers/common v0.50.1
 	github.com/containers/podman/v4 v4.3.0
-	github.com/containers/storage v1.43.0
+	github.com/containers/storage v1.44.0
 	github.com/docker/distribution v2.8.1+incompatible
 	github.com/docker/docker v20.10.21+incompatible
 	github.com/docker/go-units v0.5.0
@@ -28,7 +28,7 @@ require (
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
-	github.com/Microsoft/hcsshim v0.9.4 // indirect
+	github.com/Microsoft/hcsshim v0.9.5 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
@@ -36,7 +36,7 @@ require (
 	github.com/chzyer/readline v1.5.1 // indirect
 	github.com/containerd/cgroups v1.0.4 // indirect
 	github.com/containerd/containerd v1.6.8 // indirect
-	github.com/containerd/stargz-snapshotter/estargz v0.12.0 // indirect
+	github.com/containerd/stargz-snapshotter/estargz v0.12.1 // indirect
 	github.com/containers/image/v5 v5.23.0 // indirect
 	github.com/containers/libtrust v0.0.0-20200511145503-9c3a6c22cd9a // indirect
 	github.com/containers/ocicrypt v1.1.6 // indirect
@@ -65,7 +65,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.15.11 // indirect
+	github.com/klauspost/compress v1.15.12 // indirect
 	github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20220723181115-27de4befb95e // indirect
