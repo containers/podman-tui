@@ -2,8 +2,8 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.hostname = "fedora36"
-    config.vm.box = "fedora/36-cloud-base"
-    config.vm.box_version = "36-20220504.1"
+    config.vm.box = "fedora/37-cloud-base"
+    config.vm.box_version = "37.20221105.0"
 
     config.vm.provision "shell", inline: "mkdir -p /home/vagrant/go"
     config.vm.synced_folder ".", "/home/vagrant/go/src/podman-tui",
@@ -36,6 +36,6 @@ BASH
     config.vm.provision "shell", inline: setup_env
     config.vm.provision "shell", inline: setup_go
     config.vm.provision "shell", inline: setup_podman
-    config.vm.provision "shell", inline: "chown -R vagrant.vagrant /home/vagrant/go"
+    config.vm.provision "shell", inline: "chown -R vagrant:vagrant /home/vagrant/go"
 
 end
