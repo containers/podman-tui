@@ -5,6 +5,7 @@ GOPKGDIR := $(FIRST_GOPATH)/src/$(PKG_PATH)
 GOPKGBASEDIR ?= $(shell dirname "$(GOPKGDIR)")
 GOBIN := $(shell $(GO) env GOBIN)
 BUILDFLAGS := -mod=vendor $(BUILDFLAGS)
+BUILDTAGS := "exclude_graphdriver_devicemapper exclude_graphdriver_btrfs btrfs_noversion containers_image_openpgp remote"
 COVERAGE_PATH ?= .coverage
 TARGET = podman-tui
 BIN = ./bin
@@ -35,19 +36,19 @@ binary: $(TARGET)  ## Build podman-tui binary
 $(TARGET): $(SRC)
 	@mkdir -p $(BIN)
 	@echo "running go build"
-	@env CGO_ENABLED=0 $(GO) build $(BUILDFLAGS) -o $(BIN)/$(TARGET) -tags "containers_image_openpgp remote"
+	@env CGO_ENABLED=0 $(GO) build $(BUILDFLAGS) -o $(BIN)/$(TARGET) -tags $(BUILDTAGS)
 
 .PHONY: binary-win
 binary-win:  ## Build podman-tui.exe windows binary
 	@mkdir -p $(BIN)/windows/
 	@echo "running go build for windows"
-	@env CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags "containers_image_openpgp windows remote"
+	@env CGO_ENABLED=0 GOOS=windows GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/windows/$(TARGET).exe -tags $(BUILDTAGS)
 
 .PHONY: binary-darwin
 binary-darwin: ## Build podman-tui for darwin
 	@mkdir -p $(BIN)/darwin/
 	@echo "running go build for darwin"
-	@env CGO_ENABLED=0 GOOS=darwin GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/darwin/$(TARGET) -tags "containers_image_openpgp darwin remote"
+	@env CGO_ENABLED=0 GOOS=darwin GOARCH=$(GOARCH) $(GO) build $(BUILDFLAGS) -o $(BIN)/darwin/$(TARGET) -tags $(BUILDTAGS)
 
 .PHONY: clean
 clean:
@@ -133,6 +134,13 @@ package-install: package  ## Install rpm package
 
 .PHONY: validate
 validate: gofmt lint pre-commit  ## Validate podman-tui code (fmt, lint, ...)
+
+.PHONY: vendor
+vendor: ## Check vendor
+	$(GO) mod tidy
+	$(GO) mod vendor
+	$(GO) mod verify
+	@bash ./hack/tree_status.sh
 
 .PHONY: lint
 lint: ## Run golangci-lint

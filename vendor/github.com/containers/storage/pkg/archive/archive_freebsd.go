@@ -1,5 +1,5 @@
-//go:build !windows && !freebsd
-// +build !windows,!freebsd
+//go:build freebsd
+// +build freebsd
 
 package archive
 
@@ -9,9 +9,11 @@ import (
 	"os"
 	"path/filepath"
 	"syscall"
+	"unsafe"
 
 	"github.com/containers/storage/pkg/idtools"
 	"github.com/containers/storage/pkg/system"
+	"github.com/containers/storage/pkg/unshare"
 	"golang.org/x/sys/unix"
 )
 
@@ -38,7 +40,6 @@ func CanonicalTarNameForPath(p string) (string, error) {
 
 // chmodTarEntry is used to adjust the file permissions used in tar header based
 // on the platform the archival is done.
-
 func chmodTarEntry(perm os.FileMode) os.FileMode {
 	return perm // noop for unix as golang APIs provide perm bits correctly
 }
@@ -88,6 +89,11 @@ func minor(device uint64) uint64 {
 // handleTarTypeBlockCharFifo is an OS-specific helper function used by
 // createTarFile to handle the following types of header: Block; Char; Fifo
 func handleTarTypeBlockCharFifo(hdr *tar.Header, path string) error {
+	if unshare.IsRootless() {
+		// cannot create a device if running in user namespace
+		return nil
+	}
+
 	mode := uint32(hdr.Mode & 07777)
 	switch hdr.Typeflag {
 	case tar.TypeBlock:
@@ -98,7 +104,7 @@ func handleTarTypeBlockCharFifo(hdr *tar.Header, path string) error {
 		mode |= unix.S_IFIFO
 	}
 
-	return system.Mknod(path, mode, system.Mkdev(hdr.Devmajor, hdr.Devminor))
+	return system.Mknod(path, mode, uint64(system.Mkdev(hdr.Devmajor, hdr.Devminor)))
 }
 
 func handleLChmod(hdr *tar.Header, path string, hdrInfo os.FileInfo, forceMask *os.FileMode) error {
@@ -106,26 +112,18 @@ func handleLChmod(hdr *tar.Header, path string, hdrInfo os.FileInfo, forceMask *
 	if forceMask != nil {
 		permissionsMask = *forceMask
 	}
-	if hdr.Typeflag == tar.TypeLink {
-		if fi, err := os.Lstat(hdr.Linkname); err == nil && (fi.Mode()&os.ModeSymlink == 0) {
-			if err := os.Chmod(path, permissionsMask); err != nil {
-				return err
-			}
-		}
-	} else if hdr.Typeflag != tar.TypeSymlink {
-		if err := os.Chmod(path, permissionsMask); err != nil {
-			return err
-		}
+	p, err := unix.BytePtrFromString(path)
+	if err != nil {
+		return err
+	}
+	_, _, e1 := unix.Syscall(unix.SYS_LCHMOD, uintptr(unsafe.Pointer(p)), uintptr(permissionsMask), 0)
+	if e1 != 0 {
+		return e1
 	}
 	return nil
 }
 
-// Hardlink without symlinks
-func handleLLink(targetPath, path string) error {
-	// Note: on Linux, the link syscall will not follow symlinks.
-	// This behavior is implementation-dependent since
-	// POSIX.1-2008 so to make it clear that we need non-symlink
-	// following here we use the linkat syscall which has a flags
-	// field to select symlink following or not.
+// Hardlink without following symlinks
+func handleLLink(targetPath string, path string) error {
 	return unix.Linkat(unix.AT_FDCWD, targetPath, unix.AT_FDCWD, path, 0)
 }

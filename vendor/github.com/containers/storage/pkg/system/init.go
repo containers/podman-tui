@@ -6,7 +6,7 @@ import (
 	"unsafe"
 )
 
-// maxTime is used by chtimes.
+// Used by chtimes
 var maxTime time.Time
 
 func init() {

@@ -23,7 +23,7 @@ import (
 const defaultPerms = os.FileMode(0555)
 
 func init() {
-	graphdriver.MustRegister("devicemapper", Init)
+	graphdriver.Register("devicemapper", Init)
 }
 
 // Driver contains the device set mounted and the home directory
