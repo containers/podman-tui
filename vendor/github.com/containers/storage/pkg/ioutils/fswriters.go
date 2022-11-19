@@ -15,7 +15,7 @@ type AtomicFileWriterOptions struct {
 	NoSync bool
 }
 
-var defaultWriterOptions = AtomicFileWriterOptions{}
+var defaultWriterOptions AtomicFileWriterOptions = AtomicFileWriterOptions{}
 
 // SetDefaultOptions overrides the default options used when creating an
 // atomic file writer.
@@ -27,13 +27,6 @@ func SetDefaultOptions(opts AtomicFileWriterOptions) {
 // temporary file and closing it atomically changes the temporary file to
 // destination path. Writing and closing concurrently is not allowed.
 func NewAtomicFileWriterWithOpts(filename string, perm os.FileMode, opts *AtomicFileWriterOptions) (io.WriteCloser, error) {
-	return newAtomicFileWriter(filename, perm, opts)
-}
-
-// newAtomicFileWriter returns WriteCloser so that writing to it writes to a
-// temporary file and closing it atomically changes the temporary file to
-// destination path. Writing and closing concurrently is not allowed.
-func newAtomicFileWriter(filename string, perm os.FileMode, opts *AtomicFileWriterOptions) (*atomicFileWriter, error) {
 	f, err := os.CreateTemp(filepath.Dir(filename), ".tmp-"+filepath.Base(filename))
 	if err != nil {
 		return nil, err
@@ -62,14 +55,14 @@ func NewAtomicFileWriter(filename string, perm os.FileMode) (io.WriteCloser, err
 
 // AtomicWriteFile atomically writes data to a file named by filename.
 func AtomicWriteFile(filename string, data []byte, perm os.FileMode) error {
-	f, err := newAtomicFileWriter(filename, perm, nil)
+	f, err := NewAtomicFileWriter(filename, perm)
 	if err != nil {
 		return err
 	}
 	n, err := f.Write(data)
 	if err == nil && n < len(data) {
 		err = io.ErrShortWrite
-		f.writeErr = err
+		f.(*atomicFileWriter).writeErr = err
 	}
 	if err1 := f.Close(); err == nil {
 		err = err1

@@ -115,7 +115,7 @@ func NewNaiveLayerIDMapUpdater(driver ProtoDriver) LayerIDMapUpdater {
 // on-disk owner UIDs and GIDs which are "host" values in the first map with
 // UIDs and GIDs for "host" values from the second map which correspond to the
 // same "container" IDs.
-func (n *naiveLayerIDMapUpdater) UpdateLayerIDMap(id string, toContainer, toHost *idtools.IDMappings, mountLabel string) (retErr error) {
+func (n *naiveLayerIDMapUpdater) UpdateLayerIDMap(id string, toContainer, toHost *idtools.IDMappings, mountLabel string) error {
 	driver := n.ProtoDriver
 	options := MountOpts{
 		MountLabel: mountLabel,
@@ -124,7 +124,9 @@ func (n *naiveLayerIDMapUpdater) UpdateLayerIDMap(id string, toContainer, toHost
 	if err != nil {
 		return err
 	}
-	defer driverPut(driver, id, &retErr)
+	defer func() {
+		driver.Put(id)
+	}()
 
 	return ChownPathByMaps(layerFs, toContainer, toHost)
 }

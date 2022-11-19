@@ -11,7 +11,6 @@ type StatT struct {
 	mode os.FileMode
 	size int64
 	mtim time.Time
-	platformStatT
 }
 
 // Size returns file's size.

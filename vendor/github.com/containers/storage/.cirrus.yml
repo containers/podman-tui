@@ -18,6 +18,7 @@ env:
     #### Cache-image names to test with (double-quotes around names are critical)
     ###
     FEDORA_NAME: "fedora-36"
+    PRIOR_FEDORA_NAME: "fedora-35"
     UBUNTU_NAME: "ubuntu-2204"
 
     # GCE project where images live
@@ -25,6 +26,7 @@ env:
     # VM Image built in containers/automation_images
     IMAGE_SUFFIX: "c5878804328480768"
     FEDORA_CACHE_IMAGE_NAME: "fedora-${IMAGE_SUFFIX}"
+    PRIOR_FEDORA_CACHE_IMAGE_NAME: "prior-fedora-${IMAGE_SUFFIX}"
     UBUNTU_CACHE_IMAGE_NAME: "ubuntu-${IMAGE_SUFFIX}"
 
     ####
@@ -88,6 +90,15 @@ fedora_testing_task: &fedora_testing
         journal_log_script: '${_JOURNALCMD} || true'
 
 
+prior_fedora_testing_task:
+    <<: *fedora_testing
+    alias: prior_fedora_testing
+    name: *std_test_name
+    env:
+        OS_NAME: "${PRIOR_FEDORA_NAME}"
+        VM_IMAGE: "${PRIOR_FEDORA_CACHE_IMAGE_NAME}"
+
+
 ubuntu_testing_task: &ubuntu_testing
     <<: *fedora_testing
     alias: ubuntu_testing
@@ -106,7 +117,7 @@ lint_task:
     env:
         CIRRUS_WORKING_DIR: "/go/src/github.com/containers/storage"
     container:
-        image: golang:1.17
+        image: golang:1.16
     modules_cache:
         fingerprint_script: cat go.sum
         folder: $GOPATH/pkg/mod
@@ -114,7 +125,7 @@ lint_task:
       echo "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/backports.list
       apt-get update
       apt-get install -y libbtrfs-dev libdevmapper-dev
-    test_script: make local-validate && make lint
+    test_script: make lint
 
 
 # Update metadata on VM images referenced by this repository state
@@ -129,6 +140,7 @@ meta_task:
         # Space-separated list of images used by this repository state
         IMGNAMES: |-
             ${FEDORA_CACHE_IMAGE_NAME}
+            ${PRIOR_FEDORA_CACHE_IMAGE_NAME}
             ${UBUNTU_CACHE_IMAGE_NAME}
         BUILDID: "${CIRRUS_BUILD_ID}"
         REPOREF: "${CIRRUS_CHANGE_IN_REPO}"
@@ -142,7 +154,7 @@ meta_task:
 
 vendor_task:
     container:
-        image: golang:1.17
+        image: golang:1.16
     modules_cache:
         fingerprint_script: cat go.sum
         folder: $GOPATH/pkg/mod
@@ -155,10 +167,11 @@ success_task:
     depends_on:
         - lint
         - fedora_testing
+        - prior_fedora_testing
         - ubuntu_testing
         - meta
         - vendor
     container:
-        image: golang:1.17
+        image: golang:1.16
     clone_script: 'mkdir -p "$CIRRUS_WORKING_DIR"'  # Source code not needed
     script: /bin/true

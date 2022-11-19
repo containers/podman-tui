@@ -65,7 +65,7 @@ func (gdw *NaiveDiffDriver) Diff(id string, idMappings *idtools.IDMappings, pare
 
 	defer func() {
 		if err != nil {
-			driverPut(driver, id, &err)
+			driver.Put(id)
 		}
 	}()
 
@@ -80,7 +80,7 @@ func (gdw *NaiveDiffDriver) Diff(id string, idMappings *idtools.IDMappings, pare
 		}
 		return ioutils.NewReadCloserWrapper(archive, func() error {
 			err := archive.Close()
-			driverPut(driver, id, &err)
+			driver.Put(id)
 			return err
 		}), nil
 	}
@@ -90,7 +90,7 @@ func (gdw *NaiveDiffDriver) Diff(id string, idMappings *idtools.IDMappings, pare
 	if err != nil {
 		return nil, err
 	}
-	defer driverPut(driver, parent, &err)
+	defer driver.Put(parent)
 
 	changes, err := archive.ChangesDirs(layerFs, idMappings, parentFs, parentMappings)
 	if err != nil {
@@ -104,7 +104,7 @@ func (gdw *NaiveDiffDriver) Diff(id string, idMappings *idtools.IDMappings, pare
 
 	return ioutils.NewReadCloserWrapper(archive, func() error {
 		err := archive.Close()
-		driverPut(driver, id, &err)
+		driver.Put(id)
 
 		// NaiveDiffDriver compares file metadata with parent layers. Parent layers
 		// are extracted from tar's with full second precision on modified time.
@@ -117,7 +117,7 @@ func (gdw *NaiveDiffDriver) Diff(id string, idMappings *idtools.IDMappings, pare
 
 // Changes produces a list of changes between the specified layer
 // and its parent layer. If parent is "", then all changes will be ADD changes.
-func (gdw *NaiveDiffDriver) Changes(id string, idMappings *idtools.IDMappings, parent string, parentMappings *idtools.IDMappings, mountLabel string) (_ []archive.Change, retErr error) {
+func (gdw *NaiveDiffDriver) Changes(id string, idMappings *idtools.IDMappings, parent string, parentMappings *idtools.IDMappings, mountLabel string) ([]archive.Change, error) {
 	driver := gdw.ProtoDriver
 
 	if idMappings == nil {
@@ -134,7 +134,7 @@ func (gdw *NaiveDiffDriver) Changes(id string, idMappings *idtools.IDMappings, p
 	if err != nil {
 		return nil, err
 	}
-	defer driverPut(driver, id, &retErr)
+	defer driver.Put(id)
 
 	parentFs := ""
 
@@ -147,7 +147,7 @@ func (gdw *NaiveDiffDriver) Changes(id string, idMappings *idtools.IDMappings, p
 		if err != nil {
 			return nil, err
 		}
-		defer driverPut(driver, parent, &retErr)
+		defer driver.Put(parent)
 	}
 
 	return archive.ChangesDirs(layerFs, idMappings, parentFs, parentMappings)
@@ -171,10 +171,10 @@ func (gdw *NaiveDiffDriver) ApplyDiff(id, parent string, options ApplyDiffOpts) 
 	if err != nil {
 		return
 	}
-	defer driverPut(driver, id, &err)
+	defer driver.Put(id)
 
 	defaultForceMask := os.FileMode(0700)
-	var forceMask *os.FileMode // = nil
+	var forceMask *os.FileMode = nil
 	if runtime.GOOS == "darwin" {
 		forceMask = &defaultForceMask
 	}
@@ -224,7 +224,7 @@ func (gdw *NaiveDiffDriver) DiffSize(id string, idMappings *idtools.IDMappings, 
 	if err != nil {
 		return
 	}
-	defer driverPut(driver, id, &err)
+	defer driver.Put(id)
 
 	return archive.ChangesSize(layerFs, changes), nil
 }

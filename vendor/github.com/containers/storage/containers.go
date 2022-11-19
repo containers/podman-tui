@@ -66,25 +66,12 @@ type Container struct {
 	Flags map[string]interface{} `json:"flags,omitempty"`
 }
 
-// rwContainerStore provides bookkeeping for information about Containers.
-type rwContainerStore interface {
-	metadataStore
-	containerBigDataStore
-	flaggableStore
-
-	// startWriting makes sure the store is fresh, and locks it for writing.
-	// If this succeeds, the caller MUST call stopWriting().
-	startWriting() error
-
-	// stopWriting releases locks obtained by startWriting.
-	stopWriting()
-
-	// startReading makes sure the store is fresh, and locks it for reading.
-	// If this succeeds, the caller MUST call stopReading().
-	startReading() error
-
-	// stopReading releases locks obtained by startReading.
-	stopReading()
+// ContainerStore provides bookkeeping for information about Containers.
+type ContainerStore interface {
+	FileBasedStore
+	MetadataStore
+	ContainerBigDataStore
+	FlaggableStore
 
 	// Create creates a container that has a specified ID (or generates a
 	// random one if an empty value is supplied) and optional names,
@@ -94,8 +81,18 @@ type rwContainerStore interface {
 	// convenience of the caller, nothing more.
 	Create(id string, names []string, image, layer, metadata string, options *ContainerOptions) (*Container, error)
 
-	// updateNames modifies names associated with a  container based on (op, names).
-	updateNames(id string, names []string, op updateNameOperation) error
+	// SetNames updates the list of names associated with the container
+	// with the specified ID.
+	// Deprecated: Prone to race conditions, suggested alternatives are `AddNames` and `RemoveNames`.
+	SetNames(id string, names []string) error
+
+	// AddNames adds the supplied values to the list of names associated with the container with
+	// the specified id.
+	AddNames(id string, names []string) error
+
+	// RemoveNames removes the supplied values from the list of names associated with the container with
+	// the specified id.
+	RemoveNames(id string, names []string) error
 
 	// Get retrieves information about a container given an ID or name.
 	Get(id string) (*Container, error)
@@ -160,12 +157,12 @@ func (c *Container) ProcessLabel() string {
 }
 
 func (c *Container) MountOpts() []string {
-	switch value := c.Flags[mountOptsFlag].(type) {
+	switch c.Flags[mountOptsFlag].(type) {
 	case []string:
-		return value
+		return c.Flags[mountOptsFlag].([]string)
 	case []interface{}:
 		var mountOpts []string
-		for _, v := range value {
+		for _, v := range c.Flags[mountOptsFlag].([]interface{}) {
 			if flag, ok := v.(string); ok {
 				mountOpts = append(mountOpts, flag)
 			}
@@ -174,80 +171,6 @@ func (c *Container) MountOpts() []string {
 	default:
 		return nil
 	}
-}
-
-// startWritingWithReload makes sure the store is fresh if canReload, and locks it for writing.
-// If this succeeds, the caller MUST call stopWriting().
-//
-// This is an internal implementation detail of containerStore construction, every other caller
-// should use startWriting() instead.
-func (r *containerStore) startWritingWithReload(canReload bool) error {
-	r.lockfile.Lock()
-	succeeded := false
-	defer func() {
-		if !succeeded {
-			r.lockfile.Unlock()
-		}
-	}()
-
-	if canReload {
-		if err := r.reloadIfChanged(true); err != nil {
-			return err
-		}
-	}
-
-	succeeded = true
-	return nil
-}
-
-// startWriting makes sure the store is fresh, and locks it for writing.
-// If this succeeds, the caller MUST call stopWriting().
-func (r *containerStore) startWriting() error {
-	return r.startWritingWithReload(true)
-}
-
-// stopWriting releases locks obtained by startWriting.
-func (r *containerStore) stopWriting() {
-	r.lockfile.Unlock()
-}
-
-// startReading makes sure the store is fresh, and locks it for reading.
-// If this succeeds, the caller MUST call stopReading().
-func (r *containerStore) startReading() error {
-	r.lockfile.RLock()
-	succeeded := false
-	defer func() {
-		if !succeeded {
-			r.lockfile.Unlock()
-		}
-	}()
-
-	if err := r.reloadIfChanged(false); err != nil {
-		return err
-	}
-
-	succeeded = true
-	return nil
-}
-
-// stopReading releases locks obtained by startReading.
-func (r *containerStore) stopReading() {
-	r.lockfile.Unlock()
-}
-
-// reloadIfChanged reloads the contents of the store from disk if it is changed.
-//
-// The caller must hold r.lockfile for reading _or_ writing; lockedForWriting is true
-// if it is held for writing.
-func (r *containerStore) reloadIfChanged(lockedForWriting bool) error {
-	r.loadMut.Lock()
-	defer r.loadMut.Unlock()
-
-	modified, err := r.lockfile.Modified()
-	if err == nil && modified {
-		return r.load(lockedForWriting)
-	}
-	return err
 }
 
 func (r *containerStore) Containers() ([]Container, error) {
@@ -270,60 +193,48 @@ func (r *containerStore) datapath(id, key string) string {
 	return filepath.Join(r.datadir(id), makeBigDataBaseName(key))
 }
 
-// load reloads the contents of the store from disk.
-//
-// The caller must hold r.lockfile for reading _or_ writing; lockedForWriting is true
-// if it is held for writing.
-func (r *containerStore) load(lockedForWriting bool) error {
+func (r *containerStore) Load() error {
 	needSave := false
 	rpath := r.containerspath()
 	data, err := os.ReadFile(rpath)
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
-
 	containers := []*Container{}
-	if len(data) != 0 {
-		if err := json.Unmarshal(data, &containers); err != nil {
-			return fmt.Errorf("loading %q: %w", rpath, err)
-		}
-	}
-	idlist := make([]string, 0, len(containers))
 	layers := make(map[string]*Container)
+	idlist := []string{}
 	ids := make(map[string]*Container)
 	names := make(map[string]*Container)
-	for n, container := range containers {
-		idlist = append(idlist, container.ID)
-		ids[container.ID] = containers[n]
-		layers[container.LayerID] = containers[n]
-		for _, name := range container.Names {
-			if conflict, ok := names[name]; ok {
-				r.removeName(conflict, name)
-				needSave = true
+	if err = json.Unmarshal(data, &containers); len(data) == 0 || err == nil {
+		idlist = make([]string, 0, len(containers))
+		for n, container := range containers {
+			idlist = append(idlist, container.ID)
+			ids[container.ID] = containers[n]
+			layers[container.LayerID] = containers[n]
+			for _, name := range container.Names {
+				if conflict, ok := names[name]; ok {
+					r.removeName(conflict, name)
+					needSave = true
+				}
+				names[name] = containers[n]
 			}
-			names[name] = containers[n]
 		}
 	}
-
 	r.containers = containers
-	r.idindex = truncindex.NewTruncIndex(idlist) // Invalid values in idlist are ignored: they are not a reason to refuse processing the whole store.
+	r.idindex = truncindex.NewTruncIndex(idlist)
 	r.byid = ids
 	r.bylayer = layers
 	r.byname = names
 	if needSave {
-		if !lockedForWriting {
-			// Eventually, the callers should be modified to retry with a write lock, instead.
-			return errors.New("container store is inconsistent and the current caller does not hold a write lock")
-		}
 		return r.Save()
 	}
 	return nil
 }
 
-// Save saves the contents of the store to disk.  It should be called with
-// the lock held, locked for writing.
 func (r *containerStore) Save() error {
-	r.lockfile.AssertLockedForWriting()
+	if !r.Locked() {
+		return errors.New("container store is not locked")
+	}
 	rpath := r.containerspath()
 	if err := os.MkdirAll(filepath.Dir(rpath), 0700); err != nil {
 		return err
@@ -332,13 +243,11 @@ func (r *containerStore) Save() error {
 	if err != nil {
 		return err
 	}
-	if err := ioutils.AtomicWriteFile(rpath, jdata, 0600); err != nil {
-		return err
-	}
-	return r.lockfile.Touch()
+	defer r.Touch()
+	return ioutils.AtomicWriteFile(rpath, jdata, 0600)
 }
 
-func newContainerStore(dir string) (rwContainerStore, error) {
+func newContainerStore(dir string) (ContainerStore, error) {
 	if err := os.MkdirAll(dir, 0700); err != nil {
 		return nil, err
 	}
@@ -346,6 +255,8 @@ func newContainerStore(dir string) (rwContainerStore, error) {
 	if err != nil {
 		return nil, err
 	}
+	lockfile.Lock()
+	defer lockfile.Unlock()
 	cstore := containerStore{
 		lockfile:   lockfile,
 		dir:        dir,
@@ -354,11 +265,7 @@ func newContainerStore(dir string) (rwContainerStore, error) {
 		bylayer:    make(map[string]*Container),
 		byname:     make(map[string]*Container),
 	}
-	if err := cstore.startWritingWithReload(false); err != nil {
-		return nil, err
-	}
-	defer cstore.stopWriting()
-	if err := cstore.load(true); err != nil {
+	if err := cstore.Load(); err != nil {
 		return nil, err
 	}
 	return &cstore, nil
@@ -430,31 +337,31 @@ func (r *containerStore) Create(id string, names []string, image, layer, metadat
 	if err := hasOverlappingRanges(options.GIDMap); err != nil {
 		return nil, err
 	}
-	container = &Container{
-		ID:             id,
-		Names:          names,
-		ImageID:        image,
-		LayerID:        layer,
-		Metadata:       metadata,
-		BigDataNames:   []string{},
-		BigDataSizes:   make(map[string]int64),
-		BigDataDigests: make(map[string]digest.Digest),
-		Created:        time.Now().UTC(),
-		Flags:          copyStringInterfaceMap(options.Flags),
-		UIDMap:         copyIDMap(options.UIDMap),
-		GIDMap:         copyIDMap(options.GIDMap),
+	if err == nil {
+		container = &Container{
+			ID:             id,
+			Names:          names,
+			ImageID:        image,
+			LayerID:        layer,
+			Metadata:       metadata,
+			BigDataNames:   []string{},
+			BigDataSizes:   make(map[string]int64),
+			BigDataDigests: make(map[string]digest.Digest),
+			Created:        time.Now().UTC(),
+			Flags:          copyStringInterfaceMap(options.Flags),
+			UIDMap:         copyIDMap(options.UIDMap),
+			GIDMap:         copyIDMap(options.GIDMap),
+		}
+		r.containers = append(r.containers, container)
+		r.byid[id] = container
+		r.idindex.Add(id)
+		r.bylayer[layer] = container
+		for _, name := range names {
+			r.byname[name] = container
+		}
+		err = r.Save()
+		container = copyContainer(container)
 	}
-	r.containers = append(r.containers, container)
-	r.byid[id] = container
-	// This can only fail on duplicate IDs, which shouldn’t happen — and in that case the index is already in the desired state anyway.
-	// Implementing recovery from an unlikely and unimportant failure here would be too risky.
-	_ = r.idindex.Add(id)
-	r.bylayer[layer] = container
-	for _, name := range names {
-		r.byname[name] = container
-	}
-	err = r.Save()
-	container = copyContainer(container)
 	return container, err
 }
 
@@ -475,6 +382,19 @@ func (r *containerStore) SetMetadata(id, metadata string) error {
 
 func (r *containerStore) removeName(container *Container, name string) {
 	container.Names = stringSliceWithoutValue(container.Names, name)
+}
+
+// Deprecated: Prone to race conditions, suggested alternatives are `AddNames` and `RemoveNames`.
+func (r *containerStore) SetNames(id string, names []string) error {
+	return r.updateNames(id, names, setNames)
+}
+
+func (r *containerStore) AddNames(id string, names []string) error {
+	return r.updateNames(id, names, addNames)
+}
+
+func (r *containerStore) RemoveNames(id string, names []string) error {
+	return r.updateNames(id, names, removeNames)
 }
 
 func (r *containerStore) updateNames(id string, names []string, op updateNameOperation) error {
@@ -514,9 +434,7 @@ func (r *containerStore) Delete(id string) error {
 		}
 	}
 	delete(r.byid, id)
-	// This can only fail if the ID is already missing, which shouldn’t happen — and in that case the index is already in the desired state anyway.
-	// The store’s Delete method is used on various paths to recover from failures, so this should be robust against partially missing data.
-	_ = r.idindex.Delete(id)
+	r.idindex.Delete(id)
 	delete(r.bylayer, container.LayerID)
 	for _, name := range container.Names {
 		delete(r.byname, name)
@@ -693,4 +611,51 @@ func (r *containerStore) Wipe() error {
 		}
 	}
 	return nil
+}
+
+func (r *containerStore) Lock() {
+	r.lockfile.Lock()
+}
+
+func (r *containerStore) RecursiveLock() {
+	r.lockfile.RecursiveLock()
+}
+
+func (r *containerStore) RLock() {
+	r.lockfile.RLock()
+}
+
+func (r *containerStore) Unlock() {
+	r.lockfile.Unlock()
+}
+
+func (r *containerStore) Touch() error {
+	return r.lockfile.Touch()
+}
+
+func (r *containerStore) Modified() (bool, error) {
+	return r.lockfile.Modified()
+}
+
+func (r *containerStore) IsReadWrite() bool {
+	return r.lockfile.IsReadWrite()
+}
+
+func (r *containerStore) TouchedSince(when time.Time) bool {
+	return r.lockfile.TouchedSince(when)
+}
+
+func (r *containerStore) Locked() bool {
+	return r.lockfile.Locked()
+}
+
+func (r *containerStore) ReloadIfChanged() error {
+	r.loadMut.Lock()
+	defer r.loadMut.Unlock()
+
+	modified, err := r.Modified()
+	if err == nil && modified {
+		return r.Load()
+	}
+	return err
 }

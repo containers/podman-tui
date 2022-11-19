@@ -30,6 +30,7 @@ type lockfile struct {
 	locktype   int16
 	locked     bool
 	ro         bool
+	recursive  bool
 }
 
 const lastWriterIDSize = 64    // This must be the same as len(stringid.GenerateRandomID)
@@ -78,7 +79,7 @@ func openLock(path string, ro bool) (fd int, err error) {
 	}
 	fd, err = unix.Open(path, flags, 0o644)
 	if err == nil {
-		return fd, nil
+		return
 	}
 
 	// the directory of the lockfile seems to be removed, try to create it
@@ -130,10 +131,10 @@ func createLockerForPath(path string, ro bool) (Locker, error) {
 
 // lock locks the lockfile via FCTNL(2) based on the specified type and
 // command.
-func (l *lockfile) lock(lType int16) {
+func (l *lockfile) lock(lType int16, recursive bool) {
 	lk := unix.Flock_t{
 		Type:   lType,
-		Whence: int16(unix.SEEK_SET),
+		Whence: int16(os.SEEK_SET),
 		Start:  0,
 		Len:    0,
 	}
@@ -141,7 +142,13 @@ func (l *lockfile) lock(lType int16) {
 	case unix.F_RDLCK:
 		l.rwMutex.RLock()
 	case unix.F_WRLCK:
-		l.rwMutex.Lock()
+		if recursive {
+			// NOTE: that's okay as recursive is only set in RecursiveLock(), so
+			// there's no need to protect against hypothetical RDLCK cases.
+			l.rwMutex.RLock()
+		} else {
+			l.rwMutex.Lock()
+		}
 	default:
 		panic(fmt.Sprintf("attempted to acquire a file lock of unrecognized type %d", lType))
 	}
@@ -164,6 +171,7 @@ func (l *lockfile) lock(lType int16) {
 	}
 	l.locktype = lType
 	l.locked = true
+	l.recursive = recursive
 	l.counter++
 }
 
@@ -172,19 +180,30 @@ func (l *lockfile) Lock() {
 	if l.ro {
 		panic("can't take write lock on read-only lock file")
 	} else {
-		l.lock(unix.F_WRLCK)
+		l.lock(unix.F_WRLCK, false)
+	}
+}
+
+// RecursiveLock locks the lockfile as a writer but allows for recursive
+// acquisitions within the same process space.  Note that RLock() will be called
+// if it's a lockTypReader lock.
+func (l *lockfile) RecursiveLock() {
+	if l.ro {
+		l.RLock()
+	} else {
+		l.lock(unix.F_WRLCK, true)
 	}
 }
 
 // LockRead locks the lockfile as a reader.
 func (l *lockfile) RLock() {
-	l.lock(unix.F_RDLCK)
+	l.lock(unix.F_RDLCK, false)
 }
 
 // Unlock unlocks the lockfile.
 func (l *lockfile) Unlock() {
 	l.stateMutex.Lock()
-	if !l.locked {
+	if l.locked == false {
 		// Panic when unlocking an unlocked lock.  That's a violation
 		// of the lock semantics and will reveal such.
 		panic("calling Unlock on unlocked lock")
@@ -205,7 +224,7 @@ func (l *lockfile) Unlock() {
 		// file lock.
 		unix.Close(int(l.fd))
 	}
-	if l.locktype == unix.F_RDLCK {
+	if l.locktype == unix.F_RDLCK || l.recursive {
 		l.rwMutex.RUnlock()
 	} else {
 		l.rwMutex.Unlock()
@@ -213,33 +232,11 @@ func (l *lockfile) Unlock() {
 	l.stateMutex.Unlock()
 }
 
-func (l *lockfile) AssertLocked() {
-	// DO NOT provide a variant that returns the value of l.locked.
-	//
-	// If the caller does not hold the lock, l.locked might nevertheless be true because another goroutine does hold it, and
-	// we can’t tell the difference.
-	//
-	// Hence, this “AssertLocked” method, which exists only for sanity checks.
-
-	// Don’t even bother with l.stateMutex: The caller is expected to hold the lock, and in that case l.locked is constant true
-	// with no possible writers.
-	// If the caller does not hold the lock, we are violating the locking/memory model anyway, and accessing the data
-	// without the lock is more efficient for callers, and potentially more visible to lock analysers for incorrect callers.
-	if !l.locked {
-		panic("internal error: lock is not held by the expected owner")
-	}
-}
-
-func (l *lockfile) AssertLockedForWriting() {
-	// DO NOT provide a variant that returns the current lock state.
-	//
-	// The same caveats as for AssertLocked apply equally.
-
-	l.AssertLocked()
-	// Like AssertLocked, don’t even bother with l.stateMutex.
-	if l.locktype != unix.F_WRLCK {
-		panic("internal error: lock is not held for writing")
-	}
+// Locked checks if lockfile is locked for writing by a thread in this process.
+func (l *lockfile) Locked() bool {
+	l.stateMutex.Lock()
+	defer l.stateMutex.Unlock()
+	return l.locked && (l.locktype == unix.F_WRLCK)
 }
 
 // Touch updates the lock file with the UID of the user.
@@ -268,15 +265,14 @@ func (l *lockfile) Modified() (bool, error) {
 		panic("attempted to check last-writer in lockfile without locking it first")
 	}
 	defer l.stateMutex.Unlock()
-	currentLW := make([]byte, lastWriterIDSize)
+	currentLW := make([]byte, len(l.lw))
 	n, err := unix.Pread(int(l.fd), currentLW, 0)
 	if err != nil {
 		return true, err
 	}
-	// It is important to handle the partial read case, because
-	// the initial size of the lock file is zero, which is a valid
-	// state (no writes yet)
-	currentLW = currentLW[:n]
+	if n != len(l.lw) {
+		return true, nil
+	}
 	oldLW := l.lw
 	l.lw = currentLW
 	return !bytes.Equal(currentLW, oldLW), nil

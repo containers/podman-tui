@@ -42,7 +42,7 @@ import (
 const defaultPerms = os.FileMode(0555)
 
 func init() {
-	graphdriver.MustRegister("btrfs", Init)
+	graphdriver.Register("btrfs", Init)
 }
 
 type btrfsOptions struct {

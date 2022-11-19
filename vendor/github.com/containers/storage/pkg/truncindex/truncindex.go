@@ -14,7 +14,7 @@ import (
 
 var (
 	// ErrEmptyPrefix is an error returned if the prefix was empty.
-	ErrEmptyPrefix = errors.New("prefix can't be empty")
+	ErrEmptyPrefix = errors.New("Prefix can't be empty")
 
 	// ErrIllegalChar is returned when a space is in the ID
 	ErrIllegalChar = errors.New("illegal character: ' '")
@@ -25,7 +25,7 @@ var (
 
 // ErrAmbiguousPrefix is returned if the prefix was ambiguous
 // (multiple ids for the prefix).
-type ErrAmbiguousPrefix struct { //nolint: errname
+type ErrAmbiguousPrefix struct {
 	prefix string
 }
 
@@ -42,7 +42,6 @@ type TruncIndex struct {
 }
 
 // NewTruncIndex creates a new TruncIndex and initializes with a list of IDs.
-// Invalid IDs are _silently_ ignored.
 func NewTruncIndex(ids []string) (idx *TruncIndex) {
 	idx = &TruncIndex{
 		ids: make(map[string]struct{}),
@@ -52,7 +51,7 @@ func NewTruncIndex(ids []string) (idx *TruncIndex) {
 		trie: patricia.NewTrie(patricia.MaxPrefixPerNode(64)),
 	}
 	for _, id := range ids {
-		_ = idx.addID(id) // Ignore invalid IDs. Duplicate IDs are not a problem.
+		idx.addID(id)
 	}
 	return
 }
@@ -133,8 +132,7 @@ func (idx *TruncIndex) Get(s string) (string, error) {
 func (idx *TruncIndex) Iterate(handler func(id string)) {
 	idx.Lock()
 	defer idx.Unlock()
-	// Ignore the error from Visit: it can only fail if the provided visitor fails, and ours never does.
-	_ = idx.trie.Visit(func(prefix patricia.Prefix, item patricia.Item) error {
+	idx.trie.Visit(func(prefix patricia.Prefix, item patricia.Item) error {
 		handler(string(prefix))
 		return nil
 	})

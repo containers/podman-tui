@@ -12,7 +12,7 @@ func chroot(path string) error {
 	return nil
 }
 
-func invokeUnpack(decompressedArchive io.Reader,
+func invokeUnpack(decompressedArchive io.ReadCloser,
 	dest string,
 	options *archive.TarOptions, root string) error {
 	// Windows is different to Linux here because Windows does not support
