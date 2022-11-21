@@ -145,7 +145,9 @@ var _ = Describe("container commit", Ordered, func() {
 		app.SetFocus(commitDialog)
 		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
+		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
+		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
 		app.Draw()
 		// format dropdown
@@ -153,7 +155,9 @@ var _ = Describe("container commit", Ordered, func() {
 		app.SetFocus(commitDialog)
 		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		app.Draw()
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		app.Draw()
 		// squash checkbox
