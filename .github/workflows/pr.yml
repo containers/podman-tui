@@ -1,9 +1,16 @@
-name: validate pull requests
+name: validation
 on:
   pull_request:
 
 jobs:
-  commit:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.0
+
+  DCO-check:
     runs-on: ubuntu-latest
     steps:
       - name: get pr commits
@@ -25,14 +32,79 @@ jobs:
           error: 'Subject too long (max 72)'
 
   codespell:
-    name: codespell check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - uses: codespell-project/actions-codespell@master
         with:
           check_filenames: true
           skip: ./.git,./vendor,*_test.go,go.sum,go.mod
+
+  vendoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.2'
+      - uses: actions/checkout@v2
+      - run: |
+          go mod tidy
+          go mod vendor
+          go mod verify
+          bash ./hack/tree_status.sh
+
+  golangci-lint:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.2'
+      - uses: actions/checkout@v2
+      - run: |
+          bash hack/install_dep.sh
+          make .install.golangci-lint
+          make lint
+
+  unit_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.2'
+      - uses: actions/checkout@v2
+      - run: |
+          sudo apt-get install libgpgme-dev libbtrfs-dev libdevmapper-dev libassuan-dev pkg-config -y
+          export GOBIN=$(pwd)/bin/
+          make .install.ginkgo
+          make test-unit
+
+  build_binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.2'
+      - uses: actions/checkout@v2
+      - run: |
+          make all
+
+  build_rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - run: |
+          dnf -y install git-core
+          git clone https://github.com/${GITHUB_REPOSITORY}.git
+          cd podman-tui
+          PR_HEAD=$(echo ${GITHUB_REF} | sed 's/merge/head/g')
+          git pull origin ${PR_HEAD}
+          bash ./hack/install_dep.sh
+          make package
+          rpm -ivh /tmp/rpkg/podman-tui-*/x86_64/podman-tui-*.x86_64.rpm
+          rpm -qi podman-tui
 
   goreportcard:
     name: update reportcard
