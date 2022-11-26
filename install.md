@@ -4,29 +4,19 @@
 - [**Installing Packaged Versions**](#installing-packaged-versions)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
   - [**Fedora**](#fedora)
+- [**Container Image**](#container-image)
 - [**Configuration Files**](#configurations-files)
 
 ## Building From Source
 
 podman-tui is using go version >= 1.17.
-  1. Clone the repo
-  2. Build binaries
-      * Linux:
 
-        ```shell
-        $ make binary
-        ```
-      * Windows:
-
-        ```shell
-        $ make binary-win
-        ```
-
-      * MacOS:
-
-        ```shell
-        $ make binary-darwin
-        ```
+```shell
+$ git clone <repository>
+$ make binary # Linux
+$ make binary-win # Windows
+$ make binary-darwin # MacOS
+```
 
 ## Installing Packaged Versions
 
@@ -41,6 +31,34 @@ $ yay -S podman-tui
 ```
 $ sudo dnf -y install podman-tui
 ```
+
+## Container image
+
+### Pull from quay.io
+
+```shell
+$ podman run -it --name podman-tui-app \
+  -e CONTAINER_PASSPHRASE="<ssh key passphrase>" \
+  -v <ssh_keys_dir>:/ssh_keys/:Z \
+  --net=host \
+  quay.io/navidys/podman-tui:latest # latest release, use develop tag to pull the upstream build
+```
+
+### Build image
+
+podman-tui is using go version >= 1.17.
+
+```shell
+$ git clone <repository>
+$ make binary
+$ podman build -t podman-tui -f Containerfile
+$ podman run -it --name podman-tui-app \
+  -e CONTAINER_PASSPHRASE="<ssh key passphrase>" \
+  -v <ssh_keys_dir>:/ssh_keys/:Z \
+  --net=host \
+  podman-tui
+```
+
 
 ## Configuration Files
 
