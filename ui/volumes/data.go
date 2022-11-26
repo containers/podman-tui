@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/volumes"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -39,12 +39,12 @@ func (vols *Volumes) ClearData() {
 	vols.volumeList.mu.Unlock()
 	vols.table.Clear()
 	expand := 1
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
+	fgColor := style.PageHeaderFgColor
+	bgColor := style.PageHeaderBgColor
 
 	for i := 0; i < len(vols.headers); i++ {
 		vols.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

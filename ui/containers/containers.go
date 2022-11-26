@@ -7,7 +7,7 @@ import (
 
 	"github.com/containers/podman-tui/ui/containers/cntdialogs"
 	"github.com/containers/podman-tui/ui/dialogs"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
@@ -88,22 +88,19 @@ func NewContainers() *Containers {
 		{"unpause", "unpause the selected container that was paused before"},
 	})
 
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
 	containers.table = tview.NewTable()
 	containers.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(containers.title)))
-	containers.table.SetBorderColor(bgColor)
-	containers.table.SetTitleColor(fgColor)
+	containers.table.SetBorderColor(style.BorderColor)
+	containers.table.SetTitleColor(style.FgColor)
+	containers.table.SetBackgroundColor(style.BgColor)
 	containers.table.SetBorder(true)
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
 
 	for i := 0; i < len(containers.headers); i++ {
 		containers.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(containers.headers[i]))).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

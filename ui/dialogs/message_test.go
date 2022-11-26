@@ -51,7 +51,7 @@ var _ = Describe("message dialog", Ordered, func() {
 	})
 
 	It("set text", func() {
-		messageDialog.SetText(messageText)
+		messageDialog.SetText(MessageContainerInfo, "ID (NAME)", messageText)
 		Expect(messageDialog.textview.GetText(true)).To(Equal(messageText))
 	})
 
@@ -62,9 +62,9 @@ var _ = Describe("message dialog", Ordered, func() {
 		height := 20
 		// wants
 		wWants := 40
-		hWants := 8
+		hWants := 11
 		xWants := 5 // 0 + (50-40)/2
-		yWants := 6 // 0 + (20-8)/2
+		yWants := 4 // 0 + (20-8)/2 - 2
 
 		messageDialog.SetRect(x, y, width, height)
 		x1, y1, w1, h1 := messageDialog.Box.GetRect()

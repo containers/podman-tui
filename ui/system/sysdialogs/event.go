@@ -1,10 +1,8 @@
 package sysdialogs
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -20,6 +18,7 @@ const (
 type EventsDialog struct {
 	*tview.Box
 	layout        *tview.Flex
+	serviceName   *tview.InputField
 	textview      *tview.TextView
 	form          *tview.Form
 	display       bool
@@ -30,15 +29,20 @@ type EventsDialog struct {
 // NewEventDialog returns new EventsDialog primitive
 func NewEventDialog() *EventsDialog {
 	eventsDialog := EventsDialog{
-		Box:    tview.NewBox(),
-		layout: tview.NewFlex().SetDirection(tview.FlexRow),
+		Box:         tview.NewBox(),
+		serviceName: tview.NewInputField(),
+		layout:      tview.NewFlex().SetDirection(tview.FlexRow),
 	}
-	fgColor := utils.Styles.EventsDialog.FgColor
-	bgColor := utils.Styles.EventsDialog.BgColor
-	textviewBgColor := utils.Styles.EventsDialog.EventViewer.BgColor
-	textviewFgColor := utils.Styles.EventsDialog.EventViewer.FgColor
-	textviewBorderColor := utils.Styles.EventsDialog.EventViewer.BorderColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+
+	// service name input field
+	serviceNameLabel := "SERVICE NAME:"
+	eventsDialog.serviceName.SetBackgroundColor(style.DialogBgColor)
+	eventsDialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
+	eventsDialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
+	eventsDialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
+	eventsDialog.serviceName.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// text view
 	eventsDialog.textview = tview.NewTextView().
@@ -46,9 +50,9 @@ func NewEventDialog() *EventsDialog {
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 
-	eventsDialog.textview.SetTextColor(textviewFgColor)
-	eventsDialog.textview.SetBackgroundColor(textviewBgColor)
-	eventsDialog.textview.SetBorderColor(textviewBorderColor)
+	eventsDialog.textview.SetTextColor(style.FgColor)
+	eventsDialog.textview.SetBackgroundColor(style.BgColor)
+	eventsDialog.textview.SetBorderColor(style.DialogSubBoxBorderColor)
 	eventsDialog.textview.SetBorder(true)
 
 	// form
@@ -56,21 +60,29 @@ func NewEventDialog() *EventsDialog {
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 
-	eventsDialog.form.SetBackgroundColor(bgColor)
-	eventsDialog.form.SetButtonBackgroundColor(buttonBgColor)
+	eventsDialog.form.SetBackgroundColor(style.DialogBgColor)
+	eventsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// textview layout
 	tlayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-	tlayout.AddItem(eventsDialog.textview, 0, 1, true)
-	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+
+	tlayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(eventsDialog.serviceName, 1, 0, false).
+			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+			AddItem(eventsDialog.textview, 0, 1, true),
+			0, 1, true), 0, 1, true)
+
+	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	// layout
 	eventsDialog.layout.AddItem(tlayout, 0, 1, true)
 	eventsDialog.layout.AddItem(eventsDialog.form, dialogs.DialogFormHeight, 0, true)
 	eventsDialog.layout.SetBorder(true)
-	eventsDialog.layout.SetBackgroundColor(bgColor)
-	eventsDialog.layout.SetBorderColor(fgColor)
+	eventsDialog.layout.SetBackgroundColor(style.DialogBgColor)
+	eventsDialog.layout.SetBorderColor(style.DialogBorderColor)
 
 	return &eventsDialog
 }
@@ -90,10 +102,10 @@ func (d *EventsDialog) Hide() {
 	d.display = false
 }
 
-// SetTitle sets input dialog title
-func (d *EventsDialog) SetTitle(title string) {
-	layoutTitle := fmt.Sprintf("%s system events", title)
-	d.layout.SetTitle(strings.ToUpper(layoutTitle))
+// SetServiceName sets event dialog service (connection) name.
+func (d *EventsDialog) SetServiceName(name string) {
+	d.layout.SetTitle("SYSTEM EVENTS")
+	d.serviceName.SetText(name)
 }
 
 // SetText sets message dialog text messages

@@ -46,9 +46,9 @@ var _ = Describe("image push", Ordered, func() {
 	It("set image info", func() {
 		imageID := "imageID"
 		imageName := "imageName"
-		imageInfoWants := fmt.Sprintf("%-13s%s (%s)", "Image ID:", imageID, imageName)
+		imageInfoWants := fmt.Sprintf("%12s (%s)", imageID, imageName)
 		imagePushDialog.SetImageInfo(imageID, imageName)
-		Expect(imagePushDialog.imageInfo.GetText(true)).To(Equal(imageInfoWants))
+		Expect(imagePushDialog.imageInfo.GetText()).To(Equal(imageInfoWants))
 	})
 
 	It("cancel button selected", func() {

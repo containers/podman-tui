@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/images"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )
@@ -39,11 +39,11 @@ func (img *Images) ClearData() {
 	img.imagesList.mu.Unlock()
 	img.table.Clear()
 	expand := 1
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
+	fgColor := style.PageHeaderFgColor
+	bgColor := style.PageHeaderBgColor
 	for i := 0; i < len(img.headers); i++ {
 		img.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(img.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

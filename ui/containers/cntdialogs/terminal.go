@@ -10,6 +10,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/channel"
 	"github.com/gdamore/tcell/v2"
@@ -32,7 +33,7 @@ const (
 type ContainerExecTerminalDialog struct {
 	*tview.Box
 	layout             *tview.Flex
-	label              *tview.TextView
+	cntInfo            *tview.InputField
 	terminalScreen     *tview.Box
 	form               *tview.Form
 	cancelHandler      func()
@@ -57,8 +58,8 @@ type ContainerExecTerminalDialog struct {
 // NewContainerExecTerminalDialog returns new container exec terminal dialog
 func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 	dialog := &ContainerExecTerminalDialog{
-		Box:   tview.NewBox(),
-		label: tview.NewTextView(),
+		Box:     tview.NewBox(),
+		cntInfo: tview.NewInputField(),
 		state: state{
 			isRunning: false,
 		},
@@ -72,18 +73,21 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 			},
 		},
 	}
-	bgColor := utils.Styles.ContainerExecTerminalDialog.BgColor
-	fgColor := utils.Styles.ContainerExecTerminalDialog.FgColor
+	bgColor := style.DialogBgColor
 
 	// label
-	dialog.label.SetDynamicColors(true)
-	dialog.label.SetBackgroundColor(bgColor)
-	dialog.label.SetTextColor(fgColor)
-	dialog.label.SetBorder(false)
+	cntInfoLabel := "CONTAINER ID:"
+	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
+	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// terminal screen
-	terminalBgColor := utils.Styles.ContainerExecTerminalDialog.Terminal.BgColor
-	terminalBorderColor := utils.Styles.ContainerExecTerminalDialog.Terminal.BorderColor
+	terminalBgColor := style.TerminalBgColor
+	terminalBorderColor := style.TerminalBorderColor
 	dialog.terminalScreen.SetBackgroundColor(terminalBgColor)
 	dialog.terminalScreen.SetBorder(true)
 	dialog.terminalScreen.SetBorderColor(terminalBorderColor)
@@ -93,15 +97,15 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	//label and terminal layout
 	middleLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	middleLayout.SetBackgroundColor(bgColor)
 	middleLayout.SetBorder(false)
 	//middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	middleLayout.AddItem(dialog.label, 1, 0, true)
-	//middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	middleLayout.AddItem(dialog.cntInfo, 1, 0, true)
+	middleLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	middleLayout.AddItem(dialog.terminalScreen, 0, 1, true)
 
 	// main dialog layout
@@ -115,6 +119,7 @@ func NewContainerExecTerminalDialog() *ContainerExecTerminalDialog {
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetTitle("PODMAN CONTAINER EXEC")
 
@@ -227,10 +232,10 @@ func (d *ContainerExecTerminalDialog) InputHandler() func(event *tcell.EventKey,
 
 // SetRect set rects for this primitive.
 func (d *ContainerExecTerminalDialog) SetRect(x, y, width, height int) {
-	dX := x + dialogs.DialogPadding
-	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := height - (2 * (dialogs.DialogPadding - 1))
+	dX := x + 1
+	dY := y + 1
+	dWidth := width - 2
+	dHeight := height - 2
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
@@ -245,8 +250,8 @@ func (d *ContainerExecTerminalDialog) Draw(screen tcell.Screen) {
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 
-	terminalFgColor := utils.Styles.ContainerExecTerminalDialog.Terminal.FgColor
-	terminalBgColor := utils.Styles.ContainerExecTerminalDialog.Terminal.BgColor
+	terminalFgColor := style.TerminalFgColor
+	terminalBgColor := style.TerminalBgColor
 	terminalStyle := tcell.StyleDefault.Foreground(terminalFgColor).Background(terminalBgColor)
 
 	x, y, width, height = d.terminalScreen.GetInnerRect()
@@ -408,23 +413,17 @@ func (d *ContainerExecTerminalDialog) startVTreader() {
 // SetExecInfo sets container exec terminal information
 // container ID , name and session ID
 func (d *ContainerExecTerminalDialog) SetExecInfo(id string, name string, sessionID string) {
-	fgColor := utils.Styles.ContainerExecTerminalDialog.FgColor
-	bgColor := utils.Styles.ContainerExecTerminalDialog.HeaderBgColor
-	headerFgColor := utils.GetColorName(fgColor)
-	headerBgColor := utils.GetColorName(bgColor)
 	d.containerID = id
 	d.sessionID = sessionID
 	if len(sessionID) > utils.IDLength {
 		sessionID = sessionID[0:utils.IDLength]
 	}
 
-	label := fmt.Sprintf("[%s:%s:] CONTAINER ID: [%s:-:] %s ", headerFgColor, headerBgColor, headerFgColor, id)
-	if name != "" {
-		label = fmt.Sprintf("%s(%s) ", label, name)
-	}
 	screenLabel := fmt.Sprintf("SESSION (%s)", sessionID)
 	d.terminalScreen.SetTitle(screenLabel)
-	d.label.SetText(label)
+
+	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
+	d.cntInfo.SetText(containerInfo)
 }
 
 func (d *ContainerExecTerminalDialog) sendDetach() {

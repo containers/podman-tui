@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/libpod/define"
 	"github.com/gdamore/tcell/v2"
@@ -30,7 +31,7 @@ const (
 type ImageSaveDialog struct {
 	*tview.Box
 	layout                *tview.Flex
-	imageInfo             *tview.TextView
+	imageInfo             *tview.InputField
 	output                *tview.InputField
 	compress              *tview.Checkbox
 	format                *tview.DropDown
@@ -47,7 +48,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	dialog := &ImageSaveDialog{
 		Box:                   tview.NewBox(),
 		layout:                tview.NewFlex(),
-		imageInfo:             tview.NewTextView(),
+		imageInfo:             tview.NewInputField(),
 		output:                tview.NewInputField(),
 		compress:              tview.NewCheckbox(),
 		format:                tview.NewDropDown(),
@@ -55,36 +56,41 @@ func NewImageSaveDialog() *ImageSaveDialog {
 		form:                  tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.ImageSaveDialog.BgColor
-	fgColor := utils.Styles.ImageSaveDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
 	labelWidth := 10
 
 	// image info
-	dialog.imageInfo.SetBackgroundColor(bgColor)
-	dialog.imageInfo.SetTextColor(fgColor)
-	dialog.imageInfo.SetDynamicColors(true)
+	imageInfoLabel := "IMAGE ID:"
+	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabel("[::b]" + imageInfoLabel)
+	dialog.imageInfo.SetLabelWidth(len(imageInfoLabel) + 1)
+	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// output
 	dialog.output.SetBackgroundColor(bgColor)
 	dialog.output.SetLabelColor(fgColor)
-	dialog.output.SetLabel("Output:")
+	dialog.output.SetLabel("output:")
 	dialog.output.SetLabelWidth(labelWidth)
 	dialog.output.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// compress
 	dialog.compress.SetBackgroundColor(bgColor)
 	dialog.compress.SetLabelColor(fgColor)
-	dialog.compress.SetLabel("Compress:")
+	dialog.compress.SetLabel("compress:")
 	dialog.compress.SetLabelWidth(labelWidth)
 	dialog.compress.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// format
 	dialog.format.SetBackgroundColor(bgColor)
 	dialog.format.SetLabelColor(fgColor)
-	dialog.format.SetLabel("Format:")
+	dialog.format.SetLabel("format:")
 	dialog.format.SetLabelWidth(labelWidth)
 	dialog.format.SetOptions([]string{
 		define.V2s2Archive,
@@ -99,7 +105,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	// OciAcceptUncompressed
 	dialog.ociAcceptUncompressed.SetBackgroundColor(bgColor)
 	dialog.ociAcceptUncompressed.SetLabelColor(fgColor)
-	dialog.ociAcceptUncompressed.SetLabel("Accept uncompressed (OCI images): ")
+	dialog.ociAcceptUncompressed.SetLabel("accept uncompressed (OCI images): ")
 	dialog.ociAcceptUncompressed.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form
@@ -107,7 +113,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	dialog.form.AddButton("Save", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	compressRow := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -134,6 +140,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN IMAGE SAVE")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)

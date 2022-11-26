@@ -2,6 +2,7 @@ package cntdialogs
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
@@ -47,9 +48,9 @@ var _ = Describe("container checkpoint", Ordered, func() {
 	It("set container info", func() {
 		cntID := "cntID"
 		cntName := "cntName"
-		cntInfoWants := fmt.Sprintf("Container: %s (%s)", cntID, cntName)
+		cntInfoWants := fmt.Sprintf("%s (%s)", cntID, cntName)
 		checkpointDialog.SetContainerInfo(cntID, cntName)
-		Expect(checkpointDialog.containerInfo.GetText(true)).To(Equal(cntInfoWants))
+		Expect(strings.TrimSpace(checkpointDialog.containerInfo.GetText())).To(Equal(cntInfoWants))
 	})
 
 	It("cancel button selected", func() {

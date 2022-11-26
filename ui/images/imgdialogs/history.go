@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -19,6 +20,7 @@ const (
 type ImageHistoryDialog struct {
 	*tview.Box
 	layout        *tview.Flex
+	imageInfo     *tview.InputField
 	table         *tview.Table
 	form          *tview.Form
 	tableHeaders  []string
@@ -30,20 +32,28 @@ type ImageHistoryDialog struct {
 // NewImageHistoryDialog returns new image history dialog
 func NewImageHistoryDialog() *ImageHistoryDialog {
 	dialog := &ImageHistoryDialog{
-		Box: tview.NewBox(),
+		Box:       tview.NewBox(),
+		imageInfo: tview.NewInputField(),
 		tableHeaders: []string{
 			"id", "created", "create by", "size", "comment",
 		},
 		display: false,
 	}
 
-	bgColor := utils.Styles.ImageHistoryDialog.BgColor
-	historyTableBgColor := utils.Styles.ImageHistoryDialog.ResultTableBgColor
-	historyTableBorderColor := utils.Styles.ImageHistoryDialog.ResultTableBorderColor
+	bgColor := style.DialogBgColor
+	historyTableBgColor := style.DialogBgColor
+
+	// image info field.
+	imageInfoLabel := "IMAGE ID:"
+	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabel("[::b]" + imageInfoLabel)
+	dialog.imageInfo.SetLabelWidth(len(imageInfoLabel) + 1)
+	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	dialog.table = tview.NewTable()
-	dialog.table.SetBorder(true)
-	dialog.table.SetBorderColor(historyTableBorderColor)
 	dialog.table.SetBackgroundColor(historyTableBgColor)
 	dialog.initTable()
 
@@ -51,18 +61,25 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// table layout
 	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	tableLayout.SetBackgroundColor(bgColor)
 	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-	tableLayout.AddItem(dialog.table, 0, 1, true)
+
+	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(dialog.imageInfo, 1, 0, false).
+		AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false).
+		AddItem(dialog.table, 0, 1, true),
+		0, 1, true)
+
 	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetTitle("PODMAN IMAGE HISTORY")
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetBackgroundColor(bgColor)
 
 	dialog.layout.AddItem(tableLayout, 0, 1, true)
@@ -160,15 +177,15 @@ func (d *ImageHistoryDialog) SetCancelFunc(handler func()) *ImageHistoryDialog {
 }
 
 func (d *ImageHistoryDialog) initTable() {
-	bgColor := utils.Styles.ImageHistoryDialog.ResultHeaderRow.BgColor
-	fgColor := utils.Styles.ImageHistoryDialog.ResultHeaderRow.FgColor
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(1).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).
@@ -233,6 +250,11 @@ func (d *ImageHistoryDialog) UpdateResults(data [][]string) {
 		d.table.Select(1, 1)
 		d.table.ScrollToBeginning()
 	}
+}
+
+func (d *ImageHistoryDialog) SetImageInfo(id string, name string) {
+	imageInfo := fmt.Sprintf("%12s (%s)", id, name)
+	d.imageInfo.SetText(imageInfo)
 }
 
 func (d *ImageHistoryDialog) getCreatedByWidth() int {

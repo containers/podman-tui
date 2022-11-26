@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
@@ -32,7 +33,7 @@ const (
 type NetworkConnectDialog struct {
 	*tview.Box
 	layout         *tview.Flex
-	network        *tview.TextView
+	network        *tview.InputField
 	container      *tview.DropDown
 	aliases        *tview.InputField
 	ipv4           *tview.InputField
@@ -51,7 +52,7 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	dialog := &NetworkConnectDialog{
 		Box:       tview.NewBox(),
 		layout:    tview.NewFlex(),
-		network:   tview.NewTextView(),
+		network:   tview.NewInputField(),
 		container: tview.NewDropDown(),
 		aliases:   tview.NewInputField(),
 		ipv4:      tview.NewInputField(),
@@ -60,21 +61,25 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 		form:      tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.NetworkConnectDialog.BgColor
-	fgColor := utils.Styles.NetworkConnectDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
 
-	// network text view
-	dialog.network.SetBackgroundColor(bgColor)
-	dialog.network.SetTextColor(fgColor)
-	dialog.network.SetDynamicColors(true)
+	// network input field
+	dialog.network.SetBackgroundColor(style.DialogBgColor)
+	dialog.network.SetLabel("[::b]NETWORK ID:")
+	dialog.network.SetLabelWidth(labelWidth)
+	dialog.network.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.network.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// container drop down
 	dialog.container.SetBackgroundColor(bgColor)
 	dialog.container.SetLabelColor(fgColor)
-	dialog.container.SetLabel("Container:")
+	dialog.container.SetLabel("container:")
 	dialog.container.SetLabelWidth(labelWidth)
 	dialog.container.SetOptions([]string{""}, nil)
 	dialog.container.SetListStyles(ddUnselectedStyle, ddselectedStyle)
@@ -85,28 +90,28 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	// aliases input field
 	dialog.aliases.SetBackgroundColor(bgColor)
 	dialog.aliases.SetLabelColor(fgColor)
-	dialog.aliases.SetLabel("Alias:")
+	dialog.aliases.SetLabel("alias:")
 	dialog.aliases.SetLabelWidth(labelWidth)
 	dialog.aliases.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ipv4 input field
 	dialog.ipv4.SetBackgroundColor(bgColor)
 	dialog.ipv4.SetLabelColor(fgColor)
-	dialog.ipv4.SetLabel("IPv4:")
+	dialog.ipv4.SetLabel("ipv4:")
 	dialog.ipv4.SetLabelWidth(labelWidth)
 	dialog.ipv4.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ipv6 input field
 	dialog.ipv6.SetBackgroundColor(bgColor)
 	dialog.ipv6.SetLabelColor(fgColor)
-	dialog.ipv6.SetLabel("IPv6:")
+	dialog.ipv6.SetLabel("ipv6:")
 	dialog.ipv6.SetLabelWidth(labelWidth)
 	dialog.ipv6.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// mac address input field
 	dialog.macAddr.SetBackgroundColor(bgColor)
 	dialog.macAddr.SetLabelColor(fgColor)
-	dialog.macAddr.SetLabel("Mac Address:")
+	dialog.macAddr.SetLabel("mac address:")
 	dialog.macAddr.SetLabelWidth(labelWidth)
 	dialog.macAddr.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -115,7 +120,7 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	dialog.form.AddButton("Connect", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -143,6 +148,7 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN NETWORK CONNECT")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -170,7 +176,7 @@ func (d *NetworkConnectDialog) Hide() {
 	d.ipv4.SetText("")
 	d.ipv6.SetText("")
 	d.macAddr.SetText("")
-	d.SetNetworkInfo("")
+	d.SetNetworkInfo("", "")
 	d.container.SetCurrentOption(0)
 }
 
@@ -359,9 +365,9 @@ func (d *NetworkConnectDialog) setFocusElement() {
 }
 
 // SetNetworkInfo sets selected network name in connect dialog.
-func (d *NetworkConnectDialog) SetNetworkInfo(name string) {
+func (d *NetworkConnectDialog) SetNetworkInfo(id, name string) {
 	d.networkName = name
-	network := fmt.Sprintf("%-12s %s", "Network:", name)
+	network := fmt.Sprintf("%12s (%s)", id, name)
 
 	d.network.SetText(network)
 }

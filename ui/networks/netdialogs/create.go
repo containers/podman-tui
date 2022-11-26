@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -90,16 +91,17 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 		networkDisableDNSCheckBox: tview.NewCheckbox(),
 	}
 
-	bgColor := utils.Styles.NetworkCreateDialog.BgColor
-	fgColor := utils.Styles.NetworkCreateDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	buttonBgColor := style.ButtonBgColor
 
 	netDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 	netDialog.categories.SetBackgroundColor(bgColor)
 	netDialog.categories.SetBorder(true)
+	netDialog.categories.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 12
@@ -142,7 +144,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	// ip settings page
 	ipSettingsPageLabelWidth := 12
 	// ipv6 check box
-	netDialog.networkIpv6CheckBox.SetLabel("IPv6")
+	netDialog.networkIpv6CheckBox.SetLabel("ipv6")
 	netDialog.networkIpv6CheckBox.SetLabelWidth(ipSettingsPageLabelWidth)
 	netDialog.networkIpv6CheckBox.SetChecked(false)
 	netDialog.networkIpv6CheckBox.SetBackgroundColor(bgColor)
@@ -157,7 +159,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkGatewayField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ip range
-	netDialog.networkIPRangeField.SetLabel("IP range:")
+	netDialog.networkIPRangeField.SetLabel("ip range:")
 	netDialog.networkIPRangeField.SetLabelWidth(basicInfoPageLabelWidth)
 	netDialog.networkIPRangeField.SetBackgroundColor(bgColor)
 	netDialog.networkIPRangeField.SetLabelColor(tcell.ColorWhite)
@@ -181,6 +183,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	// category pages
 	netDialog.categoryPages.SetBackgroundColor(bgColor)
 	netDialog.categoryPages.SetBorder(true)
+	netDialog.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// form
 	netDialog.form.SetBackgroundColor(bgColor)
@@ -193,6 +196,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.setupLayout()
 	netDialog.layout.SetBackgroundColor(bgColor)
 	netDialog.layout.SetBorder(true)
+	netDialog.layout.SetBorderColor(style.DialogBorderColor)
 	netDialog.layout.SetTitle("PODMAN NETWORK CREATE")
 	netDialog.layout.AddItem(netDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -201,7 +205,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 }
 
 func (d *NetworkCreateDialog) setupLayout() {
-	bgColor := utils.Styles.NetworkCreateDialog.BgColor
+	bgColor := style.DialogBgColor
 
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
@@ -432,10 +436,10 @@ func (d *NetworkCreateDialog) SetCreateFunc(handler func()) *NetworkCreateDialog
 }
 
 func (d *NetworkCreateDialog) setActiveCategory(index int) {
-	fgColor := utils.Styles.NetworkCreateDialog.FgColor
-	bgColor := utils.Styles.ButtonPrimitive.BgColor
-	ctgTextColor := utils.GetColorName(fgColor)
-	ctgBgColor := utils.GetColorName(bgColor)
+	fgColor := style.DialogFgColor
+	bgColor := style.ButtonBgColor
+	ctgTextColor := style.GetColorHex(fgColor)
+	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
 	d.categories.Clear()

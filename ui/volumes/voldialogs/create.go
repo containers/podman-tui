@@ -5,6 +5,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -52,10 +53,10 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 		volumeDriverOptionsField: tview.NewInputField(),
 	}
 
-	bgColor := utils.Styles.VolumeCreateDialog.BgColor
-	fgColor := utils.Styles.VolumeCreateDialog.FgColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
-	inputFieldColor := utils.Styles.InputFieldPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	buttonBgColor := style.ButtonBgColor
+	inputFieldColor := style.InputFieldBgColor
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 9
@@ -94,13 +95,14 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 	volDialog.setupLayout()
 	volDialog.layout.SetBackgroundColor(bgColor)
 	volDialog.layout.SetBorder(true)
+	volDialog.layout.SetBorderColor(style.DialogBorderColor)
 	volDialog.layout.SetTitle("PODMAN VOLUME CREATE")
 
 	return &volDialog
 }
 
 func (d *VolumeCreateDialog) setupLayout() {
-	bgColor := utils.Styles.VolumeCreateDialog.BgColor
+	bgColor := style.DialogBgColor
 
 	// layouts
 	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)

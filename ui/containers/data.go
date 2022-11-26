@@ -7,7 +7,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	putils "github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/go-units"
 	"github.com/rivo/tview"
@@ -42,11 +42,11 @@ func (cnt *Containers) ClearData() {
 	cnt.containersList.mu.Unlock()
 	cnt.table.Clear()
 	expand := 1
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
+	fgColor := style.PageHeaderFgColor
+	bgColor := style.PageHeaderBgColor
 	for i := 0; i < len(cnt.headers); i++ {
 		cnt.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(cnt.headers[i]))).
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))).
 				SetExpansion(expand).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

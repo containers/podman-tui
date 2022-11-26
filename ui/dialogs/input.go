@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -43,8 +44,8 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 		focusElement: siInputElement,
 	}
 
-	bgColor := utils.Styles.InputDialog.BgColor
-	fgColor := utils.Styles.InputDialog.FgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
 
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
@@ -58,17 +59,20 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 		AddButton("Enter", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
 	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 
 	dialog.input = tview.NewInputField()
 	dialog.SetInputText(text)
 	dialog.input.SetLabelColor(fgColor)
 	dialog.input.SetBackgroundColor(bgColor)
-	dialog.input.SetFieldBackgroundColor(utils.Styles.InputFieldPrimitive.BgColor)
+	dialog.input.SetFieldBackgroundColor(style.InputFieldBgColor)
+
+	dialog.setLayout(false)
 
 	return dialog
 }
@@ -100,12 +104,24 @@ func (d *SimpleInputDialog) setLayout(haveDesc bool) {
 	} else {
 		d.height = siDialogHeight
 	}
-	d.layout.AddItem(d.textview, descHeight, 0, true)
-	d.layout.AddItem(d.input, 1, 0, true)
+
+	d.layout.AddItem(
+		tview.NewFlex().SetDirection(tview.FlexColumn).
+			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+			AddItem(d.textview, 0, 1, false).
+			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
+		descHeight, 0, true)
+
+	d.layout.AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(d.input, 0, 1, false).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
+		1, 0, true)
+
 	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
-	bgColor := utils.Styles.InputDialog.BgColor
 	d.layout.SetBorder(true)
-	d.layout.SetBackgroundColor(bgColor)
+	d.layout.SetBorderColor(style.DialogBorderColor)
+	d.layout.SetBackgroundColor(style.DialogBgColor)
 }
 
 // SetDescription sets dialogs description

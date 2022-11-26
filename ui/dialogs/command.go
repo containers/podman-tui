@@ -3,6 +3,7 @@ package dialogs
 import (
 	"fmt"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -30,36 +31,31 @@ type CommandDialog struct {
 // NewCommandDialog returns a command list primitive.
 func NewCommandDialog(options [][]string) *CommandDialog {
 
-	headerBgColor := utils.Styles.CommandDialog.HeaderRow.BgColor
-	headerFgColor := utils.Styles.CommandDialog.HeaderRow.FgColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
-	bgColor := utils.Styles.CommandDialog.BgColor
-	fgColor := utils.Styles.CommandDialog.FgColor
-
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
 		AddButton("Select", nil).
 		SetButtonsAlign(tview.AlignRight)
 
-	form.SetBackgroundColor(bgColor)
-	form.SetButtonBackgroundColor(buttonBgColor)
+	form.SetBackgroundColor(style.DialogBgColor)
+	form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	cmdsTable := tview.NewTable()
+	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
 	cmdWidth := 0
 	// command table header
 	cmdsTable.SetCell(0, 0,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", utils.GetColorName(headerFgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
-			SetBackgroundColor(headerBgColor).
-			SetTextColor(headerFgColor).
+			SetBackgroundColor(style.TableHeaderBgColor).
+			SetTextColor(style.TableHeaderFgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 	cmdsTable.SetCell(0, 1,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", utils.GetColorName(headerFgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
-			SetBackgroundColor(headerBgColor).
-			SetTextColor(headerFgColor).
+			SetBackgroundColor(style.TableHeaderBgColor).
+			SetTextColor(style.TableHeaderFgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
@@ -70,11 +66,11 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		cmdsTable.SetCell(i+1, 0,
 			tview.NewTableCell(options[i][0]).
 				SetAlign(tview.AlignLeft).
-				SetSelectable(true).SetTextColor(fgColor))
+				SetSelectable(true).SetTextColor(style.DialogFgColor))
 		cmdsTable.SetCell(i+1, 1,
 			tview.NewTableCell(options[i][1]).
 				SetAlign(tview.AlignLeft).
-				SetSelectable(true).SetTextColor(fgColor))
+				SetSelectable(true).SetTextColor(style.DialogFgColor))
 
 		if len(options[i][0]) > col1Width {
 			col1Width = len(options[i][0])
@@ -86,19 +82,20 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdWidth = col1Width + col2Width + 2
 	cmdsTable.SetFixed(1, 1)
 	cmdsTable.SetSelectable(true, false)
-	cmdsTable.SetBackgroundColor(bgColor)
+	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
 	cmdLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	cmdLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	cmdLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	cmdLayout.AddItem(cmdsTable, 0, 1, true)
-	cmdLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	cmdLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
 	layout.AddItem(cmdLayout, 0, 1, true)
 	layout.AddItem(form, DialogFormHeight, 0, true)
 	layout.SetBorder(true)
-	layout.SetBackgroundColor(bgColor)
+	layout.SetBorderColor(style.DialogBorderColor)
+	layout.SetBackgroundColor(style.DialogBgColor)
 
 	// returns the command primitive
 	return &CommandDialog{

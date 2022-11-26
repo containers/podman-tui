@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	putils "github.com/containers/podman-tui/pdcs/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
 )
@@ -14,14 +15,13 @@ func (img *Images) refresh() {
 	img.table.Clear()
 	expand := 1
 	alignment := tview.AlignLeft
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
+
 	for i := 0; i < len(img.headers); i++ {
 		img.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))).
 				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

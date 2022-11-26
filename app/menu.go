@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 
 	"github.com/rivo/tview"
 )
@@ -15,7 +15,7 @@ func newMenu(menuItems [][]string) *tview.TextView {
 		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignCenter)
-	menu.SetBackgroundColor(utils.Styles.Menu.BgColor)
+	menu.SetBackgroundColor(style.BgColor)
 	var menuList []string
 	for i := 0; i < len(menuItems); i++ {
 		key, item := genMenuItem(menuItems[i])
@@ -30,8 +30,8 @@ func newMenu(menuItems [][]string) *tview.TextView {
 
 func genMenuItem(items []string) (string, string) {
 
-	key := fmt.Sprintf("[%s:%s:b] <%s>", utils.GetColorName(utils.Styles.Menu.FgColor), utils.GetColorName(utils.Styles.Menu.BgColor), items[0])
-	desc := fmt.Sprintf("[%s:%s:b] %s", utils.GetColorName(utils.Styles.Menu.Item.FgColor), utils.GetColorName(utils.Styles.Menu.Item.BgColor), strings.ToUpper(items[1]))
+	key := fmt.Sprintf("[%s::b] <%s>[-:-:-]", style.GetColorHex(style.PageHeaderFgColor), items[0])
+	desc := fmt.Sprintf("[%s:%s:b] %s [-:-:-]", style.GetColorHex(style.PageHeaderFgColor), style.GetColorHex(style.MenuBgColor), strings.ToUpper(items[1]))
 
 	return key, desc
 }

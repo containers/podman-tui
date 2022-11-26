@@ -1,0 +1,65 @@
+---
+name: Build and Publish
+
+on:
+  push:
+    tags:
+       - 'v*'
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    name: Publish container image
+    env:
+      IMAGE_REGISTRY: quay.io/navidys
+      IMAGE_NAMESPACE: ${{ github.event.repository.name }}
+
+    runs-on: 'ubuntu-latest'
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+
+        with:
+          go-version: "1.18"
+
+      - name: Build binary
+        run: |
+          make binary
+
+      - name: Get image tags
+        id: image_tag
+        run: |
+          echo -n ::set-output name=IMAGE_TAG::
+          VERSION=$(cat podman-tui.spec.rpkg | grep Version: | awk -F: '{print $2}' | sed 's/ //g')
+          RELEASE=$(cat podman-tui.spec.rpkg | grep Release: | awk -F: '{print $2}' | sed 's/ //g')
+          if [[ "${RELEASE}" =~ "dev." ]] ; then
+            echo "develop"
+          else
+            echo "v${VERSION} latest"
+          fi
+
+      - name: Build container image
+        uses: redhat-actions/buildah-build@v2
+        id: build_image
+        with:
+          image: ${{ env.IMAGE_NAMESPACE }}
+          tags: "${{ steps.image_tag.outputs.IMAGE_TAG }}"
+          containerfiles: |
+            ./Containerfile
+
+      - name: Publish container image
+        id: push_to_quay
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build_image.outputs.image }}
+          tags: ${{ steps.build_image.outputs.tags }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Print image url
+        run: echo "Image pushed to ${{ steps.push_to_quay.outputs.registry-paths }}"

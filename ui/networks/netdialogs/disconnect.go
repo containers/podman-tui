@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
@@ -26,7 +27,7 @@ const (
 type NetworkDisconnectDialog struct {
 	*tview.Box
 	layout            *tview.Flex
-	network           *tview.TextView
+	network           *tview.InputField
 	container         *tview.DropDown
 	form              *tview.Form
 	display           bool
@@ -40,27 +41,31 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog := &NetworkDisconnectDialog{
 		Box:       tview.NewBox(),
 		layout:    tview.NewFlex(),
-		network:   tview.NewTextView(),
+		network:   tview.NewInputField(),
 		container: tview.NewDropDown(),
 		form:      tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.NetworkConnectDialog.BgColor
-	fgColor := utils.Styles.NetworkConnectDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
-	labelWidth := 11
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	labelWidth := 12
 
-	// network text view
-	dialog.network.SetBackgroundColor(bgColor)
-	dialog.network.SetTextColor(fgColor)
-	dialog.network.SetDynamicColors(true)
+	// network input field
+	dialog.network.SetBackgroundColor(style.DialogBgColor)
+	dialog.network.SetLabel("[::b]NETWORK ID:")
+	dialog.network.SetLabelWidth(labelWidth)
+	dialog.network.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.network.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// container drop down
 	dialog.container.SetBackgroundColor(bgColor)
 	dialog.container.SetLabelColor(fgColor)
-	dialog.container.SetLabel("Container:")
+	dialog.container.SetLabel("container:")
 	dialog.container.SetLabelWidth(labelWidth)
 	dialog.container.SetOptions([]string{""}, nil)
 	dialog.container.SetListStyles(ddUnselectedStyle, ddselectedStyle)
@@ -73,7 +78,7 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.form.AddButton("Disconnect", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -93,6 +98,7 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN NETWORK DISCONNECT")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -116,7 +122,7 @@ func (d *NetworkDisconnectDialog) Hide() {
 	d.focusElement = netConnectContainerFocus
 	d.networkName = ""
 
-	d.SetNetworkInfo("")
+	d.SetNetworkInfo("", "")
 	d.container.SetCurrentOption(0)
 }
 
@@ -264,9 +270,9 @@ func (d *NetworkDisconnectDialog) setFocusElement() {
 }
 
 // SetNetworkInfo sets selected network name in disconnect dialog.
-func (d *NetworkDisconnectDialog) SetNetworkInfo(name string) {
+func (d *NetworkDisconnectDialog) SetNetworkInfo(id string, name string) {
 	d.networkName = name
-	network := fmt.Sprintf("%-10s %s", "Network:", name)
+	network := fmt.Sprintf("%12s (%s)", id, name)
 
 	d.network.SetText(network)
 }

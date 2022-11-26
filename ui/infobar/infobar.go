@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 
@@ -31,7 +32,7 @@ type InfoBar struct {
 // NewInfoBar returns info bar view
 func NewInfoBar() *InfoBar {
 	table := tview.NewTable()
-	headerColor := utils.GetColorName(utils.Styles.InfoBar.ItemFgColor)
+	headerColor := style.GetColorHex(style.InfoBarItemFgColor)
 	emptyCell := func() *tview.TableCell {
 		return tview.NewTableCell("")
 	}
@@ -43,7 +44,7 @@ func NewInfoBar() *InfoBar {
 
 	// valueColor := Styles.InfoBar.ValueFgColor
 	table.SetCell(connectionCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Connection:")))
-	disconnectStatus := fmt.Sprintf("%s DISCONNECTED", utils.HeavyRedCrossMark)
+	disconnectStatus := fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark)
 	table.SetCell(connectionCellRow, 2, tview.NewTableCell(disconnectStatus))
 
 	table.SetCell(hostnameCellRow, 1, tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Hostname:")))
@@ -117,11 +118,11 @@ func (info *InfoBar) UpdateConnStatus(status registry.ConnStatus) {
 	connStatus := ""
 	switch info.connStatus {
 	case registry.ConnectionStatusConnected:
-		connStatus = fmt.Sprintf("%s STATUS_OK", utils.HeavyGreenCheckMark)
+		connStatus = fmt.Sprintf("%s STATUS_OK", style.HeavyGreenCheckMark)
 	case registry.ConnectionStatusConnectionError:
-		connStatus = fmt.Sprintf("%s STATUS_ERROR", utils.HeavyRedCrossMark)
+		connStatus = fmt.Sprintf("%s STATUS_ERROR", style.HeavyRedCrossMark)
 	default:
-		connStatus = fmt.Sprintf("%s DISCONNECTED", utils.HeavyRedCrossMark)
+		connStatus = fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark)
 	}
 
 	info.table.GetCell(connectionCellRow, 2).SetText(connStatus)

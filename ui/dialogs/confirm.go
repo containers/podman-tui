@@ -3,6 +3,7 @@ package dialogs
 import (
 	"strings"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -32,28 +33,25 @@ func NewConfirmDialog() *ConfirmDialog {
 		display: false,
 	}
 
-	bgColor := utils.Styles.ConfirmDialog.BgColor
-	fgColor := utils.Styles.ConfirmDialog.FgColor
-
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 
-	dialog.textview.SetBackgroundColor(bgColor)
-	dialog.textview.SetTextColor(fgColor)
+	dialog.textview.SetBackgroundColor(style.DialogBgColor)
+	dialog.textview.SetTextColor(style.DialogFgColor)
 
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		AddButton("  OK  ", nil).
 		SetButtonsAlign(tview.AlignRight)
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ConfirmDialog.ButtonColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
-	dialog.layout.SetBorderColor(fgColor)
-	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 
 	return dialog
 
@@ -80,8 +78,7 @@ func (d *ConfirmDialog) Hide() {
 // SetTitle sets dialog title
 func (d *ConfirmDialog) SetTitle(title string) {
 	d.layout.SetTitle(strings.ToUpper(title))
-	fgColor := utils.Styles.ConfirmDialog.FgColor
-	d.layout.SetTitleColor(fgColor)
+	d.layout.SetTitleColor(style.DialogFgColor)
 }
 
 // SetText sets dialog title
@@ -145,8 +142,13 @@ func (d *ConfirmDialog) setRect() {
 		d.x = d.x + emptyWidth
 	}
 
+	msgLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	msgLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	msgLayout.AddItem(d.textview, 0, 1, true)
+	msgLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+
 	d.layout.Clear()
-	d.layout.AddItem(d.textview, layoutHeight, 0, true)
+	d.layout.AddItem(msgLayout, layoutHeight, 0, true)
 	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
 
 	d.Box.SetRect(d.x, d.y, d.width, d.height)
@@ -154,17 +156,14 @@ func (d *ConfirmDialog) setRect() {
 
 // Draw draws this primitive onto the screen.
 func (d *ConfirmDialog) Draw(screen tcell.Screen) {
-	fgColor := utils.Styles.ConfirmDialog.FgColor
-	bgColor := utils.Styles.ConfirmDialog.BgColor
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
-	d.layout.SetBorder(true)
-	d.layout.SetBackgroundColor(bgColor)
-	d.layout.SetBorderColor(fgColor)
 	d.layout.Draw(screen)
 }
 

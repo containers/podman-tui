@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 )
 
@@ -17,9 +17,6 @@ func (sys *System) refresh() {
 	alignment := tview.AlignLeft
 	defaultAlignment := tview.AlignCenter
 
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
-
 	for i := 0; i < len(sys.connTableHeaders); i++ {
 		headerAlignment := alignment
 		if sys.connTableHeaders[i] == "default" {
@@ -29,8 +26,8 @@ func (sys *System) refresh() {
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(headerAlignment).
 				SetSelectable(false))
 	}
@@ -41,7 +38,7 @@ func (sys *System) refresh() {
 		conn := connections[i]
 		status := connectionItemStatus{conn.Status}.StatusString()
 		if conn.Default {
-			isDefault = utils.HeavyGreenCheckMark
+			isDefault = style.HeavyGreenCheckMark
 		}
 
 		// name column

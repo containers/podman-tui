@@ -7,7 +7,7 @@ import (
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/pods/poddialogs"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
@@ -67,23 +67,20 @@ func NewPods() *Pods {
 		{"top", "display the running processes of the pod's containers"},
 		{"unpause", "unpause  the selected pod"},
 	})
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
-	pods.table = tview.NewTable()
-	pods.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(pods.title)))
-	pods.table.SetBorderColor(bgColor)
-	pods.table.SetTitleColor(fgColor)
-	pods.table.SetBorder(true)
 
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
+	pods.table = tview.NewTable()
+	pods.table.SetBackgroundColor(style.BgColor)
+	pods.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(pods.title)))
+	pods.table.SetBorderColor(style.BorderColor)
+	pods.table.SetTitleColor(style.FgColor)
+	pods.table.SetBorder(true)
 
 	for i := 0; i < len(pods.headers); i++ {
 		pods.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(pods.headers[i]))).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
@@ -220,12 +217,21 @@ func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 	delegate(pods.table)
 }
 
-func (pods *Pods) getSelectedItem() string {
+func (pods *Pods) getSelectedItem() (string, string) {
+	var (
+		id   string
+		name string
+	)
+
 	if pods.table.GetRowCount() <= 1 {
-		return ""
+		return id, name
 	}
+
 	row, _ := pods.table.GetSelection()
-	return pods.table.GetCell(row, 0).Text
+	id = pods.table.GetCell(row, 0).Text
+	name = pods.table.GetCell(row, 1).Text
+
+	return id, name
 }
 
 func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {

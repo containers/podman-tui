@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -16,7 +17,7 @@ const (
 	// maxheight = button height + total input widgets row + 11
 	execDialogMaxHeight  = dialogs.DialogFormHeight + 7 + 9
 	execDialogMaxWidth   = 80
-	execDialogLabelWidth = 13
+	execDialogLabelWidth = 14
 )
 
 const (
@@ -36,7 +37,7 @@ const (
 type ContainerExecDialog struct {
 	*tview.Box
 	layout        *tview.Flex
-	label         *tview.TextView
+	cntInfo       *tview.InputField
 	command       *tview.InputField
 	interactive   *tview.Checkbox
 	tty           *tview.Checkbox
@@ -58,7 +59,7 @@ type ContainerExecDialog struct {
 func NewContainerExecDialog() *ContainerExecDialog {
 	dialog := &ContainerExecDialog{
 		Box:          tview.NewBox(),
-		label:        tview.NewTextView(),
+		cntInfo:      tview.NewInputField(),
 		command:      tview.NewInputField(),
 		tty:          tview.NewCheckbox(),
 		interactive:  tview.NewCheckbox(),
@@ -70,15 +71,19 @@ func NewContainerExecDialog() *ContainerExecDialog {
 		user:         tview.NewInputField(),
 		display:      false,
 	}
-	bgColor := utils.Styles.ContainerExecDialog.BgColor
-	fgColor := utils.Styles.ContainerExecDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
 
 	// label (container ID and Name)
-	dialog.label.SetDynamicColors(true)
-	dialog.label.SetBackgroundColor(bgColor)
-	dialog.label.SetBorder(false)
-	dialog.SetContainerID("", "")
+	cntInfoLabel := "CONTAINER ID:"
+	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
+	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// command
 	dialog.command.SetBackgroundColor(bgColor)
@@ -161,18 +166,19 @@ func NewContainerExecDialog() *ContainerExecDialog {
 		AddButton("Execute", nil).
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// main dialog layout
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetTitle("PODMAN CONTAINER EXEC")
 
 	mLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	// label
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	mLayout.AddItem(dialog.label, 1, 0, true)
+	mLayout.AddItem(dialog.cntInfo, 1, 0, true)
 	// command
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.command, 1, 0, true)
@@ -543,11 +549,9 @@ func (d *ContainerExecDialog) SetExecFunc(handler func()) *ContainerExecDialog {
 // SetContainerID sets container ID label
 func (d *ContainerExecDialog) SetContainerID(id string, name string) {
 	d.containerID = id
-	label := fmt.Sprintf("[white::]container:   [-::]%s", id)
-	if name != "" {
-		label = fmt.Sprintf("%s (%s)", label, name)
-	}
-	d.label.SetText(label)
+	containerInfo := fmt.Sprintf("%s (%s)", id, name)
+
+	d.cntInfo.SetText(containerInfo)
 }
 
 // ContainerExecOptions returns new container exec options

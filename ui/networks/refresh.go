@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/networks"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )
@@ -22,15 +22,13 @@ func (nets *Networks) UpdateData() {
 	nets.table.Clear()
 	expand := 1
 	alignment := tview.AlignLeft
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
 				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
@@ -69,8 +67,8 @@ func (nets *Networks) UpdateData() {
 func (nets *Networks) ClearData() {
 	nets.table.Clear()
 	expand := 1
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
+	fgColor := style.PageHeaderFgColor
+	bgColor := style.PageHeaderBgColor
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
