@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/BurntSushi/toml v1.2.1
-	github.com/containers/buildah v1.28.0
+	github.com/containers/buildah v1.28.1
 	github.com/containers/common v0.50.1
 	github.com/containers/podman/v4 v4.3.1
 	github.com/containers/storage v1.44.0
