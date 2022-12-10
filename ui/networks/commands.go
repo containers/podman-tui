@@ -6,6 +6,8 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/pdcs/networks"
+	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rs/zerolog/log"
 )
 
@@ -50,9 +52,10 @@ func (nets *Networks) cconnect() {
 
 			return
 		}
-		_, netName := nets.getSelectedItem()
 
-		nets.connectDialog.SetNetworkInfo(netName)
+		netID, netName := nets.getSelectedItem()
+
+		nets.connectDialog.SetNetworkInfo(netID, netName)
 		nets.connectDialog.SetContainers(cntListReport)
 		nets.progressDialog.Hide()
 		nets.connectDialog.Display()
@@ -101,9 +104,9 @@ func (nets *Networks) cdisconnect() {
 
 			return
 		}
-		_, netName := nets.getSelectedItem()
+		netID, netName := nets.getSelectedItem()
 
-		nets.disconnectDialog.SetNetworkInfo(netName)
+		nets.disconnectDialog.SetNetworkInfo(netID, netName)
 		nets.disconnectDialog.SetContainers(cntListReport)
 		nets.progressDialog.Hide()
 		nets.disconnectDialog.Display()
@@ -134,31 +137,31 @@ func (nets *Networks) disconnect() {
 
 func (nets *Networks) create() {
 	createOpts := nets.createDialog.NetworkCreateOptions()
-	createdNetwork, err := networks.Create(createOpts)
+	_, err := networks.Create(createOpts)
 	if err != nil {
 		nets.displayError("NETWORK CREATE ERROR", err)
 		return
 	}
 	nets.UpdateData()
-	netInfo := fmt.Sprintf("network %s (%s) created at %s", createdNetwork.Name, createdNetwork.ID[:12], createdNetwork.Created.String())
-	nets.messageDialog.SetTitle("podman network create")
-	nets.messageDialog.SetText(netInfo)
-	nets.messageDialog.Display()
 }
 
 func (nets *Networks) inspect() {
-	if nets.selectedID == "" {
+	netID, netName := nets.getSelectedItem()
+	if netID == "" {
 		nets.displayError("", fmt.Errorf("there is no network to display inspect"))
 		return
 	}
-	data, err := networks.Inspect(nets.selectedID)
+	data, err := networks.Inspect(netID)
 	if err != nil {
-		title := fmt.Sprintf("NETWORK (%s) INSPECT ERROR", nets.selectedID)
+		title := fmt.Sprintf("NETWORK (%s) INSPECT ERROR", netID)
 		nets.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%s (%s)", netID, netName)
+
 	nets.messageDialog.SetTitle("podman network inspect")
-	nets.messageDialog.SetText(data)
+	nets.messageDialog.SetText(dialogs.MessageNetworkInfo, headerLabel, data)
 	nets.messageDialog.Display()
 }
 
@@ -185,13 +188,19 @@ func (nets *Networks) prune() {
 }
 
 func (nets *Networks) rm() {
-	if nets.selectedID == "" {
+	netID, netName := nets.getSelectedItem()
+	if netID == "" {
 		nets.displayError("", fmt.Errorf("there is no network to remove"))
 		return
 	}
 	nets.confirmDialog.SetTitle("podman network remove")
 	nets.confirmData = "rm"
-	description := fmt.Sprintf("Are you sure you want to remove following network? \n\nNETWORK NAME : %s", nets.selectedID)
+
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	networkItem := fmt.Sprintf("[%s:%s:b]NETWORK ID:[:-:-] %s (%s)", fgColor, bgColor, netID, netName)
+
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected network?", networkItem)
 	nets.confirmDialog.SetText(description)
 	nets.confirmDialog.Display()
 }

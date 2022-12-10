@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/docker/go-units"
 	"github.com/rivo/tview"
 )
@@ -15,15 +15,13 @@ func (vols *Volumes) refresh() {
 	vols.table.Clear()
 	expand := 1
 	alignment := tview.AlignLeft
-	fgColor := utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor := utils.Styles.PageTable.HeaderRow.BgColor
 
 	for i := 0; i < len(vols.headers); i++ {
 		vols.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))).
 				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

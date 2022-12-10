@@ -10,6 +10,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
@@ -154,16 +155,17 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerImageVolumeField:    tview.NewDropDown(),
 	}
 
-	bgColor := utils.Styles.ContainerCreateDialog.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	inputFieldBgColor := style.InputFieldBgColor
 
 	containerDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 	containerDialog.categories.SetBackgroundColor(bgColor)
 	containerDialog.categories.SetBorder(true)
+	containerDialog.categories.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 14
@@ -171,14 +173,14 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerNameField.SetLabel("name:")
 	containerDialog.containerNameField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerNameField.SetBackgroundColor(bgColor)
-	containerDialog.containerNameField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNameField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerNameField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// image field
 	containerDialog.containerImageField.SetLabel("select image:")
 	containerDialog.containerImageField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerImageField.SetBackgroundColor(bgColor)
-	containerDialog.containerImageField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerImageField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerImageField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	containerDialog.containerImageField.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -186,7 +188,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerPodField.SetLabel("select pod:")
 	containerDialog.containerPodField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerPodField.SetBackgroundColor(bgColor)
-	containerDialog.containerPodField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerPodField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerPodField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	containerDialog.containerPodField.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -194,60 +196,60 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerLabelsField.SetLabel("labels:")
 	containerDialog.containerLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerLabelsField.SetBackgroundColor(bgColor)
-	containerDialog.containerLabelsField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerLabelsField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// remove field
 	containerDialog.containerRemoveField.SetLabel("remove container after exit ")
 	//containerDialog.containerRemoveField.SetLabelWidth(basicInfoPageLabelWidth)
 	containerDialog.containerRemoveField.SetBackgroundColor(bgColor)
-	containerDialog.containerRemoveField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerRemoveField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerRemoveField.SetChecked(true)
 	containerDialog.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// security options page
 	securityOptsLabelWidth := 10
 	// selinux label
-	containerDialog.containerSelinuxLabelField.SetLabel("Label:")
+	containerDialog.containerSelinuxLabelField.SetLabel("label:")
 	containerDialog.containerSelinuxLabelField.SetLabelWidth(securityOptsLabelWidth)
 	containerDialog.containerSelinuxLabelField.SetBackgroundColor(bgColor)
-	containerDialog.containerSelinuxLabelField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerSelinuxLabelField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// apparmor
-	containerDialog.containerApparmorField.SetLabel("Apparmor:")
+	containerDialog.containerApparmorField.SetLabel("apparmor:")
 	containerDialog.containerApparmorField.SetLabelWidth(securityOptsLabelWidth)
 	containerDialog.containerApparmorField.SetBackgroundColor(bgColor)
-	containerDialog.containerApparmorField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerApparmorField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// seccomp
-	containerDialog.containerSeccompField.SetLabel("Seccomp:")
+	containerDialog.containerSeccompField.SetLabel("seccomp:")
 	containerDialog.containerSeccompField.SetLabelWidth(securityOptsLabelWidth)
 	containerDialog.containerSeccompField.SetBackgroundColor(bgColor)
-	containerDialog.containerSeccompField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerSeccompField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// mask
-	containerDialog.containerMaskField.SetLabel("Mask:")
+	containerDialog.containerMaskField.SetLabel("mask:")
 	containerDialog.containerMaskField.SetLabelWidth(securityOptsLabelWidth)
 	containerDialog.containerMaskField.SetBackgroundColor(bgColor)
-	containerDialog.containerMaskField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerMaskField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerMaskField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// unmask
-	containerDialog.containerUnmaskField.SetLabel("Unmask:")
+	containerDialog.containerUnmaskField.SetLabel("unmask:")
 	containerDialog.containerUnmaskField.SetLabelWidth(securityOptsLabelWidth)
 	containerDialog.containerUnmaskField.SetBackgroundColor(bgColor)
-	containerDialog.containerUnmaskField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerUnmaskField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// no-new-privileges
-	containerDialog.containerNoNewPrivField.SetLabel("No new privileges ")
+	containerDialog.containerNoNewPrivField.SetLabel("no new privileges ")
 	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	containerDialog.containerNoNewPrivField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	containerDialog.containerNoNewPrivField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerNoNewPrivField.SetChecked(false)
 	containerDialog.containerNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -257,28 +259,28 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerHostnameField.SetLabel("hostname:")
 	containerDialog.containerHostnameField.SetLabelWidth(networkingPageLabelWidth)
 	containerDialog.containerHostnameField.SetBackgroundColor(bgColor)
-	containerDialog.containerHostnameField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerHostnameField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// IP field
-	containerDialog.containerIPAddrField.SetLabel("IP address:")
+	containerDialog.containerIPAddrField.SetLabel("ip address:")
 	containerDialog.containerIPAddrField.SetLabelWidth(networkingPageLabelWidth)
 	containerDialog.containerIPAddrField.SetBackgroundColor(bgColor)
-	containerDialog.containerIPAddrField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerIPAddrField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerIPAddrField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// mac field
-	containerDialog.containerMacAddrField.SetLabel("MAC address:")
+	containerDialog.containerMacAddrField.SetLabel("mac address:")
 	containerDialog.containerMacAddrField.SetLabelWidth(networkingPageLabelWidth)
 	containerDialog.containerMacAddrField.SetBackgroundColor(bgColor)
-	containerDialog.containerMacAddrField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerMacAddrField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerMacAddrField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// network field
 	containerDialog.containerNetworkField.SetLabel("network:")
 	containerDialog.containerNetworkField.SetLabelWidth(networkingPageLabelWidth)
 	containerDialog.containerNetworkField.SetBackgroundColor(bgColor)
-	containerDialog.containerNetworkField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerNetworkField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	containerDialog.containerNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -288,80 +290,82 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.containerPortPublishField.SetLabel("publish ports:")
 	containerDialog.containerPortPublishField.SetLabelWidth(portPageLabelWidth)
 	containerDialog.containerPortPublishField.SetBackgroundColor(bgColor)
-	containerDialog.containerPortPublishField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerPortPublishField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerPortPublishField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// expose field
 	containerDialog.containerPortExposeField.SetLabel("expose ports:")
 	containerDialog.containerPortExposeField.SetLabelWidth(portPageLabelWidth)
 	containerDialog.containerPortExposeField.SetBackgroundColor(bgColor)
-	containerDialog.containerPortExposeField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerPortExposeField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerPortExposeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// publish all field
 	containerDialog.ContainerPortPublishAllField.SetLabel("publish all ")
 	containerDialog.ContainerPortPublishAllField.SetLabelWidth(portPageLabelWidth)
 	containerDialog.ContainerPortPublishAllField.SetBackgroundColor(bgColor)
-	containerDialog.ContainerPortPublishAllField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.ContainerPortPublishAllField.SetLabelColor(style.DialogFgColor)
 	containerDialog.ContainerPortPublishAllField.SetChecked(false)
 	containerDialog.ContainerPortPublishAllField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// dns setup page
 	dnsPageLabelWidth := 13
 	// hostname field
-	containerDialog.containerDNSServersField.SetLabel("DNS servers:")
+	containerDialog.containerDNSServersField.SetLabel("dns servers:")
 	containerDialog.containerDNSServersField.SetLabelWidth(dnsPageLabelWidth)
 	containerDialog.containerDNSServersField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSServersField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerDNSServersField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerDNSServersField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// IP field
-	containerDialog.containerDNSOptionsField.SetLabel("DNS options:")
+	containerDialog.containerDNSOptionsField.SetLabel("dns options:")
 	containerDialog.containerDNSOptionsField.SetLabelWidth(dnsPageLabelWidth)
 	containerDialog.containerDNSOptionsField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSOptionsField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerDNSOptionsField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// mac field
-	containerDialog.containerDNSSearchField.SetLabel("DNS search:")
+	containerDialog.containerDNSSearchField.SetLabel("dns search:")
 	containerDialog.containerDNSSearchField.SetLabelWidth(dnsPageLabelWidth)
 	containerDialog.containerDNSSearchField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSSearchField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerDNSSearchField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerDNSSearchField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// volume setup page
 	volumePageLabelWidth := 14
 	// volume
-	containerDialog.containerVolumeField.SetLabel("Volume:")
+	containerDialog.containerVolumeField.SetLabel("volume:")
 	containerDialog.containerVolumeField.SetLabelWidth(volumePageLabelWidth)
 	containerDialog.containerVolumeField.SetBackgroundColor(bgColor)
-	containerDialog.containerVolumeField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerVolumeField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	containerDialog.containerVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// image volume
-	containerDialog.containerImageVolumeField.SetLabel("Image volume:")
+	containerDialog.containerImageVolumeField.SetLabel("image volume:")
 	containerDialog.containerImageVolumeField.SetLabelWidth(volumePageLabelWidth)
 	containerDialog.containerImageVolumeField.SetBackgroundColor(bgColor)
-	containerDialog.containerImageVolumeField.SetLabelColor(tcell.ColorWhite)
+	containerDialog.containerImageVolumeField.SetLabelColor(style.DialogFgColor)
 	containerDialog.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	containerDialog.containerImageVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// category pages
 	containerDialog.categoryPages.SetBackgroundColor(bgColor)
 	containerDialog.categoryPages.SetBorder(true)
+	containerDialog.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// form
 	containerDialog.form.SetBackgroundColor(bgColor)
 	containerDialog.form.AddButton("Cancel", nil)
 	containerDialog.form.AddButton("Create", nil)
 	containerDialog.form.SetButtonsAlign(tview.AlignRight)
-	containerDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	containerDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	containerDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
 	containerDialog.setupLayout()
 	containerDialog.layout.SetBackgroundColor(bgColor)
 	containerDialog.layout.SetBorder(true)
+	containerDialog.layout.SetBorderColor(style.DialogBorderColor)
 	containerDialog.layout.SetTitle("PODMAN CONTAINER CREATE")
 	containerDialog.layout.AddItem(containerDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -372,7 +376,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 }
 
 func (d *ContainerCreateDialog) setupLayout() {
-	bgColor := utils.Styles.ContainerCreateDialog.BgColor
+	bgColor := style.DialogBgColor
 
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
@@ -753,10 +757,10 @@ func (d *ContainerCreateDialog) SetCreateFunc(handler func()) *ContainerCreateDi
 }
 
 func (d *ContainerCreateDialog) setActiveCategory(index int) {
-	fgColor := utils.Styles.ContainerCreateDialog.FgColor
-	bgColor := int(utils.Styles.ButtonPrimitive.BgColor)
-	ctgTextColor := utils.GetColorName(fgColor)
-	ctgBgColor := utils.GetColorName(tcell.Color(bgColor))
+	fgColor := style.DialogFgColor
+	bgColor := style.ButtonBgColor
+	ctgTextColor := style.GetColorHex(fgColor)
+	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
 	d.categories.Clear()

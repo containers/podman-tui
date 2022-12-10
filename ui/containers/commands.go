@@ -7,6 +7,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	bcontainers "github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
@@ -126,9 +127,10 @@ func (cnt *Containers) restore() {
 			return
 		}
 
+		headerLabel := fmt.Sprintf("%s (%s)", restoreOptions.ContainerID, restoreOptions.Name)
 		cnt.progressDialog.Hide()
 		cnt.messageDialog.SetTitle("podman container restore")
-		cnt.messageDialog.SetText(report)
+		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
 		cnt.messageDialog.Display()
 	}
 
@@ -162,10 +164,11 @@ func (cnt *Containers) checkpoint() {
 
 			return
 		}
+		headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
 
 		cnt.progressDialog.Hide()
 		cnt.messageDialog.SetTitle("podman container checkpoint")
-		cnt.messageDialog.SetText(report)
+		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
 		cnt.messageDialog.Display()
 	}
 
@@ -195,9 +198,12 @@ func (cnt *Containers) commit() {
 			cnt.displayError(title, err)
 			return
 		}
+
+		headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+
 		cnt.progressDialog.Hide()
 		cnt.messageDialog.SetTitle("podman container commit")
-		cnt.messageDialog.SetText(response)
+		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, response)
 		cnt.messageDialog.Display()
 	}
 	go cntCommit()
@@ -292,8 +298,9 @@ func (cnt *Containers) create() {
 			return
 		}
 		if len(warnings) > 0 {
+			headerLabel := fmt.Sprintf("%s (%s)", "", createOpts.Name)
 			cnt.messageDialog.SetTitle("CONTAINER CREATE WARNINGS")
-			cnt.messageDialog.SetText(strings.Join(warnings, "\n"))
+			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
 			cnt.messageDialog.Display()
 		}
 	}
@@ -311,8 +318,11 @@ func (cnt *Containers) diff() {
 		cnt.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+
 	cnt.messageDialog.SetTitle("podman container diff")
-	cnt.messageDialog.SetText(strings.Join(data, "\n"))
+	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(data, "\n"))
 	cnt.messageDialog.Display()
 }
 
@@ -327,8 +337,11 @@ func (cnt *Containers) inspect() {
 		cnt.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+
 	cnt.messageDialog.SetTitle("podman container inspect")
-	cnt.messageDialog.SetText(data)
+	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, data)
 	cnt.messageDialog.Display()
 }
 
@@ -362,11 +375,14 @@ func (cnt *Containers) logs() {
 		cnt.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+
 	cntLogs := strings.Join(logs, "\n")
 	cntLogs = strings.ReplaceAll(cntLogs, "[", "")
 	cntLogs = strings.ReplaceAll(cntLogs, "]", "")
 	cnt.messageDialog.SetTitle("podman container logs")
-	cnt.messageDialog.SetText(cntLogs)
+	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
 	cnt.messageDialog.TextScrollToEnd()
 	cnt.messageDialog.Display()
 }
@@ -401,8 +417,11 @@ func (cnt *Containers) port() {
 		cnt.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+
 	cnt.messageDialog.SetTitle("podman container port")
-	cnt.messageDialog.SetText(strings.Join(data, "\n"))
+	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(data, "\n"))
 	cnt.messageDialog.Display()
 }
 
@@ -437,10 +456,14 @@ func (cnt *Containers) rename() {
 		return
 	}
 	cnt.cmdInputDialog.SetTitle("podman container rename")
-	description := fmt.Sprintf("[white::]container name : [black::]%s[white::]\ncontainer ID   : [black::]%s", cnt.selectedName, cnt.selectedID)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	bgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
+	containerInfo := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+	description := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s",
+		fgColor, bgColor, containerInfo)
 	cnt.cmdInputDialog.SetDescription(description)
 	cnt.cmdInputDialog.SetSelectButtonLabel("rename")
-	cnt.cmdInputDialog.SetLabel("target name")
+	cnt.cmdInputDialog.SetLabel("target name ")
 
 	cnt.cmdInputDialog.SetSelectedFunc(func() {
 		newName := cnt.cmdInputDialog.GetInputText()
@@ -467,13 +490,18 @@ func (cnt *Containers) renameContainer(id string, newName string) {
 }
 
 func (cnt *Containers) rm() {
-	if cnt.selectedID == "" {
+	cntID, cntName := cnt.getSelectedItem()
+	if cntID == "" {
 		cnt.displayError("", fmt.Errorf("there is no container to remove"))
 		return
 	}
 	cnt.confirmDialog.SetTitle("podman container remove")
 	cnt.confirmData = "rm"
-	description := fmt.Sprintf("Are you sure you want to remove following container ? \n\nCONTAINER ID : %s", cnt.selectedID)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	containerItem := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s(%s)", fgColor, bgColor, cntID, cntName)
+
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", containerItem)
 	cnt.confirmDialog.SetText(description)
 	cnt.confirmDialog.Display()
 }
@@ -546,7 +574,9 @@ func (cnt *Containers) top() {
 		cnt.displayError(title, err)
 		return
 	}
-	cnt.topDialog.UpdateResults(data)
+
+	cntID, cntName := cnt.getSelectedItem()
+	cnt.topDialog.UpdateResults(dialogs.TopContainerInfo, cntID, cntName, data)
 	cnt.topDialog.Display()
 }
 

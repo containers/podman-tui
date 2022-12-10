@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -50,10 +51,10 @@ func NewImageSearchDialog() *ImageSearchDialog {
 		display:      false,
 		focusElement: sInputElement,
 	}
-	bgColor := utils.Styles.ImageSearchDialog.BgColor
-	fgColor := utils.Styles.ImageSearchDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	buttonBgColor := style.ButtonBgColor
 
 	dialog.searchButton.SetBackgroundColor(buttonBgColor)
 	dialog.searchButton.SetLabelColorActivated(buttonBgColor)
@@ -71,13 +72,10 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.searchLayout.AddItem(dialog.searchButton, searchButtonWidth, 0, true)
 	dialog.searchLayout.SetBackgroundColor(bgColor)
 
-	stBgColor := utils.Styles.ImageSearchDialog.ResultTableBgColor
-	stBorderColor := utils.Styles.ImageSearchDialog.ResultTableBorderColor
-	stBorderTitleColor := utils.Styles.ImageSearchDialog.FgColor
-	dialog.searchResult.SetBackgroundColor(stBgColor)
-	dialog.searchResult.SetTitleColor(stBorderTitleColor)
+	dialog.searchResult.SetBackgroundColor(style.BgColor)
+	dialog.searchResult.SetTitleColor(style.TableHeaderFgColor)
 	dialog.searchResult.SetBorder(true)
-	dialog.searchResult.SetBorderColor(stBorderColor)
+	dialog.searchResult.SetBorderColor(style.DialogSubBoxBorderColor)
 	searchResultLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	searchResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	searchResultLayout.AddItem(dialog.searchResult, 0, 1, true)
@@ -94,6 +92,7 @@ func NewImageSearchDialog() *ImageSearchDialog {
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetTitle("PODMAN IMAGE SEARCH/PULL")
 	dialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -105,18 +104,18 @@ func NewImageSearchDialog() *ImageSearchDialog {
 }
 
 func (d *ImageSearchDialog) initTable() {
-	bgColor := utils.Styles.ImageSearchDialog.ResultHeaderRow.BgColor
-	fgColor := utils.Styles.ImageSearchDialog.ResultHeaderRow.FgColor
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
 	d.searchResult.Clear()
 	d.searchResult.SetCell(0, 0,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]INDEX", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]INDEX", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 	d.searchResult.SetCell(0, 1,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]NAME", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]NAME", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -124,7 +123,7 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 2,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]STARS", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]STARS", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -132,14 +131,14 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 3,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]OFFICIAL", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]OFFICIAL", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 	d.searchResult.SetCell(0, 4,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]AUTOMATED", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]AUTOMATED", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -147,7 +146,7 @@ func (d *ImageSearchDialog) initTable() {
 			SetSelectable(false))
 
 	d.searchResult.SetCell(0, 5,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", utils.GetColorName(fgColor))).
+		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(fgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(bgColor).
 			SetTextColor(fgColor).
@@ -257,7 +256,7 @@ func (d *ImageSearchDialog) HasFocus() bool {
 // SetRect set rects for this primitive.
 func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
 	paddingX := 1
-	paddingY := dialogs.DialogPadding - 1
+	paddingY := 1
 	dX := x + paddingX
 	dY := y + paddingY
 	dWidth := width - (2 * paddingX)
@@ -282,7 +281,8 @@ func (d *ImageSearchDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
-	bgColor := utils.Styles.ImageSearchDialog.BgColor
+
+	bgColor := style.DialogBgColor
 	d.Box.SetBackgroundColor(bgColor)
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
@@ -382,11 +382,11 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 		stars := data[i][3]
 		official := data[i][4]
 		if official == "[OK]" {
-			official = "\u2705"
+			official = style.HeavyGreenCheckMark
 		}
 		automated := data[i][5]
 		if automated == "[OK]" {
-			automated = "\u2705"
+			automated = style.HeavyGreenCheckMark
 		}
 
 		if strings.Index(name, index+"/") == 0 {

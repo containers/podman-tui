@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -30,7 +31,7 @@ const (
 )
 
 const (
-	cntRestoreDialogLabelWidth            = 13
+	cntRestoreDialogLabelWidth            = 14
 	cntRestoreDialogPadding               = 2
 	cntRestoreDialogChkGroupColTwoWidth   = 18
 	cntRestoreDialogChkGroupColThreeWidth = 20
@@ -89,14 +90,15 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 		form:            tview.NewForm(),
 	}
 
-	fgColor := utils.Styles.ContainerRestoreDialog.FgColor
-	bgColor := utils.Styles.ContainerRestoreDialog.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	fgColor := style.DialogFgColor
+	bgColor := style.DialogBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	inputFieldBgColor := style.InputFieldBgColor
 
 	// containers
-	dialog.containers.SetLabel("Container:")
+	containersLabel := fmt.Sprintf("[:#%x:b]CONTAINER ID:[:-:-]", style.DialogBorderColor.Hex())
+	dialog.containers.SetLabel(containersLabel)
 	dialog.containers.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.containers.SetFieldWidth(cntRestoreDialogSingleFieldWidth)
 	dialog.containers.SetBackgroundColor(bgColor)
@@ -107,7 +109,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.containers.SetCurrentOption(0)
 
 	// pod
-	dialog.pods.SetLabel("Pod:")
+	dialog.pods.SetLabel("pod:")
 	dialog.pods.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.pods.SetFieldWidth(cntRestoreDialogSingleFieldWidth)
 	dialog.pods.SetBackgroundColor(bgColor)
@@ -119,14 +121,14 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.pods.SetCurrentOption(0)
 
 	// name
-	dialog.name.SetLabel("Name:")
+	dialog.name.SetLabel("name:")
 	dialog.name.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.name.SetBackgroundColor(bgColor)
 	dialog.name.SetLabelColor(fgColor)
 	dialog.name.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// Publish ports
-	publishLabel := "Publish:"
+	publishLabel := "publish:"
 	publishLabelWidth := len(publishLabel) + cntRestoreDialogPadding
 	publishPortsLabel := fmt.Sprintf("%*s ",
 		publishLabelWidth, publishLabel)
@@ -138,12 +140,12 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// Import
 	dialog.importArchive.SetBackgroundColor(bgColor)
 	dialog.importArchive.SetLabelColor(fgColor)
-	dialog.importArchive.SetLabel("Import:")
+	dialog.importArchive.SetLabel("import:")
 	dialog.importArchive.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.importArchive.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// keep
-	dialog.keep.SetLabel("Keep:")
+	dialog.keep.SetLabel("keep:")
 	dialog.keep.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.keep.SetChecked(false)
 	dialog.keep.SetBackgroundColor(bgColor)
@@ -152,7 +154,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// ignoreStaticIP
 	ignoreStaticIPLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColTwoWidth, "Ignore static IP:")
+		cntRestoreDialogChkGroupColTwoWidth, "ignore static IP:")
 	dialog.ignoreStaticIP.SetLabel(ignoreStaticIPLabel)
 	dialog.ignoreStaticIP.SetChecked(false)
 	dialog.ignoreStaticIP.SetBackgroundColor(bgColor)
@@ -161,7 +163,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// ignoreStaticMAC
 	ignoreStaticMACLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColThreeWidth, "Ignore static MAC:")
+		cntRestoreDialogChkGroupColThreeWidth, "ignore static MAC:")
 	dialog.ignoreStaticMAC.SetLabel(ignoreStaticMACLabel)
 	dialog.ignoreStaticMAC.SetChecked(false)
 	dialog.ignoreStaticMAC.SetBackgroundColor(bgColor)
@@ -170,7 +172,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// fileLocks
 	fileLocksLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColFourWidth, "File locks:")
+		cntRestoreDialogChkGroupColFourWidth, "file locks:")
 	dialog.fileLocks.SetLabel(fileLocksLabel)
 	dialog.fileLocks.SetChecked(false)
 	dialog.fileLocks.SetBackgroundColor(bgColor)
@@ -178,7 +180,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.fileLocks.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// printStats
-	dialog.printStats.SetLabel("Print Stats: ")
+	dialog.printStats.SetLabel("print Stats: ")
 	dialog.printStats.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.printStats.SetChecked(false)
 	dialog.printStats.SetBackgroundColor(bgColor)
@@ -187,7 +189,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColTwoWidth, "TCP established:")
+		cntRestoreDialogChkGroupColTwoWidth, "tcp established:")
 	dialog.tcpEstablished.SetLabel(tcpEstablishedLabel)
 	dialog.tcpEstablished.SetChecked(false)
 	dialog.tcpEstablished.SetBackgroundColor(bgColor)
@@ -196,7 +198,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// ignoreVolumes
 	ignoreVolumesLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColThreeWidth, "Ignore volumes:")
+		cntRestoreDialogChkGroupColThreeWidth, "ignore volumes:")
 	dialog.ignoreVolumes.SetLabel(ignoreVolumesLabel)
 	dialog.ignoreVolumes.SetChecked(false)
 	dialog.ignoreVolumes.SetBackgroundColor(bgColor)
@@ -205,7 +207,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ",
-		cntRestoreDialogChkGroupColFourWidth, "Ignore rootfs:")
+		cntRestoreDialogChkGroupColFourWidth, "ignore rootfs:")
 	dialog.ignoreRootFS.SetLabel(ignoreRootFSLabel)
 	dialog.ignoreRootFS.SetChecked(false)
 	dialog.ignoreRootFS.SetBackgroundColor(bgColor)
@@ -217,7 +219,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.form.AddButton("Restore", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -282,6 +284,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN CONTAINER RESTORE")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)

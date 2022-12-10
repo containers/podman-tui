@@ -7,6 +7,7 @@ import (
 	"github.com/containers/buildah/define"
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -33,7 +34,7 @@ const (
 type ContainerCommitDialog struct {
 	*tview.Box
 	layout        *tview.Flex
-	cntInfo       *tview.TextView
+	cntInfo       *tview.InputField
 	image         *tview.InputField
 	author        *tview.InputField
 	change        *tview.InputField
@@ -52,7 +53,7 @@ type ContainerCommitDialog struct {
 func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog := &ContainerCommitDialog{
 		Box:     tview.NewBox(),
-		cntInfo: tview.NewTextView(),
+		cntInfo: tview.NewInputField(),
 		layout:  tview.NewFlex(),
 		image:   tview.NewInputField(),
 		author:  tview.NewInputField(),
@@ -64,46 +65,49 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 		form:    tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.ContainerCommitDialog.BgColor
-	fgColor := utils.Styles.ContainerCommitDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
 	labelWidth := 9
 
-	// container info text view
-	dialog.cntInfo.SetBackgroundColor(bgColor)
-	dialog.cntInfo.SetTextColor(fgColor)
-	dialog.cntInfo.SetDynamicColors(true)
+	// container info input field
+	cntInfoLabel := "CONTAINER ID:"
+	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
+	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// image field
-	dialog.image.SetBackgroundColor(bgColor)
-	dialog.image.SetLabelColor(fgColor)
-	dialog.image.SetLabel("Image:")
+	dialog.image.SetBackgroundColor(style.DialogBgColor)
+	dialog.image.SetLabelColor(style.DialogFgColor)
+	dialog.image.SetLabel("image:")
 	dialog.image.SetLabelWidth(labelWidth)
 	dialog.image.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// author field
-	authorLabel := "Author:"
-	dialog.author.SetBackgroundColor(bgColor)
-	dialog.author.SetLabelColor(fgColor)
+	authorLabel := "author:"
+	dialog.author.SetBackgroundColor(style.DialogBgColor)
+	dialog.author.SetLabelColor(style.DialogFgColor)
 	dialog.author.SetLabel(authorLabel)
 	dialog.author.SetLabelWidth(len(authorLabel) + 1)
 	dialog.author.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// change field
-	dialog.change.SetBackgroundColor(bgColor)
-	dialog.change.SetLabelColor(fgColor)
-	dialog.change.SetLabel("Change:")
+	dialog.change.SetBackgroundColor(style.DialogBgColor)
+	dialog.change.SetLabelColor(style.DialogFgColor)
+	dialog.change.SetLabel("change:")
 	dialog.change.SetLabelWidth(labelWidth)
 	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// format options dropdown
-	dialog.format.SetLabel("Format:")
+	dialog.format.SetLabel("format:")
 	dialog.format.SetTitleAlign(tview.AlignRight)
-	dialog.format.SetLabelColor(fgColor)
+	dialog.format.SetLabelColor(style.DialogFgColor)
 	dialog.format.SetLabelWidth(labelWidth)
-	dialog.format.SetBackgroundColor(bgColor)
+	dialog.format.SetBackgroundColor(style.DialogBgColor)
 	dialog.format.SetOptions([]string{
 		define.OCI,
 		define.DOCKER},
@@ -112,24 +116,24 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// commit message field
-	dialog.message.SetBackgroundColor(bgColor)
-	dialog.message.SetLabelColor(fgColor)
-	dialog.message.SetLabel("Message:")
+	dialog.message.SetBackgroundColor(style.DialogBgColor)
+	dialog.message.SetLabelColor(style.DialogFgColor)
+	dialog.message.SetLabel("message:")
 	dialog.message.SetLabelWidth(labelWidth)
 	dialog.message.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// pause checkbox
-	pauseLabel := "Pause container:"
-	dialog.pause.SetBackgroundColor(bgColor)
-	dialog.pause.SetLabelColor(fgColor)
+	pauseLabel := "pause container:"
+	dialog.pause.SetBackgroundColor(style.DialogBgColor)
+	dialog.pause.SetLabelColor(style.DialogFgColor)
 	dialog.pause.SetLabel(pauseLabel)
 	dialog.pause.SetLabelWidth(len(pauseLabel) + 1)
 	dialog.pause.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// squash checkbox
-	squashLabel := "Squash layers:"
-	dialog.squash.SetBackgroundColor(bgColor)
-	dialog.squash.SetLabelColor(fgColor)
+	squashLabel := "squash layers:"
+	dialog.squash.SetBackgroundColor(style.DialogBgColor)
+	dialog.squash.SetLabelColor(style.DialogFgColor)
 	dialog.squash.SetLabel(squashLabel)
 	dialog.squash.SetLabelWidth(len(squashLabel) + 1)
 	dialog.squash.SetFieldBackgroundColor(inputFieldBgColor)
@@ -138,47 +142,48 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.form.AddButton("Cancel", nil)
 	dialog.form.AddButton("Commit", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// image and author layout row
 	iaLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	iaLayout.SetBackgroundColor(bgColor)
+	iaLayout.SetBackgroundColor(style.DialogBgColor)
 	iaLayout.AddItem(dialog.image, 0, 1, true)
-	iaLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)
+	iaLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 2, 0, false)
 	iaLayout.AddItem(dialog.author, 0, 1, true)
 
 	// dropdown and checkbox layout row
 	dcLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	dcLayout.SetBackgroundColor(bgColor)
+	dcLayout.SetBackgroundColor(style.DialogBgColor)
 	dcLayout.AddItem(dialog.format, 0, 1, true)
 	dcLayout.AddItem(dialog.squash, 0, 1, true)
 	dcLayout.AddItem(dialog.pause, 0, 1, true)
-	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	dcLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 
 	// inputs layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	layout.AddItem(dialog.cntInfo, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	layout.AddItem(iaLayout, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	layout.AddItem(dialog.change, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	layout.AddItem(dcLayout, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	layout.AddItem(dialog.message, 0, 1, true)
 
 	inputLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	inputLayout.SetBackgroundColor(bgColor)
-	inputLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	inputLayout.SetBackgroundColor(style.DialogBgColor)
+	inputLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	inputLayout.AddItem(layout, 0, 1, true)
-	inputLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	inputLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	// main layout
 	dialog.layout.SetDirection(tview.FlexRow)
-	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN CONTAINER COMMIT")
 	dialog.layout.AddItem(inputLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -393,7 +398,7 @@ func (d *ContainerCommitDialog) SetCancelFunc(handler func()) *ContainerCommitDi
 
 // SetContainerInfo sets selected container ID and name in commit dialog
 func (d *ContainerCommitDialog) SetContainerInfo(id string, name string) {
-	containerInfo := fmt.Sprintf("Container: %s (%s)", id, name)
+	containerInfo := fmt.Sprintf("%s (%s)", id, name)
 	d.cntInfo.SetText(containerInfo)
 }
 

@@ -14,10 +14,6 @@ import (
 const (
 	// IDLength max ID length to display
 	IDLength = 12
-	// HeavyGreenCheckMark unicode
-	HeavyGreenCheckMark = "\u2705"
-	// HeavyRedCrossMark unicode
-	HeavyRedCrossMark = "\u274C"
 	// RefreshInterval application refresh interval
 	RefreshInterval = 1000 * time.Millisecond
 	idLimit         = 12
@@ -32,16 +28,6 @@ func GetIDWithLimit(id string) string {
 	}
 
 	return id
-}
-
-// GetColorName returns convert tcell color to its name
-func GetColorName(color tcell.Color) string {
-	for name, c := range tcell.ColorNames {
-		if c == color {
-			return name
-		}
-	}
-	return ""
 }
 
 // AlignStringListWidth returns max string len in the list.

@@ -96,7 +96,11 @@ var _ = Describe("network disconnect", Ordered, func() {
 
 	It("get disconnect options", func() {
 
-		network := "network01"
+		var (
+			netName = "network01"
+			netID   = "001122334455"
+		)
+
 		containerList := make([]entities.ListContainer, 0)
 		containerList = append(containerList, entities.ListContainer{
 			ID:    "f7db5ff00f23f7db5ff00f23",
@@ -110,7 +114,7 @@ var _ = Describe("network disconnect", Ordered, func() {
 		netDisconnectDialog.Hide()
 		netDisconnectDialogApp.Draw()
 		netDisconnectDialog.SetContainers(containerList)
-		netDisconnectDialog.SetNetworkInfo(network)
+		netDisconnectDialog.SetNetworkInfo(netID, netName)
 		netDisconnectDialog.Display()
 		netDisconnectDialogApp.SetFocus(netDisconnectDialog)
 		netDisconnectDialogApp.Draw()
@@ -125,15 +129,12 @@ var _ = Describe("network disconnect", Ordered, func() {
 
 		networkName, containerID := netDisconnectDialog.GetDisconnectOptions()
 		Expect(containerID).To(Equal(containerList[1].ID[0:12]))
-		Expect(networkName).To(Equal(network))
+		Expect(networkName).To(Equal(netName))
 	})
 
 	It("hide", func() {
-		networkInfo := fmt.Sprintf("%-11s", "Network:")
-
 		netDisconnectDialog.Hide()
 		Expect(netDisconnectDialog.IsDisplay()).To(Equal(false))
-		Expect(netDisconnectDialog.network.GetText(true)).To(Equal(networkInfo))
 	})
 
 	AfterAll(func() {

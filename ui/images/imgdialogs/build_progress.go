@@ -4,6 +4,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/channel"
 	"github.com/gdamore/tcell/v2"
@@ -38,11 +39,11 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 		output:      tview.NewTextView(),
 		progressBar: tvxwidgets.NewActivityModeGauge(),
 	}
-	bgColor := utils.Styles.ImageBuildPrgDialog.BgColor
-	outputBgColor := utils.Styles.ImageBuildPrgDialog.Terminal.BgColor
-	outputFgColor := utils.Styles.ImageBuildPrgDialog.Terminal.FgColor
-	buildPrgBorderColor := utils.Styles.ImageBuildPrgDialog.Terminal.BorderColor
-	prgCellColor := utils.Styles.ImageBuildPrgDialog.PrgCellColor
+	bgColor := style.DialogBgColor
+	outputBgColor := style.TerminalBgColor
+	outputFgColor := style.TerminalFgColor
+	buildPrgBorderColor := style.DialogSubBoxBorderColor
+	prgCellColor := style.PrgBarColor
 
 	// progressbar
 	buildPrgDialog.progressBar.SetBorder(true)
@@ -59,6 +60,7 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	// layout
 	buildPrgDialog.layout.SetBackgroundColor(bgColor)
 	buildPrgDialog.layout.SetBorder(true)
+	buildPrgDialog.layout.SetBorderColor(style.DialogBorderColor)
 	buildPrgDialog.layout.SetTitle("PODMAN IMAGE BUILD")
 	buildPrgDialog.layout.AddItem(buildPrgDialog.progressBar, 3, 0, false)
 

@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/containers/podman-tui/ui/dialogs"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/volumes/voldialogs"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/rivo/tview"
@@ -53,23 +53,21 @@ func NewVolumes() *Volumes {
 		{"prune", "remove all unused volumes"},
 		{"rm", "remove the selected volume"},
 	})
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
-	vols.table = tview.NewTable()
-	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
-	vols.table.SetBorderColor(bgColor)
-	vols.table.SetTitleColor(fgColor)
-	vols.table.SetBorder(true)
 
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
+	vols.table = tview.NewTable()
+
+	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
+	vols.table.SetBorderColor(style.BorderColor)
+	vols.table.SetBackgroundColor(style.BgColor)
+	vols.table.SetTitleColor(style.FgColor)
+	vols.table.SetBorder(true)
 
 	for i := 0; i < len(vols.headers); i++ {
 		vols.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

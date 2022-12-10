@@ -6,7 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/networks/netdialogs"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 )
 
@@ -52,23 +52,20 @@ func NewNetworks() *Networks {
 		//{"reload", "reload the network for containers"},
 		{"rm", "remove a CNI networks"},
 	})
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
+
 	nets.table = tview.NewTable()
 	nets.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(nets.title)))
-	nets.table.SetBorderColor(bgColor)
-	nets.table.SetTitleColor(fgColor)
+	nets.table.SetBorderColor(style.BorderColor)
+	nets.table.SetBackgroundColor(style.BgColor)
+	nets.table.SetTitleColor(style.FgColor)
 	nets.table.SetBorder(true)
-
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

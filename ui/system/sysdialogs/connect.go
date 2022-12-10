@@ -3,6 +3,7 @@ package sysdialogs
 import (
 	"fmt"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/navidys/tvxwidgets"
@@ -32,51 +33,41 @@ func NewConnectDialog() *ConnectDialog {
 		layout:         tview.NewFlex().SetDirection(tview.FlexRow),
 		textview:       tview.NewTextView(),
 		progressDialog: tvxwidgets.NewActivityModeGauge(),
-		cancelButton:   tview.NewButton("[::b]Cancel[::-]"),
+		cancelButton:   tview.NewButton(" Cancel "),
 	}
-
-	// colors
-	borderColor := utils.Styles.ConnectionProgressDialog.BorderColor
-	titleColor := utils.Styles.ConnectionProgressDialog.TitleColor
-	connPrgFgColor := utils.Styles.ConnectionProgressDialog.FgColor
-	connPrgBgColor := utils.Styles.ConnectionProgressDialog.BgColor
 
 	// connect dialog box
 	conn.Box.SetBorder(false)
 
 	// progress bar
-	conn.progressDialog.SetPgBgColor(connPrgBgColor)
-	conn.progressDialog.SetBackgroundColor(connPrgBgColor)
-	conn.progressDialog.SetPgBgColor(utils.Styles.ConnectionProgressDialog.PrgBarColor)
+	conn.progressDialog.SetBackgroundColor(style.DialogBgColor)
+	conn.progressDialog.SetPgBgColor(style.PrgBarColor)
 
 	// connection message text view
-	conn.textview.SetBackgroundColor(connPrgBgColor)
-	conn.textview.SetTextColor(titleColor)
+	conn.textview.SetBackgroundColor(style.DialogBgColor)
+	conn.textview.SetTextColor(style.DialogFgColor)
 
 	// cancel button and layout
-	conn.cancelButton.SetBackgroundColor(connPrgFgColor)
-	conn.cancelButton.SetLabelColor(titleColor)
-	conn.cancelButton.SetLabelColorActivated(connPrgBgColor)
-	//conn.cancelButton.SetBackgroundColorActivated(connPrgFgColor)
+	conn.cancelButton.SetBackgroundColor(style.ButtonBgColor)
 
 	cancelLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	cancelLayout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 0, 1, false)
+	cancelLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
 	cancelLayout.AddItem(conn.cancelButton, 10, 0, true)
-	cancelLayout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 1, 0, false)
-	cancelLayout.SetBackgroundColor(connPrgBgColor)
+	cancelLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	cancelLayout.SetBackgroundColor(style.DialogBgColor)
 
 	// connection progress layout
 	conn.layout.SetBorder(true)
-	conn.layout.SetBorderColor(borderColor)
-	conn.layout.SetTitleColor(titleColor)
+	conn.layout.SetBorderColor(style.DialogBorderColor)
+	conn.layout.SetTitleColor(style.DialogFgColor)
 
-	conn.layout.SetBackgroundColor(connPrgBgColor)
-	conn.layout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 1, 0, false)
+	conn.layout.SetBackgroundColor(style.DialogBgColor)
+	conn.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	conn.layout.AddItem(conn.progressDialog, 1, 0, false)
-	conn.layout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 1, 0, false)
+	conn.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	conn.layout.AddItem(conn.textview, 0, 0, false)
 	conn.layout.AddItem(cancelLayout, 1, 0, false)
-	conn.layout.AddItem(utils.EmptyBoxSpace(connPrgBgColor), 1, 0, false)
+	conn.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	conn.display = false
 	return conn

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -15,6 +16,7 @@ type TopDialog struct {
 	*tview.Box
 	layout        *tview.Flex
 	table         *tview.Table
+	info          *tview.InputField
 	form          *tview.Form
 	display       bool
 	tableHeaders  []string
@@ -22,40 +24,54 @@ type TopDialog struct {
 	cancelHandler func()
 }
 
+type topInfo int
+
+const (
+	// top dialog header label.
+	TopPodInfo topInfo = 0 + iota
+	TopContainerInfo
+)
+
 // NewTopDialog returns new TopDialog primitive
 func NewTopDialog() *TopDialog {
 	dialog := &TopDialog{
 		Box:          tview.NewBox(),
+		info:         tview.NewInputField(),
 		tableHeaders: []string{"user", "pid", "ppid", "%cpu", "elapsed", "tty", "time", "command"},
 		display:      false,
 	}
-	bgColor := utils.Styles.TopDialog.BgColor
-	tableBgColor := utils.Styles.TopDialog.ResultTableBgColor
-	tableBorderColor := utils.Styles.TopDialog.ResultTableBorderColor
-
 	dialog.table = tview.NewTable()
+	dialog.table.SetBackgroundColor(style.DialogBgColor)
 	dialog.table.SetBorder(true)
-	dialog.table.SetBorderColor(tableBorderColor)
-	dialog.table.SetBackgroundColor(tableBgColor)
+	dialog.table.SetBorderColor(style.DialogSubBoxBorderColor)
 	dialog.initTable()
+
+	dialog.info.SetBackgroundColor(style.DialogBgColor)
+	dialog.info.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.info.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// table layout
 	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	tableLayout.SetBackgroundColor(bgColor)
-	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-	tableLayout.AddItem(dialog.table, 0, 1, true)
-	tableLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tableLayout.SetBackgroundColor(style.DialogBgColor)
+	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(dialog.info, 1, 0, false).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(dialog.table, 0, 1, true), 0, 1, true)
+	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
-	dialog.layout.SetBackgroundColor(bgColor)
-	dialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 	dialog.layout.AddItem(tableLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 
@@ -80,6 +96,7 @@ func (d *TopDialog) IsDisplay() bool {
 // Hide stops displaying this primitive
 func (d *TopDialog) Hide() {
 	d.display = false
+	d.info.SetText("")
 }
 
 // Focus is called when this primitive receives focus
@@ -112,7 +129,7 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
 	dWidth := width - (2 * DialogPadding)
-	dHeight := len(d.results) + DialogFormHeight + 5
+	dHeight := len(d.results) + DialogFormHeight + 6
 
 	if dHeight > height {
 		dHeight = height
@@ -152,15 +169,15 @@ func (d *TopDialog) SetCancelFunc(handler func()) *TopDialog {
 }
 
 func (d *TopDialog) initTable() {
-	bgColor := utils.Styles.TopDialog.ResultHeaderRow.BgColor
-	fgColor := utils.Styles.TopDialog.ResultHeaderRow.FgColor
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(0).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).
@@ -170,7 +187,18 @@ func (d *TopDialog) initTable() {
 }
 
 // UpdateResults updates result table
-func (d *TopDialog) UpdateResults(data [][]string) {
+func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data [][]string) {
+	headerInfo := "CONTAINER ID:"
+	if infoType == TopPodInfo {
+		headerInfo = "POD ID:"
+	}
+
+	d.info.SetLabel("[b::b]" + headerInfo)
+	d.info.SetLabelWidth(len(headerInfo) + 1)
+
+	infoMessage := fmt.Sprintf("%12s (%s)", id, name)
+	d.info.SetText(infoMessage)
+
 	d.results = data
 	d.initTable()
 	alignment := tview.AlignLeft

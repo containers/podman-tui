@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -35,7 +36,7 @@ const (
 type ContainerCheckpointDialog struct {
 	*tview.Box
 	layout            *tview.Flex
-	containerInfo     *tview.TextView
+	containerInfo     *tview.InputField
 	createImage       *tview.InputField
 	export            *tview.InputField
 	fileLock          *tview.Checkbox
@@ -59,7 +60,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog := &ContainerCheckpointDialog{
 		Box:            tview.NewBox(),
 		layout:         tview.NewFlex(),
-		containerInfo:  tview.NewTextView(),
+		containerInfo:  tview.NewInputField(),
 		createImage:    tview.NewInputField(),
 		export:         tview.NewInputField(),
 		fileLock:       tview.NewCheckbox(),
@@ -73,111 +74,113 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 		form:           tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.ContainerCheckpointDialog.BgColor
-	fgColor := utils.Styles.ContainerCheckpointDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	inputFieldBgColor := style.InputFieldBgColor
 	labelWidth := 14
 	chkGroupFirstColLabelWidth := 14
 	chkGroupSecondColLabelWidth := 16
 	chkGroupThirdColLabelWidth := 16
 
 	// containerInfo
-	dialog.containerInfo.SetBackgroundColor(bgColor)
-	dialog.containerInfo.SetTextColor(fgColor)
-	dialog.containerInfo.SetDynamicColors(true)
+	dialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.containerInfo.SetLabel("[::b]CONTAINER ID:")
+	dialog.containerInfo.SetLabelWidth(labelWidth)
+	dialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// createImage
-	dialog.createImage.SetBackgroundColor(bgColor)
-	dialog.createImage.SetLabelColor(fgColor)
-	dialog.createImage.SetLabel("Create image:")
+	dialog.createImage.SetBackgroundColor(style.DialogBgColor)
+	dialog.createImage.SetLabelColor(style.DialogFgColor)
+	dialog.createImage.SetLabel("create image:")
 	dialog.createImage.SetLabelWidth(labelWidth)
 	dialog.createImage.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// export
-	dialog.export.SetBackgroundColor(bgColor)
-	dialog.export.SetLabelColor(fgColor)
-	dialog.export.SetLabel("Export:")
+	dialog.export.SetBackgroundColor(style.DialogBgColor)
+	dialog.export.SetLabelColor(style.DialogFgColor)
+	dialog.export.SetLabel("export:")
 	dialog.export.SetLabelWidth(labelWidth)
 	dialog.export.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// printStats
-	dialog.printStats.SetLabel("Print stats:")
+	dialog.printStats.SetLabel("print stats:")
 	dialog.printStats.SetLabelWidth(labelWidth)
 	dialog.printStats.SetChecked(false)
-	dialog.printStats.SetBackgroundColor(bgColor)
-	dialog.printStats.SetLabelColor(fgColor)
+	dialog.printStats.SetBackgroundColor(style.DialogBgColor)
+	dialog.printStats.SetLabelColor(style.DialogFgColor)
 	dialog.printStats.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// fileLock
-	dialog.fileLock.SetLabel("File lock:")
+	dialog.fileLock.SetLabel("file lock:")
 	dialog.fileLock.SetLabelWidth(labelWidth)
 	dialog.fileLock.SetChecked(false)
-	dialog.fileLock.SetBackgroundColor(bgColor)
-	dialog.fileLock.SetLabelColor(fgColor)
+	dialog.fileLock.SetBackgroundColor(style.DialogBgColor)
+	dialog.fileLock.SetLabelColor(style.DialogFgColor)
 	dialog.fileLock.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// ignoreRootFS
-	ignoreRootFSLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "Ignore rootFS:")
+	ignoreRootFSLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "ignore rootFS:")
 	dialog.ignoreRootFS.SetLabel(ignoreRootFSLabel)
 	dialog.ignoreRootFS.SetChecked(false)
-	dialog.ignoreRootFS.SetBackgroundColor(bgColor)
-	dialog.ignoreRootFS.SetLabelColor(fgColor)
+	dialog.ignoreRootFS.SetBackgroundColor(style.DialogBgColor)
+	dialog.ignoreRootFS.SetLabelColor(style.DialogFgColor)
 	dialog.ignoreRootFS.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// keep
-	keepLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "Keep:")
+	keepLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "keep:")
 	dialog.keep.SetLabel(keepLabel)
 	dialog.keep.SetChecked(false)
-	dialog.keep.SetBackgroundColor(bgColor)
-	dialog.keep.SetLabelColor(fgColor)
+	dialog.keep.SetBackgroundColor(style.DialogBgColor)
+	dialog.keep.SetLabelColor(style.DialogFgColor)
 	dialog.keep.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// tcpEstablished
-	tcpEstablishedLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "TCP established:")
+	tcpEstablishedLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "tcp established:")
 	dialog.tcpEstablished.SetLabel(tcpEstablishedLabel)
 	dialog.tcpEstablished.SetChecked(false)
-	dialog.tcpEstablished.SetBackgroundColor(bgColor)
-	dialog.tcpEstablished.SetLabelColor(fgColor)
+	dialog.tcpEstablished.SetBackgroundColor(style.DialogBgColor)
+	dialog.tcpEstablished.SetLabelColor(style.DialogFgColor)
 	dialog.tcpEstablished.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// leaveRunning
-	leaveRunningLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "Leave running:")
+	leaveRunningLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "leave running:")
 	dialog.leaveRunning.SetLabel(leaveRunningLabel)
 	dialog.leaveRunning.SetChecked(false)
-	dialog.leaveRunning.SetBackgroundColor(bgColor)
-	dialog.leaveRunning.SetLabelColor(fgColor)
+	dialog.leaveRunning.SetBackgroundColor(style.DialogBgColor)
+	dialog.leaveRunning.SetLabelColor(style.DialogFgColor)
 	dialog.leaveRunning.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// preCheckpoint
-	preCheckPointLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "Pre checkpoint:")
+	preCheckPointLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "pre checkpoint:")
 	dialog.preCheckpoint.SetLabel(preCheckPointLabel)
 	dialog.preCheckpoint.SetChecked(false)
-	dialog.preCheckpoint.SetBackgroundColor(bgColor)
-	dialog.preCheckpoint.SetLabelColor(fgColor)
+	dialog.preCheckpoint.SetBackgroundColor(style.DialogBgColor)
+	dialog.preCheckpoint.SetLabelColor(style.DialogFgColor)
 	dialog.preCheckpoint.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// withPrevious
-	withPreviousLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "With previous:")
+	withPreviousLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "with previous:")
 	dialog.withPrevious.SetLabel(withPreviousLabel)
 	dialog.withPrevious.SetChecked(false)
-	dialog.withPrevious.SetBackgroundColor(bgColor)
-	dialog.withPrevious.SetLabelColor(fgColor)
+	dialog.withPrevious.SetBackgroundColor(style.DialogBgColor)
+	dialog.withPrevious.SetLabelColor(style.DialogFgColor)
 	dialog.withPrevious.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// form
 	dialog.form.AddButton(" Cancel ", nil)
 	dialog.form.AddButton("Checkpoint", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	optionsLayoutRow01 := tview.NewFlex().SetDirection(tview.FlexRow)
-	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	optionsLayoutRow01.AddItem(dialog.containerInfo, 1, 0, true)
-	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	optionsLayoutRow01.AddItem(dialog.createImage, 1, 0, true)
-	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	optionsLayoutRow01.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	optionsLayoutRow01.AddItem(dialog.export, 1, 0, true)
 
 	optionsLayoutRow02 := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -194,20 +197,21 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
 	layout.AddItem(optionsLayoutRow01, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	layout.AddItem(optionsLayoutRow02, 1, 0, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	layout.AddItem(optionsLayoutRow03, 1, 0, true)
 
 	mainOptsLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	mainOptsLayout.SetBackgroundColor(bgColor)
-	mainOptsLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	mainOptsLayout.SetBackgroundColor(style.DialogBgColor)
+	mainOptsLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	mainOptsLayout.AddItem(layout, 0, 1, true)
-	mainOptsLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	mainOptsLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	dialog.layout.SetDirection(tview.FlexRow)
-	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN CONTAINER CHECKPOINT")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -498,7 +502,7 @@ func (d *ContainerCheckpointDialog) setFocusElement() {
 // SetContainerInfo sets selected container ID and name information.
 func (d *ContainerCheckpointDialog) SetContainerInfo(id string, name string) {
 	d.containerID = id
-	containerInfo := fmt.Sprintf("Container: %s (%s)", id, name)
+	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
 
 	d.containerInfo.SetText(containerInfo)
 }

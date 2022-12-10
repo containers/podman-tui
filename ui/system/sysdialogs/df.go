@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/sysinfo"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -20,6 +21,7 @@ const (
 type DfDialog struct {
 	*tview.Box
 	layout        *tview.Flex
+	serviceName   *tview.InputField
 	table         *tview.Table
 	form          *tview.Form
 	display       bool
@@ -31,38 +33,60 @@ type DfDialog struct {
 func NewDfDialog() *DfDialog {
 	dialog := &DfDialog{
 		Box:          tview.NewBox(),
+		serviceName:  tview.NewInputField(),
 		tableHeaders: []string{"type", "total", "active", "size", "reclaimable"},
 		display:      false,
 	}
-	bgColor := utils.Styles.DiskUageDialog.BgColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
+
+	// service name input field
+	serviceNameLabel := "SERVICE NAME:"
+	dialog.serviceName.SetBackgroundColor(style.DialogBgColor)
+	dialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
+	dialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
+	dialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.serviceName.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
+
+	// disk usage table
 
 	dialog.table = tview.NewTable()
-	dialog.table.SetBackgroundColor(bgColor)
-	dialog.table.SetBorder(false)
+	dialog.table.SetBackgroundColor(style.DialogBgColor)
+	dialog.table.SetBorder(true)
+	dialog.table.SetBorderColor(style.DialogSubBoxBorderColor)
 	dialog.initTable()
 
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(buttonBgColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 
 	dialog.layout.SetBorder(true)
-	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 
-	dialog.layout.AddItem(dialog.table, 4, 0, true)
+	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
+	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(dialog.serviceName, 1, 0, false).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(dialog.table, 0, 1, true), 0, 1, true)
+	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
+
+	dialog.layout.AddItem(tableLayout, 9, 0, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return dialog
 }
 
-// SetTitle sets title for the dialog
-func (d *DfDialog) SetTitle(title string) {
-	layoutTitle := fmt.Sprintf("%s system disk usage", title)
-	d.layout.SetTitle(strings.ToUpper(layoutTitle))
+// SetServiceName sets event dialog service (connection) name.
+func (d *DfDialog) SetServiceName(name string) {
+	d.layout.SetTitle("SYSTEM DISK USAGE")
+	d.serviceName.SetText(name)
 }
 
 // Display displays this primitive
@@ -117,7 +141,7 @@ func (d *DfDialog) SetRect(x, y, width, height int) {
 		dX = x + emptySpace
 	}
 
-	dHeight := dialogs.DialogFormHeight + 4 + 2
+	dHeight := dialogs.DialogFormHeight + 11
 	if height > dHeight {
 		dY = y + ((height - dHeight) / 2)
 		height = dHeight
@@ -147,8 +171,8 @@ func (d *DfDialog) SetCancelFunc(handler func()) *DfDialog {
 }
 
 func (d *DfDialog) initTable() {
-	bgColor := utils.Styles.DiskUageDialog.HeaderRow.BgColor
-	fgColor := utils.Styles.DiskUageDialog.HeaderRow.FgColor
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
 
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
@@ -156,7 +180,7 @@ func (d *DfDialog) initTable() {
 	// add headers
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", utils.GetColorName(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(1).
 				SetBackgroundColor(bgColor).
 				SetTextColor(fgColor).

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -45,62 +46,58 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 		display: false,
 	}
 
-	bgColor := utils.Styles.ConnectionAddDialog.BgColor
-	fgColor := utils.Styles.ConnectionAddDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	buttonBackBgColor := utils.Styles.ButtonPrimitive.BgColor
-
 	labelWidth := 10
 	// connection name
 	connDialog.connNameField = tview.NewInputField()
 	connDialog.connNameField.SetLabel("Name:")
 	connDialog.connNameField.SetLabelWidth(labelWidth)
-	connDialog.connNameField.SetBackgroundColor(bgColor)
-	connDialog.connNameField.SetLabelColor(fgColor)
-	connDialog.connNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	connDialog.connNameField.SetBackgroundColor(style.DialogBgColor)
+	connDialog.connNameField.SetLabelColor(style.DialogFgColor)
+	connDialog.connNameField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// connection URI
 	connDialog.connURIField = tview.NewInputField()
 	connDialog.connURIField.SetLabel("URI:")
 	connDialog.connURIField.SetLabelWidth(labelWidth)
-	connDialog.connURIField.SetBackgroundColor(bgColor)
-	connDialog.connURIField.SetLabelColor(fgColor)
-	connDialog.connURIField.SetFieldBackgroundColor(inputFieldBgColor)
+	connDialog.connURIField.SetBackgroundColor(style.DialogBgColor)
+	connDialog.connURIField.SetLabelColor(style.DialogFgColor)
+	connDialog.connURIField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// identity
 	connDialog.identityField = tview.NewInputField()
 	connDialog.identityField.SetLabel("Identity:")
 	connDialog.identityField.SetLabelWidth(labelWidth)
-	connDialog.identityField.SetBackgroundColor(bgColor)
-	connDialog.identityField.SetLabelColor(fgColor)
-	connDialog.identityField.SetFieldBackgroundColor(inputFieldBgColor)
+	connDialog.identityField.SetBackgroundColor(style.DialogBgColor)
+	connDialog.identityField.SetLabelColor(style.DialogFgColor)
+	connDialog.identityField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// form
 	connDialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		AddButton(" Add ", nil).
 		SetButtonsAlign(tview.AlignRight)
-	connDialog.form.SetBackgroundColor(bgColor)
-	connDialog.form.SetButtonBackgroundColor(buttonBackBgColor)
+	connDialog.form.SetBackgroundColor(style.DialogBgColor)
+	connDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layouts
 	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)
-	inputFieldLayout.SetBackgroundColor(bgColor)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.SetBackgroundColor(style.DialogBgColor)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	inputFieldLayout.AddItem(connDialog.connNameField, 1, 0, true)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	inputFieldLayout.AddItem(connDialog.connURIField, 1, 0, true)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	inputFieldLayout.AddItem(connDialog.identityField, 1, 0, true)
 	// adding an empty column space to beginning and end of the fields layout
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	layout.AddItem(inputFieldLayout, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 
 	connDialog.layout.SetBorder(true)
+	connDialog.layout.SetBorderColor(style.DialogBorderColor)
 	connDialog.layout.SetTitle("ADD NEW SYSTEM CONNECTION")
-	connDialog.layout.SetBackgroundColor(bgColor)
+	connDialog.layout.SetBackgroundColor(style.DialogBgColor)
 	connDialog.layout.AddItem(layout, 0, 1, true)
 	connDialog.layout.AddItem(connDialog.form, dialogs.DialogFormHeight, 0, true)
 

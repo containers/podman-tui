@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/images"
+	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 
 	"github.com/rs/zerolog/log"
 )
@@ -73,29 +75,34 @@ func (img *Images) build() {
 			return
 		}
 		img.messageDialog.SetTitle("podman image build")
-		img.messageDialog.SetText(report)
+		img.messageDialog.SetText(dialogs.MessageImageInfo, report, "")
 		img.messageDialog.Display()
 	}
 	go buildFunc()
 }
 
 func (img *Images) diff() {
-	if img.selectedID == "" {
+	imageID, imageName := img.getSelectedItem()
+
+	if imageID == "" {
 		img.displayError("", fmt.Errorf("there is no image to display diff"))
 		return
 	}
 	img.progressDialog.SetTitle("image diff in progress")
 	img.progressDialog.Display()
 	diff := func() {
-		data, err := images.Diff(img.selectedID)
+		data, err := images.Diff(imageID)
 		img.progressDialog.Hide()
 		if err != nil {
-			title := fmt.Sprintf("IMAGE (%s) DIFF ERROR", img.selectedID)
+			title := fmt.Sprintf("IMAGE (%s) DIFF ERROR", imageID)
 			img.displayError(title, err)
 			return
 		}
+
+		headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
+
 		img.messageDialog.SetTitle("podman image diff")
-		img.messageDialog.SetText(strings.Join(data, "\n"))
+		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 		img.messageDialog.Display()
 	}
 	go diff()
@@ -111,6 +118,8 @@ func (img *Images) history() {
 		title := fmt.Sprintf("IMAGE (%s) HISTORY ERROR", img.selectedID)
 		img.displayError(title, err)
 	}
+
+	img.historyDialog.SetImageInfo(img.selectedID, img.selectedName)
 	img.historyDialog.UpdateResults(result)
 	img.historyDialog.Display()
 
@@ -132,26 +141,33 @@ func (img *Images) imageImport() {
 			img.displayError("IMAGE IMPORT ERROR", err)
 			return
 		}
+
+		headerLabel := fmt.Sprintf("%s", newImageID)
+
 		img.messageDialog.SetTitle("podman image import")
-		img.messageDialog.SetText(newImageID)
+		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, "")
 		img.messageDialog.Display()
 	}
 	go importFunc()
 }
 
 func (img *Images) inspect() {
-	if img.selectedID == "" {
+	imageID, imageName := img.getSelectedItem()
+	if imageID == "" {
 		img.displayError("", fmt.Errorf("there is no image to display inspect"))
 		return
 	}
-	data, err := images.Inspect(img.selectedID)
+	data, err := images.Inspect(imageID)
 	if err != nil {
-		title := fmt.Sprintf("IMAGE (%s) INSPECT ERROR", img.selectedID)
+		title := fmt.Sprintf("IMAGE (%s) INSPECT ERROR", imageID)
 		img.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
+
 	img.messageDialog.SetTitle("podman image inspect")
-	img.messageDialog.SetText(data)
+	img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, data)
 	img.messageDialog.Display()
 }
 
@@ -206,34 +222,42 @@ func (img *Images) push() {
 }
 
 func (img *Images) rm() {
-	if img.selectedID == "" {
+	imageID, imageName := img.getSelectedItem()
+	if imageID == "" {
 		img.displayError("", fmt.Errorf("there is no image to remove"))
 		return
 	}
 	img.confirmDialog.SetTitle("podman image remove")
 	img.confirmData = "rm"
-	description := fmt.Sprintf("Are you sure you want to remove following image ? \n\nimage name : %s\nimage ID   : %s", img.selectedName, img.selectedID)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	imageItem := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)", fgColor, bgColor, imageID, imageName)
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected image?", imageItem)
+
 	img.confirmDialog.SetText(description)
 	img.confirmDialog.Display()
 }
 
 func (img *Images) remove() {
+	imageID, imageName := img.getSelectedItem()
 	img.progressDialog.SetTitle("image remove in progress")
 	img.progressDialog.Display()
-	remove := func(id string) {
-		data, err := images.Remove(id)
+	remove := func() {
+		data, err := images.Remove(imageID)
 		img.progressDialog.Hide()
 		if err != nil {
-			title := fmt.Sprintf("IMAGE (%s) REMOVE ERROR", img.selectedID)
+			title := fmt.Sprintf("IMAGE (%s) REMOVE ERROR", imageID)
 			img.displayError(title, err)
 		} else {
+			headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
+
 			img.messageDialog.SetTitle("podman image remove")
-			img.messageDialog.SetText(strings.Join(data, "\n"))
+			img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 			img.messageDialog.Display()
 		}
 
 	}
-	go remove(img.selectedID)
+	go remove()
 }
 
 func (img *Images) csave() {
@@ -273,6 +297,7 @@ func (img *Images) search(term string) {
 	img.searchDialog.ClearResults()
 	img.progressDialog.SetTitle("image search in progress")
 	img.progressDialog.Display()
+
 	search := func(term string) {
 		result, err := images.Search(term)
 		if err != nil {
@@ -291,7 +316,11 @@ func (img *Images) ctag() {
 		return
 	}
 	img.cmdInputDialog.SetTitle("podman image tag")
-	description := fmt.Sprintf("[white::]image name : [black::]%s[white::]\nimage ID   : [black::]%s", img.selectedName, img.selectedID)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+
+	description := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)",
+		fgColor, bgColor, img.selectedID, img.selectedName)
 	img.cmdInputDialog.SetDescription(description)
 	img.cmdInputDialog.SetSelectButtonLabel("tag")
 	img.cmdInputDialog.SetLabel("target name")
@@ -327,20 +356,24 @@ func (img *Images) cuntag() {
 }
 
 func (img *Images) tree() {
-	if img.selectedID == "" {
+	imageID, imageName := img.getSelectedItem()
+	if imageID == "" {
 		img.displayError("", fmt.Errorf("there is no image to display tree"))
 		return
 	}
+
 	retTree := func() {
-		tree, err := images.Tree(img.selectedID)
+		tree, err := images.Tree(imageID)
 		if err != nil {
-			title := fmt.Sprintf("IMAGE (%s) TREE ERROR", img.selectedID)
+			title := fmt.Sprintf("IMAGE (%s) TREE ERROR", imageID)
 			img.displayError(title, err)
 			return
 		}
+
+		headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
 		img.progressDialog.Hide()
 		img.messageDialog.SetTitle("podman image tree")
-		img.messageDialog.SetText(tree)
+		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, tree)
 		img.messageDialog.Display()
 	}
 	img.progressDialog.SetTitle("image tree in progress")

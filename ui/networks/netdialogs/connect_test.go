@@ -166,15 +166,12 @@ var _ = Describe("network connect", Ordered, func() {
 	})
 
 	It("hide", func() {
-		networkInfo := fmt.Sprintf("%-13s", "Network:")
-
 		netConnectDialog.Hide()
 		Expect(netConnectDialog.IsDisplay()).To(Equal(false))
 		Expect(netConnectDialog.aliases.GetText()).To(Equal(""))
 		Expect(netConnectDialog.ipv4.GetText()).To(Equal(""))
 		Expect(netConnectDialog.ipv6.GetText()).To(Equal(""))
 		Expect(netConnectDialog.macAddr.GetText()).To(Equal(""))
-		Expect(netConnectDialog.network.GetText(true)).To(Equal(networkInfo))
 	})
 
 	AfterAll(func() {

@@ -3,6 +3,7 @@ package dialogs
 import (
 	"strings"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -13,6 +14,7 @@ import (
 type MessageDialog struct {
 	*tview.Box
 	layout        *tview.Flex
+	infoType      *tview.InputField
 	textview      *tview.TextView
 	form          *tview.Form
 	display       bool
@@ -20,48 +22,67 @@ type MessageDialog struct {
 	cancelHandler func()
 }
 
+type messageInfo int
+
+const (
+	// top dialog header label.
+	MessageSystemInfo messageInfo = 0 + iota
+	MessagePodInfo
+	MessageContainerInfo
+	MessageVolumeInfo
+	MessageImageInfo
+	MessageNetworkInfo
+)
+
 // NewMessageDialog returns new message dialog primitive
 func NewMessageDialog(text string) *MessageDialog {
 	dialog := &MessageDialog{
-		Box:     tview.NewBox(),
-		display: false,
-		message: text,
+		Box:      tview.NewBox(),
+		infoType: tview.NewInputField(),
+		display:  false,
+		message:  text,
 	}
+
+	dialog.infoType.SetBackgroundColor(style.DialogBgColor)
+	dialog.infoType.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.infoType.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
 
-	bgColor := utils.Styles.MessageDialog.BgColor
-	terminalBgColor := utils.Styles.MessageDialog.Terminal.BgColor
-	terminalFgColor := utils.Styles.MessageDialog.Terminal.FgColor
-	terminalBorderColor := utils.Styles.MessageDialog.Terminal.BorderColor
-	buttonBgColor := utils.Styles.ButtonPrimitive.BgColor
-
-	dialog.textview.SetTextColor(terminalFgColor)
-	dialog.textview.SetBackgroundColor(terminalBgColor)
-	dialog.textview.SetBorderColor(terminalBorderColor)
+	dialog.textview.SetTextColor(style.FgColor)
+	dialog.textview.SetBackgroundColor(style.BgColor)
 	dialog.textview.SetBorder(true)
+	dialog.textview.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// textview layout
 	tlayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-	tlayout.AddItem(dialog.textview, 0, 1, true)
-	tlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	tlayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(dialog.infoType, 1, 0, false).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(dialog.textview, 0, 1, true),
+		0, 1, true)
+	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
 
-	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(buttonBgColor)
+	dialog.form.SetBackgroundColor(style.DialogBgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
+	dialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	dialog.layout.AddItem(tlayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 	dialog.layout.SetBorder(true)
-	dialog.layout.SetBackgroundColor(bgColor)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
+	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 
 	return dialog
 }
@@ -89,10 +110,41 @@ func (d *MessageDialog) SetTitle(title string) {
 }
 
 // SetText sets message dialog text messages
-func (d *MessageDialog) SetText(message string) {
-	d.message = message
+func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, message string) {
+	msgTypeLabel := ""
+	switch headerType {
+	case MessageSystemInfo:
+		msgTypeLabel = "SERVICE NAME:"
+	case MessagePodInfo:
+		msgTypeLabel = "POD ID:"
+	case MessageContainerInfo:
+		msgTypeLabel = "CONTAINER ID:"
+	case MessageVolumeInfo:
+		msgTypeLabel = "VOLUME NAME:"
+	case MessageImageInfo:
+		msgTypeLabel = "IMAGE ID:"
+	case MessageNetworkInfo:
+		msgTypeLabel = "NETWORK ID:"
+	}
+
+	if msgTypeLabel != "" {
+		d.infoType.SetLabel("[::b]" + msgTypeLabel)
+		d.infoType.SetLabelWidth(len(msgTypeLabel) + 1)
+		d.infoType.SetText(headerMessage)
+	}
+
+	d.message = strings.TrimSpace(message)
 	d.textview.Clear()
-	d.textview.SetText(message)
+
+	if d.message == "" {
+		d.textview.SetBorder(false)
+		d.textview.SetText("")
+	} else {
+		d.textview.SetBorder(true)
+		d.textview.SetBorderColor(style.DialogSubBoxBorderColor)
+		d.textview.SetText(message)
+	}
+
 	d.textview.ScrollToBeginning()
 }
 
@@ -113,8 +165,17 @@ func (d *MessageDialog) HasFocus() bool {
 
 // SetRect set rects for this primitive.
 func (d *MessageDialog) SetRect(x, y, width, height int) {
-	messageHeight := len(strings.Split(d.message, "\n")) + 1
+	messageHeight := 0
+	if d.message != "" {
+		messageHeight = len(strings.Split(d.message, "\n")) + 3
+	}
+
 	messageWidth := getMessageWidth(d.message)
+
+	headerWidth := len(d.infoType.GetText()) + len(d.infoType.GetLabel()) + 4
+	if messageWidth < headerWidth {
+		messageWidth = headerWidth
+	}
 
 	dWidth := width - (2 * DialogPadding)
 	if messageWidth+4 < dWidth {
@@ -126,7 +187,7 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 	emptySpace := (width - dWidth) / 2
 	dX := x + emptySpace
 
-	dHeight := messageHeight + DialogFormHeight + DialogPadding
+	dHeight := messageHeight + DialogFormHeight + DialogPadding + 1
 	if dHeight > height {
 		dHeight = height - DialogPadding - 1
 	}
@@ -135,7 +196,7 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
-	//set text view height size
+
 	d.layout.ResizeItem(d.textview, textviewHeight, 0)
 
 }

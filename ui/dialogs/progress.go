@@ -3,7 +3,7 @@ package dialogs
 import (
 	"fmt"
 
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -28,7 +28,9 @@ type ProgressDialog struct {
 // NewProgressDialog returns new progress dialog primitive
 func NewProgressDialog() *ProgressDialog {
 	return &ProgressDialog{
-		Box:     tview.NewBox().SetBorder(true),
+		Box: tview.NewBox().
+			SetBorder(true).
+			SetBorderColor(style.BorderColor),
 		display: false,
 	}
 }
@@ -104,7 +106,7 @@ func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 }
 
 func (d *ProgressDialog) tickStr(max int) string {
-	barColor := utils.GetColorName(utils.Styles.ProgressDailog.PgBarColor)
+	barColor := style.GetColorHex(style.PrgBarColor)
 	counter := d.counterValue
 	if counter < max-4 {
 		d.counterValue++

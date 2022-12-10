@@ -39,7 +39,7 @@ Building from source (Linux, Windows and MacOS) or installing packaged versions 
     $ export CONTAINER_PASSPHRASE=keypass
     ```
 
-* podman-tui uses 256 colors terminal mode on `Nix` system and standard ANSI colors on `Windows` system.
+* podman-tui uses 256 colors terminal mode on `Nix` system and standard ANSI colors on `Windows` system (use "command prompt" application).
 
 
 ## Key Bindings

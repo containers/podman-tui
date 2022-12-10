@@ -4,6 +4,7 @@ import (
 	"os/user"
 	"path"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -13,14 +14,14 @@ var _ = Describe("utils", func() {
 
 	It("get color name", func() {
 		validColor01 := tcell.ColorRed
-		validC0lor01Wants := "red"
+		validC0lor01Wants := "#ff0000"
 		validColor02 := tcell.ColorBlue
-		validColor02Wants := "blue"
+		validColor02Wants := "#ff"
 		invalidColor03 := tcell.Color100
-		invalidcolor03Wants := ""
-		Expect(GetColorName(validColor01)).To(Equal(validC0lor01Wants))
-		Expect(GetColorName(validColor02)).To(Equal(validColor02Wants))
-		Expect(GetColorName(invalidColor03)).To(Equal(invalidcolor03Wants))
+		invalidcolor03Wants := "#878700"
+		Expect(style.GetColorHex(validColor01)).To(Equal(validC0lor01Wants))
+		Expect(style.GetColorHex(validColor02)).To(Equal(validColor02Wants))
+		Expect(style.GetColorHex(invalidColor03)).To(Equal(invalidcolor03Wants))
 	})
 
 	It("empty box space", func() {
