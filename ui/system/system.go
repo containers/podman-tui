@@ -7,8 +7,8 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/system/sysdialogs"
-	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
 )
 
@@ -58,27 +58,23 @@ func NewSystem() *System {
 		connPrgDialog:    sysdialogs.NewConnectDialog(),
 		connAddDialog:    sysdialogs.NewAddConnectionDialog(),
 	}
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
 
 	// connection table
-	sys.connTable.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
+	sys.connTable.SetBackgroundColor(style.BgColor)
 	sys.connTable.SetBorder(true)
 	sys.updateConnTableTitle(0)
-	sys.connTable.SetTitleColor(fgColor)
-	sys.connTable.SetBorderColor(bgColor)
+	sys.connTable.SetTitleColor(style.FgColor)
+	sys.connTable.SetBorderColor(style.BorderColor)
 	sys.connTable.SetFixed(1, 1)
 	sys.connTable.SetSelectable(true, false)
 
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
 	for i := 0; i < len(sys.connTableHeaders); i++ {
 		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i]))
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -139,107 +140,104 @@ func NewPodCreateDialog() *PodCreateDialog {
 		//podNetworkAliasesField:   tview.NewInputField(),
 	}
 
-	bgColor := utils.Styles.PodCreateDialog.BgColor
-	fgColor := utils.Styles.PodCreateDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-
 	podDialog.categories.SetDynamicColors(true).
 		SetWrap(true).
 		SetTextAlign(tview.AlignLeft)
-	podDialog.categories.SetBackgroundColor(bgColor)
+	podDialog.categories.SetBackgroundColor(style.DialogBgColor)
 	podDialog.categories.SetBorder(true)
+	podDialog.categories.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 12
 	// name field
 	podDialog.podNameField.SetLabel("name:")
 	podDialog.podNameField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.podNameField.SetBackgroundColor(bgColor)
-	podDialog.podNameField.SetLabelColor(fgColor)
-	podDialog.podNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podNameField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podNameField.SetLabelColor(style.DialogFgColor)
+	podDialog.podNameField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// no hosts check box
 	podDialog.podNoHostsCheckBox.SetLabel("no hosts")
 	podDialog.podNoHostsCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
 	podDialog.podNoHostsCheckBox.SetChecked(false)
-	podDialog.podNoHostsCheckBox.SetBackgroundColor(bgColor)
-	podDialog.podNoHostsCheckBox.SetLabelColor(fgColor)
-	podDialog.podNoHostsCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podNoHostsCheckBox.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podNoHostsCheckBox.SetLabelColor(style.DialogFgColor)
+	podDialog.podNoHostsCheckBox.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// labels field
 	podDialog.podLabelsField.SetLabel("labels:")
 	podDialog.podLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
-	podDialog.podLabelsField.SetBackgroundColor(bgColor)
-	podDialog.podLabelsField.SetLabelColor(fgColor)
-	podDialog.podLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podLabelsField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podLabelsField.SetLabelColor(style.DialogFgColor)
+	podDialog.podLabelsField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// security options
 	securityOptsPageLabelWidth := 10
 	// labels
-	podDialog.podSelinuxLabelField.SetLabel("Label:")
+	podDialog.podSelinuxLabelField.SetLabel("label:")
 	podDialog.podSelinuxLabelField.SetLabelWidth(securityOptsPageLabelWidth)
-	podDialog.podSelinuxLabelField.SetBackgroundColor(bgColor)
-	podDialog.podSelinuxLabelField.SetLabelColor(fgColor)
-	podDialog.podSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podSelinuxLabelField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podSelinuxLabelField.SetLabelColor(style.DialogFgColor)
+	podDialog.podSelinuxLabelField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// apparmor
-	podDialog.podApparmorField.SetLabel("Apparmor:")
+	podDialog.podApparmorField.SetLabel("apparmor:")
 	podDialog.podApparmorField.SetLabelWidth(securityOptsPageLabelWidth)
-	podDialog.podApparmorField.SetBackgroundColor(bgColor)
-	podDialog.podApparmorField.SetLabelColor(fgColor)
-	podDialog.podApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podApparmorField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podApparmorField.SetLabelColor(style.DialogFgColor)
+	podDialog.podApparmorField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// seccomp
-	podDialog.podSeccompField.SetLabel("Seccomp:")
+	podDialog.podSeccompField.SetLabel("seccomp:")
 	podDialog.podSeccompField.SetLabelWidth(securityOptsPageLabelWidth)
-	podDialog.podSeccompField.SetBackgroundColor(bgColor)
-	podDialog.podSeccompField.SetLabelColor(fgColor)
-	podDialog.podSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podSeccompField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podSeccompField.SetLabelColor(style.DialogFgColor)
+	podDialog.podSeccompField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// mask
-	podDialog.podMaskField.SetLabel("Mask:")
+	podDialog.podMaskField.SetLabel("mask:")
 	podDialog.podMaskField.SetLabelWidth(securityOptsPageLabelWidth)
-	podDialog.podMaskField.SetBackgroundColor(bgColor)
-	podDialog.podMaskField.SetLabelColor(fgColor)
-	podDialog.podMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podMaskField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podMaskField.SetLabelColor(style.DialogFgColor)
+	podDialog.podMaskField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// unmask
-	podDialog.podUnmaskField.SetLabel("Unmask:")
+	podDialog.podUnmaskField.SetLabel("unmask:")
 	podDialog.podUnmaskField.SetLabelWidth(securityOptsPageLabelWidth)
-	podDialog.podUnmaskField.SetBackgroundColor(bgColor)
-	podDialog.podUnmaskField.SetLabelColor(fgColor)
-	podDialog.podUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podUnmaskField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podUnmaskField.SetLabelColor(style.DialogFgColor)
+	podDialog.podUnmaskField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// no new privileges
-	podDialog.podNoNewPrivField.SetLabel("No new privileges ")
-	podDialog.podNoNewPrivField.SetBackgroundColor(bgColor)
+	podDialog.podNoNewPrivField.SetLabel("no new privileges ")
+	podDialog.podNoNewPrivField.SetBackgroundColor(style.DialogBgColor)
 	podDialog.podNoNewPrivField.SetLabelColor(tcell.ColorWhite)
-	podDialog.podNoNewPrivField.SetBackgroundColor(bgColor)
-	podDialog.podNoNewPrivField.SetLabelColor(fgColor)
-	podDialog.podNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podNoNewPrivField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podNoNewPrivField.SetLabelColor(style.DialogFgColor)
+	podDialog.podNoNewPrivField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// DNS setup page
 	dnsPageLabelWidth := 16
 	// DNS server field
-	podDialog.podDNSServerField.SetLabel("DNS servers:")
+	podDialog.podDNSServerField.SetLabel("dns servers:")
 	podDialog.podDNSServerField.SetLabelWidth(dnsPageLabelWidth)
-	podDialog.podDNSServerField.SetBackgroundColor(bgColor)
-	podDialog.podDNSServerField.SetLabelColor(fgColor)
-	podDialog.podDNSServerField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podDNSServerField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podDNSServerField.SetLabelColor(style.DialogFgColor)
+	podDialog.podDNSServerField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// DNS options field
-	podDialog.podDNSOptionsField.SetLabel("DNS options:")
+	podDialog.podDNSOptionsField.SetLabel("dns options:")
 	podDialog.podDNSOptionsField.SetLabelWidth(dnsPageLabelWidth)
-	podDialog.podDNSOptionsField.SetBackgroundColor(bgColor)
-	podDialog.podDNSOptionsField.SetLabelColor(fgColor)
-	podDialog.podDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podDNSOptionsField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podDNSOptionsField.SetLabelColor(style.DialogFgColor)
+	podDialog.podDNSOptionsField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// DNS search domains field
 	podDialog.podDNSSearchDomaindField.SetLabel("search domains:")
 	podDialog.podDNSSearchDomaindField.SetLabelWidth(dnsPageLabelWidth)
-	podDialog.podDNSSearchDomaindField.SetBackgroundColor(bgColor)
-	podDialog.podDNSSearchDomaindField.SetLabelColor(fgColor)
-	podDialog.podDNSSearchDomaindField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podDNSSearchDomaindField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podDNSSearchDomaindField.SetLabelColor(style.DialogFgColor)
+	podDialog.podDNSSearchDomaindField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// infra page
 	infraPageLabelWidth := 15
@@ -247,80 +245,79 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podInfraCheckBox.SetLabel("infra")
 	podDialog.podInfraCheckBox.SetLabelWidth(infraPageLabelWidth)
 	podDialog.podInfraCheckBox.SetChecked(true)
-	podDialog.podInfraCheckBox.SetBackgroundColor(bgColor)
-	podDialog.podInfraCheckBox.SetLabelColor(fgColor)
-	podDialog.podInfraCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podInfraCheckBox.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podInfraCheckBox.SetLabelColor(style.DialogFgColor)
+	podDialog.podInfraCheckBox.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// infra command field
 	podDialog.podInfraCommandField.SetLabel("infra command:")
 	podDialog.podInfraCommandField.SetLabelWidth(infraPageLabelWidth)
-	podDialog.podInfraCommandField.SetBackgroundColor(bgColor)
-	podDialog.podInfraCommandField.SetLabelColor(fgColor)
-	podDialog.podInfraCommandField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podInfraCommandField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podInfraCommandField.SetLabelColor(style.DialogFgColor)
+	podDialog.podInfraCommandField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// infra image field
 	podDialog.podInfraImageField.SetLabel("infra image:")
 	podDialog.podInfraImageField.SetText(podDialog.defaultInfraImage)
 	podDialog.podInfraImageField.SetLabelWidth(infraPageLabelWidth)
-	podDialog.podInfraImageField.SetBackgroundColor(bgColor)
-	podDialog.podInfraImageField.SetLabelColor(fgColor)
-	podDialog.podInfraImageField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podInfraImageField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podInfraImageField.SetLabelColor(style.DialogFgColor)
+	podDialog.podInfraImageField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// networking page
 	networkingLabelWidth := 17
 	// hostname field
 	podDialog.podHostnameField.SetLabel("hostname:")
 	podDialog.podHostnameField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podHostnameField.SetBackgroundColor(bgColor)
-	podDialog.podHostnameField.SetLabelColor(fgColor)
-	podDialog.podHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podHostnameField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podHostnameField.SetLabelColor(style.DialogFgColor)
+	podDialog.podHostnameField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// ip address field
 	podDialog.podIPAddressField.SetLabel("ip address:")
 	podDialog.podIPAddressField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podIPAddressField.SetBackgroundColor(bgColor)
-	podDialog.podIPAddressField.SetLabelColor(fgColor)
-	podDialog.podIPAddressField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podIPAddressField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podIPAddressField.SetLabelColor(style.DialogFgColor)
+	podDialog.podIPAddressField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// mac address field
 	podDialog.podMacAddressField.SetLabel("mac address:")
 	podDialog.podMacAddressField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podMacAddressField.SetBackgroundColor(bgColor)
-	podDialog.podMacAddressField.SetLabelColor(fgColor)
-	podDialog.podMacAddressField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podMacAddressField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podMacAddressField.SetLabelColor(style.DialogFgColor)
+	podDialog.podMacAddressField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// host-to-ip map field
 	podDialog.podHostToIPMapField.SetLabel("host-to-ip:")
 	podDialog.podHostToIPMapField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podHostToIPMapField.SetBackgroundColor(bgColor)
-	podDialog.podHostToIPMapField.SetLabelColor(fgColor)
-	podDialog.podHostToIPMapField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podHostToIPMapField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podHostToIPMapField.SetLabelColor(style.DialogFgColor)
+	podDialog.podHostToIPMapField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// network field
 	podDialog.podNetworkField.SetLabel("network:")
 	podDialog.podNetworkField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podNetworkField.SetBackgroundColor(bgColor)
-	podDialog.podNetworkField.SetLabelColor(fgColor)
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
-	podDialog.podNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	podDialog.podNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
+	podDialog.podNetworkField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podNetworkField.SetLabelColor(style.DialogFgColor)
+	podDialog.podNetworkField.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
+	podDialog.podNetworkField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// category pages
-	podDialog.categoryPages.SetBackgroundColor(bgColor)
+	podDialog.categoryPages.SetBackgroundColor(style.DialogBgColor)
 	podDialog.categoryPages.SetBorder(true)
+	podDialog.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	// form
-	podDialog.form.SetBackgroundColor(bgColor)
+	podDialog.form.SetBackgroundColor(style.DialogBgColor)
 	podDialog.form.AddButton("Cancel", nil)
 	podDialog.form.AddButton("Create", nil)
 	podDialog.form.SetButtonsAlign(tview.AlignRight)
-	podDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	podDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
-	podDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
 	podDialog.setupLayout()
-	podDialog.layout.SetBackgroundColor(bgColor)
+	podDialog.layout.SetBackgroundColor(style.DialogBgColor)
 	podDialog.layout.SetBorder(true)
+	podDialog.layout.SetBorderColor(style.DialogBorderColor)
 	podDialog.layout.SetTitle("PODMAN POD CREATE")
 	podDialog.layout.AddItem(podDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -331,7 +328,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 }
 
 func (d *PodCreateDialog) setupLayout() {
-	bgColor := utils.Styles.PodCreateDialog.BgColor
+	bgColor := style.DialogBgColor
 
 	// basic info page
 	d.basicInfoPage.SetDirection(tview.FlexRow)
@@ -652,10 +649,10 @@ func (d *PodCreateDialog) SetCreateFunc(handler func()) *PodCreateDialog {
 }
 
 func (d *PodCreateDialog) setActiveCategory(index int) {
-	fgColor := utils.Styles.PodCreateDialog.FgColor
-	bgColor := utils.Styles.ButtonPrimitive.BgColor
-	ctgTextColor := utils.GetColorName(fgColor)
-	ctgBgColor := utils.GetColorName(bgColor)
+	fgColor := style.DialogFgColor
+	bgColor := style.ButtonBgColor
+	ctgTextColor := style.GetColorHex(fgColor)
+	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
 	d.categories.Clear()

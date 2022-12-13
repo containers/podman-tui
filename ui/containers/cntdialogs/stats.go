@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/docker/go-units"
@@ -19,7 +20,7 @@ type ContainerStatsDialog struct {
 	layout        *tview.Flex
 	form          *tview.Form
 	table         *tview.Table
-	containerInfo *tview.TextView
+	containerInfo *tview.InputField
 	resultChan    *chan entities.ContainerStatsReport
 	statsStream   *bool
 	mu            sync.Mutex
@@ -34,57 +35,59 @@ type ContainerStatsDialog struct {
 func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog := ContainerStatsDialog{
 		Box:           tview.NewBox(),
-		containerInfo: tview.NewTextView(),
-		maxHeight:     15,
+		containerInfo: tview.NewInputField(),
+		maxHeight:     14,
 		maxWidth:      92,
 	}
-	bgColor := utils.Styles.ContainerStatsDialog.BgColor
-	tableBgColor := utils.Styles.ContainerStatsDialog.ResultTableBgColor
-	tableBorderColor := utils.Styles.ContainerStatsDialog.ResultTableBorderColor
 
 	// table
-
 	statsDialog.table = tview.NewTable()
-	statsDialog.table.SetBackgroundColor(tableBgColor)
+	statsDialog.table.SetBackgroundColor(style.BgColor)
+	statsDialog.table.SetBorder(true)
+	statsDialog.table.SetBorderColor(style.DialogSubBoxBorderColor)
 	statsDialog.initTableUI()
 
 	// container info text view
-	statsDialog.containerInfo.SetBackgroundColor(tableBgColor)
-	statsDialog.containerInfo.SetDynamicColors(true)
-	statsDialog.containerInfo.SetWordWrap(false)
-	statsDialog.containerInfo.SetBorder(false)
+	cntInfoLabel := "CONTAINER ID:"
+	statsDialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.containerInfo.SetLabel("[::b]" + cntInfoLabel)
+	statsDialog.containerInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	statsDialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	statsDialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// form
 	statsDialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
-	statsDialog.form.SetBackgroundColor(bgColor)
-	statsDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	statsDialog.form.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// table layout
 	statTableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	statTableLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
 	statTableLayout.AddItem(statsDialog.table, 0, 1, false)
-	statTableLayout.AddItem(utils.EmptyBoxSpace(tableBgColor), 1, 0, false)
 
 	statResultLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	statResultLayout.AddItem(statsDialog.containerInfo, 1, 0, true)
+	statResultLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statResultLayout.AddItem(statTableLayout, 0, 1, true)
-	statResultLayout.SetBorder(true)
-	statResultLayout.SetBorderColor(tableBorderColor)
+	statResultLayout.SetBackgroundColor(style.BgColor)
+	statResultLayout.SetBorder(false)
 
 	// main dialog layout
 	statsDialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	statsDialog.layout.SetBorder(true)
-	statsDialog.layout.SetBackgroundColor(bgColor)
+	statsDialog.layout.SetBorderColor(style.DialogBorderColor)
+	statsDialog.layout.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.layout.SetTitle("PODMAN CONTAINER STATS")
 
 	statDialogResultLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statDialogResultLayout.AddItem(statResultLayout, 0, 1, false)
-	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statDialogResultLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
-	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statDialogResultLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -195,11 +198,8 @@ func (d *ContainerStatsDialog) SetDoneFunc(handler func()) *ContainerStatsDialog
 
 // SetContainerInfo sets container ID and name
 func (d *ContainerStatsDialog) SetContainerInfo(id string, name string) {
-	headerFgColor := utils.GetColorName(utils.Styles.ContainerStatsDialog.TableHeaderFgColor)
-	info := fmt.Sprintf(" [%s:-:-]Container ID:[-:-:-] %s", headerFgColor, id)
-	if name != "" {
-		info = fmt.Sprintf("%s (%s)", info, name)
-	}
+	info := fmt.Sprintf("%s (%s)", id, name)
+
 	d.containerInfo.SetText(info)
 }
 
@@ -248,35 +248,35 @@ func (d *ContainerStatsDialog) startReportReader() {
 
 var (
 	containerMemUsageCell = tableCell{
-		row: 1,
+		row: 0,
 		col: 1,
 	}
 	containerMemPercCell = tableCell{
-		row: 2,
+		row: 1,
 		col: 1,
 	}
 	containerBlockInputCell = tableCell{
-		row: 3,
+		row: 2,
 		col: 1,
 	}
 	containerBlockOutputCell = tableCell{
-		row: 4,
+		row: 3,
 		col: 1,
 	}
 	containerPidsCell = tableCell{
-		row: 1,
+		row: 0,
 		col: 3,
 	}
 	containerCPUPercCell = tableCell{
-		row: 2,
+		row: 1,
 		col: 3,
 	}
 	containerNetInputCell = tableCell{
-		row: 3,
+		row: 2,
 		col: 3,
 	}
 	containerNetOutputCell = tableCell{
-		row: 4,
+		row: 3,
 		col: 3,
 	}
 )
@@ -287,42 +287,42 @@ type tableCell struct {
 }
 
 func (d *ContainerStatsDialog) initTableUI() {
-	d.table.SetCell(0, 0, tview.NewTableCell(""))
-	headerFgColor := utils.Styles.ContainerStatsDialog.TableHeaderFgColor
+	//d.table.SetCell(0, 0, tview.NewTableCell(""))
+	headerFgColor := style.TableHeaderFgColor
 
 	// first column
-	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col-1, tview.NewTableCell("Mem usage/limit:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col-1, tview.NewTableCell("mem usage/limit:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col-1, tview.NewTableCell("Memory %:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col-1, tview.NewTableCell("memory %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col, tview.NewTableCell(""))
 	d.setContainerMemPerc(0.00)
 
-	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col-1, tview.NewTableCell("Block input:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col-1, tview.NewTableCell("block input:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col-1, tview.NewTableCell("Block output:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col-1, tview.NewTableCell("block output:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col, tview.NewTableCell(""))
 
 	// second column
-	d.table.SetCell(containerPidsCell.row, containerPidsCell.col-1, tview.NewTableCell("PIDs:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerPidsCell.row, containerPidsCell.col-1, tview.NewTableCell("pids:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerPidsCell.row, containerPidsCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col-1, tview.NewTableCell("CPU %:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col-1, tview.NewTableCell("cpu %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col, tview.NewTableCell(""))
 	d.setContainerCPUPerc(0.00)
 
-	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col-1, tview.NewTableCell("Net input:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col-1, tview.NewTableCell("net input:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col-1, tview.NewTableCell("Net output:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col-1, tview.NewTableCell("net output:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col, tview.NewTableCell(""))
 
 }
 
 func (d *ContainerStatsDialog) setContainerPID(pids uint64) {
 	var cntPIDS = "--"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if pids != 0 {
@@ -348,7 +348,7 @@ func (d *ContainerStatsDialog) setContainerMemPerc(usage float64) {
 
 func (d *ContainerStatsDialog) setContainerMemUsage(memUsage uint64, memLimit uint64) {
 	var usage = "-- / --"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if memUsage != 0 && memLimit != 0 {
@@ -359,7 +359,7 @@ func (d *ContainerStatsDialog) setContainerMemUsage(memUsage uint64, memLimit ui
 
 func (d *ContainerStatsDialog) setContainerBlockInput(binput uint64) {
 	var blockInput = "--"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if binput != 0 {
@@ -370,7 +370,7 @@ func (d *ContainerStatsDialog) setContainerBlockInput(binput uint64) {
 
 func (d *ContainerStatsDialog) setContainerBlockOutput(boutput uint64) {
 	var blockOutput = "--"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if boutput != 0 {
@@ -381,7 +381,7 @@ func (d *ContainerStatsDialog) setContainerBlockOutput(boutput uint64) {
 
 func (d *ContainerStatsDialog) setContainerNetInput(ninput uint64) {
 	var netInput = "--"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if ninput != 0 {
@@ -392,7 +392,7 @@ func (d *ContainerStatsDialog) setContainerNetInput(ninput uint64) {
 
 func (d *ContainerStatsDialog) setContainerNetOutput(noutput uint64) {
 	var netOutput = "--"
-	fgColor := utils.Styles.ContainerStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if noutput != 0 {

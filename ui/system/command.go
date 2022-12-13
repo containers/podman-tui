@@ -6,6 +6,8 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/sysinfo"
+	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rs/zerolog/log"
 )
 
@@ -91,7 +93,7 @@ func (sys *System) df() {
 			return
 		}
 		connName := registry.ConnectionName()
-		sys.dfDialog.SetTitle(connName)
+		sys.dfDialog.SetServiceName(connName)
 		sys.dfDialog.UpdateDiskSummary(response)
 		sys.dfDialog.Display()
 	}
@@ -103,7 +105,7 @@ func (sys *System) events() {
 		return
 	}
 	connName := registry.ConnectionName()
-	sys.eventDialog.SetTitle(connName)
+	sys.eventDialog.SetServiceName(connName)
 	sys.eventDialog.Display()
 }
 
@@ -116,10 +118,11 @@ func (sys *System) info() {
 		sys.displayError("SYSTEM INFO ERROR", err)
 		return
 	}
+
 	connName := registry.ConnectionName()
-	title := fmt.Sprintf("%s system info", connName)
-	sys.messageDialog.SetTitle(title)
-	sys.messageDialog.SetText(data)
+
+	sys.messageDialog.SetTitle("SYSTEM INFORMATION")
+	sys.messageDialog.SetText(dialogs.MessageSystemInfo, connName, data)
 	sys.messageDialog.Display()
 }
 
@@ -145,8 +148,8 @@ func (sys *System) prune() {
 			sys.displayError("SYSTEM PRUNE ERROR", err)
 			return
 		}
-		sys.messageDialog.SetText("PODMAN SYSTEM PRUNE")
-		sys.messageDialog.SetText(report)
+		sys.messageDialog.SetTitle("PODMAN SYSTEM PRUNE")
+		sys.messageDialog.SetText(dialogs.MessageSystemInfo, registry.ConnectionName(), report)
 		sys.messageDialog.Display()
 	}
 	go prune()
@@ -164,7 +167,11 @@ func (sys *System) cremove() {
 	title := "podman system connection remove"
 	sys.confirmDialog.SetTitle(title)
 	sys.confirmData = "remove_conn"
-	confirmMsg := fmt.Sprintf("Are you sure you want to remove connection %q?", connName)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	serviceItem := fmt.Sprintf("[%s:%s:b]SERVICE NAME:[:-:-] %s", fgColor, bgColor, connName)
+
+	confirmMsg := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected service connection ?", serviceItem)
 	sys.confirmDialog.SetText(confirmMsg)
 	sys.confirmDialog.Display()
 }

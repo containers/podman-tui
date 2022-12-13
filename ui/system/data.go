@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 )
 
 // UpdateConnectionsData retrieves connections list data
@@ -44,9 +44,9 @@ func (connStatus connectionItemStatus) StatusString() string {
 	var status string
 	switch connStatus.status {
 	case registry.ConnectionStatusConnected:
-		status = fmt.Sprintf("%s %s", utils.HeavyGreenCheckMark, "connected")
+		status = fmt.Sprintf("%s %s", style.HeavyGreenCheckMark, "connected")
 	case registry.ConnectionStatusConnectionError:
-		status = fmt.Sprintf("%s %s", utils.HeavyRedCrossMark, "connection error")
+		status = fmt.Sprintf("%s %s", style.HeavyRedCrossMark, "connection error")
 	}
 	return status
 }

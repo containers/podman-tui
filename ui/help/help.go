@@ -3,6 +3,7 @@ package help
 import (
 	"fmt"
 
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -24,10 +25,10 @@ func NewHelp(appName string, appVersion string) *Help {
 	}
 
 	// colors
-	headerColor := utils.Styles.Help.HeaderFgColor
-	fgColor := utils.Styles.Help.FgColor
-	bgColor := utils.Styles.Help.BgColor
-	borderColor := utils.Styles.Help.BorderColor
+	headerColor := style.HelpHeaderFgColor
+	fgColor := style.FgColor
+	bgColor := style.BgColor
+	borderColor := style.BorderColor
 
 	// application keys descriotion table
 	keyinfo := tview.NewTable()

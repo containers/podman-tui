@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	ppods "github.com/containers/podman-tui/pdcs/pods"
+	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rs/zerolog/log"
 )
 
@@ -73,18 +75,21 @@ func (p *Pods) create() {
 }
 
 func (p *Pods) inspect() {
-	if p.selectedID == "" {
+	podID, podName := p.getSelectedItem()
+	if podID == "" {
 		p.displayError("", fmt.Errorf("there is no pod to display inspect"))
 		return
 	}
-	data, err := ppods.Inspect(p.selectedID)
+	data, err := ppods.Inspect(podID)
 	if err != nil {
-		title := fmt.Sprintf("POD (%s) INSPECT ERROR", p.selectedID)
+		title := fmt.Sprintf("POD (%s) INSPECT ERROR", podID)
 		p.displayError(title, err)
 		return
 	}
+
+	headerLabel := fmt.Sprintf("%12s (%s)", podID, podName)
 	p.messageDialog.SetTitle("podman pod inspect")
-	p.messageDialog.SetText(data)
+	p.messageDialog.SetText(dialogs.MessagePodInfo, headerLabel, data)
 	p.messageDialog.Display()
 }
 
@@ -165,13 +170,18 @@ func (p *Pods) restart() {
 }
 
 func (p *Pods) rm() {
-	if p.selectedID == "" {
+	podID, podName := p.getSelectedItem()
+	if podID == "" {
 		p.displayError("", fmt.Errorf("there is no pod to remove"))
 		return
 	}
 	p.confirmDialog.SetTitle("podman pod rm")
 	p.confirmData = "rm"
-	description := fmt.Sprintf("Are you sure you want to remove following pod ? \n\nPOD ID : %s", p.selectedID)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	podItem := fmt.Sprintf("[%s:%s:b]POD ID:[:-:-] %s (%s)", fgColor, bgColor, podID, podName)
+
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected pod?", podItem)
 	p.confirmDialog.SetText(description)
 	p.confirmDialog.Display()
 }
@@ -244,7 +254,9 @@ func (p *Pods) top() {
 		p.displayError(title, err)
 		return
 	}
-	p.topDialog.UpdateResults(data)
+
+	podID, podName := p.getSelectedItem()
+	p.topDialog.UpdateResults(dialogs.TopPodInfo, podID, podName, data)
 	p.topDialog.Display()
 }
 

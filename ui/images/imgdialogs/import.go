@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/hashicorp/go-multierror"
@@ -53,36 +54,36 @@ func NewImageImportDialog() *ImageImportDialog {
 		form:          tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.ImageImportDialog.BgColor
-	fgColor := utils.Styles.ImageImportDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
 	labelWidth := 11
 
 	// path field
 	dialog.path.SetBackgroundColor(bgColor)
 	dialog.path.SetLabelColor(fgColor)
-	dialog.path.SetLabel("Source:")
+	dialog.path.SetLabel("source:")
 	dialog.path.SetLabelWidth(labelWidth)
 	dialog.path.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// change field
 	dialog.change.SetBackgroundColor(bgColor)
 	dialog.change.SetLabelColor(fgColor)
-	dialog.change.SetLabel("Change:")
+	dialog.change.SetLabel("change:")
 	dialog.change.SetLabelWidth(labelWidth)
 	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// commit field
 	dialog.commitMessage.SetBackgroundColor(bgColor)
 	dialog.commitMessage.SetLabelColor(fgColor)
-	dialog.commitMessage.SetLabel("Message:")
+	dialog.commitMessage.SetLabel("message:")
 	dialog.commitMessage.SetLabelWidth(labelWidth)
 	dialog.commitMessage.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// reference field
 	dialog.reference.SetBackgroundColor(bgColor)
 	dialog.reference.SetLabelColor(fgColor)
-	dialog.reference.SetLabel("Reference:")
+	dialog.reference.SetLabel("reference:")
 	dialog.reference.SetLabelWidth(labelWidth)
 	dialog.reference.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -91,7 +92,7 @@ func NewImageImportDialog() *ImageImportDialog {
 	dialog.form.AddButton("Import", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -113,6 +114,7 @@ func NewImageImportDialog() *ImageImportDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN IMAGE IMPORT")
 	dialog.layout.AddItem(mainOptsLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)

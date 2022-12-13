@@ -2,10 +2,11 @@ package utils
 
 import (
 	"fmt"
+
+	"github.com/containers/podman-tui/ui/style"
 )
 
 const (
-	prgCell  = "▉"
 	prgWidth = 20
 	prgWarn  = 13
 	prgCrit  = 17
@@ -20,7 +21,7 @@ func ProgressUsageString(percentage float64) string {
 			progressCell = progressCell + getBarColor(index)
 
 		} else {
-			progressCell = progressCell + prgCell
+			progressCell = progressCell + style.ProgressBarCell
 		}
 	}
 	return progressCell + fmt.Sprintf("%6.2f%%", percentage)
@@ -32,12 +33,12 @@ func getBarColor(value int) string {
 	barColor := ""
 
 	if value < prgWarn {
-		barColor = GetColorName(Styles.InfoBar.ProgressBar.BarOKColor)
+		barColor = style.GetColorName(style.PrgBarOKColor)
 	} else if value < prgCrit {
-		barColor = GetColorName(Styles.InfoBar.ProgressBar.BarWarnColor)
+		barColor = style.GetColorName(style.PrgBarWarnColor)
 	} else {
-		barColor = GetColorName(Styles.InfoBar.ProgressBar.BarCritColor)
+		barColor = style.GetColorName(style.PrgBarCritColor)
 	}
-	barCell = fmt.Sprintf("[%s::]%s[%s::]", barColor, prgCell, GetColorName(Styles.InfoBar.ProgressBar.BarEmptyColor))
+	barCell = fmt.Sprintf("[%s::]%s[%s::]", barColor, style.ProgressBarCell, style.GetColorName(style.PrgBarEmptyColor))
 	return barCell
 }

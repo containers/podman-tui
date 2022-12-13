@@ -7,6 +7,7 @@ import (
 
 	ppods "github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -67,74 +68,73 @@ func NewPodStatsDialog() *PodStatsDialog {
 		statQueryOpts:        &ppods.StatsOptions{},
 		queryRefreshInterval: 3000 * time.Millisecond,
 	}
-	bgColor := utils.Styles.PodStatsDialog.BgColor
-	fgColor := utils.Styles.PodStatsDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
 
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
 	// pod dropdown
-	pddLabel := "Pod ID:"
-	statsDialog.podDropDown.SetLabel(fmt.Sprintf("[::b]%s[::-]", pddLabel))
+	pddLabel := "POD ID:"
+	labelBgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
+	statsDialog.podDropDown.SetLabel(fmt.Sprintf("[:%s:b]%s[::-]", labelBgColor, pddLabel))
 	statsDialog.podDropDown.SetLabelWidth(len(pddLabel) + 1)
-	statsDialog.podDropDown.SetBackgroundColor(bgColor)
-	statsDialog.podDropDown.SetLabelColor(fgColor)
+	statsDialog.podDropDown.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.podDropDown.SetLabelColor(style.DialogFgColor)
 	statsDialog.podDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	statsDialog.podDropDown.SetFieldBackgroundColor(inputFieldBgColor)
+	statsDialog.podDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// pod sortby dropdown
-	pddSortByLabel := "Sort By:"
-	statsDialog.podSortByDropDown.SetLabel(fmt.Sprintf("[::b]%s[::-]", pddSortByLabel))
+	pddSortByLabel := "SORT BY:"
+	statsDialog.podSortByDropDown.SetLabel(fmt.Sprintf("[:%s:b]%s[::-]", labelBgColor, pddSortByLabel))
 	statsDialog.podSortByDropDown.SetLabelWidth(len(pddSortByLabel) + 1)
-	statsDialog.podSortByDropDown.SetBackgroundColor(bgColor)
-	statsDialog.podSortByDropDown.SetLabelColor(fgColor)
+	statsDialog.podSortByDropDown.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.podSortByDropDown.SetLabelColor(style.DialogFgColor)
 	statsDialog.podSortByDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	statsDialog.podSortByDropDown.SetOptions([]string{
 		"pod ID",
 		"container name",
 		"cpu %",
 		"mem %"}, statsDialog.setStatsQuerySortBy)
-	statsDialog.podSortByDropDown.SetFieldBackgroundColor(inputFieldBgColor)
+	statsDialog.podSortByDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// table
 	statsDialog.table = tview.NewTable()
 	statsDialog.table.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 	statsDialog.table.SetBorder(true)
-	statsDialog.table.SetBorderColor(bgColor)
+	statsDialog.table.SetBorderColor(style.DialogSubBoxBorderColor)
 	statsDialog.initTableUI()
 
 	// form
 	statsDialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
-	statsDialog.form.SetBackgroundColor(bgColor)
-	statsDialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	statsDialog.form.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// pod dropdown and sort by dropdown
 	statsDialog.controlLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
-	statsDialog.controlLayout.SetBackgroundColor(bgColor)
-	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statsDialog.controlLayout.SetBackgroundColor(style.DialogBgColor)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statsDialog.controlLayout.AddItem(statsDialog.podDropDown, 0, 1, false)
-	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statsDialog.controlLayout.AddItem(statsDialog.podSortByDropDown, 0, 1, false)
-	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statsDialog.controlLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	// table layout
 	statLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	statLayout.SetBackgroundColor(bgColor)
-	statLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statLayout.SetBackgroundColor(style.DialogBgColor)
+	statLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statLayout.AddItem(statsDialog.table, 0, 1, false)
-	statLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	statLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	// main dialog layout
 	statsDialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	statsDialog.layout.SetBorder(true)
-	statsDialog.layout.SetBackgroundColor(bgColor)
+	statsDialog.layout.SetBorderColor(style.BorderColor)
+	statsDialog.layout.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.layout.SetTitle("PODMAN POD STATS")
 
-	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statsDialog.controlLayout, 1, 0, true)
-	statsDialog.layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -378,8 +378,8 @@ func (d *PodStatsDialog) getAllPodIDs() []string {
 
 func (d *PodStatsDialog) initTableUI() {
 	var tableHeaders = []string{"POD ID", "CID", "NAME", "CPU %", "MEM USAGE / LIMIT", "MEM %", "NET IO", "BLOCK IO", "PIDS"}
-	headerBgColor := utils.Styles.PodStatsDialog.ResultHeaderRow.BgColor
-	headerFgColor := utils.Styles.PodStatsDialog.ResultHeaderRow.FgColor
+	headerBgColor := style.TableHeaderBgColor
+	headerFgColor := style.TableHeaderFgColor
 	d.table.Clear()
 	for index, header := range tableHeaders {
 		headerItem := fmt.Sprintf("[::b]%s[::-]", header)
@@ -399,7 +399,7 @@ func (d *PodStatsDialog) updateData(statReport []ppods.StatReporter) {
 	d.mu.Lock()
 	d.statsResult = statReport
 	d.mu.Unlock()
-	fgColor := utils.Styles.PodStatsDialog.FgColor
+	fgColor := style.DialogFgColor
 	row := 1
 	d.initTableUI()
 	for i := 0; i < len(d.statsResult); i++ {

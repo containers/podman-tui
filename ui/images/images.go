@@ -8,7 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/images/imgdialogs"
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 
 	"github.com/rivo/tview"
 )
@@ -80,22 +80,19 @@ func NewImages() *Images {
 		{"untag", "remove a name from the selected image"},
 	})
 
-	fgColor := utils.Styles.PageTable.FgColor
-	bgColor := utils.Styles.PageTable.BgColor
 	imgTable := tview.NewTable()
 	imgTable.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(images.title)))
-	imgTable.SetBorderColor(bgColor)
-	imgTable.SetTitleColor(fgColor)
+	imgTable.SetBorderColor(style.BorderColor)
+	imgTable.SetBackgroundColor(style.BgColor)
+	imgTable.SetTitleColor(style.FgColor)
 	imgTable.SetBorder(true)
-	fgColor = utils.Styles.PageTable.HeaderRow.FgColor
-	bgColor = utils.Styles.PageTable.HeaderRow.BgColor
 
 	for i := 0; i < len(images.headers); i++ {
 		imgTable.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(images.headers[i]))).
 				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
+				SetBackgroundColor(style.PageHeaderBgColor).
+				SetTextColor(style.PageHeaderFgColor).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}

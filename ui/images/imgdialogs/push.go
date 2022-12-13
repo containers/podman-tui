@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -32,7 +33,7 @@ const (
 type ImagePushDialog struct {
 	*tview.Box
 	layout        *tview.Flex
-	imageInfo     *tview.TextView
+	imageInfo     *tview.InputField
 	destination   *tview.InputField
 	compress      *tview.Checkbox
 	format        *tview.DropDown
@@ -52,7 +53,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog := &ImagePushDialog{
 		Box:           tview.NewBox(),
 		layout:        tview.NewFlex(),
-		imageInfo:     tview.NewTextView(),
+		imageInfo:     tview.NewInputField(),
 		destination:   tview.NewInputField(),
 		compress:      tview.NewCheckbox(),
 		format:        tview.NewDropDown(),
@@ -63,34 +64,38 @@ func NewImagePushDialog() *ImagePushDialog {
 		form:          tview.NewForm(),
 	}
 
-	bgColor := utils.Styles.ImagePushDialog.BgColor
-	fgColor := utils.Styles.ImagePushDialog.FgColor
-	inputFieldBgColor := utils.Styles.InputFieldPrimitive.BgColor
-	ddUnselectedStyle := utils.Styles.DropdownStyle.Unselected
-	ddselectedStyle := utils.Styles.DropdownStyle.Selected
+	bgColor := style.DialogBgColor
+	fgColor := style.DialogFgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
 	labelWidth := 13
 
-	// image info textview
-	dialog.imageInfo.SetBackgroundColor(bgColor)
-	dialog.imageInfo.SetTextColor(fgColor)
-	dialog.imageInfo.SetDynamicColors(true)
+	// image info field
+	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabel("[::b]IMAGE ID:")
+	dialog.imageInfo.SetLabelWidth(labelWidth)
+	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
+	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(style.DialogBorderColor).
+		Foreground(style.DialogFgColor))
 
 	// destination input field
 	dialog.destination.SetBackgroundColor(bgColor)
 	dialog.destination.SetLabelColor(fgColor)
-	dialog.destination.SetLabel("Destination:")
+	dialog.destination.SetLabel("destination:")
 	dialog.destination.SetLabelWidth(labelWidth)
 	dialog.destination.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// compress checkbox
 	dialog.compress.SetBackgroundColor(bgColor)
 	dialog.compress.SetLabelColor(fgColor)
-	dialog.compress.SetLabel("Compress:")
+	dialog.compress.SetLabel("compress:")
 	dialog.compress.SetLabelWidth(labelWidth)
 	dialog.compress.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// format dropdown
-	formatLabel := "Format:"
+	formatLabel := "format:"
 	dialog.format.SetLabel(formatLabel)
 	dialog.format.SetTitleAlign(tview.AlignRight)
 	dialog.format.SetLabelColor(fgColor)
@@ -105,7 +110,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// skipTLSVerify checkbox
-	skipTLSVerifyLabel := "Skip TLS verify:"
+	skipTLSVerifyLabel := "skip tls verify:"
 	dialog.skipTLSVerify.SetBackgroundColor(bgColor)
 	dialog.skipTLSVerify.SetLabelColor(fgColor)
 	dialog.skipTLSVerify.SetLabel(skipTLSVerifyLabel)
@@ -115,19 +120,19 @@ func NewImagePushDialog() *ImagePushDialog {
 	// authfile input field
 	dialog.authFile.SetBackgroundColor(bgColor)
 	dialog.authFile.SetLabelColor(fgColor)
-	dialog.authFile.SetLabel("Authfile:")
+	dialog.authFile.SetLabel("authfile:")
 	dialog.authFile.SetLabelWidth(labelWidth)
 	dialog.authFile.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// username input field
 	dialog.username.SetBackgroundColor(bgColor)
 	dialog.username.SetLabelColor(fgColor)
-	dialog.username.SetLabel("Username:")
+	dialog.username.SetLabel("username:")
 	dialog.username.SetLabelWidth(labelWidth)
 	dialog.username.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// password input field
-	passwordLabel := "Password:"
+	passwordLabel := "password:"
 	dialog.password.SetBackgroundColor(bgColor)
 	dialog.password.SetLabelColor(fgColor)
 	dialog.password.SetLabel(passwordLabel)
@@ -140,7 +145,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.form.AddButton("Push", nil)
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
-	dialog.form.SetButtonBackgroundColor(utils.Styles.ButtonPrimitive.BgColor)
+	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// layout
 	// dropdowns and checkbox row layour
@@ -178,6 +183,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.layout.SetDirection(tview.FlexRow)
 	dialog.layout.SetBackgroundColor(bgColor)
 	dialog.layout.SetBorder(true)
+	dialog.layout.SetBorderColor(style.DialogBorderColor)
 	dialog.layout.SetTitle("PODMAN IMAGE PUSH")
 	dialog.layout.AddItem(inputLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
@@ -396,7 +402,7 @@ func (d *ImagePushDialog) SetCancelFunc(handler func()) *ImagePushDialog {
 
 // SetImageInfo sets selected image ID and name in push dialog
 func (d *ImagePushDialog) SetImageInfo(id string, name string) {
-	containerInfo := fmt.Sprintf("%-13s%s (%s)", "Image ID:", id, name)
+	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
 	d.imageInfo.SetText(containerInfo)
 }
 

@@ -3,7 +3,7 @@ package dialogs
 import (
 	"fmt"
 
-	"github.com/containers/podman-tui/ui/utils"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
@@ -20,13 +20,13 @@ type ErrorDialog struct {
 
 // NewErrorDialog returns new error dialog primitive
 func NewErrorDialog() *ErrorDialog {
-	bgColor := utils.Styles.ErrorDialog.BgColor
+	bgColor := style.ErrorDialogBgColor
 	dialog := ErrorDialog{
 		Box:     tview.NewBox(),
 		modal:   tview.NewModal().SetBackgroundColor(bgColor).AddButtons([]string{"OK"}),
 		display: false,
 	}
-	dialog.modal.SetButtonBackgroundColor(utils.Styles.ErrorDialog.ButtonColor)
+	dialog.modal.SetButtonBackgroundColor(style.ErrorDialogButtonBgColor)
 
 	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		dialog.Hide()
@@ -97,8 +97,8 @@ func (d *ErrorDialog) GetRect() (int, int, int, int) {
 
 // Draw draws this primitive onto the screen.
 func (d *ErrorDialog) Draw(screen tcell.Screen) {
-	hFgColor := utils.Styles.ErrorDialog.HeaderFgColor
-	headerColor := utils.GetColorName(hFgColor)
+	hFgColor := style.FgColor
+	headerColor := style.GetColorHex(hFgColor)
 	var errorMessage string
 	if d.title != "" {
 		errorMessage = fmt.Sprintf("[%s::b]%s[-::-]\n", headerColor, d.title)

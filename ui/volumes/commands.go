@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/volumes"
+	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,7 +38,7 @@ func (vols *Volumes) create() {
 		return
 	}
 	vols.messageDialog.SetTitle("podman volume create")
-	vols.messageDialog.SetText(report)
+	vols.messageDialog.SetText(dialogs.MessageVolumeInfo, createOpts.Name, report)
 	vols.messageDialog.Display()
 }
 
@@ -51,8 +53,9 @@ func (vols *Volumes) inspect() {
 		vols.displayError(title, err)
 		return
 	}
+
 	vols.messageDialog.SetTitle("podman volume inspect")
-	vols.messageDialog.SetText(data)
+	vols.messageDialog.SetText(dialogs.MessageVolumeInfo, vols.selectedID, data)
 	vols.messageDialog.Display()
 }
 
@@ -88,7 +91,11 @@ func (vols *Volumes) rm() {
 	}
 	vols.confirmDialog.SetTitle("podman pod rm")
 	vols.confirmData = "rm"
-	description := fmt.Sprintf("Are you sure you want to remove following volume ? \n\nVOLUME NAME : %s", vols.selectedID)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
+	fgColor := style.GetColorHex(style.DialogFgColor)
+	volumeItem := fmt.Sprintf("[%s:%s:b]VOLUME NAME:[:-:-] %s", fgColor, bgColor, vols.selectedID)
+
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected volume?", volumeItem)
 	vols.confirmDialog.SetText(description)
 	vols.confirmDialog.Display()
 }

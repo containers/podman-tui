@@ -74,7 +74,7 @@ var _ = Describe("top dialog", Ordered, func() {
 			{"row03", "r03_pid", "r03_ppid", "r03_cpu", "r03_elapsed", "r03_tty", "r03_time", "r03_command"},
 		}
 		topDialog.Display()
-		topDialog.UpdateResults(topContent)
+		topDialog.UpdateResults(TopPodInfo, "", "", topContent)
 		app.Draw()
 		row := 1
 		Expect(topDialog.table.GetCell(row, 0).Text).To(Equal(topContent[row][0]))
