@@ -192,7 +192,6 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.form.SetButtonsAlign(tview.AlignRight)
 	netDialog.form.SetButtonBackgroundColor(buttonBgColor)
 
-	netDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
 	netDialog.setupLayout()
 	netDialog.layout.SetBackgroundColor(bgColor)
 	netDialog.layout.SetBorder(true)
