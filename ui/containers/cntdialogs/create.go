@@ -361,7 +361,6 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog.form.SetButtonsAlign(tview.AlignRight)
 	containerDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
-	containerDialog.layout.AddItem(tview.NewBox().SetBackgroundColor(bgColor), 1, 0, true)
 	containerDialog.setupLayout()
 	containerDialog.layout.SetBackgroundColor(bgColor)
 	containerDialog.layout.SetBorder(true)
