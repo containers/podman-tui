@@ -14,6 +14,11 @@ const (
 	cmdWidthOffset = 6
 )
 
+const (
+	cmdTableFocus = 0 + iota
+	cmdFormFocus
+)
+
 // CommandDialog is a commands list dialog
 type CommandDialog struct {
 	*tview.Box
@@ -24,6 +29,8 @@ type CommandDialog struct {
 	options       [][]string
 	width         int
 	height        int
+	focusElement  int
+	selectedStyle tcell.Style
 	cancelHandler func()
 	selectHandler func()
 }
@@ -33,7 +40,6 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
-		AddButton("Select", nil).
 		SetButtonsAlign(tview.AlignRight)
 
 	form.SetBackgroundColor(style.DialogBgColor)
@@ -99,11 +105,15 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	// returns the command primitive
 	return &CommandDialog{
-		Box:     tview.NewBox().SetBorder(false),
-		layout:  layout,
-		table:   cmdsTable,
-		form:    form,
-		display: false,
+		Box:          tview.NewBox().SetBorder(false),
+		layout:       layout,
+		table:        cmdsTable,
+		form:         form,
+		display:      false,
+		focusElement: cmdTableFocus,
+		selectedStyle: tcell.StyleDefault.
+			Background(style.DialogFgColor).
+			Foreground(style.DialogBgColor),
 		options: options,
 		width:   cmdWidth + cmdWidthOffset,
 		height:  len(options) + TableHeightOffset + DialogFormHeight,
@@ -139,15 +149,42 @@ func (cmd *CommandDialog) IsDisplay() bool {
 // Hide stops displaying this primitive
 func (cmd *CommandDialog) Hide() {
 	cmd.display = false
+	cmd.focusElement = cmdTableFocus
+	cmd.table.SetSelectedStyle(cmd.selectedStyle)
 }
 
 // HasFocus returns whether or not this primitive has focus
 func (cmd *CommandDialog) HasFocus() bool {
-	return cmd.form.HasFocus()
+	if cmd.table.HasFocus() || cmd.form.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // Focus is called when this primitive receives focus
 func (cmd *CommandDialog) Focus(delegate func(p tview.Primitive)) {
+	if cmd.focusElement == cmdTableFocus {
+		delegate(cmd.table)
+
+		return
+	}
+
+	button := cmd.form.GetButton(cmd.form.GetButtonCount() - 1)
+
+	button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == utils.SwitchFocusKey.Key {
+			cmd.focusElement = cmdTableFocus
+
+			cmd.Focus(delegate)
+			cmd.form.SetFocus(0)
+
+			return nil
+		}
+
+		return event
+	})
+
 	delegate(cmd.form)
 }
 
@@ -155,37 +192,49 @@ func (cmd *CommandDialog) Focus(delegate func(p tview.Primitive)) {
 func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return cmd.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("commands dialog: event %v received", event)
-		if event.Key() == tcell.KeyEsc {
+		if event.Key() == utils.CloseDialogKey.Key {
 			cmd.cancelHandler()
 			return
 		}
-		// select command
-		if event.Key() == tcell.KeyEnter || event.Key() == tcell.KeyTab {
+
+		if event.Key() == utils.SwitchFocusKey.Key {
+			cmd.setFocusElement()
+		}
+
+		if cmd.form.HasFocus() {
 			if formHandler := cmd.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
 				return
 			}
 		}
-		// scroll between command items
-		if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
-			tableHandler(event, setFocus)
-			return
+
+		// command table handler
+		if cmd.table.HasFocus() {
+			if event.Key() == tcell.KeyEnter {
+				cmd.selectHandler()
+
+				return
+			}
+
+			if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
+				tableHandler(event, setFocus)
+				return
+			}
 		}
+
 	})
 }
 
 // SetSelectedFunc sets form enter button selected function
 func (cmd *CommandDialog) SetSelectedFunc(handler func()) *CommandDialog {
 	cmd.selectHandler = handler
-	enterButton := cmd.form.GetButton(cmd.form.GetButtonCount() - 1)
-	enterButton.SetSelectedFunc(handler)
 	return cmd
 }
 
 // SetCancelFunc sets form cancel button selected function
 func (cmd *CommandDialog) SetCancelFunc(handler func()) *CommandDialog {
 	cmd.cancelHandler = handler
-	cancelButton := cmd.form.GetButton(cmd.form.GetButtonCount() - 2)
+	cancelButton := cmd.form.GetButton(cmd.form.GetButtonCount() - 1)
 	cancelButton.SetSelectedFunc(handler)
 	return cmd
 }
@@ -220,4 +269,16 @@ func (cmd *CommandDialog) Draw(screen tcell.Screen) {
 	}
 	cmd.Box.DrawForSubclass(screen, cmd)
 	cmd.layout.Draw(screen)
+}
+
+func (cmd *CommandDialog) setFocusElement() {
+	if cmd.focusElement == cmdTableFocus {
+		cmd.focusElement = cmdFormFocus
+		cmd.table.SetSelectedStyle(tcell.StyleDefault.
+			Background(style.DialogBgColor).
+			Foreground(style.DialogFgColor))
+	} else {
+		cmd.focusElement = cmdTableFocus
+		cmd.table.SetSelectedStyle(cmd.selectedStyle)
+	}
 }
