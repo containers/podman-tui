@@ -22,6 +22,7 @@ var _ = Describe("command dialog", Ordered, func() {
 		}
 		app = tview.NewApplication()
 		cmdDialog = NewCommandDialog(cmdTitle)
+
 		screen = tcell.NewSimulationScreen("UTF-8")
 		err := screen.Init()
 		if err != nil {
@@ -75,7 +76,7 @@ var _ = Describe("command dialog", Ordered, func() {
 		Expect(cmdDialog.GetSelectedItem()).To(Equal("cmd02"))
 	})
 
-	It("enter button selected", func() {
+	It("command selected", func() {
 		enterButton := "initial"
 		enterButtonWants := "enter selected"
 		enterFunc := func() {
@@ -94,7 +95,7 @@ var _ = Describe("command dialog", Ordered, func() {
 			cancelButton = cancelButtonWants
 		}
 		cmdDialog.SetCancelFunc(cancelFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		app.SetFocus(cmdDialog.form)
 		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		app.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
