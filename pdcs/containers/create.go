@@ -4,7 +4,9 @@ import (
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
-	"github.com/containers/podman/v4/pkg/bindings/containers" // nolint:gci
+	// nolint:gci
+	"github.com/containers/podman/v4/pkg/bindings/containers"
+	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/specgen"
 	"github.com/containers/podman/v4/pkg/specgenutil"
 	"github.com/pkg/errors"
@@ -12,13 +14,12 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman-tui/pdcs/volumes"
 )
 
 // CreateOptions container create options.
 type CreateOptions struct {
 	Name            string
-	Labels          map[string]string
+	Labels          []string
 	Image           string
 	Remove          bool
 	Pod             string
@@ -38,151 +39,98 @@ type CreateOptions struct {
 	ApparmorProfile string
 	Seccomp         string
 	NoNewPriv       bool
-	Mask            []string
-	Unmask          []string
+	Mask            string
+	Unmask          string
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions) ([]string, error) { // nolint:gocognit,cyclop
+func Create(opts CreateOptions) ([]string, error) { // nolint:cyclop
 	var (
 		warningResponse []string
-		macAddress      net.HardwareAddr
-		ipAddr          net.IP
-		dnsServers      = make([]net.IP, 0)
-		networks        = make(map[string]types.PerNetworkOptions)
+		createOptions   entities.ContainerCreateOptions
 	)
 
 	log.Debug().Msgf("pdcs: podman container create %v", opts)
+	utils.DefineCreateDefaults(&createOptions)
 
 	conn, err := registry.GetConnection()
 	if err != nil {
 		return warningResponse, err
 	}
 
-	containerSpecGen := specgen.NewSpecGenerator(opts.Name, false)
-	containerSpecGen.Name = opts.Name
-
-	if opts.Pod != "" {
-		containerSpecGen.Pod = opts.Pod
+	if len(opts.Labels) > 0 {
+		createOptions.Label = opts.Labels
 	}
 
-	containerSpecGen.Image = opts.Image
-	containerSpecGen.Labels = opts.Labels
-	containerSpecGen.Remove = opts.Remove
-	containerSpecGen.Hostname = opts.Hostname
+	createOptions.Name = opts.Name
+	createOptions.Rm = opts.Remove
 
-	var perNetworkOpt types.PerNetworkOptions
-
-	if opts.MacAddress != "" {
-		macAddress, err = net.ParseMAC(opts.MacAddress)
-		if err != nil {
-			return warningResponse, err
-		}
-
-		perNetworkOpt.StaticMAC = types.HardwareAddr(macAddress)
-	}
-
-	if opts.IPAddress != "" {
-		ipAddr = net.ParseIP(opts.IPAddress)
-		if ipAddr == nil {
-			return warningResponse, errors.Wrap(utils.ErrInvalidIPAddress, ipAddr.String())
-		}
-
-		perNetworkOpt.StaticIPs = []net.IP{ipAddr}
-	}
-
-	if opts.Network != "" {
-		networks[opts.Network] = perNetworkOpt
-	}
-
-	containerSpecGen.Networks = networks
-
-	for _, d := range opts.DNSServer {
-		addr := net.ParseIP(d)
-
-		if addr == nil {
-			return warningResponse, errors.Wrap(utils.ErrInvalidDNSAddress, ipAddr.String())
-		}
-
-		dnsServers = append(dnsServers, addr)
-	}
-
-	if len(dnsServers) > 0 {
-		containerSpecGen.DNSServers = dnsServers
-	}
-
-	if len(opts.DNSOptions) > 0 {
-		containerSpecGen.DNSOptions = opts.DNSOptions
-	}
-
-	if len(opts.DNSSearchDomain) > 0 {
-		containerSpecGen.DNSSearch = opts.DNSSearchDomain
-	}
-
-	// ports
-	if len(opts.Publish) > 0 {
-		containerSpecGen.PortMappings, err = specgenutil.CreatePortBindings(opts.Publish)
-		if err != nil {
-			return warningResponse, err
-		}
-	}
+	createOptions.Hostname = opts.Hostname
 
 	if len(opts.Expose) > 0 {
-		containerSpecGen.Expose, err = createExpose(opts.Expose)
-		if err != nil {
-			return warningResponse, err
-		}
+		createOptions.Expose = opts.Expose
 	}
 
-	containerSpecGen.PublishExposedPorts = opts.PublishAll
+	createOptions.PublishAll = opts.PublishAll
 
-	// volume
-	if opts.ImageVolume != "" {
-		containerSpecGen.ImageVolumeMode = opts.ImageVolume
-	}
-
-	if opts.Volume != "" {
-		// get volumes dest
-		volumeDest, err := volumes.VolumeDest(opts.Volume)
-		if err != nil {
-			return warningResponse, err
-		}
-
-		containerSpecGen.Volumes = append(containerSpecGen.Volumes, &specgen.NamedVolume{
-			Name: opts.Volume,
-			Dest: volumeDest,
-		})
-	}
-
-	// security options
-	if len(opts.SelinuxOpts) > 0 {
-		containerSpecGen.ContainerSecurityConfig.SelinuxOpts = append(containerSpecGen.ContainerSecurityConfig.SelinuxOpts, opts.SelinuxOpts...) // nolint:lll
-	}
-
-	if opts.ApparmorProfile != "" {
-		containerSpecGen.ContainerSecurityConfig.ApparmorProfile = opts.ApparmorProfile
-	}
-
-	if opts.Seccomp != "" {
-		containerSpecGen.ContainerSecurityConfig.SeccompProfilePath = opts.Seccomp
-	}
-
-	if len(opts.Mask) > 0 {
-		containerSpecGen.ContainerSecurityConfig.Mask = opts.Mask
-	}
-
-	if len(opts.Unmask) > 0 {
-		containerSpecGen.ContainerSecurityConfig.Unmask = opts.Unmask
-	}
-
-	containerSpecGen.ContainerSecurityConfig.NoNewPrivileges = opts.NoNewPriv
-
-	// validate spec
-	if err := containerSpecGen.Validate(); err != nil {
+	createOptions.Net, err = containerNetworkOptions(opts)
+	if err != nil {
 		return warningResponse, err
 	}
 
-	response, err := containers.CreateWithSpec(conn, containerSpecGen, &containers.CreateOptions{})
+	if opts.Pod != "" {
+		createOptions.Pod = opts.Pod
+		createOptions.Net.Network.NSMode = specgen.FromPod
+	} else {
+		createOptions.Net.Network.NSMode = specgen.Default
+	}
+
+	if opts.Volume != "" {
+		createOptions.Volume = []string{opts.Volume}
+	}
+
+	createOptions.ImageVolume = opts.ImageVolume
+
+	// security options
+	if opts.ApparmorProfile != "" {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "apparmor="+opts.ApparmorProfile)
+	}
+
+	if opts.Mask != "" {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "mask="+opts.Mask)
+	}
+
+	if opts.Unmask != "" {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "unmask="+opts.Unmask)
+	}
+
+	if opts.Seccomp != "" {
+		createOptions.SeccompPolicy = opts.Seccomp
+	}
+
+	if opts.NoNewPriv {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "no-new-privileges")
+	}
+
+	if len(opts.SelinuxOpts) > 0 {
+		for _, selinuxLabel := range opts.SelinuxOpts {
+			createOptions.SecurityOpt = append(createOptions.SecurityOpt, "label="+selinuxLabel)
+		}
+	}
+
+	s := specgen.NewSpecGenerator(opts.Name, false)
+	if err := specgenutil.FillOutSpecGen(s, &createOptions, nil); err != nil {
+		return warningResponse, err
+	}
+
+	s.Image = opts.Image
+
+	// validate spec
+	if err := s.Validate(); err != nil {
+		return warningResponse, err
+	}
+
+	response, err := containers.CreateWithSpec(conn, s, &containers.CreateOptions{})
 	if err != nil {
 		return warningResponse, err
 	}
@@ -190,4 +138,65 @@ func Create(opts CreateOptions) ([]string, error) { // nolint:gocognit,cyclop
 	warningResponse = response.Warnings
 
 	return warningResponse, nil
+}
+
+func containerNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { // nolint:cyclop
+	var (
+		err           error
+		perNetworkOpt types.PerNetworkOptions
+	)
+
+	netOptions := &entities.NetOptions{}
+	netOptions.Networks = make(map[string]types.PerNetworkOptions)
+
+	var dnsServers []net.IP
+
+	for _, d := range opts.DNSServer {
+		addr := net.ParseIP(d)
+		if addr != nil {
+			dnsServers = append(dnsServers, addr)
+
+			continue
+		}
+
+		return nil, errors.Wrap(utils.ErrInvalidDNSAddress, d)
+	}
+
+	if len(dnsServers) > 0 {
+		netOptions.DNSServers = dnsServers
+		netOptions.DNSOptions = opts.DNSOptions
+		netOptions.DNSSearch = opts.DNSSearchDomain
+	}
+
+	if len(opts.Publish) > 0 {
+		netOptions.PublishPorts, err = specgenutil.CreatePortBindings(opts.Publish)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if opts.Network != "" { // nolint:nestif
+		if opts.MacAddress != "" {
+			mac, err := net.ParseMAC(opts.MacAddress)
+			if err != nil {
+				return nil, err
+			}
+
+			perNetworkOpt.StaticMAC = types.HardwareAddr(mac)
+		}
+
+		if opts.IPAddress != "" {
+			addr := net.ParseIP(opts.IPAddress)
+
+			if addr == nil {
+				return nil, errors.Wrap(utils.ErrInvalidIPAddress, opts.IPAddress)
+			}
+
+			perNetworkOpt.StaticIPs = []net.IP{addr}
+		}
+
+		netOptions.Networks[opts.Network] = perNetworkOpt
+	}
+
+	return netOptions, nil
 }

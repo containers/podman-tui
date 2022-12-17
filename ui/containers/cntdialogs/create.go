@@ -940,7 +940,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 // ContainerCreateOptions returns new network options
 func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions {
 	var (
-		labels           = make(map[string]string)
+		labels           []string
 		imageID          string
 		podID            string
 		dnsServers       []string
@@ -951,23 +951,14 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		volume           string
 		imageVolume      string
 		selinuxOpts      []string
-		apparmorProfile  string
-		seccompProfile   string
-		maskPaths        []string
-		unmaskPaths      []string
 	)
+
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
 		if label != "" {
-			split := strings.Split(label, "=")
-			if len(split) == 2 {
-				key := split[0]
-				value := split[1]
-				if key != "" && value != "" {
-					labels[key] = value
-				}
-			}
+			labels = append(labels, label)
 		}
 	}
+
 	selectedImageIndex, _ := d.containerImageField.GetCurrentOption()
 	if len(d.imageList) > 0 && selectedImageIndex > 0 {
 		imageID = d.imageList[selectedImageIndex-1].ID
@@ -1013,20 +1004,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 			selinuxOpts = append(selinuxOpts, selinuxLabel)
 		}
 	}
-	apparmor := strings.TrimSpace(d.containerApparmorField.GetText())
-	if apparmor != "" {
-		apparmorProfile = apparmor
-	}
-	for _, maskPath := range strings.Split(d.containerMaskField.GetText(), ":") {
-		if maskPath != "" {
-			maskPaths = append(maskPaths, maskPath)
-		}
-	}
-	for _, unmaskPath := range strings.Split(d.containerUnmaskField.GetText(), ":") {
-		if unmaskPath != "" {
-			unmaskPaths = append(unmaskPaths, unmaskPath)
-		}
-	}
 
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
@@ -1048,11 +1025,11 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		Volume:          volume,
 		ImageVolume:     imageVolume,
 		SelinuxOpts:     selinuxOpts,
-		ApparmorProfile: apparmorProfile,
-		Seccomp:         seccompProfile,
+		ApparmorProfile: d.containerApparmorField.GetText(),
+		Seccomp:         d.containerSeccompField.GetText(),
 		NoNewPriv:       d.containerNoNewPrivField.IsChecked(),
-		Mask:            maskPaths,
-		Unmask:          unmaskPaths,
+		Mask:            d.containerMaskField.GetText(),
+		Unmask:          d.containerUnmaskField.GetText(),
 	}
 	return opts
 }
