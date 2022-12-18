@@ -365,26 +365,38 @@ func (cnt *Containers) kill() {
 }
 
 func (cnt *Containers) logs() {
-	if cnt.selectedID == "" {
+	cntID, cntName := cnt.getSelectedItem()
+	if cntID == "" {
 		cnt.displayError("", fmt.Errorf("there is no container to display log"))
 		return
 	}
-	logs, err := containers.Logs(cnt.selectedID)
-	if err != nil {
-		title := fmt.Sprintf("CONTAINER (%s) DISPLAY LOG ERROR", cnt.selectedID)
-		cnt.displayError(title, err)
-		return
+
+	cnt.progressDialog.SetTitle("container logs in progress")
+	cnt.progressDialog.Display()
+
+	getLogs := func() {
+		logData, err := containers.Logs(cntID)
+		cnt.progressDialog.Hide()
+
+		if err != nil {
+			title := fmt.Sprintf("CONTAINER (%s) DISPLAY LOG ERROR", cntID)
+			cnt.displayError(title, err)
+			return
+		}
+
+		headerLabel := fmt.Sprintf("%s (%s)", cntID, cntName)
+
+		cntLogs := strings.Join(logData, "\n")
+		cntLogs = strings.ReplaceAll(cntLogs, "[", "")
+		cntLogs = strings.ReplaceAll(cntLogs, "]", "")
+		cnt.messageDialog.SetTitle("podman container logs")
+		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
+		cnt.messageDialog.TextScrollToEnd()
+		cnt.messageDialog.Display()
 	}
 
-	headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
+	go getLogs()
 
-	cntLogs := strings.Join(logs, "\n")
-	cntLogs = strings.ReplaceAll(cntLogs, "[", "")
-	cntLogs = strings.ReplaceAll(cntLogs, "]", "")
-	cnt.messageDialog.SetTitle("podman container logs")
-	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
-	cnt.messageDialog.TextScrollToEnd()
-	cnt.messageDialog.Display()
 }
 
 func (cnt *Containers) pause() {
