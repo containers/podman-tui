@@ -1,6 +1,11 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/containers/podman/v4/libpod/define"
+	"github.com/containers/podman/v4/pkg/domain/entities"
+)
 
 const (
 	// DefaultContainerDetachKeys container's default attach keys string.
@@ -17,3 +22,17 @@ var (
 	// ErrInvalidDNSAddress invalid DNS server address error.
 	ErrInvalidDNSAddress = fmt.Errorf("invalid DNS address")
 )
+
+// DefineCreateDefaults sets default container create options.
+func DefineCreateDefaults(opts *entities.ContainerCreateOptions) {
+	opts.LogDriver = ""
+	opts.CgroupParent = ""
+	opts.MemorySwappiness = -1
+	opts.Pull = ""
+	opts.ReadOnlyTmpFS = true
+	opts.SdNotifyMode = define.SdNotifyModeContainer
+	opts.Systemd = "true"
+	opts.Ulimit = nil
+	opts.SeccompPolicy = "default"
+	opts.Volume = nil
+}
