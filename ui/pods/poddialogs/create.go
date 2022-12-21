@@ -41,8 +41,9 @@ const (
 	podHostnameFieldFocus
 	podIPAddressFieldFocus
 	podMacAddressFieldFocus
-	podHostToIPMapFieldFocus
+	podAddHostFieldFocus
 	podNetworkFieldFocus
+	podPublishFieldFocus
 )
 
 const (
@@ -69,7 +70,6 @@ type PodCreateDialog struct {
 	display                  bool
 	activePageIndex          int
 	focusElement             int
-	defaultInfraImage        string
 	podNameField             *tview.InputField
 	podNoHostsCheckBox       *tview.Checkbox
 	podLabelsField           *tview.InputField
@@ -88,11 +88,11 @@ type PodCreateDialog struct {
 	podHostnameField         *tview.InputField
 	podIPAddressField        *tview.InputField
 	podMacAddressField       *tview.InputField
-	podHostToIPMapField      *tview.InputField
+	podAddHostField          *tview.InputField
 	podNetworkField          *tview.DropDown
-	//podNetworkAliasesField   *tview.InputField
-	cancelHandler func()
-	createHandler func()
+	podPublishField          *tview.InputField
+	cancelHandler            func()
+	createHandler            func()
 }
 
 // NewPodCreateDialog returns new pod create dialog primitive PodCreateDialog
@@ -116,7 +116,6 @@ func NewPodCreateDialog() *PodCreateDialog {
 			"Security Options"},
 		activePageIndex:          0,
 		display:                  false,
-		defaultInfraImage:        pods.DefaultPodInfraImage(),
 		podNameField:             tview.NewInputField(),
 		podNoHostsCheckBox:       tview.NewCheckbox(),
 		podLabelsField:           tview.NewInputField(),
@@ -135,9 +134,9 @@ func NewPodCreateDialog() *PodCreateDialog {
 		podHostnameField:         tview.NewInputField(),
 		podIPAddressField:        tview.NewInputField(),
 		podMacAddressField:       tview.NewInputField(),
-		podHostToIPMapField:      tview.NewInputField(),
+		podAddHostField:          tview.NewInputField(),
 		podNetworkField:          tview.NewDropDown(),
-		//podNetworkAliasesField:   tview.NewInputField(),
+		podPublishField:          tview.NewInputField(),
 	}
 
 	podDialog.categories.SetDynamicColors(true).
@@ -258,7 +257,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 
 	// infra image field
 	podDialog.podInfraImageField.SetLabel("infra image:")
-	podDialog.podInfraImageField.SetText(podDialog.defaultInfraImage)
+	podDialog.podInfraImageField.SetText("")
 	podDialog.podInfraImageField.SetLabelWidth(infraPageLabelWidth)
 	podDialog.podInfraImageField.SetBackgroundColor(style.DialogBgColor)
 	podDialog.podInfraImageField.SetLabelColor(style.DialogFgColor)
@@ -287,12 +286,12 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podMacAddressField.SetLabelColor(style.DialogFgColor)
 	podDialog.podMacAddressField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
-	// host-to-ip map field
-	podDialog.podHostToIPMapField.SetLabel("host-to-ip:")
-	podDialog.podHostToIPMapField.SetLabelWidth(networkingLabelWidth)
-	podDialog.podHostToIPMapField.SetBackgroundColor(style.DialogBgColor)
-	podDialog.podHostToIPMapField.SetLabelColor(style.DialogFgColor)
-	podDialog.podHostToIPMapField.SetFieldBackgroundColor(style.InputFieldBgColor)
+	// add host field
+	podDialog.podAddHostField.SetLabel("add host:")
+	podDialog.podAddHostField.SetLabelWidth(networkingLabelWidth)
+	podDialog.podAddHostField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podAddHostField.SetLabelColor(style.DialogFgColor)
+	podDialog.podAddHostField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// network field
 	podDialog.podNetworkField.SetLabel("network:")
@@ -301,6 +300,13 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.podNetworkField.SetLabelColor(style.DialogFgColor)
 	podDialog.podNetworkField.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
 	podDialog.podNetworkField.SetFieldBackgroundColor(style.InputFieldBgColor)
+
+	// publish field
+	podDialog.podPublishField.SetLabel("publish:")
+	podDialog.podPublishField.SetLabelWidth(networkingLabelWidth)
+	podDialog.podPublishField.SetBackgroundColor(style.DialogBgColor)
+	podDialog.podPublishField.SetLabelColor(style.DialogFgColor)
+	podDialog.podPublishField.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// category pages
 	podDialog.categoryPages.SetBackgroundColor(style.DialogBgColor)
@@ -380,9 +386,11 @@ func (d *PodCreateDialog) setupLayout() {
 	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podMacAddressField, 1, 0, true)
 	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.podHostToIPMapField, 1, 0, true)
+	d.networkingPage.AddItem(d.podAddHostField, 1, 0, true)
 	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.networkingPage.AddItem(d.podNetworkField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.podPublishField, 1, 0, true)
 	d.networkingPage.SetBackgroundColor(bgColor)
 
 	// adding category pages
@@ -507,12 +515,12 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.podIPAddressField)
 	case podMacAddressFieldFocus:
 		delegate(d.podMacAddressField)
-	case podHostToIPMapFieldFocus:
-		delegate(d.podHostToIPMapField)
+	case podAddHostFieldFocus:
+		delegate(d.podAddHostField)
 	case podNetworkFieldFocus:
 		delegate(d.podNetworkField)
-	//case podNetworkAliasesFieldFocus:
-	//	delegate(d.podNetworkAliasesField)
+	case podPublishFieldFocus:
+		delegate(d.podPublishField)
 	// category page
 	case categoryPagesFocus:
 		delegate(d.categoryPages)
@@ -717,16 +725,16 @@ func (d *PodCreateDialog) initData() {
 
 	d.podInfraCheckBox.SetChecked(true)
 	d.podInfraCommandField.SetText("")
-	d.podInfraImageField.SetText(d.defaultInfraImage)
+	d.podInfraImageField.SetText("")
 
 	d.podHostnameField.SetText("")
 	d.podIPAddressField.SetText("")
 	d.podMacAddressField.SetText("")
-	d.podHostToIPMapField.SetText("")
+	d.podAddHostField.SetText("")
 
 	d.podNetworkField.SetOptions(networkOptions, nil)
 	d.podNetworkField.SetCurrentOption(0)
-	//d.podNetworkAliasesField.SetText("")
+	d.podPublishField.SetText("")
 
 }
 
@@ -782,11 +790,11 @@ func (d *PodCreateDialog) setNetworkingPageNextFocus() {
 	} else if d.podIPAddressField.HasFocus() {
 		d.focusElement = podMacAddressFieldFocus
 	} else if d.podMacAddressField.HasFocus() {
-		d.focusElement = podHostToIPMapFieldFocus
-	} else if d.podHostToIPMapField.HasFocus() {
+		d.focusElement = podAddHostFieldFocus
+	} else if d.podAddHostField.HasFocus() {
 		d.focusElement = podNetworkFieldFocus
-		//} else if d.podNetworkField.HasFocus() {
-		//	d.focusElement = podNetworkAliasesFieldFocus
+	} else if d.podNetworkField.HasFocus() {
+		d.focusElement = podPublishFieldFocus
 	} else {
 		d.focusElement = podFormFocus
 	}
@@ -800,11 +808,12 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		dnsServers       []string
 		dnsOptions       []string
 		dnsSearchDomains []string
-		hostAdd          []string
-		infraCommand     []string
+		addHost          []string
 		network          string
 		securityOpts     []string
+		publish          []string
 	)
+
 	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
@@ -815,12 +824,6 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 					labels[key] = value
 				}
 			}
-		}
-	}
-
-	for _, icmd := range strings.Split(d.podInfraCommandField.GetText(), " ") {
-		if icmd != "" {
-			infraCommand = append(infraCommand, icmd)
 		}
 	}
 
@@ -840,15 +843,21 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		}
 	}
 
-	for _, hadd := range strings.Split(d.podHostToIPMapField.GetText(), " ") {
+	for _, hadd := range strings.Split(d.podAddHostField.GetText(), " ") {
 		if hadd != "" {
-			hostAdd = append(hostAdd, hadd)
+			addHost = append(addHost, hadd)
 		}
 	}
 
 	index, netName := d.podNetworkField.GetCurrentOption()
 	if index > 0 {
 		network = netName
+	}
+
+	for _, p := range strings.Split(d.podPublishField.GetText(), " ") {
+		if p != "" {
+			publish = append(publish, p)
+		}
 	}
 
 	// securuty options
@@ -886,13 +895,14 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		DNSSearchDomain: dnsSearchDomains,
 		Infra:           d.podInfraCheckBox.IsChecked(),
 		InfraImage:      d.podInfraImageField.GetText(),
-		InfraCommand:    infraCommand,
+		InfraCommand:    d.podInfraCommandField.GetText(),
 		Hostname:        d.podHostnameField.GetText(),
 		IPAddress:       d.podIPAddressField.GetText(),
 		MacAddress:      d.podMacAddressField.GetText(),
-		HostToIP:        hostAdd,
+		AddHost:         addHost,
 		Network:         network,
 		SecurityOpts:    securityOpts,
+		Publish:         publish,
 	}
 	return opts
 }
