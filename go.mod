@@ -15,8 +15,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
 	github.com/navidys/tvxwidgets v0.3.0
-	github.com/onsi/ginkgo/v2 v2.6.0
-	github.com/onsi/gomega v1.24.1
+	github.com/onsi/ginkgo/v2 v2.6.1
+	github.com/onsi/gomega v1.24.2
 	github.com/pkg/errors v0.9.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 	github.com/rs/zerolog v1.28.0
@@ -110,7 +110,7 @@ require (
 	go.etcd.io/bbolt v1.3.6 // indirect
 	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.3.0 // indirect
+	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/term v0.3.0 // indirect
