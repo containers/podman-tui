@@ -15,8 +15,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
 	github.com/navidys/tvxwidgets v0.3.0
-	github.com/onsi/ginkgo/v2 v2.6.0
-	github.com/onsi/gomega v1.24.1
+	github.com/onsi/ginkgo/v2 v2.7.0
+	github.com/onsi/gomega v1.26.0
 	github.com/pkg/errors v0.9.1
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 	github.com/rs/zerolog v1.29.0
