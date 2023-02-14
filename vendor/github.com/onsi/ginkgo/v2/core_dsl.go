@@ -164,6 +164,29 @@ func GinkgoParallelProcess() int {
 }
 
 /*
+GinkgoHelper marks the function it's called in as a test helper.  When a failure occurs inside a helper function, Ginkgo will skip the helper when analyzing the stack trace to identify where the failure occurred.
+
+This is an alternative, simpler, mechanism to passing in a skip offset when calling Fail or using Gomega.
+*/
+func GinkgoHelper() {
+	types.MarkAsHelper(1)
+}
+
+/*
+GinkgoLabelFilter() returns the label filter configured for this suite via `--label-filter`.
+
+You can use this to manually check if a set of labels would satisfy the filter via:
+
+	if (Label("cat", "dog").MatchesLabelFilter(GinkgoLabelFilter())) {
+		//...
+	}
+*/
+func GinkgoLabelFilter() string {
+	suiteConfig, _ := GinkgoConfiguration()
+	return suiteConfig.LabelFilter
+}
+
+/*
 PauseOutputInterception() pauses Ginkgo's output interception.  This is only relevant
 when running in parallel and output to stdout/stderr is being intercepted.  You generally
 don't need to call this function - however there are cases when Ginkgo's output interception
@@ -370,6 +393,12 @@ func AbortSuite(message string, callerSkip ...int) {
 }
 
 /*
+ignorablePanic is used by Gomega to signal to GinkgoRecover that Goemga is handling
+the error associated with this panic.  It i used when Eventually/Consistently are passed a func(g Gomega) and the resulting function launches a goroutines that makes a failed assertion.  That failed assertion is registered by Gomega and then panics.  Ordinarily the panic is captured by Gomega.  In the case of a goroutine Gomega can't capture the panic - so we piggy back on GinkgoRecover so users have a single defer GinkgoRecover() pattern to follow.  To do that we need to tell Ginkgo to ignore this panic and not register it as a panic on the global Failer.
+*/
+type ignorablePanic interface{ GinkgoRecoverShouldIgnoreThisPanic() }
+
+/*
 GinkgoRecover should be deferred at the top of any spawned goroutine that (may) call `Fail`
 Since Gomega assertions call fail, you should throw a `defer GinkgoRecover()` at the top of any goroutine that
 calls out to Gomega
@@ -384,6 +413,9 @@ You can learn more about how Ginkgo manages failures here: https://onsi.github.i
 func GinkgoRecover() {
 	e := recover()
 	if e != nil {
+		if _, ok := e.(ignorablePanic); ok {
+			return
+		}
 		global.Failer.Panic(types.NewCodeLocationWithStackTrace(1), e)
 	}
 }
