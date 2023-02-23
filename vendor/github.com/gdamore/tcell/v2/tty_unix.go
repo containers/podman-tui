@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build aix || darwin || dragonfly || freebsd || linux || netbsd || openbsd || solaris || zos
 // +build aix darwin dragonfly freebsd linux netbsd openbsd solaris zos
 
 package tcell
@@ -72,7 +73,6 @@ func (tty *devTty) Start() error {
 	if tty.f, err = os.OpenFile(tty.dev, os.O_RDWR, 0); err != nil {
 		return err
 	}
-	tty.fd = int(tty.f.Fd())
 
 	if !term.IsTerminal(tty.fd) {
 		return errors.New("device is not a terminal")
