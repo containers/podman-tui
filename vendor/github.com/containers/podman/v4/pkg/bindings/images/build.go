@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -25,6 +24,7 @@ import (
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/storage/pkg/fileutils"
 	"github.com/containers/storage/pkg/ioutils"
+	"github.com/containers/storage/pkg/regexp"
 	"github.com/docker/go-units"
 	"github.com/hashicorp/go-multierror"
 	jsoniter "github.com/json-iterator/go"
@@ -36,9 +36,7 @@ type devino struct {
 	Ino uint64
 }
 
-var (
-	iidRegex = regexp.MustCompile(`^[0-9a-f]{12}`)
-)
+var iidRegex = regexp.Delayed(`^[0-9a-f]{12}`)
 
 // Build creates an image using a containerfile reference
 func Build(ctx context.Context, containerFiles []string, options entities.BuildOptions) (*entities.BuildReport, error) {
@@ -231,7 +229,15 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 		params.Set("manifest", options.Manifest)
 	}
 	if options.CacheFrom != nil {
-		params.Set("cachefrom", options.CacheFrom.String())
+		cacheFrom := []string{}
+		for _, cacheSrc := range options.CacheFrom {
+			cacheFrom = append(cacheFrom, cacheSrc.String())
+		}
+		cacheFromJSON, err := jsoniter.MarshalToString(cacheFrom)
+		if err != nil {
+			return nil, err
+		}
+		params.Set("cachefrom", cacheFromJSON)
 	}
 
 	switch options.SkipUnusedStages {
@@ -242,7 +248,15 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 	}
 
 	if options.CacheTo != nil {
-		params.Set("cacheto", options.CacheTo.String())
+		cacheTo := []string{}
+		for _, cacheSrc := range options.CacheTo {
+			cacheTo = append(cacheTo, cacheSrc.String())
+		}
+		cacheToJSON, err := jsoniter.MarshalToString(cacheTo)
+		if err != nil {
+			return nil, err
+		}
+		params.Set("cacheto", cacheToJSON)
 	}
 	if int64(options.CacheTTL) != 0 {
 		params.Set("cachettl", options.CacheTTL.String())
@@ -290,6 +304,15 @@ func Build(ctx context.Context, containerFiles []string, options entities.BuildO
 			params.Add("platform", platform)
 		}
 	}
+
+	for _, volume := range options.CommonBuildOpts.Volumes {
+		params.Add("volume", volume)
+	}
+
+	for _, group := range options.GroupAdd {
+		params.Add("groupadd", group)
+	}
+
 	var err error
 	var contextDir string
 	if contextDir, err = filepath.EvalSymlinks(options.ContextDirectory); err == nil {
@@ -626,23 +649,27 @@ func nTar(excludes []string, sources ...string) (io.ReadCloser, error) {
 					return err
 				}
 
+				separator := string(filepath.Separator)
 				// check if what we are given is an empty dir, if so then continue w/ it. Else return.
 				// if we are given a file or a symlink, we do not want to exclude it.
-				if d.IsDir() && s == path {
-					var p *os.File
-					p, err = os.Open(path)
-					if err != nil {
-						return err
-					}
-					defer p.Close()
-					_, err = p.Readdir(1)
-					if err != io.EOF {
-						return nil // non empty root dir, need to return
-					} else if err != nil {
-						logrus.Errorf("While reading directory %v: %v", path, err)
+				if s == path {
+					separator = ""
+					if d.IsDir() {
+						var p *os.File
+						p, err = os.Open(path)
+						if err != nil {
+							return err
+						}
+						defer p.Close()
+						_, err = p.Readdir(1)
+						if err != io.EOF {
+							return nil // non empty root dir, need to return
+						} else if err != nil {
+							logrus.Errorf("While reading directory %v: %v", path, err)
+						}
 					}
 				}
-				name := filepath.ToSlash(strings.TrimPrefix(path, s+string(filepath.Separator)))
+				name := filepath.ToSlash(strings.TrimPrefix(path, s+separator))
 
 				excluded, err := pm.Matches(name) //nolint:staticcheck
 				if err != nil {
