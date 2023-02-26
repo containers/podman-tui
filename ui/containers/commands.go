@@ -24,6 +24,8 @@ func (cnt *Containers) runCommand(cmd string) {
 		cnt.diff()
 	case "exec":
 		cnt.cexec()
+	case "healthcheck":
+		cnt.preHealthcheck()
 	case "inspect":
 		cnt.inspect()
 	case "kill":
@@ -60,6 +62,38 @@ func (cnt *Containers) displayError(title string, err error) {
 	cnt.errorDialog.SetTitle(title)
 	cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 	cnt.errorDialog.Display()
+}
+
+func (cnt *Containers) preHealthcheck() {
+	cntID, cntName := cnt.getSelectedItem()
+	if cntID == "" {
+		cnt.displayError("", fmt.Errorf("there is no container to perform healthcheck command"))
+		return
+	}
+
+	cnt.progressDialog.SetTitle("container healthcheck in progress")
+	cnt.progressDialog.Display()
+
+	cntHealthCheck := func() {
+		report, err := containers.HealthCheck(cntID)
+		cnt.progressDialog.Hide()
+
+		if err != nil {
+			title := fmt.Sprintf("CONTAINER (%s) HEALTHCHECK ERROR", cntID)
+
+			cnt.displayError(title, err)
+
+			return
+		}
+
+		headerLabel := fmt.Sprintf("%s (%s)", cntID, cntName)
+
+		cnt.messageDialog.SetTitle("podman container healthcheck")
+		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
+		cnt.messageDialog.Display()
+	}
+
+	go cntHealthCheck()
 }
 
 func (cnt *Containers) preRestore() {

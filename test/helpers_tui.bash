@@ -203,33 +203,36 @@ function podman_tui_select_container_cmd() {
     menu_index=3;;
   "exec")
     menu_index=4;;
-  "inspect")
+  "healthcheck")
     menu_index=5;;
-  "kill")
+  "inspect")
     menu_index=6;;
-  "logs")
+  "kill")
     menu_index=7;;
-  "pause")
+  "logs")
     menu_index=8;;
-  "port")
+  "pause")
     menu_index=9;;
-  "prune")
+  "port")
     menu_index=10;;
-  "rename")
+  "prune")
     menu_index=11;;
-  "restore")
+  "rename")
     menu_index=12;;
-  "remove")
+  "restore")
     menu_index=13;;
-  "start")
+  "remove")
     menu_index=14;;
-  # index 15 stats
-  "stop")
+  "start")
+    menu_index=15;;
+  "stat")
     menu_index=16;;
-  "top")
+  "stop")
     menu_index=17;;
-  "unpause")
+  "top")
     menu_index=18;;
+  "unpause")
+    menu_index=19;;
   esac
 
   podman_tui_select_menu $menu_index
