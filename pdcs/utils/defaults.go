@@ -29,7 +29,7 @@ func DefineCreateDefaults(opts *entities.ContainerCreateOptions) {
 	opts.CgroupParent = ""
 	opts.MemorySwappiness = -1
 	opts.Pull = ""
-	opts.ReadOnlyTmpFS = true
+	// opts.ReadOnlyTmpFS = true
 	opts.SdNotifyMode = define.SdNotifyModeContainer
 	opts.Systemd = "true"
 	opts.Ulimit = nil

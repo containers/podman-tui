@@ -58,6 +58,14 @@ type ListOptions struct {
 	Filters map[string][]string
 }
 
+// NetworkUpdateOptions describes options to update a network
+//
+//go:generate go run ../generator/generator.go UpdateOptions
+type UpdateOptions struct {
+	AddDNSServers    []string `json:"adddnsservers"`
+	RemoveDNSServers []string `json:"removednsservers"`
+}
+
 // DisconnectOptions are optional options for disconnecting
 // containers from a network
 //
@@ -76,11 +84,20 @@ type ExistsOptions struct {
 }
 
 // PruneOptions are optional options for removing unused
-// CNI networks
+// networks
 //
 //go:generate go run ../generator/generator.go PruneOptions
 type PruneOptions struct {
 	// Filters are applied to the prune of networks to be more
 	// specific on choosing
 	Filters map[string][]string
+}
+
+// ExtraCreateOptions are optional additional configuration flags for creating Networks
+// that are not part of the network configuration
+//
+//go:generate go run ../generator/generator.go ExtraCreateOptions
+type ExtraCreateOptions struct {
+	// IgnoreIfExists if true, do not fail if the network already exists
+	IgnoreIfExists *bool `schema:"ignoreIfExists"`
 }
