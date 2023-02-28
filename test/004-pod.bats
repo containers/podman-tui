@@ -25,13 +25,12 @@ load helpers_tui
     # go to "Create" button and press Enter
     podman_tui_set_view "pods"
     podman_tui_select_pod_cmd "create"
-    podman_tui_send_inputs "Enter"
     podman_tui_send_inputs $TEST_POD_NAME "Tab" "Tab" $TEST_LABEL
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Down"
     podman_tui_select_item $net_index
     podman_tui_send_inputs "Enter"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Down" "Tab"
     podman_tui_send_inputs "disable"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Space"
     podman_tui_send_inputs "Tab" "Tab"

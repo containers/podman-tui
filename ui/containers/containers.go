@@ -72,6 +72,7 @@ func NewContainers() *Containers {
 		{"create", "create a new container but do not start"},
 		{"diff", "inspect changes to the selected container's file systems"},
 		{"exec", "execute the specified command inside a running container"},
+		{"healthcheck", "run the health check of a container"},
 		{"inspect", "display the configuration of a container"},
 		{"kill", "kill the selected running container with a SIGKILL signal"},
 		{"logs", "fetch the logs of the selected container"},
