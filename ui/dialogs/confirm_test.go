@@ -11,21 +11,21 @@ import (
 )
 
 var _ = Describe("confirm dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var confirmDialogApp *tview.Application
+	var confirmDialogScreen tcell.SimulationScreen
 	var confirmDialog *ConfirmDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		confirmDialogApp = tview.NewApplication()
 		confirmDialog = NewConfirmDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		confirmDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := confirmDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(confirmDialog, true).Run(); err != nil {
+			if err := confirmDialogApp.SetScreen(confirmDialogScreen).SetRoot(confirmDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -39,7 +39,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(confirmDialog)
+		confirmDialogApp.SetFocus(confirmDialog)
 		Expect(confirmDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -64,9 +64,9 @@ var _ = Describe("confirm dialog", Ordered, func() {
 		}
 		confirmDialog.SetSelectedFunc(enterFunc)
 		confirmDialog.Display()
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		confirmDialogApp.Draw()
+		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		confirmDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
 	})
 
@@ -77,15 +77,15 @@ var _ = Describe("confirm dialog", Ordered, func() {
 			cancelButton = cancelButtonWants
 		}
 		confirmDialog.SetCancelFunc(cancelFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
-		app.Draw()
+		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
+		confirmDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
 		cancelButton = "initial"
 		confirmDialog.Display()
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		confirmDialogApp.Draw()
+		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		confirmDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
 	})
 
@@ -96,7 +96,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		confirmDialogApp.Stop()
 	})
 
 })

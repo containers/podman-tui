@@ -12,21 +12,21 @@ import (
 )
 
 var _ = Describe("container commit", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var containerCommitApp *tview.Application
+	var containerCommitScreen tcell.SimulationScreen
 	var commitDialog *ContainerCommitDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		containerCommitApp = tview.NewApplication()
 		commitDialog = NewContainerCommitDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		containerCommitScreen = tcell.NewSimulationScreen("UTF-8")
+		err := containerCommitScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(commitDialog, true).Run(); err != nil {
+			if err := containerCommitApp.SetScreen(containerCommitScreen).SetRoot(commitDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -40,7 +40,7 @@ var _ = Describe("container commit", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(commitDialog)
+		containerCommitApp.SetFocus(commitDialog)
 		Expect(commitDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -57,13 +57,13 @@ var _ = Describe("container commit", Ordered, func() {
 			commitDialog.Hide()
 		}
 		commitDialog.Hide()
-		app.Draw()
+		containerCommitApp.Draw()
 		commitDialog.SetCancelFunc(cancelFunc)
 		commitDialog.Display()
-		app.Draw()
-		app.SetFocus(commitDialog.form)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.Draw()
+		containerCommitApp.SetFocus(commitDialog.form)
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
 		Expect(commitDialog.IsDisplay()).To(Equal(false))
 	})
 
@@ -74,14 +74,14 @@ var _ = Describe("container commit", Ordered, func() {
 			commitButton = commitButtonWants
 		}
 		commitDialog.Hide()
-		app.Draw()
+		containerCommitApp.Draw()
 		commitDialog.SetCommitFunc(commitFunc)
 		commitDialog.Display()
-		app.Draw()
-		app.SetFocus(commitDialog.form)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.Draw()
+		containerCommitApp.SetFocus(commitDialog.form)
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
 		Expect(commitButton).To(Equal(commitButtonWants))
 	})
 
@@ -127,57 +127,57 @@ var _ = Describe("container commit", Ordered, func() {
 		}
 
 		commitDialog.Hide()
-		app.Draw()
+		containerCommitApp.Draw()
 		commitDialog.Display()
-		app.SetFocus(commitDialog)
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
 		// image input field
-		app.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
+		containerCommitApp.Draw()
 		// author input field
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 98, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 98, tcell.ModNone))
+		containerCommitApp.Draw()
 		// change input field
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
+		containerCommitApp.Draw()
 		// format dropdown
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
 		// squash checkbox
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
 		// pause checkbox
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		containerCommitApp.Draw()
 		// message input field
 		commitDialog.setFocusElement()
-		app.SetFocus(commitDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
-		app.Draw()
+		containerCommitApp.SetFocus(commitDialog)
+		containerCommitApp.Draw()
+		containerCommitApp.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
+		containerCommitApp.Draw()
 
 		// get and check commit options
 		commitOpts := commitDialog.GetContainerCommitOptions()
@@ -194,7 +194,7 @@ var _ = Describe("container commit", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		containerCommitApp.Stop()
 	})
 
 })

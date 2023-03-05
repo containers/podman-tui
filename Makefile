@@ -72,7 +72,7 @@ install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codesp
 .PHONY: .install.ginkgo
 .install.ginkgo:
 	if [ ! -x "$(GOBIN)/ginkgo" ]; then \
-		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.5.0 ; \
+		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.9.0 ; \
 	fi
 
 .PHONY: .install.bats

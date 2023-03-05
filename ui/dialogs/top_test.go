@@ -11,21 +11,21 @@ import (
 )
 
 var _ = Describe("top dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var topDialogApp *tview.Application
+	var topDialogScreen tcell.SimulationScreen
 	var topDialog *TopDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		topDialogApp = tview.NewApplication()
 		topDialog = NewTopDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		topDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := topDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(topDialog, true).Run(); err != nil {
+			if err := topDialogApp.SetScreen(topDialogScreen).SetRoot(topDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -45,7 +45,7 @@ var _ = Describe("top dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(topDialog)
+		topDialogApp.SetFocus(topDialog)
 		Expect(topDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -56,8 +56,8 @@ var _ = Describe("top dialog", Ordered, func() {
 			enterButton = enterButtonWants
 		}
 		topDialog.SetCancelFunc(enterFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		topDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		topDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
 	})
 
@@ -75,21 +75,21 @@ var _ = Describe("top dialog", Ordered, func() {
 		}
 		topDialog.Display()
 		topDialog.UpdateResults(TopPodInfo, "", "", topContent)
-		app.Draw()
+		topDialogApp.Draw()
 		row := 1
 		Expect(topDialog.table.GetCell(row, 0).Text).To(Equal(topContent[row][0]))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		app.Draw()
+		topDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		topDialogApp.Draw()
 		currentRow, _ := topDialog.table.GetSelection()
 		Expect(currentRow).To(Equal(row + 1))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		app.Draw()
+		topDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		topDialogApp.Draw()
 		currentRow, _ = topDialog.table.GetSelection()
 		Expect(currentRow).To(Equal(row + 2))
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		topDialogApp.Stop()
 	})
 
 })
