@@ -13,20 +13,20 @@ import (
 
 var _ = Describe("network disconnect", Ordered, func() {
 	var netDisconnectDialogApp *tview.Application
-	var netDialogScreen tcell.SimulationScreen
+	var netDisconnectDialogScreen tcell.SimulationScreen
 	var netDisconnectDialog *NetworkDisconnectDialog
 	var runApp func()
 
 	BeforeAll(func() {
 		netDisconnectDialogApp = tview.NewApplication()
 		netDisconnectDialog = NewNetworkDisconnectDialog()
-		netDialogScreen = tcell.NewSimulationScreen("UTF-8")
-		err := netDialogScreen.Init()
+		netDisconnectDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := netDisconnectDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := netDisconnectDialogApp.SetScreen(netDialogScreen).SetRoot(netDisconnectDialog, true).Run(); err != nil {
+			if err := netDisconnectDialogApp.SetScreen(netDisconnectDialogScreen).SetRoot(netDisconnectDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}

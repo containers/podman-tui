@@ -12,21 +12,21 @@ import (
 )
 
 var _ = Describe("network connect", Ordered, func() {
-	var netDialogApp *tview.Application
-	var netDialogScreen tcell.SimulationScreen
+	var netConnectDialogApp *tview.Application
+	var netConnectDialogScreen tcell.SimulationScreen
 	var netConnectDialog *NetworkConnectDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		netDialogApp = tview.NewApplication()
+		netConnectDialogApp = tview.NewApplication()
 		netConnectDialog = NewNetworkConnectDialog()
-		netDialogScreen = tcell.NewSimulationScreen("UTF-8")
-		err := netDialogScreen.Init()
+		netConnectDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := netConnectDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := netDialogApp.SetScreen(netDialogScreen).SetRoot(netConnectDialog, true).Run(); err != nil {
+			if err := netConnectDialogApp.SetScreen(netConnectDialogScreen).SetRoot(netConnectDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -41,7 +41,7 @@ var _ = Describe("network connect", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		netDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.SetFocus(netConnectDialog)
 		Expect(netConnectDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -53,10 +53,10 @@ var _ = Describe("network connect", Ordered, func() {
 		}
 		netConnectDialog.SetCancelFunc(cancelFunc)
 		netConnectDialog.focusElement = netConnectFormFocus
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		Expect(cancelAction).To(Equal(cancelWants))
 	})
 
@@ -68,11 +68,11 @@ var _ = Describe("network connect", Ordered, func() {
 		}
 		netConnectDialog.SetConnectFunc(cancelFunc)
 		netConnectDialog.focusElement = netConnectFormFocus
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		Expect(connectAction).To(Equal(connectWants))
 	})
 
@@ -117,45 +117,45 @@ var _ = Describe("network connect", Ordered, func() {
 		})
 
 		netConnectDialog.Hide()
-		netDialogApp.Draw()
+		netConnectDialogApp.Draw()
 		netConnectDialog.SetContainers(containerList)
 		netConnectDialog.Display()
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
 
 		// container
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		netDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 
 		// alias
 		netConnectDialog.setFocusElement()
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
+		netConnectDialogApp.Draw()
 
 		// ipv4
 		netConnectDialog.setFocusElement()
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
+		netConnectDialogApp.Draw()
 
 		// ipv6
 		netConnectDialog.setFocusElement()
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
+		netConnectDialogApp.Draw()
 
 		// mac address
 		netConnectDialog.setFocusElement()
-		netDialogApp.SetFocus(netConnectDialog)
-		netDialogApp.Draw()
-		netDialogApp.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
-		netDialogApp.Draw()
+		netConnectDialogApp.SetFocus(netConnectDialog)
+		netConnectDialogApp.Draw()
+		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
+		netConnectDialogApp.Draw()
 
 		connectOptions := netConnectDialog.GetConnectOptions()
 		Expect(connectOptions.Container).To(Equal(containerList[1].ID[0:12]))
@@ -175,6 +175,6 @@ var _ = Describe("network connect", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		netDialogApp.Stop()
+		netConnectDialogApp.Stop()
 	})
 })

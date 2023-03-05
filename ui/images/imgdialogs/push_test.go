@@ -11,21 +11,21 @@ import (
 )
 
 var _ = Describe("image push", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var imagePushDialogApp *tview.Application
+	var imagePushDialogScreen tcell.SimulationScreen
 	var imagePushDialog *ImagePushDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		imagePushDialogApp = tview.NewApplication()
 		imagePushDialog = NewImagePushDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		imagePushDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := imagePushDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(imagePushDialog, true).Run(); err != nil {
+			if err := imagePushDialogApp.SetScreen(imagePushDialogScreen).SetRoot(imagePushDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -39,7 +39,7 @@ var _ = Describe("image push", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(imagePushDialog)
+		imagePushDialogApp.SetFocus(imagePushDialog)
 		Expect(imagePushDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -56,13 +56,13 @@ var _ = Describe("image push", Ordered, func() {
 			imagePushDialog.Hide()
 		}
 		imagePushDialog.Hide()
-		app.Draw()
+		imagePushDialogApp.Draw()
 		imagePushDialog.SetCancelFunc(cancelFunc)
 		imagePushDialog.Display()
-		app.Draw()
-		app.SetFocus(imagePushDialog.form)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog.form)
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		Expect(imagePushDialog.IsDisplay()).To(Equal(false))
 	})
 
@@ -73,14 +73,14 @@ var _ = Describe("image push", Ordered, func() {
 			pushButton = pushButtonWants
 		}
 		imagePushDialog.Hide()
-		app.Draw()
+		imagePushDialogApp.Draw()
 		imagePushDialog.SetPushFunc(commitFunc)
 		imagePushDialog.Display()
-		app.Draw()
-		app.SetFocus(imagePushDialog.form)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog.form)
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		Expect(pushButton).To(Equal(pushButtonWants))
 	})
 
@@ -126,51 +126,51 @@ var _ = Describe("image push", Ordered, func() {
 		}
 
 		imagePushDialog.Hide()
-		app.Draw()
+		imagePushDialogApp.Draw()
 		imagePushDialog.Display()
 		//  description field
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		// compress field
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
+		imagePushDialogApp.Draw()
 		// format dropdown
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		// skip TLS verify field
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 32, tcell.ModNone)) // space
+		imagePushDialogApp.Draw()
 		// username field
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		// password field
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
+		imagePushDialogApp.Draw()
 		// authfile field
 		imagePushDialog.setFocusElement()
-		app.SetFocus(imagePushDialog)
-		app.Draw()
-		app.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
-		app.Draw()
+		imagePushDialogApp.SetFocus(imagePushDialog)
+		imagePushDialogApp.Draw()
+		imagePushDialogApp.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
+		imagePushDialogApp.Draw()
 
 		// get and check push options
 		pushOptions := imagePushDialog.GetImagePushOptions()
@@ -184,6 +184,6 @@ var _ = Describe("image push", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		imagePushDialogApp.Stop()
 	})
 })

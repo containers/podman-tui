@@ -9,21 +9,21 @@ import (
 )
 
 var _ = Describe("error dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var errorDialogApp *tview.Application
+	var errorDialogScreen tcell.SimulationScreen
 	var errorDialog *ErrorDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		errorDialogApp = tview.NewApplication()
 		errorDialog = NewErrorDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		errorDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := errorDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(errorDialog, true).Run(); err != nil {
+			if err := errorDialogApp.SetScreen(errorDialogScreen).SetRoot(errorDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -37,7 +37,7 @@ var _ = Describe("error dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(errorDialog)
+		errorDialogApp.SetFocus(errorDialog)
 		Expect(errorDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -48,8 +48,8 @@ var _ = Describe("error dialog", Ordered, func() {
 			enterButton = enterButtonWants
 		}
 		errorDialog.SetDoneFunc(enterFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		errorDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		errorDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
 	})
 
@@ -60,7 +60,7 @@ var _ = Describe("error dialog", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		errorDialogApp.Stop()
 	})
 
 })

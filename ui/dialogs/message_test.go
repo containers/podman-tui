@@ -11,22 +11,22 @@ import (
 )
 
 var _ = Describe("message dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var messageDialogApp *tview.Application
+	var messageDialogScreen tcell.SimulationScreen
 	var messageDialog *MessageDialog
 	var messageText string = "this is a test message"
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		messageDialogApp = tview.NewApplication()
 		messageDialog = NewMessageDialog(messageText)
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		messageDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := messageDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(messageDialog, true).Run(); err != nil {
+			if err := messageDialogApp.SetScreen(messageDialogScreen).SetRoot(messageDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -40,7 +40,7 @@ var _ = Describe("message dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(messageDialog)
+		messageDialogApp.SetFocus(messageDialog)
 		Expect(messageDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -81,8 +81,8 @@ var _ = Describe("message dialog", Ordered, func() {
 			cancelButton = cancelButtonWants
 		}
 		messageDialog.SetCancelFunc(cancelFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
-		app.Draw()
+		messageDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
+		messageDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
 	})
 
@@ -93,7 +93,7 @@ var _ = Describe("message dialog", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		messageDialogApp.Stop()
 	})
 
 })

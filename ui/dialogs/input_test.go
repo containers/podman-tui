@@ -12,21 +12,21 @@ import (
 )
 
 var _ = Describe("input dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var inputDialogApp *tview.Application
+	var inputDialogScreen tcell.SimulationScreen
 	var inputDialog *SimpleInputDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		inputDialogApp = tview.NewApplication()
 		inputDialog = NewSimpleInputDialog("")
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		inputDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := inputDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(inputDialog, true).Run(); err != nil {
+			if err := inputDialogApp.SetScreen(inputDialogScreen).SetRoot(inputDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -40,7 +40,7 @@ var _ = Describe("input dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(inputDialog)
+		inputDialogApp.SetFocus(inputDialog)
 		Expect(inputDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -100,8 +100,8 @@ var _ = Describe("input dialog", Ordered, func() {
 			enterButton = enterButtonWants
 		}
 		inputDialog.SetSelectedFunc(enterFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		inputDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
 
 	})
@@ -113,8 +113,8 @@ var _ = Describe("input dialog", Ordered, func() {
 			cancelButton = cancelButtonWants
 		}
 		inputDialog.SetCancelFunc(cancelFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
-		app.Draw()
+		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEsc, 0, tcell.ModNone))
+		inputDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
 	})
 
@@ -128,21 +128,21 @@ var _ = Describe("input dialog", Ordered, func() {
 		selectButton := inputDialog.form.GetButton(inputDialog.form.GetButtonCount() - 1)
 		cancelButton := inputDialog.form.GetButton(inputDialog.form.GetButtonCount() - 2)
 		inputDialog.Display()
-		app.Draw()
+		inputDialogApp.Draw()
 		Expect(inputDialog.input.HasFocus()).To(Equal(true))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.Draw()
+		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		inputDialogApp.Draw()
 		Expect(cancelButton.HasFocus()).To(Equal(true))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.Draw()
+		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		inputDialogApp.Draw()
 		Expect(selectButton.HasFocus()).To(Equal(true))
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		app.Draw()
+		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		inputDialogApp.Draw()
 		Expect(inputDialog.input.HasFocus()).To(Equal(true))
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		inputDialogApp.Stop()
 	})
 
 })

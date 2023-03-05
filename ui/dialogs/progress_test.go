@@ -9,21 +9,21 @@ import (
 )
 
 var _ = Describe("progress bar dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var progressDialogApp *tview.Application
+	var progressDialogScreen tcell.SimulationScreen
 	var progressDialog *ProgressDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		app = tview.NewApplication()
+		progressDialogApp = tview.NewApplication()
 		progressDialog = NewProgressDialog()
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		progressDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := progressDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(progressDialog, true).Run(); err != nil {
+			if err := progressDialogApp.SetScreen(progressDialogScreen).SetRoot(progressDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -38,7 +38,7 @@ var _ = Describe("progress bar dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(progressDialog.Box)
+		progressDialogApp.SetFocus(progressDialog.Box)
 		Expect(progressDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -90,7 +90,7 @@ var _ = Describe("progress bar dialog", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		progressDialogApp.Stop()
 	})
 
 })

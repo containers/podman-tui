@@ -12,21 +12,21 @@ import (
 )
 
 var _ = Describe("volume create", Ordered, func() {
-	var volDialogApp *tview.Application
-	var volDialogScreen tcell.SimulationScreen
+	var volCreateDialogApp *tview.Application
+	var volCreateDialogScreen tcell.SimulationScreen
 	var volCreateDialog *VolumeCreateDialog
 	var runApp func()
 
 	BeforeAll(func() {
-		volDialogApp = tview.NewApplication()
+		volCreateDialogApp = tview.NewApplication()
 		volCreateDialog = NewVolumeCreateDialog()
-		volDialogScreen = tcell.NewSimulationScreen("UTF-8")
-		err := volDialogScreen.Init()
+		volCreateDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := volCreateDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := volDialogApp.SetScreen(volDialogScreen).SetRoot(volCreateDialog, true).Run(); err != nil {
+			if err := volCreateDialogApp.SetScreen(volCreateDialogScreen).SetRoot(volCreateDialog, true).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -53,7 +53,7 @@ var _ = Describe("volume create", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		volDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.SetFocus(volCreateDialog)
 		Expect(volCreateDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -65,10 +65,10 @@ var _ = Describe("volume create", Ordered, func() {
 		}
 		volCreateDialog.SetCancelFunc(cancelFunc)
 		volCreateDialog.focusElement = formFocus
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
-		volDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
+		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		volCreateDialogApp.Draw()
 		Expect(cancelAction).To(Equal(cancelWants))
 	})
 
@@ -79,11 +79,11 @@ var _ = Describe("volume create", Ordered, func() {
 			createAction = createWants
 		}
 		volCreateDialog.SetCreateFunc(cancelFunc)
-		volDialogApp.SetFocus(volCreateDialog.form)
-		volDialogApp.Draw()
-		volDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
-		volDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog.form)
+		volCreateDialogApp.Draw()
+		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		volCreateDialogApp.Draw()
 		Expect(createAction).To(Equal(createWants))
 	})
 
@@ -94,22 +94,22 @@ var _ = Describe("volume create", Ordered, func() {
 
 	It("next focus element", func() {
 		volCreateDialog.Hide()
-		volDialogApp.Draw()
+		volCreateDialogApp.Draw()
 		volCreateDialog.Display()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeNameField.HasFocus()).To(Equal(true))
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeLabelField.HasFocus()).To(Equal(true))
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeDriverField.HasFocus()).To(Equal(true))
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeDriverOptionsField.HasFocus()).To(Equal(true))
 	})
 
@@ -128,48 +128,48 @@ var _ = Describe("volume create", Ordered, func() {
 		volOptionStr := fmt.Sprintf("%s=%s", volOption.key, volOption.value)
 
 		volCreateDialog.Hide()
-		volDialogApp.Draw()
+		volCreateDialogApp.Draw()
 		volCreateDialog.Display()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		// enter volume name
 		volNameEvents := utils.StringToEventKey(volName)
 		for i := 0; i < len(volNameEvents); i++ {
-			volDialogApp.QueueEvent(volNameEvents[i])
-			volDialogApp.SetFocus(volCreateDialog)
-			volDialogApp.Draw()
+			volCreateDialogApp.QueueEvent(volNameEvents[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
 		}
 		// enter volume label
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		volLabelEvents := utils.StringToEventKey(volLabelStr)
 		for i := 0; i < len(volLabelEvents); i++ {
-			volDialogApp.QueueEvent(volLabelEvents[i])
-			volDialogApp.SetFocus(volCreateDialog)
-			volDialogApp.Draw()
+			volCreateDialogApp.QueueEvent(volLabelEvents[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
 		}
 
 		// enter volume driver
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		volDriverEvents := utils.StringToEventKey(volDriver)
 		for i := 0; i < len(volDriverEvents); i++ {
-			volDialogApp.QueueEvent(volDriverEvents[i])
-			volDialogApp.SetFocus(volCreateDialog)
-			volDialogApp.Draw()
+			volCreateDialogApp.QueueEvent(volDriverEvents[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
 		}
 
 		// enter volume options
 		volCreateDialog.nextFocus()
-		volDialogApp.SetFocus(volCreateDialog)
-		volDialogApp.Draw()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
 		volOptionEvents := utils.StringToEventKey(volOptionStr)
 		for i := 0; i < len(volOptionEvents); i++ {
-			volDialogApp.QueueEvent(volOptionEvents[i])
-			volDialogApp.SetFocus(volCreateDialog)
-			volDialogApp.Draw()
+			volCreateDialogApp.QueueEvent(volOptionEvents[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
 		}
 
 		volCreateOptions := volCreateDialog.VolumeCreateOptions()
@@ -183,7 +183,7 @@ var _ = Describe("volume create", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		volDialogApp.Stop()
+		volCreateDialogApp.Stop()
 	})
 
 })

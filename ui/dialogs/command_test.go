@@ -9,8 +9,8 @@ import (
 )
 
 var _ = Describe("command dialog", Ordered, func() {
-	var app *tview.Application
-	var screen tcell.SimulationScreen
+	var cmdDialogApp *tview.Application
+	var cmdDialogScreen tcell.SimulationScreen
 	var cmdDialog *CommandDialog
 	var cmdTitle [][]string
 	var runApp func()
@@ -20,16 +20,16 @@ var _ = Describe("command dialog", Ordered, func() {
 			{"cmd01", "cmd01 description"},
 			{"cmd02", "cmd02 description"},
 		}
-		app = tview.NewApplication()
+		cmdDialogApp = tview.NewApplication()
 		cmdDialog = NewCommandDialog(cmdTitle)
 
-		screen = tcell.NewSimulationScreen("UTF-8")
-		err := screen.Init()
+		cmdDialogScreen = tcell.NewSimulationScreen("UTF-8")
+		err := cmdDialogScreen.Init()
 		if err != nil {
 			panic(err)
 		}
 		runApp = func() {
-			if err := app.SetScreen(screen).SetRoot(cmdDialog, false).Run(); err != nil {
+			if err := cmdDialogApp.SetScreen(cmdDialogScreen).SetRoot(cmdDialog, false).Run(); err != nil {
 				panic(err)
 			}
 		}
@@ -43,7 +43,7 @@ var _ = Describe("command dialog", Ordered, func() {
 	})
 
 	It("set focus", func() {
-		app.SetFocus(cmdDialog)
+		cmdDialogApp.SetFocus(cmdDialog)
 		hasFocus := cmdDialog.HasFocus()
 		Expect(hasFocus).To(Equal(true))
 	})
@@ -71,8 +71,8 @@ var _ = Describe("command dialog", Ordered, func() {
 	})
 
 	It("get selected item", func() {
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
-		app.Draw()
+		cmdDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		cmdDialogApp.Draw()
 		Expect(cmdDialog.GetSelectedItem()).To(Equal("cmd02"))
 	})
 
@@ -83,8 +83,8 @@ var _ = Describe("command dialog", Ordered, func() {
 			enterButton = enterButtonWants
 		}
 		cmdDialog.SetSelectedFunc(enterFunc)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		cmdDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		cmdDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
 	})
 
@@ -95,9 +95,9 @@ var _ = Describe("command dialog", Ordered, func() {
 			cancelButton = cancelButtonWants
 		}
 		cmdDialog.SetCancelFunc(cancelFunc)
-		app.SetFocus(cmdDialog.form)
-		app.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
-		app.Draw()
+		cmdDialogApp.SetFocus(cmdDialog.form)
+		cmdDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		cmdDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))
 	})
 
@@ -107,7 +107,7 @@ var _ = Describe("command dialog", Ordered, func() {
 	})
 
 	AfterAll(func() {
-		app.Stop()
+		cmdDialogApp.Stop()
 	})
 
 })
