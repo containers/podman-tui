@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -14,7 +15,6 @@ import (
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/types"
 	"github.com/containers/storage/pkg/homedir"
-	"github.com/containers/storage/pkg/regexp"
 	"github.com/sirupsen/logrus"
 )
 
@@ -384,7 +384,7 @@ func (config *V1RegistriesConf) ConvertToV2() (*V2RegistriesConf, error) {
 }
 
 // anchoredDomainRegexp is an internal implementation detail of postProcess, defining the valid values of elements of UnqualifiedSearchRegistries.
-var anchoredDomainRegexp = regexp.Delayed("^" + reference.DomainRegexp.String() + "$")
+var anchoredDomainRegexp = regexp.MustCompile("^" + reference.DomainRegexp.String() + "$")
 
 // postProcess checks the consistency of all the configuration, looks for conflicts,
 // and normalizes the configuration (e.g., sets the Prefix to Location if not set).
