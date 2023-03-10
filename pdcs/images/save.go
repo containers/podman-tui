@@ -20,7 +20,7 @@ type ImageSaveOptions struct {
 }
 
 // Save saves an image on the local machine.
-func Save(imageID string, opts ImageSaveOptions) error { // nolint:cyclop
+func Save(imageID string, opts ImageSaveOptions) error { //nolint:cyclop
 	log.Debug().Msgf("pdcs: podman image save %v", opts)
 
 	conn, err := registry.GetConnection()
@@ -47,7 +47,7 @@ func Save(imageID string, opts ImageSaveOptions) error { // nolint:cyclop
 	defer outputFile.Close()
 
 	cancelChan := make(chan bool, 1)
-	writerChan := make(chan []byte, 1024) // nolint:gomnd
+	writerChan := make(chan []byte, 1024) //nolint:gomnd
 	outputWriter := channel.NewWriter(writerChan)
 
 	writeOutputFunc := func() {

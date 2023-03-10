@@ -4,16 +4,14 @@ import (
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
-	// nolint:gci
+	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/specgen"
 	"github.com/containers/podman/v4/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-
-	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman-tui/pdcs/utils"
 )
 
 // CreateOptions container create options.
@@ -44,7 +42,7 @@ type CreateOptions struct {
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions) ([]string, error) { // nolint:cyclop
+func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 	var (
 		warningResponse []string
 		createOptions   entities.ContainerCreateOptions
@@ -140,7 +138,7 @@ func Create(opts CreateOptions) ([]string, error) { // nolint:cyclop
 	return warningResponse, nil
 }
 
-func containerNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { // nolint:cyclop
+func containerNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { //nolint:cyclop
 	var (
 		err           error
 		perNetworkOpt types.PerNetworkOptions
@@ -175,7 +173,7 @@ func containerNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) {
 		}
 	}
 
-	if opts.Network != "" { // nolint:nestif
+	if opts.Network != "" { //nolint:nestif
 		if opts.MacAddress != "" {
 			mac, err := net.ParseMAC(opts.MacAddress)
 			if err != nil {

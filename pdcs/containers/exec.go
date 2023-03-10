@@ -82,7 +82,7 @@ func ResizeExecTty(id string, height int, width int) {
 				return
 			}
 
-			log.Debug().Msgf("pdcs: podman container exec session (%12s) tty resized successfully (height=%d, width=%d)", id, height, width) // nolint:lll
+			log.Debug().Msgf("pdcs: podman container exec session (%12s) tty resized successfully (height=%d, width=%d)", id, height, width) //nolint:lll
 
 			return
 		}
@@ -90,7 +90,7 @@ func ResizeExecTty(id string, height int, width int) {
 }
 
 // Exec returns the diff of the specified container ID.
-func Exec(sessionID string, opts ExecOption) { // nolint:cyclop
+func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 	log.Debug().Msgf("pdcs: podman container session (%s) exec %v", sessionID, opts)
 
 	conn, err := registry.GetConnection()
@@ -149,7 +149,7 @@ func Exec(sessionID string, opts ExecOption) { // nolint:cyclop
 		log.Error().Msgf("%v", err)
 	}
 
-	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " ")))); err != nil { // nolint:lll
+	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " ")))); err != nil { //nolint:lll
 		log.Error().Msgf("%v", err)
 	}
 

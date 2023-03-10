@@ -44,7 +44,7 @@ func Create(opts CreateOptions) (types.Network, error) {
 		IPv6Enabled: opts.IPv6,
 	}
 
-	if len(opts.Subnets) > 0 { // nolint:nestif
+	if len(opts.Subnets) > 0 { //nolint:nestif
 		for i := range opts.Subnets {
 			subnet, err := types.ParseCIDR(opts.Subnets[i])
 			if err != nil {

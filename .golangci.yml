@@ -16,7 +16,15 @@ linters:
     - wrapcheck
     - execinquery
     - funlen
+    # generics disabled
+    - wastedassign
+    - rowserrcheck
     # deprecated
+    - nosnakecase
+    - varcheck
+    - structcheck
+    - ifshort
+    - deadcode
     - golint
     - maligned
     - interfacer
