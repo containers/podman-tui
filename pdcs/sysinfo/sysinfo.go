@@ -39,8 +39,8 @@ func SysInfo() (*SystemInfo, error) {
 	info.Kernel = response.Host.Kernel
 	memUsed := response.Host.MemTotal - response.Host.MemFree
 	swapUsed := response.Host.SwapTotal - response.Host.SwapFree
-	info.MemUsagePC = float64(memUsed*100) / float64(response.Host.MemTotal)    // nolint:gomnd
-	info.SwapUsagePC = float64(swapUsed*100) / float64(response.Host.SwapTotal) // nolint:gomnd
+	info.MemUsagePC = float64(memUsed*100) / float64(response.Host.MemTotal)    //nolint:gomnd
+	info.SwapUsagePC = float64(swapUsed*100) / float64(response.Host.SwapTotal) //nolint:gomnd
 
 	info.Runtime = response.Host.OCIRuntime.Version
 	info.BuildahVersion = response.Host.BuildahVersion

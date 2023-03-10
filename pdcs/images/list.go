@@ -55,7 +55,7 @@ func sortImages(imageS []*entities.ImageSummary) ([]ImageListReporter, error) {
 	for _, e := range imageS {
 		var h ImageListReporter
 
-		if len(e.RepoTags) > 0 { // nolint:nestif
+		if len(e.RepoTags) > 0 { //nolint:nestif
 			tagged := []ImageListReporter{}
 			untagged := []ImageListReporter{}
 

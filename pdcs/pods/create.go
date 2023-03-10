@@ -38,7 +38,7 @@ type CreateOptions struct {
 }
 
 // Create creates a new pod.
-func Create(opts CreateOptions) error { // nolint:cyclop
+func Create(opts CreateOptions) error { //nolint:cyclop
 	log.Debug().Msgf("pdcs: podman pod create %v", opts)
 
 	var createOptions entities.PodCreateOptions
@@ -146,7 +146,7 @@ func defaultPodInfraImage() string {
 	return containerConfig.Engine.InfraImage
 }
 
-func podNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { // nolint:cyclop
+func podNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { //nolint:cyclop
 	var (
 		err           error
 		perNetworkOpt types.PerNetworkOptions
@@ -187,7 +187,7 @@ func podNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { // no
 
 	netOptions.NoHosts = opts.NoHost
 
-	if opts.Network != "" { // nolint:nestif
+	if opts.Network != "" { //nolint:nestif
 		if opts.MacAddress != "" {
 			mac, err := net.ParseMAC(opts.MacAddress)
 			if err != nil {
@@ -213,7 +213,7 @@ func podNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { // no
 	return netOptions, nil
 }
 
-func containerToPodOptions(containerCreate *entities.ContainerCreateOptions, podCreate *entities.PodCreateOptions) error { // nolint:lll
+func containerToPodOptions(containerCreate *entities.ContainerCreateOptions, podCreate *entities.PodCreateOptions) error { //nolint:lll
 	contMarshal, err := json.Marshal(containerCreate)
 	if err != nil {
 		return err

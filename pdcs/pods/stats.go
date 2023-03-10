@@ -103,7 +103,7 @@ func (sreport StatReporter) memPerc() float64 {
 
 func percentageToFloat(text string) float64 {
 	text = strings.ReplaceAll(text, "%", "")
-	value, _ := strconv.ParseFloat(text, 64) // nolint:gomnd
+	value, _ := strconv.ParseFloat(text, 64)
 
 	return value
 }

@@ -87,7 +87,7 @@ install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codesp
 
 .PHONY: .install.golangci-lint
 .install.golangci-lint:
-	VERSION=1.46.2 ./hack/install_golangci.sh
+	VERSION=1.51.1 ./hack/install_golangci.sh
 
 .PHONY: .install.codespell
 .install.codespell:
@@ -145,6 +145,7 @@ vendor: ## Check vendor
 .PHONY: lint
 lint: ## Run golangci-lint
 	@echo "running golangci-lint"
+	$(BIN)/golangci-lint version
 	$(BIN)/golangci-lint run
 
 .PHONY: pre-commit

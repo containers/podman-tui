@@ -13,7 +13,6 @@ Pre-run checks:
   - # systemctl --user start podman.socket
   - # export TERM=xterm-256color
 
-
 Key bindings:
 
   - F1: view pods list page
@@ -25,6 +24,5 @@ Key bindings:
   - Enter: lunch page command dialog
   - Esc: close a dialog
   - Tab: switch between interface widgets
-
 */
 package main

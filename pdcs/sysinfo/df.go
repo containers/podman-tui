@@ -39,7 +39,7 @@ func DiskUsage() ([]*DfSummary, error) {
 	return dfreport, nil
 }
 
-func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary { // nolint:funlen
+func prepDfSummary(reports *entities.SystemDfReport) []*DfSummary { //nolint:funlen
 	var (
 		dfSummaries       []*DfSummary
 		active            int
@@ -139,7 +139,7 @@ func (dfsum *DfSummary) Size() string {
 
 // Reclaimable returns reclaimable value of df summary.
 func (dfsum *DfSummary) Reclaimable() string {
-	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100 // nolint:gomnd
+	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100 //nolint:gomnd
 
 	return fmt.Sprintf("%s (%d%%)", units.HumanSize(float64(dfsum.reclaimable)), percent)
 }
