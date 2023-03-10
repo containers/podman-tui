@@ -20,7 +20,7 @@ load helpers_tui
 
     podman network create $TEST_CONTAINER_NETWORK_NAME || echo done
     podman volume create $TEST_CONTAINER_VOLUME_NAME || echo done
-    podman pod create --name $TEST_CONTAINER_POD_NAME || echo done
+    podman pod create --name $TEST_CONTAINER_POD_NAME --network $TEST_CONTAINER_NETWORK_NAME --publish $TEST_CONTAINER_PORT || echo done
     sleep 2
 
     # get required pod, image, network and volume index for number of KeyDown stroke
@@ -46,26 +46,13 @@ load helpers_tui
     podman_tui_send_inputs "Down"
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
-    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab"
     sleep 1
-
-    # switch to "network settings" create view
-    # select network from dropdown widget
-    podman_tui_send_inputs "Down" "Down" "Tab"
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Down"
-    podman_tui_select_item $net_index
-    podman_tui_send_inputs "Enter"
-    podman_tui_send_inputs "Tab" "Tab"
-    sleep 1
-
-    # switch to "ports settings" create view
-    # fillout "publish ports" field
-    podman_tui_send_inputs "Tab" "Down" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_PORT "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab"
     sleep 1
 
     # switch to "security options" create view
-    podman_tui_send_inputs "Down" "Tab"
+    podman_tui_send_inputs "Down" "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Tab" "Tab"
 
@@ -98,6 +85,7 @@ load helpers_tui
     cnt_security_opt=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .HostConfig.SecurityOpt }}")
 
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
+
     assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_NAME" "expected container volume: $TEST_CONTAINER_VOLUME_NAME"
     assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
     assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
@@ -118,9 +106,10 @@ load helpers_tui
     podman_tui_select_container_cmd "commit"
 
     podman_tui_send_inputs $TEST_CONTAINER_COMMIT_IMAGE_NAME
-    podman_tui_send_inputs Tab Tab Tab Tab Tab Tab Tab
-    podman_tui_send_inputs Tab Enter
-    sleep 5
+    podman_tui_send_inputs Tab Tab Tab Tab
+    podman_tui_send_inputs Tab Tab Tab Tab
+    podman_tui_send_inputs Enter
+    sleep 10
     run_helper podman image ls ${TEST_CONTAINER_COMMIT_IMAGE_NAME} --format "{{ .Repository }}"
     assert "$output" =~ "localhost/${TEST_CONTAINER_COMMIT_IMAGE_NAME}" "expected image"
 }
@@ -174,7 +163,7 @@ load helpers_tui
     # switch to containers view
     # selec restore command from container commands dialog
     # filleout information
-    # go to restire button and Enter
+    # go to restore button and Enter
 
     podman_tui_set_view "containers"
     podman_tui_select_container_cmd "restore"
@@ -390,7 +379,7 @@ load helpers_tui
     podman_tui_select_item $container_index
     podman_tui_select_container_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 3
+    sleep 10
 
     run_helper podman container ls --all --filter "name=${TEST_CONTAINER_NAME}$" --noheading
     assert "$output" == "" "expected $TEST_CONTAINER_NAME to be removed"
