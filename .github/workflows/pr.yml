@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: '1.18.2'
+          go-version: '1.18.8'
       - uses: actions/checkout@v3
       - run: |
           go mod tidy
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: '1.18.2'
+          go-version: '1.18.8'
       - uses: actions/checkout@v3
       - run: |
           bash hack/install_dep.sh
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: '1.18.2'
+          go-version: '1.18.8'
       - uses: actions/checkout@v3
       - run: |
           sudo apt-get update
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v3
         with:
-          go-version: '1.18.2'
+          go-version: '1.18.8'
       - uses: actions/checkout@v3
       - run: |
           make all
