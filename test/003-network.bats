@@ -107,7 +107,7 @@ load helpers_tui
     # select prune command from network commands dialog
     # confirm the operation on warnings dialog
     podman_tui_set_view "networks"
-    podman_tui_select_volume_cmd "prune"
+    podman_tui_select_network_cmd "prune"
     podman_tui_send_inputs "Enter"
     sleep 2
 
