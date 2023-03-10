@@ -4,16 +4,15 @@ import (
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
-	// nolint:gci
+	"github.com/containers/podman-tui/pdcs/registry"
+	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
+	"github.com/containers/podman/v4/pkg/bindings/volumes"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/specgen"
 	"github.com/containers/podman/v4/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-
-	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman-tui/pdcs/utils"
 )
 
 // CreateOptions container create options.
@@ -86,7 +85,18 @@ func Create(opts CreateOptions) ([]string, error) { // nolint:cyclop
 	}
 
 	if opts.Volume != "" {
-		createOptions.Volume = []string{opts.Volume}
+		// get volume path
+		volFilter := make(map[string][]string)
+		volFilter["name"] = []string{opts.Volume}
+
+		volResponse, err := volumes.List(conn, new(volumes.ListOptions).WithFilters(volFilter))
+		if err != nil {
+			return warningResponse, err
+		}
+
+		if len(volResponse) > 0 {
+			createOptions.Volume = []string{volResponse[0].Mountpoint}
+		}
 	}
 
 	createOptions.ImageVolume = opts.ImageVolume
