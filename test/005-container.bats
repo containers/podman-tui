@@ -174,7 +174,7 @@ load helpers_tui
     # switch to containers view
     # selec restore command from container commands dialog
     # filleout information
-    # go to restire button and Enter
+    # go to restore button and Enter
 
     podman_tui_set_view "containers"
     podman_tui_select_container_cmd "restore"

@@ -28,15 +28,15 @@ func Top(id string) ([][]string, error) {
 	for i := 0; i < len(response); i++ {
 		space := regexp.MustCompile(`\s+`)
 		line := space.ReplaceAllString(response[i], " ")
-		splited := strings.Split(line, " ")
-		user := splited[0]
-		pid := splited[1]
-		ppid := splited[2]
-		cpu := splited[3]
-		elapsed := splited[4]
-		tty := splited[5]
-		time := splited[6]
-		command := splited[7:]
+		split := strings.Split(line, " ")
+		user := split[0]
+		pid := split[1]
+		ppid := split[2]
+		cpu := split[3]
+		elapsed := split[4]
+		tty := split[5]
+		time := split[6]
+		command := split[7:]
 		cmd := strings.Join(command, " ")
 
 		report = append(report, []string{

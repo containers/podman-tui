@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// CntCommitOptions contaienrs commit options.
+// CntCommitOptions containers commit options.
 type CntCommitOptions struct {
 	Author  string
 	Changes []string
