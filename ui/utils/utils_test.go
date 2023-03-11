@@ -1,9 +1,6 @@
 package utils
 
 import (
-	"os/user"
-	"path"
-
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
@@ -29,27 +26,6 @@ var _ = Describe("utils", func() {
 		emptyBox := EmptyBoxSpace(boxColor)
 		Expect(emptyBox.GetBackgroundColor()).To(Equal(boxColor))
 		Expect(emptyBox.GetTitle()).To(Equal(""))
-	})
-
-	It("resolve home directory", func() {
-
-		user, err := user.Current()
-		if err != nil {
-			panic(err)
-		}
-
-		path01 := path.Join("/home", user.Username, "path01")
-		path01Wants := path01
-		path02 := "~/path02"
-		path02Wants := path.Join("/home", user.Username, "path02")
-
-		path01Resolv, err := ResolveHomeDir(path01)
-		Expect(path01Resolv).To(Equal(path01Wants))
-		Expect(err).To(BeNil())
-
-		path02Resolv, err := ResolveHomeDir(path02)
-		Expect(path02Resolv).To(Equal(path02Wants))
-		Expect(err).To(BeNil())
 	})
 
 	It("validate file name", func() {

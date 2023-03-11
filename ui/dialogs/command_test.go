@@ -44,6 +44,7 @@ var _ = Describe("command dialog", Ordered, func() {
 
 	It("set focus", func() {
 		cmdDialogApp.SetFocus(cmdDialog)
+		cmdDialogApp.Draw()
 		hasFocus := cmdDialog.HasFocus()
 		Expect(hasFocus).To(Equal(true))
 	})
@@ -96,6 +97,7 @@ var _ = Describe("command dialog", Ordered, func() {
 		}
 		cmdDialog.SetCancelFunc(cancelFunc)
 		cmdDialogApp.SetFocus(cmdDialog.form)
+		cmdDialogApp.Draw()
 		cmdDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		cmdDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))

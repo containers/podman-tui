@@ -79,6 +79,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		checkpointDialogApp.Draw()
 		Expect(checkpointAction).To(Equal(checkpointWants))
@@ -112,6 +113,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 		checkpointDialog.Hide()
 		checkpointDialogApp.Draw()
 		checkpointDialog.Display()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 
@@ -121,6 +123,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// export
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
@@ -128,6 +131,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// create file lock
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -135,6 +139,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// ignore rootfs
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -142,6 +147,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// tcp established
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -149,6 +155,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// pre checkpoint
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -156,6 +163,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// print stats
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -163,6 +171,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// keep
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -170,6 +179,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// leave running
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -177,6 +187,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 
 		// withPrevious
 		checkpointDialog.setFocusElement()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))

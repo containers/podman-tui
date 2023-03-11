@@ -71,6 +71,7 @@ var _ = Describe("network connect", Ordered, func() {
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netConnectDialogApp.Draw()
 		Expect(connectAction).To(Equal(connectWants))
@@ -125,12 +126,15 @@ var _ = Describe("network connect", Ordered, func() {
 
 		// container
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netConnectDialogApp.Draw()
 
 		// alias
 		netConnectDialog.setFocusElement()
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone))
@@ -138,6 +142,7 @@ var _ = Describe("network connect", Ordered, func() {
 
 		// ipv4
 		netConnectDialog.setFocusElement()
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone))
@@ -145,6 +150,7 @@ var _ = Describe("network connect", Ordered, func() {
 
 		// ipv6
 		netConnectDialog.setFocusElement()
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 100, tcell.ModNone))
@@ -152,6 +158,7 @@ var _ = Describe("network connect", Ordered, func() {
 
 		// mac address
 		netConnectDialog.setFocusElement()
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(256, 101, tcell.ModNone))
