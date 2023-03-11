@@ -96,6 +96,7 @@ var _ = Describe("command dialog", Ordered, func() {
 		}
 		cmdDialog.SetCancelFunc(cancelFunc)
 		cmdDialogApp.SetFocus(cmdDialog.form)
+		cmdDialogApp.Draw()
 		cmdDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		cmdDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))

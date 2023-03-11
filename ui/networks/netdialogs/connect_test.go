@@ -71,6 +71,7 @@ var _ = Describe("network connect", Ordered, func() {
 		netConnectDialogApp.SetFocus(netConnectDialog)
 		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netConnectDialogApp.Draw()
 		Expect(connectAction).To(Equal(connectWants))
@@ -125,7 +126,9 @@ var _ = Describe("network connect", Ordered, func() {
 
 		// container
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyDown, 0, tcell.ModNone))
+		netConnectDialogApp.Draw()
 		netConnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netConnectDialogApp.Draw()
 

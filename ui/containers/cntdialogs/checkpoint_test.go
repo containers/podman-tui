@@ -79,6 +79,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		checkpointDialogApp.Draw()
 		Expect(checkpointAction).To(Equal(checkpointWants))
@@ -112,6 +113,7 @@ var _ = Describe("container checkpoint", Ordered, func() {
 		checkpointDialog.Hide()
 		checkpointDialogApp.Draw()
 		checkpointDialog.Display()
+		checkpointDialogApp.Draw()
 		checkpointDialogApp.SetFocus(checkpointDialog)
 		checkpointDialogApp.Draw()
 

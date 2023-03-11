@@ -99,6 +99,7 @@ var _ = Describe("network create", Ordered, func() {
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netCreateDialogApp.Draw()
 		Expect(createAction).To(Equal(createWants))
@@ -220,6 +221,7 @@ var _ = Describe("network create", Ordered, func() {
 		netNameEvents := utils.StringToEventKey(netName)
 		for i := 0; i < len(netNameEvents); i++ {
 			netCreateDialogApp.QueueEvent(netNameEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
@@ -231,6 +233,7 @@ var _ = Describe("network create", Ordered, func() {
 		netLabelEvents := utils.StringToEventKey(netLabelStr)
 		for i := 0; i < len(netLabelEvents); i++ {
 			netCreateDialogApp.QueueEvent(netLabelEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
@@ -241,20 +244,24 @@ var _ = Describe("network create", Ordered, func() {
 		netCreateDialogApp.Draw()
 		if netInternal {
 			netCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
 
 		// set network options
 		netCreateDialog.setBasicInfoPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netCreateDialog.setBasicInfoPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netOptionEvents := utils.StringToEventKey(netOptionStr)
 		for i := 0; i < len(netOptionStr); i++ {
 			netCreateDialogApp.QueueEvent(netOptionEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
@@ -268,49 +275,58 @@ var _ = Describe("network create", Ordered, func() {
 		// set IPv6
 		if ipv6 {
 			netCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
 
 		// set gateway
 		netCreateDialog.setIPSettingsPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netGatwayEvents := utils.StringToEventKey(gateway)
 		for i := 0; i < len(netGatwayEvents); i++ {
 			netCreateDialogApp.QueueEvent(netGatwayEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
 
 		// set ip range
 		netCreateDialog.setIPSettingsPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netIPRangeEvents := utils.StringToEventKey(iprange)
 		for i := 0; i < len(netIPRangeEvents); i++ {
 			netCreateDialogApp.QueueEvent(netIPRangeEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
 
 		// set sebnet
 		netCreateDialog.setIPSettingsPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		netSubnetEvents := utils.StringToEventKey(subnet)
 		for i := 0; i < len(netSubnetEvents); i++ {
 			netCreateDialogApp.QueueEvent(netSubnetEvents[i])
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}
 
 		// set disable DNS
 		netCreateDialog.setIPSettingsPageNextFocus()
+		netCreateDialogApp.Draw()
 		netCreateDialogApp.SetFocus(netCreateDialog)
 		netCreateDialogApp.Draw()
 		if disableDNS {
 			netCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+			netCreateDialogApp.Draw()
 			netCreateDialogApp.SetFocus(netCreateDialog)
 			netCreateDialogApp.Draw()
 		}

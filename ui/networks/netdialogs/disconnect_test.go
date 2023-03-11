@@ -71,6 +71,7 @@ var _ = Describe("network disconnect", Ordered, func() {
 		netDisconnectDialogApp.SetFocus(netDisconnectDialog)
 		netDisconnectDialogApp.Draw()
 		netDisconnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		netDisconnectDialogApp.Draw()
 		netDisconnectDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		netDisconnectDialogApp.Draw()
 		Expect(disconnectWants).To(Equal(disconnectAction))
@@ -114,8 +115,10 @@ var _ = Describe("network disconnect", Ordered, func() {
 		netDisconnectDialog.Hide()
 		netDisconnectDialogApp.Draw()
 		netDisconnectDialog.SetContainers(containerList)
+		netDisconnectDialogApp.Draw()
 		netDisconnectDialog.SetNetworkInfo(netID, netName)
 		netDisconnectDialog.Display()
+		netDisconnectDialogApp.Draw()
 		netDisconnectDialogApp.SetFocus(netDisconnectDialog)
 		netDisconnectDialogApp.Draw()
 

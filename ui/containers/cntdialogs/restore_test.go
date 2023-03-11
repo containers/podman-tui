@@ -33,6 +33,7 @@ var _ = Describe("container restore", Ordered, func() {
 
 	It("display", func() {
 		restoreDialog.Display()
+		restoreDialogApp.Draw()
 		Expect(restoreDialog.IsDisplay()).To(Equal(true))
 		Expect(restoreDialog.focusElement).To(Equal(cntRestoreContainersFocus))
 	})
