@@ -84,6 +84,7 @@ var _ = Describe("confirm dialog", Ordered, func() {
 		confirmDialog.Display()
 		confirmDialogApp.Draw()
 		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		confirmDialogApp.Draw()
 		confirmDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		confirmDialogApp.Draw()
 		Expect(cancelButton).To(Equal(cancelButtonWants))

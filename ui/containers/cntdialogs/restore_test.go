@@ -33,13 +33,14 @@ var _ = Describe("container restore", Ordered, func() {
 
 	It("display", func() {
 		restoreDialog.Display()
+		restoreDialogApp.Draw()
 		Expect(restoreDialog.IsDisplay()).To(Equal(true))
 		Expect(restoreDialog.focusElement).To(Equal(cntRestoreContainersFocus))
 	})
 
 	It("set focus", func() {
 		restoreDialogApp.SetFocus(restoreDialog)
-		//restoreDialogApp.Draw()
+		restoreDialogApp.Draw()
 		Expect(restoreDialog.HasFocus()).To(Equal(true))
 	})
 
@@ -128,6 +129,7 @@ var _ = Describe("container restore", Ordered, func() {
 
 		// pod
 		restoreDialog.setFocusElement()
+		restoreDialogApp.Draw()
 		restoreDialogApp.SetFocus(restoreDialog)
 		restoreDialogApp.Draw()
 		restoreDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -139,19 +141,23 @@ var _ = Describe("container restore", Ordered, func() {
 
 		// name
 		restoreDialog.setFocusElement()
+		restoreDialogApp.Draw()
 		restoreDialogApp.SetFocus(restoreDialog)
 		restoreDialogApp.Draw()
 		// publish
 		restoreDialog.setFocusElement()
+		restoreDialogApp.Draw()
 		restoreDialogApp.SetFocus(restoreDialog)
 		restoreDialogApp.Draw()
 		// Import
 		restoreDialog.setFocusElement()
+		restoreDialogApp.Draw()
 		restoreDialogApp.SetFocus(restoreDialog)
 		restoreDialogApp.Draw()
 
 		for i := 0; i < 8; i++ {
 			restoreDialog.setFocusElement()
+			restoreDialogApp.Draw()
 			restoreDialogApp.SetFocus(restoreDialog)
 			restoreDialogApp.Draw()
 			restoreDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
