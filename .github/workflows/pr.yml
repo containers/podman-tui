@@ -94,22 +94,6 @@ jobs:
       - run: |
           make all
 
-  build_rpm:
-    runs-on: ubuntu-latest
-    container:
-      image: fedora:latest
-    steps:
-      - run: |
-          dnf -y install git-core
-          git clone https://github.com/${GITHUB_REPOSITORY}.git
-          cd podman-tui
-          PR_HEAD=$(echo ${GITHUB_REF} | sed 's/merge/head/g')
-          git pull origin ${PR_HEAD}
-          bash ./hack/install_dep.sh
-          make package
-          rpm -ivh /tmp/rpkg/podman-tui-*/x86_64/podman-tui-*.x86_64.rpm
-          rpm -qi podman-tui
-
   goreportcard:
     name: update reportcard
     if: github.event.pull_request.merged == true

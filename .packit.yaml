@@ -1,0 +1,23 @@
+# See the documentation for more information:
+# https://packit.dev/docs/configuration/
+
+specfile_path: podman-tui.spec
+
+jobs:
+  - job: copr_build
+    trigger: pull_request
+    enable_net: true
+    srpm_build_deps:
+      - make
+      - openssl-devel
+      - rpkg
+    targets:
+      - fedora-all
+      - epel-9
+      - centos-stream-9
+    actions:
+      post-upstream-clone:
+        - "rpkg spec --outdir ./"
+
+      fix-spec-file:
+        "bash .packit.sh"
