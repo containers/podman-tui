@@ -2,10 +2,12 @@ package containers
 
 import (
 	"net"
+	"strconv"
 
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
+	"github.com/containers/podman/v4/libpod/define"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
 	"github.com/containers/podman/v4/pkg/bindings/volumes"
 	"github.com/containers/podman/v4/pkg/domain/entities"
@@ -17,29 +19,40 @@ import (
 
 // CreateOptions container create options.
 type CreateOptions struct {
-	Name            string
-	Labels          []string
-	Image           string
-	Remove          bool
-	Pod             string
-	Hostname        string
-	IPAddress       string
-	Network         string
-	MacAddress      string
-	Publish         []string
-	Expose          []string
-	PublishAll      bool
-	DNSServer       []string
-	DNSOptions      []string
-	DNSSearchDomain []string
-	Volume          string
-	ImageVolume     string
-	SelinuxOpts     []string
-	ApparmorProfile string
-	Seccomp         string
-	NoNewPriv       bool
-	Mask            string
-	Unmask          string
+	Name                  string
+	Labels                []string
+	Image                 string
+	Remove                bool
+	Pod                   string
+	Hostname              string
+	IPAddress             string
+	Network               string
+	MacAddress            string
+	Publish               []string
+	Expose                []string
+	PublishAll            bool
+	DNSServer             []string
+	DNSOptions            []string
+	DNSSearchDomain       []string
+	Volume                string
+	ImageVolume           string
+	SelinuxOpts           []string
+	ApparmorProfile       string
+	Seccomp               string
+	NoNewPriv             bool
+	Mask                  string
+	Unmask                string
+	HealthCmd             string
+	HealthInterval        string
+	HealthRetries         string
+	HealthStartPeroid     string
+	HealthTimeout         string
+	HealthOnFailure       string
+	HealthStartupCmd      string
+	HealthStartupInterval string
+	HealthStartupRetries  string
+	HealthStartupSuccess  string
+	HealthStartupTimeout  string
 }
 
 // Create creates a new container.
@@ -128,6 +141,11 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 		}
 	}
 
+	// add healthcheck options
+	if err := containerHealthOptions(&createOptions, opts); err != nil {
+		return warningResponse, err
+	}
+
 	s := specgen.NewSpecGenerator(opts.Name, false)
 	if err := specgenutil.FillOutSpecGen(s, &createOptions, nil); err != nil {
 		return warningResponse, err
@@ -148,6 +166,80 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 	warningResponse = response.Warnings
 
 	return warningResponse, nil
+}
+
+func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts CreateOptions) error { //nolint:cyclop
+	// healthcheck
+	if opts.HealthCmd == "" {
+		createOptions.HealthCmd = "none"
+
+		return nil
+	}
+
+	createOptions.HealthCmd = opts.HealthCmd
+	createOptions.HealthInterval = define.DefaultHealthCheckInterval
+	createOptions.StartupHCInterval = define.DefaultHealthCheckInterval
+	createOptions.HealthRetries = define.DefaultHealthCheckRetries
+	createOptions.HealthStartPeriod = define.DefaultHealthCheckStartPeriod
+	createOptions.HealthTimeout = define.DefaultHealthCheckTimeout
+	createOptions.StartupHCTimeout = define.DefaultHealthCheckTimeout
+	createOptions.HealthOnFailure = opts.HealthOnFailure
+
+	if opts.HealthInterval != "" {
+		createOptions.HealthInterval = opts.HealthInterval
+	}
+
+	if opts.HealthStartPeroid != "" {
+		createOptions.HealthStartPeriod = opts.HealthStartPeroid
+	}
+
+	if opts.HealthTimeout != "" {
+		createOptions.HealthTimeout = opts.HealthTimeout
+	}
+
+	if opts.HealthStartupCmd != "" {
+		createOptions.StartupHCCmd = opts.HealthStartupCmd
+	}
+
+	if opts.HealthStartupInterval != "" {
+		createOptions.StartupHCInterval = opts.HealthStartupInterval
+	}
+
+	if opts.HealthStartupTimeout != "" {
+		createOptions.StartupHCTimeout = opts.HealthStartupTimeout
+	}
+
+	if opts.HealthRetries != "" {
+		retries, err := strconv.ParseUint(opts.HealthRetries, 10, 32)
+		if err != nil {
+			return err
+		}
+
+		retriesWd := uint(retries)
+		createOptions.HealthRetries = retriesWd
+	}
+
+	if opts.HealthStartupRetries != "" {
+		startupRetries, err := strconv.ParseUint(opts.HealthStartupRetries, 10, 32)
+		if err != nil {
+			return err
+		}
+
+		startupRetriesWd := uint(startupRetries)
+		createOptions.StartupHCRetries = startupRetriesWd
+	}
+
+	if opts.HealthStartupSuccess != "" {
+		startupSuccess, err := strconv.ParseUint(opts.HealthStartupSuccess, 10, 32)
+		if err != nil {
+			return err
+		}
+
+		startupSuccessWd := uint(startupSuccess)
+		createOptions.StartupHCRetries = startupSuccessWd
+	}
+
+	return nil
 }
 
 func containerNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { //nolint:cyclop

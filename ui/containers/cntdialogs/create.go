@@ -19,8 +19,8 @@ import (
 )
 
 const (
-	containerCreateDialogMaxWidth = 80
-	containerCreateDialogHeight   = 19
+	containerCreateDialogMaxWidth = 100
+	containerCreateDialogHeight   = 18
 )
 
 const (
@@ -50,11 +50,23 @@ const (
 	createContainerDNSSearchFieldFocus
 	createContainerImageVolumeFieldFocus
 	createContainerVolumeFieldFocus
+	containerHealthCmdFieldFocus
+	containerHealthStartupCmdFieldFocus
+	containerHealthOnFailureFieldFocus
+	containerHealthIntervalFieldFocus
+	containerHealthStartupIntervalFieldFocus
+	containerHealthTimeoutFieldFocus
+	containerHealthStartupTimeoutFieldFocus
+	containerHealthRetriesFieldFocus
+	containerHealthStartupRetriesFieldFocus
+	containerHealthStartPeriodFieldFocus
+	containerHealthStartupSuccessFieldFocus
 )
 
 const (
 	basicInfoPageIndex = 0 + iota
 	dnsPageIndex
+	healthPageIndex
 	networkingPageIndex
 	portPageIndex
 	securityOptsPageIndex
@@ -64,50 +76,62 @@ const (
 // ContainerCreateDialog implements container create dialog
 type ContainerCreateDialog struct {
 	*tview.Box
-	layout                       *tview.Flex
-	categoryLabels               []string
-	categories                   *tview.TextView
-	categoryPages                *tview.Pages
-	basicInfoPage                *tview.Flex
-	securityOptsPage             *tview.Flex
-	portPage                     *tview.Flex
-	networkingPage               *tview.Flex
-	dnsPage                      *tview.Flex
-	volumePage                   *tview.Flex
-	form                         *tview.Form
-	display                      bool
-	activePageIndex              int
-	focusElement                 int
-	imageList                    []images.ImageListReporter
-	podList                      []*entities.ListPodsReport
-	containerNameField           *tview.InputField
-	containerImageField          *tview.DropDown
-	containerPodField            *tview.DropDown
-	containerLabelsField         *tview.InputField
-	containerRemoveField         *tview.Checkbox
-	containerSelinuxLabelField   *tview.InputField
-	containerApparmorField       *tview.InputField
-	containerSeccompField        *tview.InputField
-	containerMaskField           *tview.InputField
-	containerUnmaskField         *tview.InputField
-	containerNoNewPrivField      *tview.Checkbox
-	containerPortExposeField     *tview.InputField
-	containerPortPublishField    *tview.InputField
-	ContainerPortPublishAllField *tview.Checkbox
-	containerHostnameField       *tview.InputField
-	containerIPAddrField         *tview.InputField
-	containerMacAddrField        *tview.InputField
-	containerNetworkField        *tview.DropDown
-	containerDNSServersField     *tview.InputField
-	containerDNSOptionsField     *tview.InputField
-	containerDNSSearchField      *tview.InputField
-	containerVolumeField         *tview.DropDown
-	containerImageVolumeField    *tview.DropDown
-	cancelHandler                func()
-	createHandler                func()
+	layout                              *tview.Flex
+	categoryLabels                      []string
+	categories                          *tview.TextView
+	categoryPages                       *tview.Pages
+	basicInfoPage                       *tview.Flex
+	securityOptsPage                    *tview.Flex
+	portPage                            *tview.Flex
+	networkingPage                      *tview.Flex
+	dnsPage                             *tview.Flex
+	volumePage                          *tview.Flex
+	healthPage                          *tview.Flex
+	form                                *tview.Form
+	display                             bool
+	activePageIndex                     int
+	focusElement                        int
+	imageList                           []images.ImageListReporter
+	podList                             []*entities.ListPodsReport
+	containerNameField                  *tview.InputField
+	containerImageField                 *tview.DropDown
+	containerPodField                   *tview.DropDown
+	containerLabelsField                *tview.InputField
+	containerRemoveField                *tview.Checkbox
+	containerSelinuxLabelField          *tview.InputField
+	containerApparmorField              *tview.InputField
+	containerSeccompField               *tview.InputField
+	containerMaskField                  *tview.InputField
+	containerUnmaskField                *tview.InputField
+	containerNoNewPrivField             *tview.Checkbox
+	containerPortExposeField            *tview.InputField
+	containerPortPublishField           *tview.InputField
+	ContainerPortPublishAllField        *tview.Checkbox
+	containerHostnameField              *tview.InputField
+	containerIPAddrField                *tview.InputField
+	containerMacAddrField               *tview.InputField
+	containerNetworkField               *tview.DropDown
+	containerDNSServersField            *tview.InputField
+	containerDNSOptionsField            *tview.InputField
+	containerDNSSearchField             *tview.InputField
+	containerHealthCmdField             *tview.InputField
+	containerHealthIntervalField        *tview.InputField
+	containerHealthOnFailureField       *tview.DropDown
+	containerHealthRetriesField         *tview.InputField
+	containerHealthStartPeriodField     *tview.InputField
+	containerHealthTimeoutField         *tview.InputField
+	containerHealthStartupCmdField      *tview.InputField
+	containerHealthStartupIntervalField *tview.InputField
+	containerHealthStartupRetriesField  *tview.InputField
+	containerHealthStartupSuccessField  *tview.InputField
+	containerHealthStartupTimeoutField  *tview.InputField
+	containerVolumeField                *tview.DropDown
+	containerImageVolumeField           *tview.DropDown
+	cancelHandler                       func()
+	createHandler                       func()
 }
 
-// NewContainerCreateDialog returns new container create dialog primitive ContainerCreateDialog
+// NewContainerCreateDialog returns new container create dialog primitive ContainerCreateDialog.
 func NewContainerCreateDialog() *ContainerCreateDialog {
 	containerDialog := ContainerCreateDialog{
 		Box:              tview.NewBox(),
@@ -120,264 +144,161 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		dnsPage:          tview.NewFlex(),
 		portPage:         tview.NewFlex(),
 		volumePage:       tview.NewFlex(),
+		healthPage:       tview.NewFlex(),
 		form:             tview.NewForm(),
 		categoryLabels: []string{
 			"Basic Information",
 			"DNS Settings",
+			"Health check",
 			"Network Settings",
 			"Ports Settings",
 			"Security Options",
 			"Volumes Settings"},
-		activePageIndex:              0,
-		display:                      false,
-		containerNameField:           tview.NewInputField(),
-		containerImageField:          tview.NewDropDown(),
-		containerPodField:            tview.NewDropDown(),
-		containerLabelsField:         tview.NewInputField(),
-		containerRemoveField:         tview.NewCheckbox(),
-		containerSelinuxLabelField:   tview.NewInputField(),
-		containerApparmorField:       tview.NewInputField(),
-		containerSeccompField:        tview.NewInputField(),
-		containerMaskField:           tview.NewInputField(),
-		containerUnmaskField:         tview.NewInputField(),
-		containerNoNewPrivField:      tview.NewCheckbox(),
-		containerPortExposeField:     tview.NewInputField(),
-		containerPortPublishField:    tview.NewInputField(),
-		ContainerPortPublishAllField: tview.NewCheckbox(),
-		containerHostnameField:       tview.NewInputField(),
-		containerIPAddrField:         tview.NewInputField(),
-		containerMacAddrField:        tview.NewInputField(),
-		containerNetworkField:        tview.NewDropDown(),
-		containerDNSServersField:     tview.NewInputField(),
-		containerDNSOptionsField:     tview.NewInputField(),
-		containerDNSSearchField:      tview.NewInputField(),
-		containerVolumeField:         tview.NewDropDown(),
-		containerImageVolumeField:    tview.NewDropDown(),
+		activePageIndex:                     0,
+		display:                             false,
+		containerNameField:                  tview.NewInputField(),
+		containerImageField:                 tview.NewDropDown(),
+		containerPodField:                   tview.NewDropDown(),
+		containerLabelsField:                tview.NewInputField(),
+		containerRemoveField:                tview.NewCheckbox(),
+		containerSelinuxLabelField:          tview.NewInputField(),
+		containerApparmorField:              tview.NewInputField(),
+		containerSeccompField:               tview.NewInputField(),
+		containerMaskField:                  tview.NewInputField(),
+		containerUnmaskField:                tview.NewInputField(),
+		containerNoNewPrivField:             tview.NewCheckbox(),
+		containerPortExposeField:            tview.NewInputField(),
+		containerPortPublishField:           tview.NewInputField(),
+		ContainerPortPublishAllField:        tview.NewCheckbox(),
+		containerHostnameField:              tview.NewInputField(),
+		containerIPAddrField:                tview.NewInputField(),
+		containerMacAddrField:               tview.NewInputField(),
+		containerNetworkField:               tview.NewDropDown(),
+		containerDNSServersField:            tview.NewInputField(),
+		containerDNSOptionsField:            tview.NewInputField(),
+		containerDNSSearchField:             tview.NewInputField(),
+		containerVolumeField:                tview.NewDropDown(),
+		containerImageVolumeField:           tview.NewDropDown(),
+		containerHealthCmdField:             tview.NewInputField(),
+		containerHealthIntervalField:        tview.NewInputField(),
+		containerHealthOnFailureField:       tview.NewDropDown(),
+		containerHealthRetriesField:         tview.NewInputField(),
+		containerHealthStartPeriodField:     tview.NewInputField(),
+		containerHealthTimeoutField:         tview.NewInputField(),
+		containerHealthStartupCmdField:      tview.NewInputField(),
+		containerHealthStartupIntervalField: tview.NewInputField(),
+		containerHealthStartupRetriesField:  tview.NewInputField(),
+		containerHealthStartupSuccessField:  tview.NewInputField(),
+		containerHealthStartupTimeoutField:  tview.NewInputField(),
 	}
 
-	bgColor := style.DialogBgColor
-	ddUnselectedStyle := style.DropDownUnselected
-	ddselectedStyle := style.DropDownSelected
-	inputFieldBgColor := style.InputFieldBgColor
-
-	containerDialog.categories.SetDynamicColors(true).
-		SetWrap(true).
-		SetTextAlign(tview.AlignLeft)
-	containerDialog.categories.SetBackgroundColor(bgColor)
-	containerDialog.categories.SetBorder(true)
-	containerDialog.categories.SetBorderColor(style.DialogSubBoxBorderColor)
-
-	// basic information setup page
-	basicInfoPageLabelWidth := 14
-	// name field
-	containerDialog.containerNameField.SetLabel("name:")
-	containerDialog.containerNameField.SetLabelWidth(basicInfoPageLabelWidth)
-	containerDialog.containerNameField.SetBackgroundColor(bgColor)
-	containerDialog.containerNameField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerNameField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// image field
-	containerDialog.containerImageField.SetLabel("select image:")
-	containerDialog.containerImageField.SetLabelWidth(basicInfoPageLabelWidth)
-	containerDialog.containerImageField.SetBackgroundColor(bgColor)
-	containerDialog.containerImageField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerImageField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	containerDialog.containerImageField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// pod field
-	containerDialog.containerPodField.SetLabel("select pod:")
-	containerDialog.containerPodField.SetLabelWidth(basicInfoPageLabelWidth)
-	containerDialog.containerPodField.SetBackgroundColor(bgColor)
-	containerDialog.containerPodField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerPodField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	containerDialog.containerPodField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// labels field
-	containerDialog.containerLabelsField.SetLabel("labels:")
-	containerDialog.containerLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
-	containerDialog.containerLabelsField.SetBackgroundColor(bgColor)
-	containerDialog.containerLabelsField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// remove field
-	containerDialog.containerRemoveField.SetLabel("remove container after exit ")
-	//containerDialog.containerRemoveField.SetLabelWidth(basicInfoPageLabelWidth)
-	containerDialog.containerRemoveField.SetBackgroundColor(bgColor)
-	containerDialog.containerRemoveField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerRemoveField.SetChecked(true)
-	containerDialog.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// security options page
-	securityOptsLabelWidth := 10
-	// selinux label
-	containerDialog.containerSelinuxLabelField.SetLabel("label:")
-	containerDialog.containerSelinuxLabelField.SetLabelWidth(securityOptsLabelWidth)
-	containerDialog.containerSelinuxLabelField.SetBackgroundColor(bgColor)
-	containerDialog.containerSelinuxLabelField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// apparmor
-	containerDialog.containerApparmorField.SetLabel("apparmor:")
-	containerDialog.containerApparmorField.SetLabelWidth(securityOptsLabelWidth)
-	containerDialog.containerApparmorField.SetBackgroundColor(bgColor)
-	containerDialog.containerApparmorField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// seccomp
-	containerDialog.containerSeccompField.SetLabel("seccomp:")
-	containerDialog.containerSeccompField.SetLabelWidth(securityOptsLabelWidth)
-	containerDialog.containerSeccompField.SetBackgroundColor(bgColor)
-	containerDialog.containerSeccompField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// mask
-	containerDialog.containerMaskField.SetLabel("mask:")
-	containerDialog.containerMaskField.SetLabelWidth(securityOptsLabelWidth)
-	containerDialog.containerMaskField.SetBackgroundColor(bgColor)
-	containerDialog.containerMaskField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerMaskField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// unmask
-	containerDialog.containerUnmaskField.SetLabel("unmask:")
-	containerDialog.containerUnmaskField.SetLabelWidth(securityOptsLabelWidth)
-	containerDialog.containerUnmaskField.SetBackgroundColor(bgColor)
-	containerDialog.containerUnmaskField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// no-new-privileges
-	containerDialog.containerNoNewPrivField.SetLabel("no new privileges ")
-	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	containerDialog.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	containerDialog.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerNoNewPrivField.SetChecked(false)
-	containerDialog.containerNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// networking setup page
-	networkingPageLabelWidth := 13
-	// hostname field
-	containerDialog.containerHostnameField.SetLabel("hostname:")
-	containerDialog.containerHostnameField.SetLabelWidth(networkingPageLabelWidth)
-	containerDialog.containerHostnameField.SetBackgroundColor(bgColor)
-	containerDialog.containerHostnameField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// IP field
-	containerDialog.containerIPAddrField.SetLabel("ip address:")
-	containerDialog.containerIPAddrField.SetLabelWidth(networkingPageLabelWidth)
-	containerDialog.containerIPAddrField.SetBackgroundColor(bgColor)
-	containerDialog.containerIPAddrField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerIPAddrField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// mac field
-	containerDialog.containerMacAddrField.SetLabel("mac address:")
-	containerDialog.containerMacAddrField.SetLabelWidth(networkingPageLabelWidth)
-	containerDialog.containerMacAddrField.SetBackgroundColor(bgColor)
-	containerDialog.containerMacAddrField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerMacAddrField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// network field
-	containerDialog.containerNetworkField.SetLabel("network:")
-	containerDialog.containerNetworkField.SetLabelWidth(networkingPageLabelWidth)
-	containerDialog.containerNetworkField.SetBackgroundColor(bgColor)
-	containerDialog.containerNetworkField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	containerDialog.containerNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// ports setup page
-	portPageLabelWidth := 15
-	// publish field
-	containerDialog.containerPortPublishField.SetLabel("publish ports:")
-	containerDialog.containerPortPublishField.SetLabelWidth(portPageLabelWidth)
-	containerDialog.containerPortPublishField.SetBackgroundColor(bgColor)
-	containerDialog.containerPortPublishField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerPortPublishField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// expose field
-	containerDialog.containerPortExposeField.SetLabel("expose ports:")
-	containerDialog.containerPortExposeField.SetLabelWidth(portPageLabelWidth)
-	containerDialog.containerPortExposeField.SetBackgroundColor(bgColor)
-	containerDialog.containerPortExposeField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerPortExposeField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// publish all field
-	containerDialog.ContainerPortPublishAllField.SetLabel("publish all ")
-	containerDialog.ContainerPortPublishAllField.SetLabelWidth(portPageLabelWidth)
-	containerDialog.ContainerPortPublishAllField.SetBackgroundColor(bgColor)
-	containerDialog.ContainerPortPublishAllField.SetLabelColor(style.DialogFgColor)
-	containerDialog.ContainerPortPublishAllField.SetChecked(false)
-	containerDialog.ContainerPortPublishAllField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// dns setup page
-	dnsPageLabelWidth := 13
-	// hostname field
-	containerDialog.containerDNSServersField.SetLabel("dns servers:")
-	containerDialog.containerDNSServersField.SetLabelWidth(dnsPageLabelWidth)
-	containerDialog.containerDNSServersField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSServersField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerDNSServersField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// IP field
-	containerDialog.containerDNSOptionsField.SetLabel("dns options:")
-	containerDialog.containerDNSOptionsField.SetLabelWidth(dnsPageLabelWidth)
-	containerDialog.containerDNSOptionsField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSOptionsField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// mac field
-	containerDialog.containerDNSSearchField.SetLabel("dns search:")
-	containerDialog.containerDNSSearchField.SetLabelWidth(dnsPageLabelWidth)
-	containerDialog.containerDNSSearchField.SetBackgroundColor(bgColor)
-	containerDialog.containerDNSSearchField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerDNSSearchField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// volume setup page
-	volumePageLabelWidth := 14
-	// volume
-	containerDialog.containerVolumeField.SetLabel("volume:")
-	containerDialog.containerVolumeField.SetLabelWidth(volumePageLabelWidth)
-	containerDialog.containerVolumeField.SetBackgroundColor(bgColor)
-	containerDialog.containerVolumeField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	containerDialog.containerVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// image volume
-	containerDialog.containerImageVolumeField.SetLabel("image volume:")
-	containerDialog.containerImageVolumeField.SetLabelWidth(volumePageLabelWidth)
-	containerDialog.containerImageVolumeField.SetBackgroundColor(bgColor)
-	containerDialog.containerImageVolumeField.SetLabelColor(style.DialogFgColor)
-	containerDialog.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	containerDialog.containerImageVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
-
-	// category pages
-	containerDialog.categoryPages.SetBackgroundColor(bgColor)
-	containerDialog.categoryPages.SetBorder(true)
-	containerDialog.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
-
-	// form
-	containerDialog.form.SetBackgroundColor(bgColor)
-	containerDialog.form.AddButton("Cancel", nil)
-	containerDialog.form.AddButton("Create", nil)
-	containerDialog.form.SetButtonsAlign(tview.AlignRight)
-	containerDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
-
 	containerDialog.setupLayout()
-	containerDialog.layout.SetBackgroundColor(bgColor)
-	containerDialog.layout.SetBorder(true)
-	containerDialog.layout.SetBorderColor(style.DialogBorderColor)
-	containerDialog.layout.SetTitle("PODMAN CONTAINER CREATE")
-	containerDialog.layout.AddItem(containerDialog.form, dialogs.DialogFormHeight, 0, true)
-
 	containerDialog.setActiveCategory(0)
-
 	containerDialog.initCustomInputHanlers()
+
 	return &containerDialog
 }
 
 func (d *ContainerCreateDialog) setupLayout() {
 	bgColor := style.DialogBgColor
 
-	// basic info page
+	d.categories.SetDynamicColors(true).
+		SetWrap(true).
+		SetTextAlign(tview.AlignLeft)
+	d.categories.SetBackgroundColor(bgColor)
+	d.categories.SetBorder(true)
+	d.categories.SetBorderColor(style.DialogSubBoxBorderColor)
+
+	// category pages
+	d.categoryPages.SetBackgroundColor(bgColor)
+	d.categoryPages.SetBorder(true)
+	d.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
+
+	d.setupBasicInfoPageUI()
+	d.setupDnsPageUI()
+	d.setupHealthPageUI()
+	d.setupNetworkPageUI()
+	d.setupPortsPageUI()
+	d.setupSecurityPageUI()
+	d.setupVolumePageUI()
+
+	// form
+	d.form.SetBackgroundColor(bgColor)
+	d.form.AddButton("Cancel", nil)
+	d.form.AddButton("Create", nil)
+	d.form.SetButtonsAlign(tview.AlignRight)
+	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
+
+	// adding category pages
+	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[healthPageIndex], d.healthPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[portPageIndex], d.portPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[volumePageIndex], d.volumePage, true, true)
+
+	// add it to layout.
+	d.layout.SetBackgroundColor(bgColor)
+	d.layout.SetBorder(true)
+	d.layout.SetBorderColor(style.DialogBorderColor)
+	d.layout.SetTitle("PODMAN CONTAINER CREATE")
+
+	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	layout.AddItem(d.categories, layoutWidth+6, 0, true)
+	layout.AddItem(d.categoryPages, 0, 1, true)
+	layout.SetBackgroundColor(bgColor)
+	d.layout.AddItem(layout, 0, 1, true)
+
+	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
+}
+
+func (d *ContainerCreateDialog) setupBasicInfoPageUI() {
+	bgColor := style.DialogBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	inputFieldBgColor := style.InputFieldBgColor
+	basicInfoPageLabelWidth := 14
+
+	// name field
+	d.containerNameField.SetLabel("name:")
+	d.containerNameField.SetLabelWidth(basicInfoPageLabelWidth)
+	d.containerNameField.SetBackgroundColor(bgColor)
+	d.containerNameField.SetLabelColor(style.DialogFgColor)
+	d.containerNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// image field
+	d.containerImageField.SetLabel("select image:")
+	d.containerImageField.SetLabelWidth(basicInfoPageLabelWidth)
+	d.containerImageField.SetBackgroundColor(bgColor)
+	d.containerImageField.SetLabelColor(style.DialogFgColor)
+	d.containerImageField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerImageField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// pod field
+	d.containerPodField.SetLabel("select pod:")
+	d.containerPodField.SetLabelWidth(basicInfoPageLabelWidth)
+	d.containerPodField.SetBackgroundColor(bgColor)
+	d.containerPodField.SetLabelColor(style.DialogFgColor)
+	d.containerPodField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerPodField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// labels field
+	d.containerLabelsField.SetLabel("labels:")
+	d.containerLabelsField.SetLabelWidth(basicInfoPageLabelWidth)
+	d.containerLabelsField.SetBackgroundColor(bgColor)
+	d.containerLabelsField.SetLabelColor(style.DialogFgColor)
+	d.containerLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// remove field
+	d.containerRemoveField.SetLabel("remove container after exit ")
+	d.containerRemoveField.SetBackgroundColor(bgColor)
+	d.containerRemoveField.SetLabelColor(style.DialogFgColor)
+	d.containerRemoveField.SetChecked(true)
+	d.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	d.basicInfoPage.SetDirection(tview.FlexRow)
 	d.basicInfoPage.AddItem(d.containerNameField, 1, 0, true)
 	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -389,6 +310,315 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.basicInfoPage.AddItem(d.containerRemoveField, 1, 0, true)
 	d.basicInfoPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupDnsPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	dnsPageLabelWidth := 13
+
+	// hostname field
+	d.containerDNSServersField.SetLabel("dns servers:")
+	d.containerDNSServersField.SetLabelWidth(dnsPageLabelWidth)
+	d.containerDNSServersField.SetBackgroundColor(bgColor)
+	d.containerDNSServersField.SetLabelColor(style.DialogFgColor)
+	d.containerDNSServersField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// IP field
+	d.containerDNSOptionsField.SetLabel("dns options:")
+	d.containerDNSOptionsField.SetLabelWidth(dnsPageLabelWidth)
+	d.containerDNSOptionsField.SetBackgroundColor(bgColor)
+	d.containerDNSOptionsField.SetLabelColor(style.DialogFgColor)
+	d.containerDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mac field
+	d.containerDNSSearchField.SetLabel("dns search:")
+	d.containerDNSSearchField.SetLabelWidth(dnsPageLabelWidth)
+	d.containerDNSSearchField.SetBackgroundColor(bgColor)
+	d.containerDNSSearchField.SetLabelColor(style.DialogFgColor)
+	d.containerDNSSearchField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	d.dnsPage.SetDirection(tview.FlexRow)
+	d.dnsPage.AddItem(d.containerDNSServersField, 1, 0, true)
+	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.dnsPage.AddItem(d.containerDNSOptionsField, 1, 0, true)
+	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.dnsPage.AddItem(d.containerDNSSearchField, 1, 0, true)
+	d.dnsPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupHealthPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	healthPageLabelWidth := 13
+	healthPageSecColLabelWidth := 18
+	healthPageMultiRowFieldWidth := 7
+
+	// health cmd
+	d.containerHealthCmdField.SetLabel("Command:")
+	d.containerHealthCmdField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthCmdField.SetBackgroundColor(bgColor)
+	d.containerHealthCmdField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthCmdField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// startup cmd
+	d.containerHealthStartupCmdField.SetLabel("Startup cmd:")
+	d.containerHealthStartupCmdField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthStartupCmdField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupCmdField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupCmdField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// multi primitive row01
+	// startup success
+	d.containerHealthStartupSuccessField.SetLabel("Startup success:")
+	d.containerHealthStartupSuccessField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupSuccessField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupSuccessField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupSuccessField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupSuccessField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// on-failure
+	d.containerHealthOnFailureField.SetOptions([]string{"none", "kill", "restart", "stop"}, nil)
+	d.containerHealthOnFailureField.SetLabel("On failure:")
+	d.containerHealthOnFailureField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthOnFailureField.SetBackgroundColor(bgColor)
+	d.containerHealthOnFailureField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthOnFailureField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerHealthOnFailureField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// start period
+	startPeroidLabel := fmt.Sprintf("%15s: ", "Start period")
+	d.containerHealthStartPeriodField.SetLabel(startPeroidLabel)
+	d.containerHealthStartPeriodField.SetBackgroundColor(bgColor)
+	d.containerHealthStartPeriodField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartPeriodField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	multiItemRow01 := tview.NewFlex().SetDirection(tview.FlexColumn)
+	multiItemRow01.AddItem(d.containerHealthOnFailureField, 0, 1, true)
+	multiItemRow01.AddItem(d.containerHealthStartupSuccessField, 0, 1, true)
+	multiItemRow01.AddItem(d.containerHealthStartPeriodField, 0, 1, true)
+	multiItemRow01.SetBackgroundColor(bgColor)
+
+	// multi primitive row02
+	// startup interval
+	d.containerHealthStartupIntervalField.SetLabel("Startup interval:")
+	d.containerHealthStartupIntervalField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupIntervalField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupIntervalField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// interval
+	d.containerHealthIntervalField.SetLabel("Interval:")
+	d.containerHealthIntervalField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthIntervalField.SetBackgroundColor(bgColor)
+	d.containerHealthIntervalField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	multiItemRow02 := tview.NewFlex().SetDirection(tview.FlexColumn)
+	multiItemRow02.AddItem(d.containerHealthIntervalField, 0, 1, true)
+	multiItemRow02.AddItem(d.containerHealthStartupIntervalField, 0, 1, true)
+	multiItemRow02.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	multiItemRow02.SetBackgroundColor(bgColor)
+
+	// multi primitive row03
+	// startup retries
+	d.containerHealthStartupRetriesField.SetLabel("Startup retries:")
+	d.containerHealthStartupRetriesField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupRetriesField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupRetriesField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// retires
+	d.containerHealthRetriesField.SetLabel("Retries:")
+	d.containerHealthRetriesField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthRetriesField.SetBackgroundColor(bgColor)
+	d.containerHealthRetriesField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	multiItemRow03 := tview.NewFlex().SetDirection(tview.FlexColumn)
+	multiItemRow03.AddItem(d.containerHealthRetriesField, 0, 1, true)
+	multiItemRow03.AddItem(d.containerHealthStartupRetriesField, 0, 1, true)
+	multiItemRow03.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	multiItemRow03.SetBackgroundColor(bgColor)
+
+	// multi primitive row04
+	// startup timeout
+	d.containerHealthStartupTimeoutField.SetLabel("Startup timeout:")
+	d.containerHealthStartupTimeoutField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupTimeoutField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupTimeoutField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// timeout
+	d.containerHealthTimeoutField.SetLabel("Timeout:")
+	d.containerHealthTimeoutField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthTimeoutField.SetBackgroundColor(bgColor)
+	d.containerHealthTimeoutField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	multiItemRow04 := tview.NewFlex().SetDirection(tview.FlexColumn)
+	multiItemRow04.AddItem(d.containerHealthTimeoutField, 0, 1, true)
+	multiItemRow04.AddItem(d.containerHealthStartupTimeoutField, 0, 1, true)
+	multiItemRow04.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	multiItemRow04.SetBackgroundColor(bgColor)
+
+	// health page
+	d.healthPage.SetDirection(tview.FlexRow)
+	d.healthPage.AddItem(d.containerHealthCmdField, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(d.containerHealthStartupCmdField, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(multiItemRow01, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(multiItemRow02, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(multiItemRow03, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(multiItemRow04, 1, 0, true)
+	d.healthPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupNetworkPageUI() {
+	bgColor := style.DialogBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	inputFieldBgColor := style.InputFieldBgColor
+	networkingPageLabelWidth := 13
+
+	// hostname field
+	d.containerHostnameField.SetLabel("hostname:")
+	d.containerHostnameField.SetLabelWidth(networkingPageLabelWidth)
+	d.containerHostnameField.SetBackgroundColor(bgColor)
+	d.containerHostnameField.SetLabelColor(style.DialogFgColor)
+	d.containerHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// IP field
+	d.containerIPAddrField.SetLabel("ip address:")
+	d.containerIPAddrField.SetLabelWidth(networkingPageLabelWidth)
+	d.containerIPAddrField.SetBackgroundColor(bgColor)
+	d.containerIPAddrField.SetLabelColor(style.DialogFgColor)
+	d.containerIPAddrField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mac field
+	d.containerMacAddrField.SetLabel("mac address:")
+	d.containerMacAddrField.SetLabelWidth(networkingPageLabelWidth)
+	d.containerMacAddrField.SetBackgroundColor(bgColor)
+	d.containerMacAddrField.SetLabelColor(style.DialogFgColor)
+	d.containerMacAddrField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// network field
+	d.containerNetworkField.SetLabel("network:")
+	d.containerNetworkField.SetLabelWidth(networkingPageLabelWidth)
+	d.containerNetworkField.SetBackgroundColor(bgColor)
+	d.containerNetworkField.SetLabelColor(style.DialogFgColor)
+	d.containerNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// network settings page
+	d.networkingPage.SetDirection(tview.FlexRow)
+	d.networkingPage.AddItem(d.containerHostnameField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.containerIPAddrField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.containerMacAddrField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.containerNetworkField, 1, 0, true)
+	d.networkingPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupPortsPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	portPageLabelWidth := 15
+
+	// publish field
+	d.containerPortPublishField.SetLabel("publish ports:")
+	d.containerPortPublishField.SetLabelWidth(portPageLabelWidth)
+	d.containerPortPublishField.SetBackgroundColor(bgColor)
+	d.containerPortPublishField.SetLabelColor(style.DialogFgColor)
+	d.containerPortPublishField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// expose field
+	d.containerPortExposeField.SetLabel("expose ports:")
+	d.containerPortExposeField.SetLabelWidth(portPageLabelWidth)
+	d.containerPortExposeField.SetBackgroundColor(bgColor)
+	d.containerPortExposeField.SetLabelColor(style.DialogFgColor)
+	d.containerPortExposeField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// publish all field
+	d.ContainerPortPublishAllField.SetLabel("publish all ")
+	d.ContainerPortPublishAllField.SetLabelWidth(portPageLabelWidth)
+	d.ContainerPortPublishAllField.SetBackgroundColor(bgColor)
+	d.ContainerPortPublishAllField.SetLabelColor(style.DialogFgColor)
+	d.ContainerPortPublishAllField.SetChecked(false)
+	d.ContainerPortPublishAllField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	d.portPage.SetDirection(tview.FlexRow)
+	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
+	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.portPage.AddItem(d.ContainerPortPublishAllField, 1, 0, true)
+	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.portPage.AddItem(d.containerPortExposeField, 1, 0, true)
+	d.portPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupSecurityPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	securityOptsLabelWidth := 10
+
+	// selinux label
+	d.containerSelinuxLabelField.SetLabel("label:")
+	d.containerSelinuxLabelField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSelinuxLabelField.SetBackgroundColor(bgColor)
+	d.containerSelinuxLabelField.SetLabelColor(style.DialogFgColor)
+	d.containerSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// apparmor
+	d.containerApparmorField.SetLabel("apparmor:")
+	d.containerApparmorField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerApparmorField.SetBackgroundColor(bgColor)
+	d.containerApparmorField.SetLabelColor(style.DialogFgColor)
+	d.containerApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// seccomp
+	d.containerSeccompField.SetLabel("seccomp:")
+	d.containerSeccompField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSeccompField.SetBackgroundColor(bgColor)
+	d.containerSeccompField.SetLabelColor(style.DialogFgColor)
+	d.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mask
+	d.containerMaskField.SetLabel("mask:")
+	d.containerMaskField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerMaskField.SetBackgroundColor(bgColor)
+	d.containerMaskField.SetLabelColor(style.DialogFgColor)
+	d.containerMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// unmask
+	d.containerUnmaskField.SetLabel("unmask:")
+	d.containerUnmaskField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerUnmaskField.SetBackgroundColor(bgColor)
+	d.containerUnmaskField.SetLabelColor(style.DialogFgColor)
+	d.containerUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// no-new-privileges
+	d.containerNoNewPrivField.SetLabel("no new privileges ")
+	d.containerNoNewPrivField.SetBackgroundColor(bgColor)
+	d.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
+	d.containerNoNewPrivField.SetBackgroundColor(bgColor)
+	d.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
+	d.containerNoNewPrivField.SetChecked(false)
+	d.containerNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
@@ -403,35 +633,30 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.securityOptsPage.AddItem(d.containerUnmaskField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.securityOptsPage.AddItem(d.containerNoNewPrivField, 1, 0, true)
+}
 
-	// network settings page
-	d.networkingPage.SetDirection(tview.FlexRow)
-	d.networkingPage.AddItem(d.containerHostnameField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.containerIPAddrField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.containerMacAddrField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.containerNetworkField, 1, 0, true)
-	d.networkingPage.SetBackgroundColor(bgColor)
+func (d *ContainerCreateDialog) setupVolumePageUI() {
+	bgColor := style.DialogBgColor
+	ddUnselectedStyle := style.DropDownUnselected
+	ddselectedStyle := style.DropDownSelected
+	inputFieldBgColor := style.InputFieldBgColor
+	volumePageLabelWidth := 14
 
-	// port settings page
-	d.portPage.SetDirection(tview.FlexRow)
-	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
-	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.portPage.AddItem(d.ContainerPortPublishAllField, 1, 0, true)
-	d.portPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.portPage.AddItem(d.containerPortExposeField, 1, 0, true)
-	d.portPage.SetBackgroundColor(bgColor)
+	// volume
+	d.containerVolumeField.SetLabel("volume:")
+	d.containerVolumeField.SetLabelWidth(volumePageLabelWidth)
+	d.containerVolumeField.SetBackgroundColor(bgColor)
+	d.containerVolumeField.SetLabelColor(style.DialogFgColor)
+	d.containerVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// dns settings page
-	d.dnsPage.SetDirection(tview.FlexRow)
-	d.dnsPage.AddItem(d.containerDNSServersField, 1, 0, true)
-	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.dnsPage.AddItem(d.containerDNSOptionsField, 1, 0, true)
-	d.dnsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.dnsPage.AddItem(d.containerDNSSearchField, 1, 0, true)
-	d.dnsPage.SetBackgroundColor(bgColor)
+	// image volume
+	d.containerImageVolumeField.SetLabel("image volume:")
+	d.containerImageVolumeField.SetLabelWidth(volumePageLabelWidth)
+	d.containerImageVolumeField.SetBackgroundColor(bgColor)
+	d.containerImageVolumeField.SetLabelColor(style.DialogFgColor)
+	d.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	d.containerImageVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// volume settings page
 	d.volumePage.SetDirection(tview.FlexRow)
@@ -439,44 +664,26 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.volumePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.volumePage.AddItem(d.containerImageVolumeField, 1, 0, true)
 	d.volumePage.SetBackgroundColor(bgColor)
-
-	// adding category pages
-	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[portPageIndex], d.portPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[volumePageIndex], d.volumePage, true, true)
-
-	// add it to layout.
-	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
-	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true)
-	layout.AddItem(d.categoryPages, 0, 1, true)
-	layout.SetBackgroundColor(bgColor)
-
-	d.layout.AddItem(layout, 0, 1, true)
-
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ContainerCreateDialog) Display() {
 	d.display = true
 	d.initData()
 	d.focusElement = createCategoryPagesFocus
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ContainerCreateDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ContainerCreateDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ContainerCreateDialog) HasFocus() bool {
 	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
 		return true
@@ -486,7 +693,7 @@ func (d *ContainerCreateDialog) HasFocus() bool {
 }
 
 // dropdownHasFocus returns true if container create dialog dropdown primitives
-// has focus
+// has focus.
 func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 	if d.containerImageField.HasFocus() || d.containerPodField.HasFocus() {
 		return true
@@ -494,13 +701,13 @@ func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 	if d.containerVolumeField.HasFocus() || d.containerImageVolumeField.HasFocus() {
 		return true
 	}
-	if d.containerNetworkField.HasFocus() {
+	if d.containerNetworkField.HasFocus() || d.containerHealthOnFailureField.HasFocus() {
 		return true
 	}
 	return false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
@@ -592,6 +799,29 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.containerVolumeField)
 	case createContainerImageVolumeFieldFocus:
 		delegate(d.containerImageVolumeField)
+	// health page
+	case containerHealthCmdFieldFocus:
+		delegate(d.containerHealthCmdField)
+	case containerHealthStartupCmdFieldFocus:
+		delegate(d.containerHealthStartupCmdField)
+	case containerHealthOnFailureFieldFocus:
+		delegate(d.containerHealthOnFailureField)
+	case containerHealthIntervalFieldFocus:
+		delegate(d.containerHealthIntervalField)
+	case containerHealthStartupIntervalFieldFocus:
+		delegate(d.containerHealthStartupIntervalField)
+	case containerHealthTimeoutFieldFocus:
+		delegate(d.containerHealthTimeoutField)
+	case containerHealthStartupTimeoutFieldFocus:
+		delegate(d.containerHealthStartupTimeoutField)
+	case containerHealthRetriesFieldFocus:
+		delegate(d.containerHealthRetriesField)
+	case containerHealthStartupRetriesFieldFocus:
+		delegate(d.containerHealthStartupRetriesField)
+	case containerHealthStartPeriodFieldFocus:
+		delegate(d.containerHealthStartPeriodField)
+	case containerHealthStartupSuccessFieldFocus:
+		delegate(d.containerHealthStartupSuccessField)
 	// category page
 	case createCategoryPagesFocus:
 		delegate(d.categoryPages)
@@ -626,7 +856,7 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 	})
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container create dialog: event %v received", event)
@@ -688,6 +918,17 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 				return
 			}
 		}
+
+		if d.healthPage.HasFocus() {
+			if handler := d.healthPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setHealthSettingsPageNextFocus()
+				}
+				handler(event, setFocus)
+				return
+			}
+		}
+
 		if d.categories.HasFocus() {
 			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
 				categroryHandler(event, setFocus)
@@ -739,7 +980,7 @@ func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDialog {
 	d.cancelHandler = handler
 	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
@@ -747,7 +988,7 @@ func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDi
 	return d
 }
 
-// SetCreateFunc sets form create button selected function
+// SetCreateFunc sets form create button selected function.
 func (d *ContainerCreateDialog) SetCreateFunc(handler func()) *ContainerCreateDialog {
 	d.createHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
@@ -864,6 +1105,19 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerVolumeField.SetCurrentOption(0)
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
 	d.containerImageVolumeField.SetCurrentOption(0)
+
+	// health options
+	d.containerHealthCmdField.SetText("")
+	d.containerHealthStartupCmdField.SetText("")
+	d.containerHealthOnFailureField.SetCurrentOption(0)
+	d.containerHealthIntervalField.SetText("")
+	d.containerHealthStartupIntervalField.SetText("")
+	d.containerHealthTimeoutField.SetText("")
+	d.containerHealthStartupTimeoutField.SetText("")
+	d.containerHealthRetriesField.SetText("")
+	d.containerHealthStartupRetriesField.SetText("")
+	d.containerHealthStartPeriodField.SetText("")
+	d.containerHealthStartupSuccessField.SetText("")
 }
 
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
@@ -928,6 +1182,32 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	}
 }
 
+func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() {
+	if d.containerHealthCmdField.HasFocus() {
+		d.focusElement = containerHealthStartupCmdFieldFocus
+	} else if d.containerHealthStartupCmdField.HasFocus() {
+		d.focusElement = containerHealthOnFailureFieldFocus
+	} else if d.containerHealthOnFailureField.HasFocus() {
+		d.focusElement = containerHealthStartupSuccessFieldFocus
+	} else if d.containerHealthStartupSuccessField.HasFocus() {
+		d.focusElement = containerHealthStartPeriodFieldFocus
+	} else if d.containerHealthStartPeriodField.HasFocus() {
+		d.focusElement = containerHealthIntervalFieldFocus
+	} else if d.containerHealthIntervalField.HasFocus() {
+		d.focusElement = containerHealthStartupIntervalFieldFocus
+	} else if d.containerHealthStartupIntervalField.HasFocus() {
+		d.focusElement = containerHealthRetriesFieldFocus
+	} else if d.containerHealthRetriesField.HasFocus() {
+		d.focusElement = containerHealthStartupRetriesFieldFocus
+	} else if d.containerHealthStartupRetriesField.HasFocus() {
+		d.focusElement = containerHealthTimeoutFieldFocus
+	} else if d.containerHealthTimeoutField.HasFocus() {
+		d.focusElement = containerHealthStartupTimeoutFieldFocus
+	} else {
+		d.focusElement = createContainerFormFocus
+	}
+}
+
 func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
 		d.focusElement = createContainerImageVolumeFieldFocus
@@ -936,7 +1216,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	}
 }
 
-// ContainerCreateOptions returns new network options
+// ContainerCreateOptions returns new network options.
 func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions {
 	var (
 		labels           []string
@@ -1004,31 +1284,45 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		}
 	}
 
+	// health check
+	_, healthOnFailure := d.containerHealthOnFailureField.GetCurrentOption()
+
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
-		Name:            d.containerNameField.GetText(),
-		Image:           imageID,
-		Pod:             podID,
-		Labels:          labels,
-		Remove:          d.containerRemoveField.IsChecked(),
-		Hostname:        d.containerHostnameField.GetText(),
-		MacAddress:      d.containerMacAddrField.GetText(),
-		IPAddress:       d.containerIPAddrField.GetText(),
-		Network:         network,
-		Publish:         publish,
-		Expose:          expose,
-		PublishAll:      d.ContainerPortPublishAllField.IsChecked(),
-		DNSServer:       dnsServers,
-		DNSOptions:      dnsOptions,
-		DNSSearchDomain: dnsSearchDomains,
-		Volume:          volume,
-		ImageVolume:     imageVolume,
-		SelinuxOpts:     selinuxOpts,
-		ApparmorProfile: d.containerApparmorField.GetText(),
-		Seccomp:         d.containerSeccompField.GetText(),
-		NoNewPriv:       d.containerNoNewPrivField.IsChecked(),
-		Mask:            d.containerMaskField.GetText(),
-		Unmask:          d.containerUnmaskField.GetText(),
+		Name:                  d.containerNameField.GetText(),
+		Image:                 imageID,
+		Pod:                   podID,
+		Labels:                labels,
+		Remove:                d.containerRemoveField.IsChecked(),
+		Hostname:              d.containerHostnameField.GetText(),
+		MacAddress:            d.containerMacAddrField.GetText(),
+		IPAddress:             d.containerIPAddrField.GetText(),
+		Network:               network,
+		Publish:               publish,
+		Expose:                expose,
+		PublishAll:            d.ContainerPortPublishAllField.IsChecked(),
+		DNSServer:             dnsServers,
+		DNSOptions:            dnsOptions,
+		DNSSearchDomain:       dnsSearchDomains,
+		Volume:                volume,
+		ImageVolume:           imageVolume,
+		SelinuxOpts:           selinuxOpts,
+		ApparmorProfile:       d.containerApparmorField.GetText(),
+		Seccomp:               d.containerSeccompField.GetText(),
+		NoNewPriv:             d.containerNoNewPrivField.IsChecked(),
+		Mask:                  d.containerMaskField.GetText(),
+		Unmask:                d.containerUnmaskField.GetText(),
+		HealthCmd:             strings.TrimSpace(d.containerHealthCmdField.GetText()),
+		HealthInterval:        strings.TrimSpace(d.containerHealthIntervalField.GetText()),
+		HealthRetries:         strings.TrimSpace(d.containerHealthRetriesField.GetText()),
+		HealthStartPeroid:     strings.TrimSpace(d.containerHealthStartPeriodField.GetText()),
+		HealthTimeout:         strings.TrimSpace(d.containerHealthTimeoutField.GetText()),
+		HealthOnFailure:       strings.TrimSpace(healthOnFailure),
+		HealthStartupCmd:      strings.TrimSpace(d.containerHealthStartupCmdField.GetText()),
+		HealthStartupInterval: strings.TrimSpace(d.containerHealthStartupIntervalField.GetText()),
+		HealthStartupRetries:  strings.TrimSpace(d.containerHealthStartupRetriesField.GetText()),
+		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
+		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
 	}
 	return opts
 }

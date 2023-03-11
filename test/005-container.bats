@@ -51,8 +51,23 @@ load helpers_tui
     podman_tui_send_inputs "Tab"
     sleep 1
 
+    # switch to "health check"  create view
+    podman_tui_send_inputs "Down" "Down" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_CMD "Tab" "Tab"
+    podman_tui_send_inputs "Enter" "Down" "Down" "Enter"
+    podman_tui_send_inputs "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_INTERVAL
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_RETRIES
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_TIMEOUT
+    podman_tui_send_inputs "Tab" "Tab" "Tab"
+    sleep 1
+    podman_tui_send_inputs "Tab"
+    sleep 1
+
     # switch to "security options" create view
-    podman_tui_send_inputs "Down" "Down" "Down" "Down" "Tab"
+    podman_tui_send_inputs "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Tab" "Tab"
 
@@ -84,12 +99,23 @@ load helpers_tui
 
     cnt_security_opt=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .HostConfig.SecurityOpt }}")
 
+    cnt_healthcheck_interval=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .Config.Healthcheck.Interval }}")
+    cnt_healthcheck_timeout=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .Config.Healthcheck.Timeout }}")
+    cnt_healthcheck_retires=$(podman container inspect ${TEST_CONTAINER_NAME} --format "{{ json .Config.Healthcheck.Retries }}")
+    cnt_hltcheck_interval="$(echo $TEST_CONTAINER_HEALTH_INTERVAL | sed 's/s//')000000000"
+    cnt_gltcheck_timeout="$(echo $TEST_CONTAINER_HEALTH_TIMEOUT | sed 's/s//')000000000"
+
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
 
     assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_NAME" "expected container volume: $TEST_CONTAINER_VOLUME_NAME"
     assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
     assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
     assert "$cnt_security_opt" =~ "no-new-privileges" "expected no-new-privileges in container security options"
+
+    # heathcheck tests
+    assert "$cnt_healthcheck_interval" =~ "$cnt_hltcheck_interval" "expected healthcheck interval to mach $cnt_hltcheck_interval"
+    assert "$cnt_healthcheck_timeout" =~ "$cnt_gltcheck_timeout" "expected healthcheck timeout to mach $cnt_gltcheck_timeout"
+    assert "$cnt_healthcheck_retires" =~ "$TEST_CONTAINER_HEALTH_RETRIES" "expected healthcheck retries to mach $TEST_CONTAINER_HEALTH_RETRIES"
 
 }
 
@@ -283,7 +309,7 @@ load helpers_tui
     sleep 2
 
     run_helper podman container ls --all --filter="name=${TEST_CONTAINER_NAME}$" --format "{{ .Status }}"
-    assert "$output" == "Paused" "expected $TEST_CONTAINER_NAME to be paused"
+    assert "$output" =~ "Paused" "expected $TEST_CONTAINER_NAME to be paused"
 }
 
 @test "container unpause" {
