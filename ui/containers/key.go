@@ -14,12 +14,14 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 		if cnt.progressDialog.IsDisplay() {
 			return
 		}
+
 		// command dialog handler
 		if cnt.cmdDialog.HasFocus() {
 			if cmdHandler := cnt.cmdDialog.InputHandler(); cmdHandler != nil {
 				cmdHandler(event, setFocus)
 			}
 		}
+
 		// input dialog handler
 		if cnt.cmdInputDialog.HasFocus() {
 			if cmdInputHandler := cnt.cmdInputDialog.InputHandler(); cmdInputHandler != nil {
@@ -33,30 +35,28 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 				messageDialogHandler(event, setFocus)
 			}
 		}
+
 		// create dialog dialog handler
 		if cnt.createDialog.HasFocus() {
 			if createDialogHandler := cnt.createDialog.InputHandler(); createDialogHandler != nil {
 				createDialogHandler(event, setFocus)
 			}
 		}
+
 		// exec dialog dialog handler
 		if cnt.execDialog.HasFocus() {
 			if execDialogHandler := cnt.execDialog.InputHandler(); execDialogHandler != nil {
 				execDialogHandler(event, setFocus)
 			}
 		}
-		// exec terminal dialog dialog handler
-		if cnt.execTerminalDialog.HasFocus() {
-			if execTerminalDialogHandler := cnt.execTerminalDialog.InputHandler(); execTerminalDialogHandler != nil {
-				execTerminalDialogHandler(event, setFocus)
-			}
-		}
+
 		// confirm dialog handler
 		if cnt.confirmDialog.HasFocus() {
 			if confirmDialogHandler := cnt.confirmDialog.InputHandler(); confirmDialogHandler != nil {
 				confirmDialogHandler(event, setFocus)
 			}
 		}
+
 		// error dialog handler
 		if cnt.errorDialog.HasFocus() {
 			if errorDialogHandler := cnt.errorDialog.InputHandler(); errorDialogHandler != nil {
@@ -96,6 +96,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 		if cnt.restoreDialog.HasFocus() {
 			if cntRestoreDialogHandler := cnt.restoreDialog.InputHandler(); cntRestoreDialogHandler != nil {
 				cntRestoreDialogHandler(event, setFocus)
+			}
+		}
+
+		// container terminal dialog handler
+		if cnt.terminalDialog.HasFocus() {
+			if cntTerminalDialogHandler := cnt.terminalDialog.InputHandler(); cntTerminalDialogHandler != nil {
+				cntTerminalDialogHandler(event, setFocus)
 			}
 		}
 

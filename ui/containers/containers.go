@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/containers/podman-tui/ui/containers/cntdialogs"
+	"github.com/containers/podman-tui/ui/containers/cntdialogs/vterm"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman/v4/pkg/domain/entities"
@@ -15,28 +16,28 @@ import (
 // Containers implements the containers page primitive
 type Containers struct {
 	*tview.Box
-	title              string
-	headers            []string
-	table              *tview.Table
-	errorDialog        *dialogs.ErrorDialog
-	cmdDialog          *dialogs.CommandDialog
-	cmdInputDialog     *dialogs.SimpleInputDialog
-	confirmDialog      *dialogs.ConfirmDialog
-	messageDialog      *dialogs.MessageDialog
-	progressDialog     *dialogs.ProgressDialog
-	topDialog          *dialogs.TopDialog
-	createDialog       *cntdialogs.ContainerCreateDialog
-	execDialog         *cntdialogs.ContainerExecDialog
-	execTerminalDialog *cntdialogs.ContainerExecTerminalDialog
-	statsDialog        *cntdialogs.ContainerStatsDialog
-	commitDialog       *cntdialogs.ContainerCommitDialog
-	checkpointDialog   *cntdialogs.ContainerCheckpointDialog
-	restoreDialog      *cntdialogs.ContainerRestoreDialog
-	containersList     containerListReport
-	selectedID         string
-	selectedName       string
-	confirmData        string
-	fastRefreshChan    chan bool
+	title            string
+	headers          []string
+	table            *tview.Table
+	errorDialog      *dialogs.ErrorDialog
+	cmdDialog        *dialogs.CommandDialog
+	cmdInputDialog   *dialogs.SimpleInputDialog
+	confirmDialog    *dialogs.ConfirmDialog
+	messageDialog    *dialogs.MessageDialog
+	progressDialog   *dialogs.ProgressDialog
+	topDialog        *dialogs.TopDialog
+	createDialog     *cntdialogs.ContainerCreateDialog
+	execDialog       *cntdialogs.ContainerExecDialog
+	terminalDialog   *vterm.VtermDialog
+	statsDialog      *cntdialogs.ContainerStatsDialog
+	commitDialog     *cntdialogs.ContainerCommitDialog
+	checkpointDialog *cntdialogs.ContainerCheckpointDialog
+	restoreDialog    *cntdialogs.ContainerRestoreDialog
+	containersList   containerListReport
+	selectedID       string
+	selectedName     string
+	confirmData      string
+	fastRefreshChan  chan bool
 }
 
 type containerListReport struct {
@@ -47,26 +48,27 @@ type containerListReport struct {
 // NewContainers returns containers page view
 func NewContainers() *Containers {
 	containers := &Containers{
-		Box:                tview.NewBox(),
-		title:              "containers",
-		headers:            []string{"container id", "image", "pod", "created", "status", "names", "ports"},
-		errorDialog:        dialogs.NewErrorDialog(),
-		cmdInputDialog:     dialogs.NewSimpleInputDialog(""),
-		messageDialog:      dialogs.NewMessageDialog(""),
-		progressDialog:     dialogs.NewProgressDialog(),
-		confirmDialog:      dialogs.NewConfirmDialog(),
-		topDialog:          dialogs.NewTopDialog(),
-		createDialog:       cntdialogs.NewContainerCreateDialog(),
-		execDialog:         cntdialogs.NewContainerExecDialog(),
-		execTerminalDialog: cntdialogs.NewContainerExecTerminalDialog(),
-		statsDialog:        cntdialogs.NewContainerStatsDialog(),
-		commitDialog:       cntdialogs.NewContainerCommitDialog(),
-		checkpointDialog:   cntdialogs.NewContainerCheckpointDialog(),
-		restoreDialog:      cntdialogs.NewContainerRestoreDialog(),
+		Box:              tview.NewBox(),
+		title:            "containers",
+		headers:          []string{"container id", "image", "pod", "created", "status", "names", "ports"},
+		errorDialog:      dialogs.NewErrorDialog(),
+		cmdInputDialog:   dialogs.NewSimpleInputDialog(""),
+		messageDialog:    dialogs.NewMessageDialog(""),
+		progressDialog:   dialogs.NewProgressDialog(),
+		confirmDialog:    dialogs.NewConfirmDialog(),
+		topDialog:        dialogs.NewTopDialog(),
+		createDialog:     cntdialogs.NewContainerCreateDialog(),
+		execDialog:       cntdialogs.NewContainerExecDialog(),
+		terminalDialog:   vterm.NewVtermDialog(),
+		statsDialog:      cntdialogs.NewContainerStatsDialog(),
+		commitDialog:     cntdialogs.NewContainerCommitDialog(),
+		checkpointDialog: cntdialogs.NewContainerCheckpointDialog(),
+		restoreDialog:    cntdialogs.NewContainerRestoreDialog(),
 	}
 	containers.topDialog.SetTitle("podman container top")
 
 	containers.cmdDialog = dialogs.NewCommandDialog([][]string{
+		{"attach", "attach to a running container"},
 		{"checkpoint", "checkpoints a running container"},
 		{"commit", "create an image from a container's changes"},
 		{"create", "create a new container but do not start"},
@@ -151,11 +153,9 @@ func NewContainers() *Containers {
 	containers.execDialog.SetCancelFunc(containers.execDialog.Hide)
 	containers.execDialog.SetExecFunc(containers.exec)
 
-	// set exec terminal dialog functions
-	containers.execTerminalDialog.SetCancelFunc(containers.execTerminalDialog.Hide)
-
-	// set exec terminal fast refresh
-	containers.execTerminalDialog.SetFastRefreshHandler(func() {
+	// terminal dialog
+	containers.terminalDialog.SetCancelFunc(containers.terminalDialog.Hide)
+	containers.terminalDialog.SetFastRefreshHandler(func() {
 		containers.fastRefreshChan <- true
 	})
 
@@ -199,14 +199,14 @@ func (cnt *Containers) HasFocus() bool {
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
-	if cnt.execTerminalDialog.HasFocus() || cnt.statsDialog.HasFocus() {
+	if cnt.statsDialog.HasFocus() || cnt.commitDialog.HasFocus() {
 		return true
 	}
-	if cnt.commitDialog.HasFocus() || cnt.checkpointDialog.HasFocus() {
+	if cnt.checkpointDialog.HasFocus() || cnt.restoreDialog.HasFocus() {
 		return true
 	}
 
-	if cnt.restoreDialog.HasFocus() || cnt.Box.HasFocus() {
+	if cnt.Box.HasFocus() || cnt.terminalDialog.HasFocus() {
 		return true
 	}
 
@@ -230,11 +230,11 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
-	if cnt.execTerminalDialog.HasFocus() || cnt.commitDialog.HasFocus() {
+	if cnt.commitDialog.HasFocus() || cnt.checkpointDialog.HasFocus() {
 		return true
 	}
 
-	if cnt.checkpointDialog.HasFocus() || cnt.restoreDialog.HasFocus() {
+	if cnt.restoreDialog.HasFocus() || cnt.terminalDialog.HasFocus() {
 		return true
 	}
 
@@ -248,51 +248,55 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		delegate(cnt.errorDialog)
 		return
 	}
+
 	// command dialog
 	if cnt.cmdDialog.IsDisplay() {
 		delegate(cnt.cmdDialog)
 		return
 	}
+
 	// command input dialog
 	if cnt.cmdInputDialog.IsDisplay() {
 		delegate(cnt.cmdInputDialog)
 		return
 	}
+
 	// message dialog
 	if cnt.messageDialog.IsDisplay() {
 		delegate(cnt.messageDialog)
 		return
 	}
+
 	// container top dialog
 	if cnt.topDialog.IsDisplay() {
 		delegate(cnt.topDialog)
 		return
 	}
+
 	// confirm dialog
 	if cnt.confirmDialog.IsDisplay() {
 		delegate(cnt.confirmDialog)
 		return
 	}
+
 	// create dialog
 	if cnt.createDialog.IsDisplay() {
 		delegate(cnt.createDialog)
 		return
 	}
+
 	// exec dialog
 	if cnt.execDialog.IsDisplay() {
 		delegate(cnt.execDialog)
 		return
 	}
-	// exec terminal dialog
-	if cnt.execTerminalDialog.IsDisplay() {
-		delegate(cnt.execTerminalDialog)
-		return
-	}
+
 	// stats dialog
 	if cnt.statsDialog.IsDisplay() {
 		delegate(cnt.statsDialog)
 		return
 	}
+
 	// commit dialog
 	if cnt.commitDialog.IsDisplay() {
 		delegate(cnt.commitDialog)
@@ -308,6 +312,13 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 	// restore dialog
 	if cnt.restoreDialog.IsDisplay() {
 		delegate(cnt.restoreDialog)
+		return
+	}
+
+	// termianl dialog
+	if cnt.terminalDialog.IsDisplay() {
+		delegate(cnt.terminalDialog)
+
 		return
 	}
 
@@ -336,36 +347,43 @@ func (cnt *Containers) HideAllDialogs() {
 	if cnt.errorDialog.IsDisplay() {
 		cnt.errorDialog.Hide()
 	}
+
 	if cnt.progressDialog.IsDisplay() {
 		cnt.progressDialog.Hide()
 	}
+
 	if cnt.confirmDialog.IsDisplay() {
 		cnt.confirmDialog.Hide()
 	}
+
 	if cnt.cmdDialog.IsDisplay() {
 		cnt.cmdDialog.Hide()
 	}
+
 	if cnt.cmdInputDialog.IsDisplay() {
 		cnt.cmdInputDialog.Hide()
 	}
+
 	if cnt.messageDialog.IsDisplay() {
 		cnt.messageDialog.Hide()
 	}
+
 	if cnt.topDialog.IsDisplay() {
 		cnt.topDialog.Hide()
 	}
+
 	if cnt.createDialog.IsDisplay() {
 		cnt.createDialog.Hide()
 	}
+
 	if cnt.execDialog.IsDisplay() {
 		cnt.execDialog.Hide()
 	}
-	if cnt.execTerminalDialog.IsDisplay() {
-		cnt.execTerminalDialog.Hide()
-	}
+
 	if cnt.statsDialog.IsDisplay() {
 		cnt.statsDialog.Hide()
 	}
+
 	if cnt.commitDialog.IsDisplay() {
 		cnt.commitDialog.Hide()
 	}
@@ -376,5 +394,9 @@ func (cnt *Containers) HideAllDialogs() {
 
 	if cnt.restoreDialog.IsDisplay() {
 		cnt.restoreDialog.Hide()
+	}
+
+	if cnt.terminalDialog.IsDisplay() {
+		cnt.terminalDialog.Hide()
 	}
 }

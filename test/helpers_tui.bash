@@ -198,46 +198,48 @@ function podman_tui_select_container_cmd() {
   local menu_index=0
 
   case $1 in
-  "checkpoint")
+  "attach")
     menu_index=0;;
-  "commit")
+  "checkpoint")
     menu_index=1;;
-  "create")
+  "commit")
     menu_index=2;;
-  "diff")
+  "create")
     menu_index=3;;
-  "exec")
+  "diff")
     menu_index=4;;
-  "healthcheck")
+  "exec")
     menu_index=5;;
-  "inspect")
+  "healthcheck")
     menu_index=6;;
-  "kill")
+  "inspect")
     menu_index=7;;
-  "logs")
+  "kill")
     menu_index=8;;
-  "pause")
+  "logs")
     menu_index=9;;
-  "port")
+  "pause")
     menu_index=10;;
-  "prune")
+  "port")
     menu_index=11;;
-  "rename")
+  "prune")
     menu_index=12;;
-  "restore")
+  "rename")
     menu_index=13;;
-  "remove")
+  "restore")
     menu_index=14;;
-  "start")
+  "remove")
     menu_index=15;;
-  "stat")
+  "start")
     menu_index=16;;
-  "stop")
+  "stat")
     menu_index=17;;
-  "top")
+  "stop")
     menu_index=18;;
-  "unpause")
+  "top")
     menu_index=19;;
+  "unpause")
+    menu_index=20;;
   esac
 
   podman_tui_select_menu $menu_index
