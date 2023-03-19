@@ -10,9 +10,16 @@ import (
 	"github.com/rivo/tview"
 )
 
-func (vols *Volumes) refresh() {
+const (
+	volsTableDriverColIndex = 0 + iota
+	volsTableNameColIndex
+	volsTableCreatedAtColIndex
+	volsTableMountPointColIndex
+)
 
+func (vols *Volumes) refresh() {
 	vols.table.Clear()
+
 	expand := 1
 	alignment := tview.AlignLeft
 
@@ -25,11 +32,12 @@ func (vols *Volumes) refresh() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
-	rowIndex := 1
 
+	rowIndex := 1
 	volList := vols.getData()
 
 	vols.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(vols.title), len(volList)))
+
 	for i := 0; i < len(volList); i++ {
 		volDriver := volList[i].Driver
 		volName := volList[i].Name
@@ -37,30 +45,29 @@ func (vols *Volumes) refresh() {
 		volMountPoint := volList[i].Mountpoint
 
 		// driver name column
-		vols.table.SetCell(rowIndex, 0,
+		vols.table.SetCell(rowIndex, volsTableDriverColIndex,
 			tview.NewTableCell(volDriver).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
-		// name name column
-		vols.table.SetCell(rowIndex, 1,
+		// name column
+		vols.table.SetCell(rowIndex, volsTableNameColIndex,
 			tview.NewTableCell(volName).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// created at column
-		vols.table.SetCell(rowIndex, 2,
+		vols.table.SetCell(rowIndex, volsTableCreatedAtColIndex,
 			tview.NewTableCell(volCreatedAt).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// mount point at column
-		vols.table.SetCell(rowIndex, 3,
+		vols.table.SetCell(rowIndex, volsTableCreatedAtColIndex,
 			tview.NewTableCell(volMountPoint).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		rowIndex++
 	}
-
 }

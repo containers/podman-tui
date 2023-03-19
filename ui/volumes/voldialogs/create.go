@@ -25,7 +25,7 @@ const (
 	volumeDriverOptionsFocus
 )
 
-// VolumeCreateDialog implements volume create dialog
+// VolumeCreateDialog implements volume create dialog.
 type VolumeCreateDialog struct {
 	*tview.Box
 	layout                   *tview.Flex
@@ -40,7 +40,7 @@ type VolumeCreateDialog struct {
 	createHandler            func()
 }
 
-// NewVolumeCreateDialog returns new pod create dialog primitive VolumeCreateDialog
+// NewVolumeCreateDialog returns new pod create dialog primitive VolumeCreateDialog.
 func NewVolumeCreateDialog() *VolumeCreateDialog {
 	volDialog := VolumeCreateDialog{
 		Box:                      tview.NewBox(),
@@ -124,38 +124,39 @@ func (d *VolumeCreateDialog) setupLayout() {
 
 	d.layout.AddItem(layout, 0, 1, true)
 	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
-
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *VolumeCreateDialog) Display() {
 	d.display = true
 	d.focusElement = volumeNameFieldFocus
 	d.initData()
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *VolumeCreateDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *VolumeCreateDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *VolumeCreateDialog) HasFocus() bool {
 	if d.volumeNameField.HasFocus() || d.volumeLabelField.HasFocus() {
 		return true
 	}
+
 	if d.volumeDriverField.HasFocus() || d.volumeDriverOptionsField.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
@@ -166,12 +167,13 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = volumeNameFieldFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
 			if event.Key() == tcell.KeyEnter {
-				//d.pullSelectHandler()
 				return nil
 			}
+
 			return event
 		})
 		delegate(d.form)
@@ -184,19 +186,19 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.volumeDriverField)
 	case volumeDriverOptionsFocus:
 		delegate(d.volumeDriverOptionsField)
-
 	}
-
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("volume create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				if event.Key() == tcell.KeyEnter {
@@ -205,36 +207,48 @@ func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus
 						d.createHandler()
 					}
 				}
+
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if event.Key() == tcell.KeyTab {
 			d.nextFocus()
 			d.Focus(setFocus)
+
 			return
 		}
+
 		if d.volumeNameField.HasFocus() {
 			if handler := d.volumeNameField.InputHandler(); handler != nil {
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.volumeLabelField.HasFocus() {
 			if handler := d.volumeLabelField.InputHandler(); handler != nil {
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.volumeDriverField.HasFocus() {
 			if handler := d.volumeDriverField.InputHandler(); handler != nil {
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.volumeDriverOptionsField.HasFocus() {
 			if handler := d.volumeDriverOptionsField.InputHandler(); handler != nil {
 				handler(event, setFocus)
+
 				return
 			}
 		}
@@ -256,16 +270,15 @@ func (d *VolumeCreateDialog) nextFocus() {
 
 // SetRect set rects for this primitive.
 func (d *VolumeCreateDialog) SetRect(x, y, width, height int) {
-
 	if width > volumeCreateDialogMaxWidth {
-		emptySpace := (width - volumeCreateDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - volumeCreateDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = volumeCreateDialogMaxWidth
 	}
 
 	if height > volumeCreateDialogHeight {
-		emptySpace := (height - volumeCreateDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - volumeCreateDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = volumeCreateDialogHeight
 	}
 
@@ -277,25 +290,28 @@ func (d *VolumeCreateDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *VolumeCreateDialog) SetCancelFunc(handler func()) *VolumeCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCreateFunc sets form create button selected function
+// SetCreateFunc sets form create button selected function.
 func (d *VolumeCreateDialog) SetCreateFunc(handler func()) *VolumeCreateDialog {
 	d.createHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -304,44 +320,49 @@ func (d *VolumeCreateDialog) initData() {
 	d.volumeLabelField.SetText("")
 	d.volumeDriverField.SetText("")
 	d.volumeDriverOptionsField.SetText("")
-
 }
 
-// VolumeCreateOptions returns new volume options
+// VolumeCreateOptions returns new volume options.
 func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions {
 	var (
 		labels  = make(map[string]string)
 		options = make(map[string]string)
 	)
+
 	for _, label := range strings.Split(d.volumeLabelField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 {
+			if len(split) == 2 { //nolint:gomnd
 				key := split[0]
 				value := split[1]
+
 				if key != "" && value != "" {
 					labels[key] = value
 				}
 			}
 		}
 	}
+
 	for _, option := range strings.Split(d.volumeDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
-			if len(split) == 2 {
+			if len(split) == 2 { //nolint:gomnd
 				key := split[0]
 				value := split[1]
+
 				if key != "" && value != "" {
 					options[key] = value
 				}
 			}
 		}
 	}
+
 	opts := volumes.CreateOptions{
 		Name:          d.volumeNameField.GetText(),
 		Labels:        labels,
 		Driver:        d.volumeDriverField.GetText(),
 		DriverOptions: options,
 	}
+
 	return opts
 }
