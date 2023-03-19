@@ -16,7 +16,7 @@ func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		}
 
 		for _, dialog := range vols.getInnerDialogs() {
-			if dialog.IsDisplay() {
+			if dialog.HasFocus() {
 				if handler := dialog.InputHandler(); handler != nil {
 					handler(event, setFocus)
 				}

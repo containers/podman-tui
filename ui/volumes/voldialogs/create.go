@@ -145,12 +145,10 @@ func (d *VolumeCreateDialog) Hide() {
 
 // HasFocus returns whether or not this primitive has focus.
 func (d *VolumeCreateDialog) HasFocus() bool {
-	if d.volumeNameField.HasFocus() || d.volumeLabelField.HasFocus() {
-		return true
-	}
-
-	if d.volumeDriverField.HasFocus() || d.volumeDriverOptionsField.HasFocus() {
-		return true
+	for _, item := range d.getInnerPrimitives() {
+		if item.HasFocus() {
+			return true
+		}
 	}
 
 	return d.Box.HasFocus() || d.form.HasFocus()
@@ -199,7 +197,7 @@ func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus
 			return
 		}
 
-		if d.form.HasFocus() {
+		if d.form.HasFocus() { //nolint:nestif
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				if event.Key() == tcell.KeyEnter {
 					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
@@ -221,35 +219,13 @@ func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus
 			return
 		}
 
-		if d.volumeNameField.HasFocus() {
-			if handler := d.volumeNameField.InputHandler(); handler != nil {
-				handler(event, setFocus)
+		for _, item := range d.getInnerPrimitives() {
+			if item.HasFocus() {
+				if handler := item.InputHandler(); handler != nil {
+					handler(event, setFocus)
 
-				return
-			}
-		}
-
-		if d.volumeLabelField.HasFocus() {
-			if handler := d.volumeLabelField.InputHandler(); handler != nil {
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.volumeDriverField.HasFocus() {
-			if handler := d.volumeDriverField.InputHandler(); handler != nil {
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.volumeDriverOptionsField.HasFocus() {
-			if handler := d.volumeDriverOptionsField.InputHandler(); handler != nil {
-				handler(event, setFocus)
-
-				return
+					return
+				}
 			}
 		}
 	})
@@ -323,7 +299,7 @@ func (d *VolumeCreateDialog) initData() {
 }
 
 // VolumeCreateOptions returns new volume options.
-func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions {
+func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions { //nolint:cyclop
 	var (
 		labels  = make(map[string]string)
 		options = make(map[string]string)
@@ -365,4 +341,13 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions {
 	}
 
 	return opts
+}
+
+func (d *VolumeCreateDialog) getInnerPrimitives() []tview.Primitive {
+	return []tview.Primitive{
+		d.volumeNameField,
+		d.volumeLabelField,
+		d.volumeDriverField,
+		d.volumeDriverOptionsField,
+	}
 }
