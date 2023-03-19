@@ -12,7 +12,6 @@ run:
     - ui/images
     - ui/networks
     - ui/pods
-    - ui/style
     - ui/system
     - ui/utils
 linters:
