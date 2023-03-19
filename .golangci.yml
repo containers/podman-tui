@@ -1,11 +1,19 @@
 run:
   deadline: 5m
+  skip-files:
+    - ".*_test.go"
   skip-dirs:
     - app
     - cmd
     - config
     - system
-    - ui
+    - ui/containers
+    - ui/dialogs
+    - ui/images
+    - ui/networks
+    - ui/pods
+    - ui/system
+    - ui/utils
 linters:
   enable-all: true
   disable:

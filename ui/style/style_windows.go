@@ -8,18 +8,18 @@ import (
 )
 
 const (
-	// HeavyGreenCheckMark unicode
+	// HeavyGreenCheckMark unicode.
 	HeavyGreenCheckMark = "[green::]\u25CF[-::]"
-	// HeavyRedCrossMark unicode
+	// HeavyRedCrossMark unicode.
 	HeavyRedCrossMark = "[red::]\u25CF[-::]"
-	// ProgressBar cell
+	// ProgressBar cell.
 	ProgressBarCell = "\u2593"
 )
 
 var (
-	// infobar
+	// infobar.
 	InfoBarItemFgColor = tcell.ColorGray
-	// main views
+	// main views.
 	FgColor              = tview.Styles.PrimaryTextColor
 	BgColor              = tview.Styles.PrimitiveBackgroundColor
 	BorderColor          = tcell.ColorPink
@@ -30,36 +30,36 @@ var (
 	RunningStatusFgColor = tcell.ColorLime
 	PausedStatusFgColor  = tcell.ColorYellow
 
-	// dialogs
+	// dialogs.
 	DialogBgColor            = tview.Styles.PrimitiveBackgroundColor
 	DialogFgColor            = tview.Styles.PrimaryTextColor
 	DialogBorderColor        = tcell.ColorPink
 	DialogSubBoxBorderColor  = tcell.ColorGray
 	ErrorDialogBgColor       = tcell.ColorRed
 	ErrorDialogButtonBgColor = tcell.ColorPink
-	// terminal
+	// terminal.
 	TerminalBgColor     = tview.Styles.PrimitiveBackgroundColor
 	TerminalFgColor     = tview.Styles.PrimaryTextColor
 	TerminalBorderColor = tview.Styles.PrimitiveBackgroundColor
-	// table header
+	// table header.
 	TableHeaderBgColor = tcell.ColorPink
 	TableHeaderFgColor = tview.Styles.PrimaryTextColor
-	// progress bar
+	// progress bar.
 	PrgBgColor       = tview.Styles.PrimaryTextColor
 	PrgBarColor      = tcell.ColorFuchsia
 	PrgBarEmptyColor = tcell.ColorWhite
 	PrgBarOKColor    = tcell.ColorLime
 	PrgBarWarnColor  = tcell.ColorYellow
 	PrgBarCritColor  = tcell.ColorRed
-	// dropdown
+	// dropdown.
 	DropDownUnselected = tcell.StyleDefault.Background(tcell.ColorGray).Foreground(tcell.ColorWhite)
 	DropDownSelected   = tcell.StyleDefault.Background(tcell.ColorPurple).Foreground(tview.Styles.PrimaryTextColor)
-	// other primitives
+	// other primitives.
 	InputFieldBgColor = tcell.ColorGray
 	ButtonBgColor     = tcell.ColorPink
 )
 
-// GetColorName returns convert tcell color to its name
+// GetColorName returns convert tcell color to its name.
 func GetColorName(color tcell.Color) string {
 	for name, c := range tcell.ColorNames {
 		if c == color {

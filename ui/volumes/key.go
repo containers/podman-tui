@@ -14,52 +14,42 @@ func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p 
 		if vols.progressDialog.IsDisplay() {
 			return
 		}
-		// error dialog handler
-		if vols.errorDialog.HasFocus() {
-			if errorDialogHandler := vols.errorDialog.InputHandler(); errorDialogHandler != nil {
-				errorDialogHandler(event, setFocus)
+
+		for _, dialog := range vols.getInnerDialogs() {
+			if dialog.HasFocus() {
+				if handler := dialog.InputHandler(); handler != nil {
+					handler(event, setFocus)
+				}
 			}
 		}
-		// message dialog handler
-		if vols.messageDialog.HasFocus() {
-			if messageDialogHandler := vols.messageDialog.InputHandler(); messageDialogHandler != nil {
-				messageDialogHandler(event, setFocus)
-			}
-		}
-		// create dialog dialog handler
-		if vols.createDialog.HasFocus() {
-			if createDialogHandler := vols.createDialog.InputHandler(); createDialogHandler != nil {
-				createDialogHandler(event, setFocus)
-			}
-		}
-		// confirm dialog handler
-		if vols.confirmDialog.HasFocus() {
-			if confirmDialogHandler := vols.confirmDialog.InputHandler(); confirmDialogHandler != nil {
-				confirmDialogHandler(event, setFocus)
-			}
-		}
-		// command dialog handler
-		if vols.cmdDialog.HasFocus() {
-			if cmdHandler := vols.cmdDialog.InputHandler(); cmdHandler != nil {
-				cmdHandler(event, setFocus)
-			}
-		}
+
 		// table handlers
 		if vols.table.HasFocus() {
-			vols.selectedID = vols.getSelectedItem()
-			if event.Rune() == utils.CommandMenuKey.Rune() {
-				if vols.cmdDialog.GetCommandCount() <= 1 {
-					return
-				}
-				vols.cmdDialog.Display()
-			} else if event.Key() == utils.DeleteKey.EventKey() {
-				vols.rm()
-			} else {
-				if tableHandler := vols.table.InputHandler(); tableHandler != nil {
-					tableHandler(event, setFocus)
-				}
-			}
+			vols.processTableInputHandler(event, setFocus)
 		}
+
 		setFocus(vols)
 	})
+}
+
+func (vols *Volumes) processTableInputHandler(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+	if event.Rune() == utils.CommandMenuKey.Rune() {
+		if vols.cmdDialog.GetCommandCount() <= 1 {
+			return
+		}
+
+		vols.cmdDialog.Display()
+
+		return
+	}
+
+	if event.Key() == utils.DeleteKey.EventKey() {
+		vols.removePrep()
+
+		return
+	}
+
+	if tableHandler := vols.table.InputHandler(); tableHandler != nil {
+		tableHandler(event, setFocus)
+	}
 }

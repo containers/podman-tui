@@ -11,15 +11,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retrieves pods list data
+// UpdateData retrieves pods list data.
 func (vols *Volumes) UpdateData() {
 	volList, err := volumes.List()
 	if err != nil {
 		log.Error().Msgf("view: volumes update %v", err)
 		vols.errorDialog.SetText(fmt.Sprintf("%v", err))
 		vols.errorDialog.Display()
+
 		return
 	}
+
 	vols.volumeList.mu.Lock()
 	vols.volumeList.report = volList
 	vols.volumeList.mu.Unlock()
@@ -29,15 +31,18 @@ func (vols *Volumes) getData() []*entities.VolumeListReport {
 	vols.volumeList.mu.Lock()
 	data := vols.volumeList.report
 	vols.volumeList.mu.Unlock()
+
 	return data
 }
 
-// ClearData clears table data
+// ClearData clears table data.
 func (vols *Volumes) ClearData() {
 	vols.volumeList.mu.Lock()
 	vols.volumeList.report = nil
 	vols.volumeList.mu.Unlock()
+
 	vols.table.Clear()
+
 	expand := 1
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
@@ -51,5 +56,6 @@ func (vols *Volumes) ClearData() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
+
 	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
 }

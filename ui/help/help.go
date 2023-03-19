@@ -9,7 +9,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Help is a help primitive dialog
+// Help is a help primitive dialog.
 type Help struct {
 	*tview.Box
 	title  string
@@ -54,7 +54,8 @@ func NewHelp(appName string, appVersion string) *Help {
 	rowIndex := 0
 	colIndex := 0
 	needInit := true
-	maxRowIndex := int(len(utils.UIKeysBindings) / 2)
+	maxRowIndex := len(utils.UIKeysBindings) / 2 //nolint:gomnd
+
 	for i := 0; i < len(utils.UIKeysBindings); i++ {
 		if i >= maxRowIndex {
 			if needInit {
@@ -63,23 +64,25 @@ func NewHelp(appName string, appVersion string) *Help {
 				needInit = false
 			}
 		}
+
 		keyinfo.SetCell(rowIndex, colIndex,
 			tview.NewTableCell(fmt.Sprintf("%s:", utils.UIKeysBindings[i].KeyLabel)).
 				SetAlign(tview.AlignRight).
 				SetBackgroundColor(bgColor).
 				SetSelectable(true).SetTextColor(headerColor))
+
 		keyinfo.SetCell(rowIndex, colIndex+1,
 			tview.NewTableCell(utils.UIKeysBindings[i].KeyDesc).
 				SetAlign(tview.AlignLeft).
 				SetBackgroundColor(bgColor).
 				SetSelectable(true).SetTextColor(fgColor))
 
-		rowIndex = rowIndex + 1
+		rowIndex++
 	}
 
 	// appinfo and appkeys layout
 	mlayout := tview.NewFlex().SetDirection(tview.FlexRow)
-	mlayout.AddItem(appinfo, 2, 0, false)
+	mlayout.AddItem(appinfo, 2, 0, false) //nolint:gomnd
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	mlayout.AddItem(keyinfo, 0, 1, false)
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
@@ -96,28 +99,28 @@ func NewHelp(appName string, appVersion string) *Help {
 	return help
 }
 
-// GetTitle returns primitive title
+// GetTitle returns primitive title.
 func (help *Help) GetTitle() string {
 	return help.title
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (help *Help) HasFocus() bool {
 	return help.Box.HasFocus() || help.layout.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (help *Help) Focus(delegate func(p tview.Primitive)) {
 	delegate(help.layout)
 }
 
 // Draw draws this primitive onto the screen.
 func (help *Help) Draw(screen tcell.Screen) {
-
 	x, y, width, height := help.Box.GetInnerRect()
-	if height <= 3 {
+	if height <= 3 { //nolint:gomnd
 		return
 	}
+
 	help.Box.DrawForSubclass(screen, help)
 	help.layout.SetRect(x, y, width, height)
 	help.layout.Draw(screen)

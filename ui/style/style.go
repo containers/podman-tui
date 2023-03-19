@@ -11,63 +11,64 @@ import (
 )
 
 const (
-	// HeavyGreenCheckMark unicode
+	// HeavyGreenCheckMark unicode.
 	HeavyGreenCheckMark = "\u2705"
-	// HeavyRedCrossMark unicode
+	// HeavyRedCrossMark unicode.
 	HeavyRedCrossMark = "\u274C"
-	// ProgressBar cell
+	// ProgressBar cell.
 	ProgressBarCell = "▉"
 )
 
 var (
-	// infobar
+	// infobar.
 	InfoBarItemFgColor = tcell.ColorSilver
-	// main views
+	// main views.
 	FgColor              = tcell.ColorFloralWhite
 	BgColor              = tview.Styles.PrimitiveBackgroundColor
-	BorderColor          = tcell.NewRGBColor(135, 135, 175)
-	HelpHeaderFgColor    = tcell.NewRGBColor(135, 135, 175)
+	BorderColor          = tcell.NewRGBColor(135, 135, 175) //nolint:gomnd
+	HelpHeaderFgColor    = tcell.NewRGBColor(135, 135, 175) //nolint:gomnd
 	MenuBgColor          = tcell.ColorMediumPurple
 	PageHeaderBgColor    = tcell.ColorMediumPurple
 	PageHeaderFgColor    = tcell.ColorFloralWhite
-	RunningStatusFgColor = tcell.NewRGBColor(95, 215, 0)
-	PausedStatusFgColor  = tcell.NewRGBColor(255, 175, 0)
-	// dialogs
-	DialogBgColor            = tcell.NewRGBColor(38, 38, 38)
+	RunningStatusFgColor = tcell.NewRGBColor(95, 215, 0)  //nolint:gomnd
+	PausedStatusFgColor  = tcell.NewRGBColor(255, 175, 0) //nolint:gomnd
+	// dialogs.
+	DialogBgColor            = tcell.NewRGBColor(38, 38, 38) //nolint:gomnd
 	DialogBorderColor        = tcell.ColorMediumPurple
 	DialogFgColor            = tcell.ColorFloralWhite
 	DialogSubBoxBorderColor  = tcell.ColorDimGray
-	ErrorDialogBgColor       = tcell.NewRGBColor(215, 0, 0)
+	ErrorDialogBgColor       = tcell.NewRGBColor(215, 0, 0) //nolint:gomnd
 	ErrorDialogButtonBgColor = tcell.ColorDarkRed
-	// terminal
+	// terminal.
 	TerminalFgColor     = tcell.ColorFloralWhite
-	TerminalBgColor     = tcell.NewRGBColor(5, 5, 5)
+	TerminalBgColor     = tcell.NewRGBColor(5, 5, 5) //nolint:gomnd
 	TerminalBorderColor = tcell.ColorDimGray
-	// table header
+	// table header.
 	TableHeaderBgColor = tcell.ColorMediumPurple
 	TableHeaderFgColor = tcell.ColorFloralWhite
-	// progress bar
+	// progress bar.
 	PrgBgColor       = tcell.ColorDimGray
 	PrgBarColor      = tcell.ColorDarkOrange
 	PrgBarEmptyColor = tcell.ColorWhite
 	PrgBarOKColor    = tcell.ColorGreen
 	PrgBarWarnColor  = tcell.ColorOrange
 	PrgBarCritColor  = tcell.ColorRed
-	// dropdown
+	// dropdown.
 	DropDownUnselected = tcell.StyleDefault.Background(tcell.ColorWhiteSmoke).Foreground(tcell.ColorBlack)
 	DropDownSelected   = tcell.StyleDefault.Background(tcell.ColorLightSlateGray).Foreground(tcell.ColorWhite)
-	// other primitives
+	// other primitives.
 	InputFieldBgColor = tcell.ColorGray
 	ButtonBgColor     = tcell.ColorMediumPurple
 )
 
-// GetColorName returns convert tcell color to its name
+// GetColorName returns convert tcell color to its name.
 func GetColorName(color tcell.Color) string {
 	for name, c := range tcell.ColorNames {
 		if c == color {
 			return name
 		}
 	}
+
 	return ""
 }
 
