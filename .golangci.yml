@@ -10,7 +10,6 @@ run:
     - ui/containers
     - ui/dialogs
     - ui/images
-    - ui/infobar
     - ui/networks
     - ui/pods
     - ui/style
