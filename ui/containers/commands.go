@@ -14,6 +14,8 @@ import (
 
 func (cnt *Containers) runCommand(cmd string) {
 	switch cmd {
+	case "attach":
+		cnt.attach()
 	case "checkpoint":
 		cnt.preCheckpoint()
 	case "commit":
@@ -64,10 +66,50 @@ func (cnt *Containers) displayError(title string, err error) {
 	cnt.errorDialog.Display()
 }
 
+func (cnt *Containers) attach() {
+	cntID, cntName := cnt.getSelectedItem()
+	if cntID == "" {
+		cnt.displayError("", fmt.Errorf("there is no container to perform attach command"))
+
+		return
+	}
+
+	cnt.progressDialog.SetTitle("container attach in progress")
+	cnt.progressDialog.Display()
+
+	attachReady := make(chan bool)
+	stdin, stdout := cnt.terminalDialog.InitAttachChannels()
+	detachKeys := cnt.terminalDialog.DetachKeys()
+
+	attach := func() {
+		err := containers.Attach(cntID, stdin, stdout, attachReady, detachKeys)
+		if err != nil {
+			attachReady <- false
+			title := fmt.Sprintf("CONTAINER (%s) ATTACH ERROR", cntID)
+			cnt.progressDialog.Hide()
+			cnt.displayError(title, err)
+			return
+		}
+	}
+
+	waitForAttach := func() {
+		isReady := <-attachReady
+		if isReady {
+			cnt.progressDialog.Hide()
+			cnt.terminalDialog.SetContainerInfo(cntID, cntName)
+			cnt.terminalDialog.Display()
+		}
+	}
+
+	go waitForAttach()
+	go attach()
+}
+
 func (cnt *Containers) preHealthcheck() {
 	cntID, cntName := cnt.getSelectedItem()
 	if cntID == "" {
 		cnt.displayError("", fmt.Errorf("there is no container to perform healthcheck command"))
+
 		return
 	}
 
@@ -273,17 +315,22 @@ func (cnt *Containers) stats() {
 }
 
 func (cnt *Containers) cexec() {
-	if cnt.selectedID == "" {
+	cntID, cntName := cnt.getSelectedItem()
+
+	if cntID == "" {
 		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+
 		return
 	}
-	cntID, cntName := cnt.getSelectedItem()
+
 	cnt.execDialog.SetContainerID(cntID, cntName)
 	cnt.execDialog.Display()
 }
 
 func (cnt *Containers) exec() {
 	cnt.execDialog.Hide()
+
+	cntID, cntName := cnt.getSelectedItem()
 	_, _, width, height := cnt.table.GetInnerRect()
 	// TODO better calculation
 	width = width - (2 * dialogs.DialogPadding) - 6
@@ -293,26 +340,27 @@ func (cnt *Containers) exec() {
 	execOpts.TtyWidth = width
 	execOpts.TtyHeight = height
 
-	err := cnt.execTerminalDialog.PrepareForExec(cnt.selectedID, cnt.selectedName, &execOpts)
-	if err != nil {
-		title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
-		cnt.displayError(title, err)
-		return
-	}
+	execOpts.InputStream, execOpts.OutputStream = cnt.terminalDialog.InitExecChannels()
+	execOpts.DetachKeys = cnt.terminalDialog.DetachKeys()
 
+	cnt.terminalDialog.SetContainerInfo(cntID, cntName)
 	prepareAndExec := func() {
 		execSessionID, err := containers.NewExecSession(cnt.selectedID, execOpts)
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
-		cnt.execTerminalDialog.SetExecInfo(cnt.selectedID, cnt.selectedName, execSessionID)
+
+		cnt.terminalDialog.SetSessionID(execSessionID)
 		containers.Exec(execSessionID, execOpts)
 	}
+
 	go prepareAndExec()
 
-	cnt.execTerminalDialog.Display()
+	cnt.terminalDialog.Display()
 
 }
 
