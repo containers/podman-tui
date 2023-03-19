@@ -169,14 +169,6 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 }
 
 func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts CreateOptions) error { //nolint:cyclop
-	// healthcheck
-	if opts.HealthCmd == "" {
-		createOptions.HealthCmd = "none"
-
-		return nil
-	}
-
-	createOptions.HealthCmd = opts.HealthCmd
 	createOptions.HealthInterval = define.DefaultHealthCheckInterval
 	createOptions.StartupHCInterval = define.DefaultHealthCheckInterval
 	createOptions.HealthRetries = define.DefaultHealthCheckRetries
@@ -184,6 +176,14 @@ func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts
 	createOptions.HealthTimeout = define.DefaultHealthCheckTimeout
 	createOptions.StartupHCTimeout = define.DefaultHealthCheckTimeout
 	createOptions.HealthOnFailure = opts.HealthOnFailure
+
+	if opts.HealthCmd == "" {
+		createOptions.HealthCmd = "none"
+
+		return nil
+	}
+
+	createOptions.HealthCmd = opts.HealthCmd
 
 	if opts.HealthInterval != "" {
 		createOptions.HealthInterval = opts.HealthInterval
