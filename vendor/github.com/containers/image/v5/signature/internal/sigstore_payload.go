@@ -46,8 +46,7 @@ func NewUntrustedSigstorePayload(dockerManifestDigest digest.Digest, dockerRefer
 	}
 }
 
-// A compile-time check that UntrustedSigstorePayload and *UntrustedSigstorePayload implements json.Marshaler
-var _ json.Marshaler = UntrustedSigstorePayload{}
+// Compile-time check that UntrustedSigstorePayload implements json.Marshaler
 var _ json.Marshaler = (*UntrustedSigstorePayload)(nil)
 
 // MarshalJSON implements the json.Marshaler interface.

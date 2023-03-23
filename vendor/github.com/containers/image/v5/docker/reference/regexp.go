@@ -1,7 +1,6 @@
 package reference
 
 import (
-	storageRegexp "github.com/containers/storage/pkg/regexp"
 	"regexp"
 	"strings"
 )
@@ -61,7 +60,7 @@ var (
 	anchoredTag = anchored(tag)
 	// anchoredTagRegexp matches valid tag names, anchored at the start and
 	// end of the matched string.
-	anchoredTagRegexp = storageRegexp.Delayed(anchoredTag)
+	anchoredTagRegexp = re(anchoredTag)
 
 	// DigestRegexp matches valid digests.
 	DigestRegexp = re(digestPat)
@@ -69,7 +68,7 @@ var (
 	anchoredDigest = anchored(digestPat)
 	// anchoredDigestRegexp matches valid digests, anchored at the start and
 	// end of the matched string.
-	anchoredDigestRegexp = storageRegexp.Delayed(anchoredDigest)
+	anchoredDigestRegexp = re(anchoredDigest)
 
 	namePat = expression(
 		optional(domain, literal(`/`)),
@@ -86,7 +85,7 @@ var (
 			optional(repeated(literal(`/`), nameComponent))))
 	// anchoredNameRegexp is used to parse a name value, capturing the
 	// domain and trailing components.
-	anchoredNameRegexp = storageRegexp.Delayed(anchoredName)
+	anchoredNameRegexp = re(anchoredName)
 
 	referencePat = anchored(capture(namePat),
 		optional(literal(":"), capture(tag)),
@@ -109,7 +108,13 @@ var (
 	anchoredIdentifier = anchored(identifier)
 	// anchoredIdentifierRegexp is used to check or match an
 	// identifier value, anchored at start and end of string.
-	anchoredIdentifierRegexp = storageRegexp.Delayed(anchoredIdentifier)
+	anchoredIdentifierRegexp = re(anchoredIdentifier)
+
+	anchoredShortIdentifier = anchored(shortIdentifier)
+	// anchoredShortIdentifierRegexp is used to check if a value
+	// is a possible identifier prefix, anchored at start and end
+	// of string.
+	anchoredShortIdentifierRegexp = re(anchoredShortIdentifier)
 )
 
 // re compiles the string to a regular expression.
