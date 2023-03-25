@@ -13,23 +13,27 @@ type apiConn struct {
 	message    string
 }
 
-// ConnStatus returns connection status
+// ConnStatus returns connection status.
 func (conn *apiConn) ConnStatus() (registry.ConnStatus, string) {
 	var status registry.ConnStatus
+
 	message := ""
+
 	conn.mu.Lock()
 	status = conn.connStaus
 	message = conn.message
 	conn.mu.Unlock()
-	return status, message
 
+	return status, message
 }
 
 func (conn *apiConn) previousStatus() registry.ConnStatus {
 	var status registry.ConnStatus
+
 	conn.mu.Lock()
 	status = conn.prevStatus
 	conn.mu.Unlock()
+
 	return status
 }
 
