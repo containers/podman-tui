@@ -6,7 +6,6 @@ run:
     - app
     - cmd
     - config
-    - system
     - ui/containers
     - ui/dialogs
     - ui/images

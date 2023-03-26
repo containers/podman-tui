@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -13,7 +14,7 @@ const (
 	messageBufferSize = 100
 )
 
-// Engine implements connection and system info check
+// Engine implements connection and system info check.
 type Engine struct {
 	refreshInterval time.Duration
 	sysinfo         systemInfo
@@ -21,7 +22,7 @@ type Engine struct {
 	conn            apiConn
 }
 
-// NewEngine returns new health checker
+// NewEngine returns new health checker.
 func NewEngine(refreshInterval time.Duration) *Engine {
 	health := &Engine{
 		conn: apiConn{
@@ -34,38 +35,38 @@ func NewEngine(refreshInterval time.Duration) *Engine {
 		},
 		sysinfo: systemInfo{},
 	}
-	//health.sysEvents.eventCancelChan = make(chan bool)
-	//health.sysEvents.cancelChan = make(chan bool)
-	//health.sysEvents.eventChan = make(chan entities.Event, 20)
-	//health.updateSysInfo()
+
 	return health
 }
 
-// Start starts health checkers
+// Start starts health checkers.
 func (engine *Engine) Start() {
 	engine.sysinfo.info = &sysinfo.SystemInfo{}
 	go engine.healthCheckLoop()
 }
 
-// ConnStatus returns connection status
+// ConnStatus returns connection status.
 func (engine *Engine) ConnStatus() (registry.ConnStatus, string) {
 	return engine.conn.ConnStatus()
 }
 
-// Connect sets engine connection
+// Connect sets engine connection.
 func (engine *Engine) Connect(connection registry.Connection) {
 	log.Debug().Msgf("health: connect to %v", connection)
+
 	if registry.ConnectionIsSet() {
 		engine.Disconnect()
 	}
+
 	registry.SetConnection(connection)
 }
 
-// Disconnect disconnects engine and unsets the connection
+// Disconnect disconnects engine and unsets the connection.
 func (engine *Engine) Disconnect() {
 	if !registry.ConnectionIsSet() {
 		return
 	}
+
 	log.Debug().Msgf("health: disconnect")
 	registry.SetConnectionStatus(registry.ConnectionStatusDisconnected)
 	engine.conn.setStatus(registry.ConnectionStatusDisconnected, "")
@@ -74,25 +75,23 @@ func (engine *Engine) Disconnect() {
 
 func (engine *Engine) healthCheckLoop() {
 	tick := time.NewTicker(engine.refreshInterval)
+
 	for {
-		select {
-		case <-tick.C:
-			engine.healthCheck()
-		}
+		<-tick.C
+		engine.healthCheck()
 	}
 }
 
 func (engine *Engine) healthCheck() {
 	info, err := sysinfo.SysInfo()
-	status := true
-	if err != nil {
-		status = false
-		if err == registry.ErrConnectionNotSelected {
+	if err != nil { //nolint:nestif
+		if errors.Is(err, registry.ErrConnectionNotSelected) {
 			engine.conn.setStatus(registry.ConnectionStatusDisconnected, "")
 		} else {
 			engine.conn.setStatus(registry.ConnectionStatusConnectionError, fmt.Sprintf("%v", err))
 			log.Error().Msgf("health check: %v", err)
 		}
+
 		if registry.ConnectionIsSet() {
 			registry.SetConnectionStatus(registry.ConnectionStatusConnectionError)
 		} else {
@@ -102,14 +101,17 @@ func (engine *Engine) healthCheck() {
 		if engine.conn.previousStatus() == registry.ConnectionStatusDisconnected {
 			engine.clearSysInfoData()
 		}
+
 		return
 	}
+
 	// starting event streaming process after reconnecting
-	if status && !engine.EventStatus() {
+	if !engine.EventStatus() {
 		if engine.conn.previousStatus() == registry.ConnectionStatusConnected {
 			engine.startEventStreamer()
 		}
 	}
+
 	engine.conn.setStatus(registry.ConnectionStatusConnected, "")
 	engine.sysinfo.mu.Lock()
 	engine.sysinfo.info = info
