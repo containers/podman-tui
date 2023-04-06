@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -23,7 +24,6 @@ import (
 	"github.com/containers/image/v5/pkg/blobinfocache/none"
 	"github.com/containers/image/v5/pkg/sysregistriesv2"
 	"github.com/containers/image/v5/types"
-	"github.com/containers/storage/pkg/regexp"
 	digest "github.com/opencontainers/go-digest"
 	"github.com/sirupsen/logrus"
 )
@@ -303,7 +303,7 @@ func handle206Response(streams chan io.ReadCloser, errs chan error, body io.Read
 	}
 }
 
-var multipartByteRangesRe = regexp.Delayed("multipart/byteranges; boundary=([A-Za-z-0-9:]+)")
+var multipartByteRangesRe = regexp.MustCompile("multipart/byteranges; boundary=([A-Za-z-0-9:]+)")
 
 func parseMediaType(contentType string) (string, map[string]string, error) {
 	mediaType, params, err := mime.ParseMediaType(contentType)

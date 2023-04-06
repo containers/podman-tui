@@ -72,8 +72,7 @@ func newUntrustedSignature(dockerManifestDigest digest.Digest, dockerReference s
 	}
 }
 
-// A compile-time check that untrustedSignature  and *untrustedSignature implements json.Marshaler
-var _ json.Marshaler = untrustedSignature{}
+// Compile-time check that untrustedSignature implements json.Marshaler
 var _ json.Marshaler = (*untrustedSignature)(nil)
 
 // MarshalJSON implements the json.Marshaler interface.
