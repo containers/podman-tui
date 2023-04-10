@@ -19,12 +19,12 @@ import (
 
 	"github.com/containers/image/v5/docker/reference"
 	"github.com/containers/image/v5/internal/iolimits"
+	"github.com/containers/image/v5/internal/useragent"
 	"github.com/containers/image/v5/manifest"
 	"github.com/containers/image/v5/pkg/docker/config"
 	"github.com/containers/image/v5/pkg/sysregistriesv2"
 	"github.com/containers/image/v5/pkg/tlsclientconfig"
 	"github.com/containers/image/v5/types"
-	"github.com/containers/image/v5/version"
 	"github.com/containers/storage/pkg/homedir"
 	"github.com/docker/distribution/registry/api/errcode"
 	v2 "github.com/docker/distribution/registry/api/v2"
@@ -68,8 +68,6 @@ var (
 		{path: etcDir + "/containers/certs.d", absolute: true},
 		{path: etcDir + "/docker/certs.d", absolute: true},
 	}
-
-	defaultUserAgent = "containers/" + version.Version + " (github.com/containers/image)"
 )
 
 // extensionSignature and extensionSignatureList come from github.com/openshift/origin/pkg/dockerregistry/server/signaturedispatcher.go:
@@ -215,6 +213,7 @@ func dockerCertDir(sys *types.SystemContext, hostPort string) (string, error) {
 // newDockerClientFromRef returns a new dockerClient instance for refHostname (a host a specified in the Docker image reference, not canonicalized to dockerRegistry)
 // “write” specifies whether the client will be used for "write" access (in particular passed to lookaside.go:toplevelFromSection)
 // signatureBase is always set in the return value
+// The caller must call .Close() on the returned client when done.
 func newDockerClientFromRef(sys *types.SystemContext, ref dockerReference, registryConfig *registryConfiguration, write bool, actions string) (*dockerClient, error) {
 	auth, err := config.GetCredentialsForRef(sys, ref.ref)
 	if err != nil {
@@ -249,6 +248,7 @@ func newDockerClientFromRef(sys *types.SystemContext, ref dockerReference, regis
 // (e.g., "registry.com[:5000][/some/namespace]/repo").
 // Please note that newDockerClient does not set all members of dockerClient
 // (e.g., username and password); those must be set by callers if necessary.
+// The caller must call .Close() on the returned client when done.
 func newDockerClient(sys *types.SystemContext, registry, reference string) (*dockerClient, error) {
 	hostName := registry
 	if registry == dockerHostname {
@@ -284,7 +284,7 @@ func newDockerClient(sys *types.SystemContext, registry, reference string) (*doc
 	}
 	tlsClientConfig.InsecureSkipVerify = skipVerify
 
-	userAgent := defaultUserAgent
+	userAgent := useragent.DefaultUserAgent
 	if sys != nil && sys.DockerRegistryUserAgent != "" {
 		userAgent = sys.DockerRegistryUserAgent
 	}
@@ -304,6 +304,7 @@ func CheckAuth(ctx context.Context, sys *types.SystemContext, username, password
 	if err != nil {
 		return fmt.Errorf("creating new docker client: %w", err)
 	}
+	defer client.Close()
 	client.auth = types.DockerAuthConfig{
 		Username: username,
 		Password: password,
@@ -373,6 +374,7 @@ func SearchRegistry(ctx context.Context, sys *types.SystemContext, registry, ima
 	if err != nil {
 		return nil, fmt.Errorf("creating new docker client: %w", err)
 	}
+	defer client.Close()
 	client.auth = auth
 	if sys != nil {
 		client.registryToken = sys.DockerBearerRegistryToken
@@ -450,8 +452,8 @@ func SearchRegistry(ctx context.Context, sys *types.SystemContext, registry, ima
 		if link == "" {
 			break
 		}
-		linkURLStr := strings.Trim(strings.Split(link, ";")[0], "<>")
-		linkURL, err := url.Parse(linkURLStr)
+		linkURLPart, _, _ := strings.Cut(link, ";")
+		linkURL, err := url.Parse(strings.Trim(linkURLPart, "<>"))
 		if err != nil {
 			return searchRes, err
 		}
@@ -474,12 +476,22 @@ func (c *dockerClient) makeRequest(ctx context.Context, method, path string, hea
 		return nil, err
 	}
 
-	urlString := fmt.Sprintf("%s://%s%s", c.scheme, c.registry, path)
-	requestURL, err := url.Parse(urlString)
+	requestURL, err := c.resolveRequestURL(path)
 	if err != nil {
 		return nil, err
 	}
 	return c.makeRequestToResolvedURL(ctx, method, requestURL, headers, stream, -1, auth, extraScope)
+}
+
+// resolveRequestURL turns a path for c.makeRequest into a full URL.
+// Most users should call makeRequest directly, this exists basically to make the URL available for debug logs.
+func (c *dockerClient) resolveRequestURL(path string) (*url.URL, error) {
+	urlString := fmt.Sprintf("%s://%s%s", c.scheme, c.registry, path)
+	res, err := url.Parse(urlString)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // Checks if the auth headers in the response contain an indication of a failed
@@ -588,7 +600,7 @@ func (c *dockerClient) makeRequestToResolvedURL(ctx context.Context, method stri
 		case <-time.After(delay):
 			// Nothing
 		}
-		delay = delay * 2 // If the registry does not specify a delay, back off exponentially.
+		delay *= 2 // If the registry does not specify a delay, back off exponentially.
 	}
 }
 
@@ -967,10 +979,17 @@ func (c *dockerClient) getBlob(ctx context.Context, ref dockerReference, info ty
 		return nil, 0, fmt.Errorf("fetching blob: %w", err)
 	}
 	cache.RecordKnownLocation(ref.Transport(), bicTransportScope(ref), info.Digest, newBICLocationReference(ref))
-	return res.Body, getBlobSize(res), nil
+	blobSize := getBlobSize(res)
+
+	reconnectingReader, err := newBodyReader(ctx, c, path, res.Body)
+	if err != nil {
+		res.Body.Close()
+		return nil, 0, err
+	}
+	return reconnectingReader, blobSize, nil
 }
 
-// getOCIDescriptorContents returns the contents a blob spcified by descriptor in ref, which must fit within limit.
+// getOCIDescriptorContents returns the contents a blob specified by descriptor in ref, which must fit within limit.
 func (c *dockerClient) getOCIDescriptorContents(ctx context.Context, ref dockerReference, desc imgspecv1.Descriptor, maxSize int, cache types.BlobInfoCache) ([]byte, error) {
 	// Note that this copies all kinds of attachments: attestations, and whatever else is there,
 	// not just signatures. We leave the signature consumers to decide based on the MIME type.
@@ -979,7 +998,7 @@ func (c *dockerClient) getOCIDescriptorContents(ctx context.Context, ref dockerR
 		return nil, err
 	}
 	defer reader.Close()
-	payload, err := iolimits.ReadAtMost(reader, iolimits.MaxSignatureBodySize)
+	payload, err := iolimits.ReadAtMost(reader, maxSize)
 	if err != nil {
 		return nil, fmt.Errorf("reading blob %s in %s: %w", desc.Digest.String(), ref.ref.Name(), err)
 	}
@@ -1068,4 +1087,12 @@ func (c *dockerClient) getExtensionsSignatures(ctx context.Context, ref dockerRe
 // sigstoreAttachmentTag returns a sigstore attachment tag for the specified digest.
 func sigstoreAttachmentTag(d digest.Digest) string {
 	return strings.Replace(d.String(), ":", "-", 1) + ".sig"
+}
+
+// Close removes resources associated with an initialized dockerClient, if any.
+func (c *dockerClient) Close() error {
+	if c.client != nil {
+		c.client.CloseIdleConnections()
+	}
+	return nil
 }
