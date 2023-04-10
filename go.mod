@@ -7,7 +7,7 @@ require (
 	github.com/containers/buildah v1.28.1-0.20221221082547-8403b6ebc13d
 	github.com/containers/common v0.50.2-0.20230105184634-df156f4ee73f
 	github.com/containers/podman/v4 v4.4.0-rc1
-	github.com/containers/storage v1.46.0
+	github.com/containers/storage v1.46.1
 	github.com/docker/distribution v2.8.1+incompatible
 	github.com/docker/docker v23.0.3+incompatible
 	github.com/docker/go-units v0.5.0
@@ -67,7 +67,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/klauspost/compress v1.16.4 // indirect
 	github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20221109233200-85aa52084eaf // indirect

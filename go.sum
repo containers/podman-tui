@@ -240,8 +240,8 @@ github.com/containers/podman/v4 v4.4.0-rc1/go.mod h1:9datmewEZU6PVstbXCVi4TJ52+1
 github.com/containers/psgo v1.8.0 h1:2loGekmGAxM9ir5OsXWEfGwFxorMPYnc6gEDsGFQvhY=
 github.com/containers/psgo v1.8.0/go.mod h1:T8ZxnX3Ur4RvnhxFJ7t8xJ1F48RhiZB4rSrOaR/qGHc=
 github.com/containers/storage v1.43.0/go.mod h1:uZ147thiIFGdVTjMmIw19knttQnUCl3y9zjreHrg11s=
-github.com/containers/storage v1.46.0 h1:K3Tw/U+ZwmMT/tzX04mh5wnK2PuIdEGS2BGMP7ZYAqw=
-github.com/containers/storage v1.46.0/go.mod h1:AVNewDV1jODy8b4Ia4AgsJ6UFKQSIaOQvQ8S6N4VuH0=
+github.com/containers/storage v1.46.1 h1:GcAe8J0Y6T2CF70fXPojUpnme6zXamuzGCrNujVtIGE=
+github.com/containers/storage v1.46.1/go.mod h1:81vNDX4h+nXJ2o0D6Yqy6JGXDYJGVpHZpz0nr09iJuQ=
 github.com/coreos/bbolt v1.3.2/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-iptables v0.4.5/go.mod h1:/mVI274lEDI2ns62jHCDnCyBF9Iwsmekav8Dbxlm1MU=
@@ -529,8 +529,8 @@ github.com/klauspost/compress v1.11.3/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYs
 github.com/klauspost/compress v1.11.13/go.mod h1:aoV0uJVorq1K+umq18yTdKaF57EivdYsUV+/s2qKfXs=
 github.com/klauspost/compress v1.15.7/go.mod h1:PhcZ0MbTNciWF3rruxRgKxI5NkcHHrHUDtV4Yw2GlzU=
 github.com/klauspost/compress v1.15.9/go.mod h1:PhcZ0MbTNciWF3rruxRgKxI5NkcHHrHUDtV4Yw2GlzU=
-github.com/klauspost/compress v1.16.3 h1:XuJt9zzcnaz6a16/OU53ZjWp/v7/42WcR5t2a0PcNQY=
-github.com/klauspost/compress v1.16.3/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=
+github.com/klauspost/compress v1.16.4 h1:91KN02FnsOYhuunwU4ssRe8lc2JosWmizWa91B5v1PU=
+github.com/klauspost/compress v1.16.4/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=
 github.com/klauspost/pgzip v1.2.5/go.mod h1:Ch1tH69qFZu15pkjo5kYi6mth2Zzwzt50oCQKQE9RUs=
 github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 h1:BcxbplxjtczA1a6d3wYoa7a0WL3rq9DKBMGHeKyjEF0=
 github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8/go.mod h1:Ch1tH69qFZu15pkjo5kYi6mth2Zzwzt50oCQKQE9RUs=
