@@ -7,6 +7,7 @@ import (
 
 	"github.com/containers/common/pkg/config"
 	"github.com/containers/image/v5/manifest"
+	"github.com/containers/image/v5/signature/signer"
 	"github.com/containers/image/v5/types"
 	encconfig "github.com/containers/ocicrypt/config"
 	"github.com/containers/podman/v4/pkg/inspect"
@@ -210,6 +211,10 @@ type ImagePushOptions struct {
 	RemoveSignatures bool
 	// SignaturePolicy to use when pulling.  Ignored for remote calls.
 	SignaturePolicy string
+	// Signers, if non-empty, asks for signatures to be added during the copy
+	// using the provided signers.
+	// Rejected for remote calls.
+	Signers []*signer.Signer
 	// SignBy adds a signature at the destination using the specified key.
 	// Ignored for remote calls.
 	SignBy string
@@ -256,6 +261,16 @@ type ImageSearchOptions struct {
 	// Authfile is the path to the authentication file. Ignored for remote
 	// calls.
 	Authfile string
+	// CertDir is the path to certificate directories.  Ignored for remote
+	// calls.
+	CertDir string
+	// Username for authenticating against the registry.
+	Username string
+	// Password for authenticating against the registry.
+	Password string
+	// IdentityToken is used to authenticate the user and get
+	// an access token for the registry.
+	IdentityToken string
 	// Filters for the search results.
 	Filters []string
 	// Limit the number of results.
