@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 0.10.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,7 +60,32 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Mar 05 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.10.0-dev-1
+* Sun Apr 16 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.10.0-1
+- Packit update - remove centos stream build
+- Golangci-lint system package
+- Package ui/styles - applying golint
+- Package ui/infobar - applying golint
+- Package ui/help - applying golint
+- Package ui/volumes code improvement and golint
+- Adding container attach command to container page/view
+- Fix container create error without health options
+- Add container health options to the container create dialog
+- Add packit configuration to build RPM as part of PR tests
+- Update unit tests and github workflow for running the tests
+- Fix container create error when volume is selected
+- Update github workflow golang version to 1.18.8
+- Golangci-lint update to v1.51.1
+- Fix vendor + codepsell
+- Unit tests fix
+- Bump github.com/containers/podman/v4 to 4.5.0
+- Bump actions/stale from 7 to 8
+- Bump github.com/containers/common
+- Bump github.com/docker/docker
+- Bump github.com/containers/podman/v4 to 4.4.4
+- Bump github.com/spf13/cobra from 1.6.1 to 1.7.0
+- Bump github.com/containers/storage from 1.45.4 to 1.46.0
+- Bump actions/setup-go from 3 to 4
+- Bump golang.org/x/crypto from 0.6.0 to 0.7.0
 
 * Sun Mar 05 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.9.0-1
 - New feature - container healthcheck
