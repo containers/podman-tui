@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.10.0
-Release: 1%{?dist}
+Version: 0.11.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Sun Apr 16 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.11.0-dev-1
+
 * Sun Apr 16 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.10.0-1
 - Packit update - remove centos stream build
 - Golangci-lint system package
