@@ -5,11 +5,11 @@ go 1.18
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/containers/buildah v1.30.0
-	github.com/containers/common v0.52.0
+	github.com/containers/common v0.53.0
 	github.com/containers/podman/v4 v4.5.0
 	github.com/containers/storage v1.46.1
 	github.com/docker/distribution v2.8.1+incompatible
-	github.com/docker/docker v23.0.3+incompatible
+	github.com/docker/docker v23.0.4+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/hashicorp/go-multierror v1.1.1
@@ -102,7 +102,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221005185240-3a7f492d3f1b // indirect
 	github.com/opencontainers/runc v1.1.5 // indirect
-	github.com/opencontainers/runtime-spec v1.1.0-rc.1 // indirect
+	github.com/opencontainers/runtime-spec v1.1.0-rc.2 // indirect
 	github.com/opencontainers/runtime-tools v0.9.1-0.20230317050512-e931285f4b69 // indirect
 	github.com/opencontainers/selinux v1.11.0 // indirect
 	github.com/ostreedev/ostree-go v0.0.0-20210805093236-719684c64e4f // indirect
