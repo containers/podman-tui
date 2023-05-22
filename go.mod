@@ -9,7 +9,7 @@ require (
 	github.com/containers/podman/v4 v4.5.0
 	github.com/containers/storage v1.46.1
 	github.com/docker/distribution v2.8.1+incompatible
-	github.com/docker/docker v23.0.3+incompatible
+	github.com/docker/docker v24.0.1+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.6.0
 	github.com/hashicorp/go-multierror v1.1.1
