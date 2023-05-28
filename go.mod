@@ -8,7 +8,7 @@ require (
 	github.com/containers/common v0.53.0
 	github.com/containers/podman/v4 v4.5.0
 	github.com/containers/storage v1.46.1
-	github.com/docker/distribution v2.8.1+incompatible
+	github.com/docker/distribution v2.8.2+incompatible
 	github.com/docker/docker v23.0.4+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.6.0
