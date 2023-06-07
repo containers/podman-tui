@@ -6,7 +6,7 @@ require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/containers/buildah v1.30.0
 	github.com/containers/common v0.53.0
-	github.com/containers/podman/v4 v4.5.0
+	github.com/containers/podman/v4 v4.5.1
 	github.com/containers/storage v1.46.1
 	github.com/docker/distribution v2.8.2+incompatible
 	github.com/docker/docker v23.0.4+incompatible
