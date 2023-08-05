@@ -217,6 +217,11 @@ func (i *Image) getManifestList() (manifests.List, error) {
 // image index (OCI).  This information may be critical to make certain
 // execution paths more robust (e.g., suppress certain errors).
 func (i *Image) IsManifestList(ctx context.Context) (bool, error) {
+	// FIXME: due to `ImageDigestBigDataKey` we'll always check the
+	// _last-written_ manifest which is causing issues for multi-arch image
+	// pulls.
+	//
+	// See https://github.com/containers/common/pull/1505#discussion_r1242677279.
 	ref, err := i.StorageReference()
 	if err != nil {
 		return false, err
@@ -388,10 +393,7 @@ func (m *ManifestList) AnnotateInstance(d digest.Digest, options *ManifestListAn
 	}
 
 	// Write the changes to disk.
-	if err := m.saveAndReload(); err != nil {
-		return err
-	}
-	return nil
+	return m.saveAndReload()
 }
 
 // RemoveInstance removes the instance specified by `d` from the manifest list.
@@ -402,10 +404,7 @@ func (m *ManifestList) RemoveInstance(d digest.Digest) error {
 	}
 
 	// Write the changes to disk.
-	if err := m.saveAndReload(); err != nil {
-		return err
-	}
-	return nil
+	return m.saveAndReload()
 }
 
 // ManifestListPushOptions allow for customizing pushing a manifest list.

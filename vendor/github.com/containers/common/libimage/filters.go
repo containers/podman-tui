@@ -178,7 +178,7 @@ func (r *Runtime) compileImageFilters(ctx context.Context, options *ListImagesOp
 			filter = filterManifest(ctx, manifest)
 
 		case "reference":
-			filter = filterReferences(value)
+			filter = filterReferences(r, value)
 
 		case "until":
 			until, err := r.until(value)
@@ -268,8 +268,15 @@ func filterManifest(ctx context.Context, value bool) filterFunc {
 }
 
 // filterReferences creates a reference filter for matching the specified value.
-func filterReferences(value string) filterFunc {
+func filterReferences(r *Runtime, value string) filterFunc {
+	lookedUp, _, _ := r.LookupImage(value, nil)
 	return func(img *Image) (bool, error) {
+		if lookedUp != nil {
+			if lookedUp.ID() == img.ID() {
+				return true, nil
+			}
+		}
+
 		refs, err := img.NamesReferences()
 		if err != nil {
 			return false, err
@@ -306,6 +313,7 @@ func filterReferences(value string) filterFunc {
 				}
 			}
 		}
+
 		return false, nil
 	}
 }
@@ -386,10 +394,12 @@ func filterID(value string) filterFunc {
 	}
 }
 
-// filterDigest creates an digest filter for matching the specified value.
+// filterDigest creates a digest filter for matching the specified value.
 func filterDigest(value string) filterFunc {
+	// TODO: return an error if value is not a digest
+	// if _, err := digest.Parse(value); err != nil {...}
 	return func(img *Image) (bool, error) {
-		return string(img.Digest()) == value, nil
+		return img.hasDigest(value), nil
 	}
 }
 
