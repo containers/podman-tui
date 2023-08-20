@@ -63,7 +63,7 @@ func (vols *Volumes) refresh() {
 				SetAlign(alignment))
 
 		// mount point at column
-		vols.table.SetCell(rowIndex, volsTableCreatedAtColIndex,
+		vols.table.SetCell(rowIndex, volsTableMountPointColIndex,
 			tview.NewTableCell(volMountPoint).
 				SetExpansion(expand).
 				SetAlign(alignment))
