@@ -24,7 +24,7 @@ type ExecOption struct {
 	EnvVariables []string
 	EnvFile      []string
 	User         string
-	OutputStream io.WriteCloser
+	OutputStream io.Writer
 	InputStream  *bufio.Reader
 	TtyWidth     int
 	TtyHeight    int

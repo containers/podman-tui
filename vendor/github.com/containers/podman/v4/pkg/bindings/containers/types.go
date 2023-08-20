@@ -229,8 +229,14 @@ type UnpauseOptions struct{}
 //
 //go:generate go run ../generator/generator.go WaitOptions
 type WaitOptions struct {
+	// Conditions to wait on.  Includes container statuses such as
+	// "running" or "stopped" and health-related values such "healthy".
+	Conditions []string `schema:"condition"`
+	// Time interval to wait before polling for completion.
+	Interval *string
+	// Container status to wait on.
+	// Deprecated: use Conditions instead.
 	Condition []define.ContainerStatus
-	Interval  *string
 }
 
 // StopOptions are optional options for stopping containers
@@ -289,9 +295,9 @@ type ResizeExecTTYOptions struct {
 //go:generate go run ../generator/generator.go ExecStartAndAttachOptions
 type ExecStartAndAttachOptions struct {
 	// OutputStream will be attached to container's STDOUT
-	OutputStream *io.WriteCloser
+	OutputStream *io.Writer
 	// ErrorStream will be attached to container's STDERR
-	ErrorStream *io.WriteCloser
+	ErrorStream *io.Writer
 	// InputStream will be attached to container's STDIN
 	InputStream *bufio.Reader
 	// AttachOutput is whether to attach to STDOUT
