@@ -81,7 +81,7 @@ github.com/containerd/stargz-snapshotter/estargz/errorutil
 # github.com/containers/buildah v1.31.2
 ## explicit; go 1.18
 github.com/containers/buildah/define
-# github.com/containers/common v0.55.3
+# github.com/containers/common v0.55.4
 ## explicit; go 1.18
 github.com/containers/common/libimage
 github.com/containers/common/libimage/define
@@ -107,7 +107,7 @@ github.com/containers/common/pkg/supplemented
 github.com/containers/common/pkg/timetype
 github.com/containers/common/pkg/util
 github.com/containers/common/version
-# github.com/containers/image/v5 v5.26.1
+# github.com/containers/image/v5 v5.26.2
 ## explicit; go 1.18
 github.com/containers/image/v5/copy
 github.com/containers/image/v5/directory
@@ -236,7 +236,7 @@ github.com/containers/psgo/internal/dev
 github.com/containers/psgo/internal/host
 github.com/containers/psgo/internal/proc
 github.com/containers/psgo/internal/process
-# github.com/containers/storage v1.48.0
+# github.com/containers/storage v1.48.1
 ## explicit; go 1.19
 github.com/containers/storage
 github.com/containers/storage/drivers
