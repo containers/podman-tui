@@ -6,7 +6,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - uses: pre-commit/action@v3.0.0
 
@@ -34,7 +34,7 @@ jobs:
   codespell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: codespell-project/actions-codespell@master
         with:
           check_filenames: true
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '1.18.8'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           go mod tidy
           go mod vendor
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '1.18.8'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           bash hack/install_dep.sh
           make .install.golangci-lint
@@ -90,7 +90,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '1.18.8'
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           make all
 
