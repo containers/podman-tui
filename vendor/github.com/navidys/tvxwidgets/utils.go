@@ -33,6 +33,7 @@ const (
 	emptySpaceParts   = 2
 	brailleOffsetRune = '\u2800'
 	dotRune           = '\u25CF'
+	fullBlockRune     = '\u2588'
 )
 
 var (

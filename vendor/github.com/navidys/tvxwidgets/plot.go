@@ -76,7 +76,7 @@ func (plot *Plot) Draw(screen tcell.Screen) {
 
 	switch plot.marker {
 	case PlotMarkerDot:
-		plot.darwDotMarkerToScreen(screen)
+		plot.drawDotMarkerToScreen(screen)
 	case PlotMarkerBraille:
 		plot.drawBrailleMarkerToScreen(screen)
 	}
@@ -165,7 +165,7 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 
 	axesStyle := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.axesColor)
 
-	// draw Y axis lin
+	// draw Y axis line
 	drawLine(screen,
 		x+plotYAxisLabelsWidth,
 		y,
@@ -219,7 +219,7 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 }
 
 // nolint:gocognit,cyclop
-func (plot *Plot) darwDotMarkerToScreen(screen tcell.Screen) {
+func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 	x, y, width, height := plot.getChartAreaRect()
 	chartData := plot.getData()
 	maxVal := getMaxFloat64From2dSlice(chartData)

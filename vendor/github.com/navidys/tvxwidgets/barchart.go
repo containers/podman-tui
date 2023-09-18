@@ -32,15 +32,19 @@ type BarChart struct {
 	// barWidth width of bars
 	barWidth int
 	// hasBorder true if primitive has border
-	hasBorder bool
+	hasBorder      bool
+	axesColor      tcell.Color
+	axesLabelColor tcell.Color
 }
 
 // NewBarChart returns a new bar chart primitive.
 func NewBarChart() *BarChart {
 	chart := &BarChart{
-		Box:      tview.NewBox(),
-		barGap:   barGap,
-		barWidth: barWidth,
+		Box:            tview.NewBox(),
+		barGap:         barGap,
+		barWidth:       barWidth,
+		axesColor:      tcell.ColorDimGray,
+		axesLabelColor: tcell.ColorDimGray,
 	}
 
 	return chart
@@ -58,13 +62,10 @@ func (c *BarChart) HasFocus() bool {
 
 // Draw draws this primitive onto the screen.
 func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
-	style := tcell.StyleDefault
-	style = style.Foreground(tview.Styles.BorderColor).Background(tview.Styles.PrimitiveBackgroundColor)
-
 	c.Box.DrawForSubclass(screen, c)
 
 	x, y, width, height := c.Box.GetInnerRect()
-	// log.Printf("%d %d %d %d", x, y, width, height)
+
 	maxValY := y + 1
 	xAxisStartY := y + height - 2 // nolint:gomnd
 	barStartY := y + height - 3   // nolint:gomnd
@@ -81,20 +82,34 @@ func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 	if maxValLenght < barChartYAxisLabelWidth {
 		maxValLenght = barChartYAxisLabelWidth
 	}
-	// draw graph y-axis
-	for i := borderPadding; i+y < y+height-borderPadding; i++ {
-		tview.PrintJoinedSemigraphics(screen, x+maxValLenght, y+i, tview.Borders.Vertical, style)
-	}
-	// draw graph x-axix
-	for i := maxValLenght + 1; i+x < x+width-borderPadding; i++ {
-		tview.PrintJoinedSemigraphics(screen, x+i, xAxisStartY, tview.Borders.Horizontal, style)
-	}
-	tview.PrintJoinedSemigraphics(screen, x+maxValLenght, xAxisStartY, tview.BoxDrawingsLightVerticalAndRight, style)
-	tview.PrintJoinedSemigraphics(screen, x+maxValLenght-1, xAxisStartY, '0', style)
+
+	axesStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(c.axesColor)
+	axesLabelStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(c.axesLabelColor)
+
+	// draw Y axis line
+	drawLine(screen,
+		x+maxValLenght,
+		y+borderPadding,
+		height-borderPadding-1,
+		verticalLine, axesStyle)
+
+	// draw X axis line
+	drawLine(screen,
+		x+maxValLenght+1,
+		xAxisStartY,
+		width-borderPadding-maxValLenght-1,
+		horizontalLine, axesStyle)
+
+	tview.PrintJoinedSemigraphics(screen,
+		x+maxValLenght,
+		xAxisStartY,
+		tview.BoxDrawingsLightUpAndRight, axesStyle)
+
+	tview.PrintJoinedSemigraphics(screen, x+maxValLenght-1, xAxisStartY, '0', axesLabelStyle)
 
 	mxValRune := []rune(maxValueSr)
 	for i := 0; i < len(mxValRune); i++ {
-		tview.PrintJoinedSemigraphics(screen, x+borderPadding+i, maxValY, mxValRune[i], style)
+		tview.PrintJoinedSemigraphics(screen, x+borderPadding+i, maxValY, mxValRune[i], axesLabelStyle)
 	}
 
 	// draw bars
@@ -109,15 +124,15 @@ func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 		// set labels
 		r := []rune(item.label)
 		for j := 0; j < len(r); j++ {
-			tview.PrintJoinedSemigraphics(screen, startX+j, labelY, r[j], style)
+			tview.PrintJoinedSemigraphics(screen, startX+j, labelY, r[j], axesLabelStyle)
 		}
 		// bar style
-		bStyle := style.Foreground(item.color)
+		bStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(item.color)
 		barHeight := c.getHeight(valueMaxHeight, item.value)
 
 		for k := 0; k < barHeight; k++ {
 			for l := 0; l < c.barWidth; l++ {
-				tview.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, '\u2588', bStyle)
+				tview.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, fullBlockRune, bStyle)
 			}
 		}
 		// bar value
@@ -157,6 +172,16 @@ func (c *BarChart) SetRect(x, y, width, height int) {
 // SetMaxValue sets maximum value of bars.
 func (c *BarChart) SetMaxValue(max int) {
 	c.maxVal = max
+}
+
+// SetAxesColor sets axes x and y lines color.
+func (c *BarChart) SetAxesColor(color tcell.Color) {
+	c.axesColor = color
+}
+
+// SetAxesLabelColor sets axes x and y label color.
+func (c *BarChart) SetAxesLabelColor(color tcell.Color) {
+	c.axesLabelColor = color
 }
 
 // AddBar adds new bar item to the bar chart primitive.
