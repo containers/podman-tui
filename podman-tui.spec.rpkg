@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.12.0
+Version: 0.13.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,7 +60,30 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Aug 20 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.12.0-dev-1
+* Sat Nov 11 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.13.0-dev-1
+
+* Sat Nov 11 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.12.0-1
+- Bump github.com/containers/buildah from 1.31.2 to 1.32.2
+- Bump github.com/containers/podman/v4 from 4.6.2 to 4.7.2
+- GH action update
+- Using github.com/distribution/reference
+- Bump github.com/docker/distribution
+- Bump github.com/docker/docker
+- Bump google.golang.org/grpc from 1.57.0 to 1.57.1
+- Bump golang.org/x/net from 0.13.0 to 0.17.0
+- Bump golang.org/x/crypto from 0.13.0 to 0.15.0
+- Update ginkgo cli version to 2.11.0
+- Bump github.com/spf13/cobra from 1.7.0 to 1.8.0
+- Running codespell
+- Bump github.com/rs/zerolog from 1.30.0 to 1.31.0
+- Bump github.com/containers/storage from 1.48.0 to 1.50.2
+- Bump github.com/navidys/tvxwidgets from 0.3.0 to 0.4.0
+- Bump github.com/containers/podman/v4 from 4.6.1 to 4.6.2
+- Bump github.com/cyphar/filepath-securejoin from 0.2.3 to 0.2.4
+- Bump github.com/docker/docker
+- Bump golang.org/x/crypto from 0.12.0 to 0.13.0
+- Bump actions/checkout from 3 to 4
+- Bump tim-actions/commit-message-checker-with-regex from 0.3.1 to 0.3.2
 
 * Sun Aug 20 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.11.0-1
 - Fix missing volume list created time column
