@@ -293,7 +293,7 @@ func (d *ImageSearchDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-//InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive
 func (d *ImageSearchDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("confirm dialog: event %v received", event)
@@ -354,7 +354,7 @@ func (d *ImageSearchDialog) GetSearchText() string {
 	return d.input.GetText()
 }
 
-//GetSelectedItem returns selected image name from search result table
+// GetSelectedItem returns selected image name from search result table
 func (d *ImageSearchDialog) GetSelectedItem() string {
 	row, _ := d.searchResult.GetSelection()
 	if row >= 0 {

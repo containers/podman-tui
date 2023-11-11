@@ -7,7 +7,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
 	"github.com/containers/podman/v4/pkg/domain/entities"
-	"github.com/docker/distribution/reference"
+	"github.com/distribution/reference"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
