@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.18.8'
+          go-version: '>=1.19.0'
       - uses: actions/checkout@v4
       - run: |
           go mod tidy
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.18.8'
+          go-version: '>=1.19.0'
       - uses: actions/checkout@v4
       - run: |
           bash hack/install_dep.sh
@@ -89,7 +89,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.18.8'
+          go-version: '>=1.19.0'
       - uses: actions/checkout@v4
       - run: |
           make all

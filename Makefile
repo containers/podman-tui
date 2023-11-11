@@ -14,6 +14,7 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo -Z)
 PKG_MANAGER ?= $(shell command -v dnf yum|head -n1)
 PRE_COMMIT = $(shell command -v bin/venv/bin/pre-commit ~/.local/bin/pre-commit pre-commit | head -n1)
+GINKO_CLI_VERSION = $(shell grep 'ginkgo/v2' go.mod | grep -o ' v.*' | sed 's/ //g')
 
 # Default to the native OS type and architecture unless otherwise specified
 NATIVE_GOOS := $(shell env -u GOOS $(GO) env GOOS)
@@ -72,7 +73,7 @@ install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codesp
 .PHONY: .install.ginkgo
 .install.ginkgo:
 	if [ ! -x "$(GOBIN)/ginkgo" ]; then \
-		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@v2.11.0 ; \
+		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@$(GINKO_CLI_VERSION) ; \
 	fi
 
 .PHONY: .install.bats
