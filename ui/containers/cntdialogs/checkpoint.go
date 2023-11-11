@@ -32,7 +32,7 @@ const (
 	cntCheckpointFormFocus
 )
 
-// ContainerCheckpointDialog implements container checkpint dialog primitive.
+// ContainerCheckpointDialog implements container checkpoint dialog primitive.
 type ContainerCheckpointDialog struct {
 	*tview.Box
 	layout            *tview.Flex

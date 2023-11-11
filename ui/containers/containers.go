@@ -315,7 +315,7 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
-	// termianl dialog
+	// terminal dialog
 	if cnt.terminalDialog.IsDisplay() {
 		delegate(cnt.terminalDialog)
 
