@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.12.0
-Release: 1%{?dist}
+Version: 0.13.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Nov 11 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.13.0-dev-1
+
 * Sat Nov 11 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.12.0-1
 - Bump github.com/containers/buildah from 1.31.2 to 1.32.2
 - Bump github.com/containers/podman/v4 from 4.6.2 to 4.7.2
