@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Inspect returns inspect resuls of the specific container.
+// Inspect returns inspect results of the specific container.
 func Inspect(id string) (string, error) {
 	log.Debug().Msgf("pdcs: podman container inspect %s", id)
 

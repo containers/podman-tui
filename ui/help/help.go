@@ -30,7 +30,7 @@ func NewHelp(appName string, appVersion string) *Help {
 	bgColor := style.BgColor
 	borderColor := style.BorderColor
 
-	// application keys descriotion table
+	// application keys description table
 	keyinfo := tview.NewTable()
 	keyinfo.SetBackgroundColor(bgColor)
 	keyinfo.SetFixed(1, 1)

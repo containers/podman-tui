@@ -1,6 +1,6 @@
 # Contributing To Podman TUI
 
-We'd love your contribtion on the project!
+We'd love your contribution on the project!
 
 ## Topics
 
