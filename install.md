@@ -4,6 +4,7 @@
 - [**Installing Packaged Versions**](#installing-packaged-versions)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
   - [**Fedora**](#fedora)
+  - [**Gentoo**](#gentoo)
 - [**Container Image**](#container-image)
 - [**Configuration Files**](#configurations-files)
 
@@ -30,6 +31,12 @@ $ yay -S podman-tui
 
 ```
 $ sudo dnf -y install podman-tui
+```
+
+### Gentoo
+
+```
+$ sudo emerge app-containers/podman-tui
 ```
 
 ## Container image
