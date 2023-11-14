@@ -3,8 +3,10 @@
 - [**Building From Source**](#building-from-source)
 - [**Installing Packaged Versions**](#installing-packaged-versions)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
+  - [**CentOS Stream**](#centos-stream)
   - [**Fedora**](#fedora)
   - [**Gentoo**](#gentoo)
+  - [**RHEL**](#rhel)
 - [**Container Image**](#container-image)
 - [**Configuration Files**](#configurations-files)
 
@@ -27,16 +29,32 @@ $ make binary-darwin # MacOS
 $ yay -S podman-tui
 ```
 
+### CentOS Stream
+
+Enable [EPEL repository](https://docs.fedoraproject.org/en-US/epel/) and then run:
+
+```shell
+$ sudo dnf -y install podman-tui
+```
+
 ### Fedora
 
-```
+```shell
 $ sudo dnf -y install podman-tui
 ```
 
 ### Gentoo
 
-```
+```shell
 $ sudo emerge app-containers/podman-tui
+```
+
+### RHEL
+
+Enable [EPEL repository](https://docs.fedoraproject.org/en-US/epel/) and then run:
+
+```shell
+$ sudo dnf -y install podman-tui
 ```
 
 ## Container image
