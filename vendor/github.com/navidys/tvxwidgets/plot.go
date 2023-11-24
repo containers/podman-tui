@@ -255,25 +255,15 @@ func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 }
 
 func (plot *Plot) drawBrailleMarkerToScreen(screen tcell.Screen) {
-	var cellMaxY int
-
 	x, y, width, height := plot.getChartAreaRect()
 
 	plot.calcBrailleLines()
 
-	for point := range plot.getBrailleCells() {
-		if point.Y > cellMaxY {
-			cellMaxY = point.Y
-		}
-	}
-
-	diffMAxY := y + height - cellMaxY - 1
-
 	// print to screen
 	for point, cell := range plot.getBrailleCells() {
 		style := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(cell.color)
-		if point.X < x+width && point.Y+diffMAxY < y+height {
-			tview.PrintJoinedSemigraphics(screen, point.X, point.Y+diffMAxY, cell.cRune, style)
+		if point.X < x+width && point.Y < y+height {
+			tview.PrintJoinedSemigraphics(screen, point.X, point.Y, cell.cRune, style)
 		}
 	}
 }
@@ -288,7 +278,7 @@ func (plot *Plot) calcBrailleLines() {
 			continue
 		}
 
-		previousHeight := int((line[1] / maxVal) * float64(height-1))
+		previousHeight := int((line[0] / maxVal) * float64(height-1))
 
 		for j, val := range line[1:] {
 			lheight := int((val / maxVal) * float64(height-1))
