@@ -1,0 +1,57 @@
+name: Go
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  vendoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '>=1.19.0'
+      - uses: actions/checkout@v4
+      - run: |
+          go mod tidy
+          go mod vendor
+          go mod verify
+          bash ./hack/tree_status.sh
+
+  golangci-lint:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '>=1.19.0'
+      - uses: actions/checkout@v4
+      - run: |
+          bash hack/install_dep.sh
+          make .install.golangci-lint
+          make lint
+
+  unit_test:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          # Preparing and running unit tests #
+          dnf -y install git-core golang glibc-static git-core wget gcc make
+          bash ./hack/install_dep.sh
+          export GOBIN=$(pwd)/bin/
+          make .install.ginkgo
+          make test-unit
+
+  build_binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '>=1.19.0'
+      - uses: actions/checkout@v4
+      - run: |
+          make all
