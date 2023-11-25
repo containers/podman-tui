@@ -50,6 +50,7 @@ const (
 	createContainerDNSSearchFieldFocus
 	createContainerImageVolumeFieldFocus
 	createContainerVolumeFieldFocus
+	createContainerMountFieldFocus
 	containerHealthCmdFieldFocus
 	containerHealthStartupCmdFieldFocus
 	containerHealthOnFailureFieldFocus
@@ -127,6 +128,7 @@ type ContainerCreateDialog struct {
 	containerHealthStartupTimeoutField  *tview.InputField
 	containerVolumeField                *tview.InputField
 	containerImageVolumeField           *tview.DropDown
+	containerMountField                 *tview.InputField
 	cancelHandler                       func()
 	createHandler                       func()
 }
@@ -179,6 +181,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerDNSSearchField:             tview.NewInputField(),
 		containerVolumeField:                tview.NewInputField(),
 		containerImageVolumeField:           tview.NewDropDown(),
+		containerMountField:                 tview.NewInputField(),
 		containerHealthCmdField:             tview.NewInputField(),
 		containerHealthIntervalField:        tview.NewInputField(),
 		containerHealthOnFailureField:       tview.NewDropDown(),
@@ -657,11 +660,20 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 	d.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerImageVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
+	// mounts
+	d.containerMountField.SetLabel("mount:")
+	d.containerMountField.SetLabelWidth(volumePageLabelWidth)
+	d.containerMountField.SetBackgroundColor(bgColor)
+	d.containerMountField.SetLabelColor(style.DialogFgColor)
+	d.containerMountField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// volume settings page
 	d.volumePage.SetDirection(tview.FlexRow)
 	d.volumePage.AddItem(d.containerVolumeField, 1, 0, true)
 	d.volumePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.volumePage.AddItem(d.containerImageVolumeField, 1, 0, true)
+	d.volumePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.volumePage.AddItem(d.containerMountField, 1, 0, true)
 	d.volumePage.SetBackgroundColor(bgColor)
 }
 
@@ -797,6 +809,8 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.containerVolumeField)
 	case createContainerImageVolumeFieldFocus:
 		delegate(d.containerImageVolumeField)
+	case createContainerMountFieldFocus:
+		delegate(d.containerMountField)
 	// health page
 	case containerHealthCmdFieldFocus:
 		delegate(d.containerHealthCmdField)
@@ -1095,6 +1109,7 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerDNSSearchField.SetText("")
 	d.containerDNSOptionsField.SetText("")
 	d.containerVolumeField.SetText("")
+	d.containerMountField.SetText("")
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
 	d.containerImageVolumeField.SetCurrentOption(0)
 
@@ -1203,6 +1218,8 @@ func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() {
 func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
 		d.focusElement = createContainerImageVolumeFieldFocus
+	} else if d.containerImageVolumeField.HasFocus() {
+		d.focusElement = createContainerMountFieldFocus
 	} else {
 		d.focusElement = createContainerFormFocus
 	}
@@ -1296,6 +1313,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		DNSSearchDomain:       dnsSearchDomains,
 		Volume:                d.containerVolumeField.GetText(),
 		ImageVolume:           imageVolume,
+		Mount:                 d.containerMountField.GetText(),
 		SelinuxOpts:           selinuxOpts,
 		ApparmorProfile:       d.containerApparmorField.GetText(),
 		Seccomp:               d.containerSeccompField.GetText(),
