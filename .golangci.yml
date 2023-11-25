@@ -9,7 +9,6 @@ run:
     - ui/networks
     - ui/pods
     - ui/system
-    - ui/utils
 linters:
   enable-all: true
   disable:

@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// UserHomeDir returns user's home directory
+// UserHomeDir returns user's home directory.
 func UserHomeDir() (string, error) {
 	return os.UserHomeDir()
 }
