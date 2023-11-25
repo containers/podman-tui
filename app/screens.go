@@ -10,6 +10,7 @@ func (app *App) switchToScreen(name string) {
 	app.pages.SwitchToPage(name)
 	app.setPageFocus(name)
 	app.updatePageData(name)
+
 	app.currentPage = name
 }
 
@@ -28,11 +29,13 @@ func (app *App) frontScreenHasActiveDialog() bool {
 	case app.volumes.GetTitle():
 		return app.volumes.SubDialogHasFocus()
 	}
+
 	return false
 }
 
 func (app *App) switchToPreviousScreen() {
 	var previousScreen string
+
 	switch app.currentPage {
 	case app.help.GetTitle():
 		previousScreen = app.networks.GetTitle()
@@ -48,14 +51,14 @@ func (app *App) switchToPreviousScreen() {
 		previousScreen = app.volumes.GetTitle()
 	case app.networks.GetTitle():
 		previousScreen = app.images.GetTitle()
-	case app.system.GetTitle():
-		previousScreen = app.networks.GetTitle()
 	}
+
 	app.switchToScreen(previousScreen)
 }
 
 func (app *App) switchToNextScreen() {
 	var nextScreen string
+
 	switch app.currentPage {
 	case app.help.GetTitle():
 		nextScreen = app.system.GetTitle()
@@ -72,6 +75,7 @@ func (app *App) switchToNextScreen() {
 	case app.networks.GetTitle():
 		nextScreen = app.system.GetTitle()
 	}
+
 	app.switchToScreen(nextScreen)
 }
 
@@ -99,6 +103,7 @@ func (app *App) updatePageData(page string) {
 	if connStatus != registry.ConnectionStatusConnected {
 		return
 	}
+
 	switch page {
 	case app.system.GetTitle():
 		app.system.UpdateConnectionsData()
@@ -149,6 +154,6 @@ func (app *App) clearViewsData() {
 
 func (app *App) clearInfoUIData() {
 	app.infoBar.UpdateBasicInfo("", "", "")
-	app.infoBar.UpdateSystemUsageInfo(0.00, 0.00)
+	app.infoBar.UpdateSystemUsageInfo(0.00, 0.00) //nolint:gomnd
 	app.infoBar.UpdatePodmanInfo("", "", "", "")
 }

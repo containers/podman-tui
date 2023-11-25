@@ -20,7 +20,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// App represents main application struct
+// App represents main application struct.
 type App struct {
 	*tview.Application
 	infoBar         *infobar.InfoBar
@@ -40,7 +40,7 @@ type App struct {
 	config          *config.Config
 }
 
-// NewApp returns new app
+// NewApp returns new app.
 func NewApp(name string, version string) *App {
 	log.Debug().Msg("app: new application")
 
@@ -49,10 +49,11 @@ func NewApp(name string, version string) *App {
 		Application:     tview.NewApplication(),
 		pages:           tview.NewPages(),
 		needInitUI:      false,
-		fastRefreshChan: make(chan bool, 10),
+		fastRefreshChan: make(chan bool, 10), //nolint:gomnd
 	}
 
 	var err error
+
 	app.config, err = config.NewConfig()
 	if err != nil {
 		log.Fatal().Msgf("%v", err)
@@ -68,12 +69,15 @@ func NewApp(name string, version string) *App {
 	app.images = images.NewImages()
 	app.networks = networks.NewNetworks()
 	app.system = system.NewSystem()
+
 	app.system.SetConnectionListFunc(app.config.ServicesConnections)
 	app.system.SetConnectionSetDefaultFunc(func(name string) error {
 		err := app.config.SetDefaultService(name)
 		app.system.UpdateConnectionsData()
+
 		return err
 	})
+
 	app.system.SetConnectionConnectFunc(app.health.Connect)
 	app.system.SetConnectionDisconnectFunc(app.health.Disconnect)
 	app.system.SetConnectionAddFunc(app.config.Add)
@@ -82,15 +86,15 @@ func NewApp(name string, version string) *App {
 	app.help = help.NewHelp(name, version)
 
 	// set refresh channel for container page
-	// its required for container exec dialog
+	// its required for container exec dialog.
 	app.containers.SetFastRefreshChannel(app.fastRefreshChan)
 
 	// set refresh channel for image page
-	// its required for image build dialog
+	// its required for image build dialog.
 	app.images.SetFastRefreshChannel(app.fastRefreshChan)
 
 	// menu items
-	var menuItems = [][]string{
+	menuItems := [][]string{
 		{utils.HelpScreenKey.Label(), app.help.GetTitle()},
 		{utils.SystemScreenKey.Label(), app.system.GetTitle()},
 		{utils.PodsScreenKey.Label(), app.pods.GetTitle()},
@@ -99,7 +103,9 @@ func NewApp(name string, version string) *App {
 		{utils.ImagesScreenKey.Label(), app.images.GetTitle()},
 		{utils.NetworksScreenKey.Label(), app.networks.GetTitle()},
 	}
+
 	app.menu = newMenu(menuItems)
+
 	app.pages.AddPage(app.help.GetTitle(), app.help, true, false)
 	app.pages.AddPage(app.system.GetTitle(), app.system, true, false)
 	app.pages.AddPage(app.pods.GetTitle(), app.pods, true, false)
@@ -112,7 +118,7 @@ func NewApp(name string, version string) *App {
 }
 
 // Run starts the application loop.
-func (app *App) Run() error {
+func (app *App) Run() error { //nolint:cyclop
 	log.Info().Msg("app: run")
 
 	flex := tview.NewFlex().
@@ -134,6 +140,7 @@ func (app *App) Run() error {
 			app.Stop()
 			os.Exit(0)
 		}
+
 		if !app.frontScreenHasActiveDialog() {
 			event = utils.ParseKeyEventKey(event)
 
@@ -142,49 +149,58 @@ func (app *App) Run() error {
 			case utils.NextScreenKey.Rune():
 				// next screen
 				app.switchToNextScreen()
+
 				return nil
 
 			case utils.PreviousScreenKey.Rune():
 				// previous screen
 				app.switchToPreviousScreen()
+
 				return nil
 			}
 
 			// normal page key switch
-			switch event.Key() {
+			switch event.Key() { //nolint:exhaustive
 			case utils.HelpScreenKey.EventKey():
 				// help page
 				app.switchToScreen(app.help.GetTitle())
+
 				return nil
 
 			case utils.SystemScreenKey.EventKey():
 				// system page
 				app.switchToScreen(app.system.GetTitle())
+
 				return nil
 
 			case utils.PodsScreenKey.EventKey():
 				// pods page
 				app.switchToScreen(app.pods.GetTitle())
+
 				return nil
 
 			case utils.ContainersScreenKey.EventKey():
 				// containers page
 				app.switchToScreen(app.containers.GetTitle())
+
 				return nil
 
 			case utils.VolumesScreenKey.EventKey():
 				// volumes page
 				app.switchToScreen(app.volumes.GetTitle())
+
 				return nil
 
 			case utils.ImagesScreenKey.EventKey():
 				// images page
 				app.switchToScreen(app.images.GetTitle())
+
 				return nil
 
 			case utils.NetworksScreenKey.EventKey():
 				// networks page
 				app.switchToScreen(app.networks.GetTitle())
+
 				return nil
 			}
 		}
@@ -197,8 +213,10 @@ func (app *App) Run() error {
 				return nil
 			}
 		}
+
 		return event
 	})
+
 	app.currentPage = app.system.GetTitle()
 	app.pages.SwitchToPage(app.system.GetTitle())
 
@@ -211,5 +229,6 @@ func (app *App) Run() error {
 	if err := app.SetRoot(flex, true).SetFocus(app.system).EnableMouse(false).Run(); err != nil {
 		return err
 	}
+
 	return nil
 }
