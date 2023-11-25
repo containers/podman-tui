@@ -13,6 +13,8 @@ load helpers_tui
     podman network rm $TEST_CONTAINER_NETWORK_NAME || echo done
     podman volume rm $TEST_CONTAINER_VOLUME_NAME || echo done
 
+    [ ! -d "${TEST_CONTAINER_MOUNT_SOURCE}" ] && mkdir $TEST_CONTAINER_MOUNT_SOURCE
+
     httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
     if [ "${httpd_image}" == "" ] ; then
         podman image pull docker.io/library/httpd
@@ -74,22 +76,24 @@ load helpers_tui
     # select volume from dropdown widget
     podman_tui_send_inputs "Down" "Tab"
     podman_tui_send_inputs "${TEST_CONTAINER_VOLUME_NAME}:${TEST_CONTAINER_VOLUME_MOUNT_POINT}:rw"
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "type=bind,src=${TEST_CONTAINER_MOUNT_SOURCE},dst=${TEST_CONTAINER_MOUNT_DEST}"
     sleep 1
 
     # go to "Create" button and press Enter
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep 2
 
     # get created container information
     container_information=$(podman container ls --all --pod --filter "name=${TEST_CONTAINER_NAME}$" --format \
-    "{{ json .PodName }},{{ json .Networks }},{{ json .Mounts }},{{ json .Image }},{{ json .Ports }},{{ json .Labels }}")
+    "{{ json .PodName }}|{{ json .Networks }}|{{ json .Mounts }}|{{ json .Image }}|{{ json .Ports }}|{{ json .Labels }}")
 
-    cnt_pod_name=$(echo $container_information | awk -F, '{print $1}')
-    cnt_networks=$(echo $container_information | awk -F, '{print $2}')
-    cnt_mounts=$(echo $container_information | awk -F, '{print $3}')
-    cnt_image_name=$(echo $container_information | awk -F, '{print $4}')
-    cnt_ports=$(echo $container_information | awk -F, '{print $5}')
-    cnt_labels=$(echo $container_information | awk -F, '{print $6}')
+    cnt_pod_name=$(echo $container_information | awk -F '|' '{print $1}')
+    cnt_networks=$(echo $container_information | awk -F '|' '{print $2}')
+    cnt_mounts=$(echo $container_information | awk -F '|' '{print $3}')
+    cnt_image_name=$(echo $container_information | awk -F '|' '{print $4}')
+    cnt_ports=$(echo $container_information | awk -F '|' '{print $5}')
+    cnt_labels=$(echo $container_information | awk -F '|' '{print $6}')
 
     host_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $1}')
     cnt_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $2}')
@@ -106,6 +110,8 @@ load helpers_tui
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
 
     assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_MOUNT_POINT" "expected container volume mount point: $TEST_CONTAINER_VOLUME_MOUNT_POINT"
+    assert "$cnt_mounts" =~ "$TEST_CONTAINER_MOUNT_DEST" "expected container mount point: $TEST_CONTAINER_MOUNT_DEST"
+
     assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
     assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
     assert "$cnt_security_opt" =~ "no-new-privileges" "expected no-new-privileges in container security options"

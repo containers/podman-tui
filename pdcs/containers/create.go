@@ -36,6 +36,7 @@ type CreateOptions struct {
 	DNSSearchDomain       []string
 	Volume                string
 	ImageVolume           string
+	Mount                 string
 	SelinuxOpts           []string
 	ApparmorProfile       string
 	Seccomp               string
@@ -99,6 +100,14 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 
 	if opts.Volume != "" {
 		createOptions.Volume = strings.Split(opts.Volume, ",")
+	}
+
+	if opts.Mount != "" {
+		for _, mopts := range strings.Split(opts.Mount, " ") {
+			if mopts != "" {
+				createOptions.Mount = append(createOptions.Mount, mopts)
+			}
+		}
 	}
 
 	createOptions.ImageVolume = opts.ImageVolume
