@@ -12,50 +12,59 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Add adds new service connection
+// Add adds new service connection.
 func (c *Config) Add(name string, uri string, identity string) error {
 	log.Debug().Msgf("config: adding new service %s %s %s", name, uri, identity)
+
 	newService, err := validateNewService(name, uri, identity)
 	if err != nil {
 		return err
 	}
+
 	if err := c.add(name, newService); err != nil {
 		return err
 	}
+
 	if err := c.Write(); err != nil {
 		return err
 	}
+
 	return c.reload()
 }
 
 func (c *Config) add(name string, newService Service) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+
 	for serviceName := range c.Services {
 		if serviceName == name {
-			return fmt.Errorf("duplicated service name")
+			return ErrDuplicatedServiceName
 		}
 	}
 
 	c.Services[name] = newService
+
 	return nil
 }
 
 // most of codes are from:
-// https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go
-func validateNewService(name string, dest string, identity string) (Service, error) {
+// https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go.
+func validateNewService(name string, dest string, identity string) (Service, error) { //nolint:gocognit,cyclop
 	var (
 		service         Service
 		serviceIdentity string
 	)
+
 	if name == "" {
-		return service, fmt.Errorf("empty service name %q", name)
+		return service, ErrEmptyServiceName
 	}
+
 	if dest == "" {
-		return service, fmt.Errorf("empty URI %q", dest)
+		return service, ErrEmptyURIDestination
 	}
+
 	if match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)); err != nil {
-		return service, fmt.Errorf("%v invalid destition", err)
+		return service, fmt.Errorf("%w invalid destition", err)
 	} else if !match {
 		dest = "ssh://" + dest
 	}
@@ -64,6 +73,7 @@ func validateNewService(name string, dest string, identity string) (Service, err
 	if err != nil {
 		return service, err
 	}
+
 	switch uri.Scheme {
 	case "ssh":
 		if uri.User.Username() == "" {
@@ -71,16 +81,20 @@ func validateNewService(name string, dest string, identity string) (Service, err
 				return service, err
 			}
 		}
+
 		serviceIdentity, err = utils.ResolveHomeDir(identity)
 		if err != nil {
 			return service, err
 		}
+
 		if identity == "" {
-			return service, fmt.Errorf("%q empty identity field for SSH connection", identity)
+			return service, ErrEmptySSHIdentity
 		}
+
 		if uri.Port() == "" {
 			uri.Host = net.JoinHostPort(uri.Hostname(), "22")
 		}
+
 		if uri.Path == "" || uri.Path == "/" {
 			if uri.Path, err = getUDS(uri, serviceIdentity); err != nil {
 				return service, err
@@ -88,9 +102,11 @@ func validateNewService(name string, dest string, identity string) (Service, err
 		}
 	case "unix":
 		if identity != "" {
-			return service, fmt.Errorf("identity option not supported for unix scheme")
+			return service, fmt.Errorf("%w identity", ErrInvalidUnixSchemaOption)
 		}
+
 		info, err := os.Stat(uri.Path)
+
 		switch {
 		case errors.Is(err, os.ErrNotExist):
 			log.Warn().Msgf("config: %q does not exists", uri.Path)
@@ -99,15 +115,14 @@ func validateNewService(name string, dest string, identity string) (Service, err
 		case err != nil:
 			return service, err
 		case info.Mode()&os.ModeSocket == 0:
-			return service, fmt.Errorf("%q exists and is not a unix domain socket", uri.Path)
+			return service, fmt.Errorf("%w %q", ErrFileNotUnixSocket, uri.Path)
 		}
-
 	case "tcp":
 		if identity != "" {
-			return service, fmt.Errorf("identity option not supported for tcp scheme")
+			return service, fmt.Errorf("%w identity", ErrInvalidTCPSchemaOption)
 		}
 	default:
-		return service, fmt.Errorf("%q invalid schema name", uri.Scheme)
+		return service, fmt.Errorf("%w %q", ErrInvalidURISchemaName, uri.Scheme)
 	}
 
 	service.Identity = serviceIdentity
