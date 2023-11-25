@@ -72,13 +72,10 @@ jobs:
     container:
       image: fedora:latest
     steps:
+      - uses: actions/checkout@v4
       - run: |
           # Preparing and running unit tests #
           dnf -y install git-core golang glibc-static git-core wget gcc make
-          git clone https://github.com/${GITHUB_REPOSITORY}.git
-          cd podman-tui
-          PR_HEAD=$(echo ${GITHUB_REF} | sed 's/merge/head/g')
-          git pull origin ${PR_HEAD}
           bash ./hack/install_dep.sh
           export GOBIN=$(pwd)/bin/
           make .install.ginkgo

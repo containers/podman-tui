@@ -27,7 +27,6 @@ load helpers_tui
     pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_CONTAINER_POD_NAME" | awk '{print $1}')
     image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
     net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_CONTAINER_NETWORK_NAME" | awk '{print $1}')
-    vol_index=$(podman volume ls -q | nl -v 1 | grep "$TEST_CONTAINER_VOLUME_NAME" | awk '{print $1}')
 
 
     # switch to containers view
@@ -73,9 +72,8 @@ load helpers_tui
 
     # switch to "volumes settings" create view
     # select volume from dropdown widget
-    podman_tui_send_inputs "Down" "Tab" "Down"
-    podman_tui_select_item $vol_index
-    podman_tui_send_inputs "Enter"
+    podman_tui_send_inputs "Down" "Tab"
+    podman_tui_send_inputs "${TEST_CONTAINER_VOLUME_NAME}:${TEST_CONTAINER_VOLUME_MOUNT_POINT}:rw"
     sleep 1
 
     # go to "Create" button and press Enter
@@ -107,7 +105,7 @@ load helpers_tui
 
     assert "$cnt_pod_name" =~ "$TEST_CONTAINER_POD_NAME" "expected container pod: $TEST_CONTAINER_POD_NAME"
 
-    assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_NAME" "expected container volume: $TEST_CONTAINER_VOLUME_NAME"
+    assert "$cnt_mounts" =~ "$TEST_CONTAINER_VOLUME_MOUNT_POINT" "expected container volume mount point: $TEST_CONTAINER_VOLUME_MOUNT_POINT"
     assert "$cnt_image_name" =~ "$httpd_image" "expected container image name: $httpd_image"
     assert "$cnt_ports" =~ "$cnt_port_str" "expected container port: $cnt_port_str"
     assert "$cnt_security_opt" =~ "no-new-privileges" "expected no-new-privileges in container security options"
