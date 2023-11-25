@@ -4,8 +4,6 @@ run:
     - ".*_test.go"
   skip-dirs:
     - app
-    # - cmd
-    - config
     - ui/containers
     - ui/dialogs
     - ui/images
