@@ -8,42 +8,49 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,cyclop,lll
 	return sys.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: system event %v received", event)
+
 		if sys.progressDialog.IsDisplay() {
 			return
 		}
+
 		// command dialog handler
 		if sys.cmdDialog.HasFocus() {
 			if cmdHandler := sys.cmdDialog.InputHandler(); cmdHandler != nil {
 				cmdHandler(event, setFocus)
 			}
 		}
+
 		// confirm dialog handler
 		if sys.confirmDialog.HasFocus() {
 			if confirmDialogHandler := sys.confirmDialog.InputHandler(); confirmDialogHandler != nil {
 				confirmDialogHandler(event, setFocus)
 			}
 		}
+
 		// message dialog handler
 		if sys.messageDialog.HasFocus() {
 			if messageDialogHandler := sys.messageDialog.InputHandler(); messageDialogHandler != nil {
 				messageDialogHandler(event, setFocus)
 			}
 		}
+
 		// disk usage dialog
 		if sys.dfDialog.HasFocus() {
 			if dfDialogHandler := sys.dfDialog.InputHandler(); dfDialogHandler != nil {
 				dfDialogHandler(event, setFocus)
 			}
 		}
+
 		// error dialog handler
 		if sys.errorDialog.HasFocus() {
 			if errorDialogHandler := sys.errorDialog.InputHandler(); errorDialogHandler != nil {
 				errorDialogHandler(event, setFocus)
 			}
 		}
+
 		// connection progress dialog handler
 		if sys.connPrgDialog.HasFocus() {
 			if connectionPrgDialog := sys.connPrgDialog.InputHandler(); connectionPrgDialog != nil {
@@ -66,8 +73,8 @@ func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 		}
 
 		// table handlers
-		if sys.connTable.HasFocus() {
-			if event.Rune() == utils.CommandMenuKey.Rune() {
+		if sys.connTable.HasFocus() { //nolint:nestif
+			if event.Rune() == utils.CommandMenuKey.Rune() { //nolint:gocritic
 				sys.cmdDialog.Display()
 			} else if event.Key() == utils.DeleteKey.EventKey() {
 				sys.cremove()
@@ -77,6 +84,7 @@ func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 				}
 			}
 		}
+
 		setFocus(sys)
 	})
 }

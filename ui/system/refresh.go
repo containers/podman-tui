@@ -9,10 +9,10 @@ import (
 )
 
 func (sys *System) refresh() {
-
 	connections := sys.getConnectionsData()
 	sys.connTable.Clear()
 	sys.updateConnTableTitle(len(connections))
+
 	expand := 1
 	alignment := tview.AlignLeft
 	defaultAlignment := tview.AlignCenter
@@ -22,6 +22,7 @@ func (sys *System) refresh() {
 		if sys.connTableHeaders[i] == "default" {
 			headerAlignment = defaultAlignment
 		}
+
 		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i]))
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
@@ -31,12 +32,14 @@ func (sys *System) refresh() {
 				SetAlign(headerAlignment).
 				SetSelectable(false))
 	}
+
 	rowIndex := 1
 
 	for i := 0; i < len(connections); i++ {
 		isDefault := ""
 		conn := connections[i]
 		status := connectionItemStatus{conn.Status}.StatusString()
+
 		if conn.Default {
 			isDefault = style.HeavyGreenCheckMark
 		}
@@ -54,19 +57,19 @@ func (sys *System) refresh() {
 				SetAlign(defaultAlignment))
 
 		// status column
-		sys.connTable.SetCell(rowIndex, 2,
+		sys.connTable.SetCell(rowIndex, 2, //nolint:gomnd
 			tview.NewTableCell(status).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// uri column
-		sys.connTable.SetCell(rowIndex, 3,
+		sys.connTable.SetCell(rowIndex, 3, //nolint:gomnd
 			tview.NewTableCell(conn.URI).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// identity column
-		sys.connTable.SetCell(rowIndex, 4,
+		sys.connTable.SetCell(rowIndex, 4, //nolint:gomnd
 			tview.NewTableCell(conn.Identity).
 				SetExpansion(expand).
 				SetAlign(alignment))

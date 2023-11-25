@@ -14,7 +14,7 @@ const (
 	textviewHasFocus
 )
 
-// EventsDialog implements system events view dialog primitive
+// EventsDialog implements system events view dialog primitive.
 type EventsDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -26,7 +26,7 @@ type EventsDialog struct {
 	focusElement  int
 }
 
-// NewEventDialog returns new EventsDialog primitive
+// NewEventDialog returns new EventsDialog primitive.
 func NewEventDialog() *EventsDialog {
 	eventsDialog := EventsDialog{
 		Box:         tview.NewBox(),
@@ -36,6 +36,7 @@ func NewEventDialog() *EventsDialog {
 
 	// service name input field
 	serviceNameLabel := "SERVICE NAME:"
+
 	eventsDialog.serviceName.SetBackgroundColor(style.DialogBgColor)
 	eventsDialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
 	eventsDialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
@@ -87,17 +88,17 @@ func NewEventDialog() *EventsDialog {
 	return &eventsDialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *EventsDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *EventsDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *EventsDialog) Hide() {
 	d.display = false
 }
@@ -108,14 +109,14 @@ func (d *EventsDialog) SetServiceName(name string) {
 	d.serviceName.SetText(name)
 }
 
-// SetText sets message dialog text messages
+// SetText sets message dialog text messages.
 func (d *EventsDialog) SetText(message string) {
 	d.textview.Clear()
 	d.textview.SetText(message)
 	d.textview.ScrollToEnd()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *EventsDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// text screen field focus
@@ -124,8 +125,10 @@ func (d *EventsDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == utils.SwitchFocusKey.EventKey() {
 				d.focusElement = formFieldHasFocus
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
 		delegate(d.textview)
@@ -136,45 +139,49 @@ func (d *EventsDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == utils.SwitchFocusKey.EventKey() {
 				d.focusElement = textviewHasFocus
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				d.cancelHandler()
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	}
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *EventsDialog) HasFocus() bool {
 	return d.form.HasFocus() || d.textview.HasFocus()
 }
 
 // SetRect set rects for this primitive.
 func (d *EventsDialog) SetRect(x, y, width, height int) {
-
-	dWidth := width - (2 * dialogs.DialogPadding)
+	dWidth := width - (2 * dialogs.DialogPadding) //nolint:gomnd
 	if dWidth < 0 {
 		dWidth = 0
 	}
+
 	dX := x + dialogs.DialogPadding
 
-	dHeight := height - (2 * dialogs.DialogPadding)
+	dHeight := height - (2 * dialogs.DialogPadding) //nolint:gomnd
 	if dHeight < 0 {
 		dHeight = 0
 	}
+
 	dY := y + dialogs.DialogPadding
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
-
 }
 
 // Draw draws this primitive onto the screen.
 func (d *EventsDialog) Draw(screen tcell.Screen) {
-
 	if !d.display {
 		return
 	}
@@ -185,35 +192,42 @@ func (d *EventsDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *EventsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("events dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.EventKey() {
 			d.cancelHandler()
+
 			return
 		}
+
 		// textview field
 		if d.textview.HasFocus() {
 			if textviewHandler := d.textview.InputHandler(); textviewHandler != nil {
 				textviewHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// form primitive
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
 	})
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *EventsDialog) SetCancelFunc(handler func()) *EventsDialog {
 	d.cancelHandler = handler
 	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }

@@ -17,7 +17,7 @@ const (
 	dfDialogMaxWidth = 60
 )
 
-// DfDialog is a simple dialog with disk usage result table
+// DfDialog is a simple dialog with disk usage result table.
 type DfDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -29,7 +29,7 @@ type DfDialog struct {
 	cancelHandler func()
 }
 
-// NewDfDialog returns new DfDialog primitive
+// NewDfDialog returns new DfDialog primitive.
 func NewDfDialog() *DfDialog {
 	dialog := &DfDialog{
 		Box:          tview.NewBox(),
@@ -40,6 +40,7 @@ func NewDfDialog() *DfDialog {
 
 	// service name input field
 	serviceNameLabel := "SERVICE NAME:"
+
 	dialog.serviceName.SetBackgroundColor(style.DialogBgColor)
 	dialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
 	dialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
@@ -49,8 +50,8 @@ func NewDfDialog() *DfDialog {
 		Foreground(style.DialogFgColor))
 
 	// disk usage table
-
 	dialog.table = tview.NewTable()
+
 	dialog.table.SetBackgroundColor(style.DialogBgColor)
 	dialog.table.SetBorder(true)
 	dialog.table.SetBorderColor(style.DialogSubBoxBorderColor)
@@ -59,6 +60,7 @@ func NewDfDialog() *DfDialog {
 	dialog.form = tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
+
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
@@ -69,6 +71,7 @@ func NewDfDialog() *DfDialog {
 	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 
 	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
@@ -77,7 +80,7 @@ func NewDfDialog() *DfDialog {
 		AddItem(dialog.table, 0, 1, true), 0, 1, true)
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 
-	dialog.layout.AddItem(tableLayout, 9, 0, true)
+	dialog.layout.AddItem(tableLayout, 9, 0, true) //nolint:gomnd
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return dialog
@@ -89,42 +92,45 @@ func (d *DfDialog) SetServiceName(name string) {
 	d.serviceName.SetText(name)
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *DfDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *DfDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *DfDialog) Hide() {
 	d.display = false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *DfDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// HasFocus returns true if this primitive has focus
+// HasFocus returns true if this primitive has focus.
 func (d *DfDialog) HasFocus() bool {
 	return d.form.HasFocus() || d.table.HasFocus()
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *DfDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("disk usage dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
+
 			return
 		}
+
 		// scroll between df items
 		if tableHandler := d.table.InputHandler(); tableHandler != nil {
 			tableHandler(event, setFocus)
+
 			return
 		}
 	})
@@ -134,26 +140,25 @@ func (d *DfDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 func (d *DfDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y
-	dWidth := width - (2 * dialogs.DialogPadding)
+	dWidth := width - (2 * dialogs.DialogPadding) //nolint:gomnd
+
 	if dWidth > dfDialogMaxWidth {
 		dWidth = dfDialogMaxWidth
-		emptySpace := (width - dWidth) / 2
+		emptySpace := (width - dWidth) / 2 //nolint:gomnd
 		dX = x + emptySpace
 	}
 
-	dHeight := dialogs.DialogFormHeight + 11
+	dHeight := dialogs.DialogFormHeight + 11 //nolint:gomnd
 	if height > dHeight {
-		dY = y + ((height - dHeight) / 2)
+		dY = y + ((height - dHeight) / 2) //nolint:gomnd
 		height = dHeight
 	}
 
 	d.Box.SetRect(dX, dY, dWidth, height)
-
 }
 
 // Draw draws this primitive onto the screen.
 func (d *DfDialog) Draw(screen tcell.Screen) {
-
 	if !d.display {
 		return
 	}
@@ -164,9 +169,10 @@ func (d *DfDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *DfDialog) SetCancelFunc(handler func()) *DfDialog {
 	d.cancelHandler = handler
+
 	return d
 }
 
@@ -177,6 +183,7 @@ func (d *DfDialog) initTable() {
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+
 	// add headers
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
@@ -187,11 +194,12 @@ func (d *DfDialog) initTable() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
+
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 }
 
-// UpdateDiskSummary updates disk summary table result
+// UpdateDiskSummary updates disk summary table result.
 func (d *DfDialog) UpdateDiskSummary(sum []*sysinfo.DfSummary) {
 	// add summaries
 	rowIndex := 1
@@ -204,21 +212,21 @@ func (d *DfDialog) UpdateDiskSummary(sum []*sysinfo.DfSummary) {
 			tview.NewTableCell(dfReport.Total()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
-		d.table.SetCell(rowIndex, 2,
+		d.table.SetCell(rowIndex, 2, //nolint:gomnd
 			tview.NewTableCell(dfReport.Active()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
 
-		d.table.SetCell(rowIndex, 3,
+		d.table.SetCell(rowIndex, 3, //nolint:gomnd
 			tview.NewTableCell(dfReport.Size()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
 
-		d.table.SetCell(rowIndex, 4,
+		d.table.SetCell(rowIndex, 4, //nolint:gomnd
 			tview.NewTableCell(dfReport.Reclaimable()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
 
-		rowIndex = rowIndex + 1
+		rowIndex++
 	}
 }
