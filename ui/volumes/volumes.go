@@ -169,8 +169,8 @@ func (vols *Volumes) HideAllDialogs() {
 	}
 }
 
-func (vols *Volumes) getInnerDialogs() []utils.UiDialog {
-	dialogs := []utils.UiDialog{
+func (vols *Volumes) getInnerDialogs() []utils.UIDialog {
+	dialogs := []utils.UIDialog{
 		vols.errorDialog,
 		vols.progressDialog,
 		vols.confirmDialog,

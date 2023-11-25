@@ -5,22 +5,23 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// application key bindings names
+// application key bindings names.
+
 var (
 	CommandMenuKey = uiKeyInfo{
-		Key:      tcell.Key(256),
+		Key:      tcell.Key(256), //nolint:gomnd
 		KeyRune:  rune('m'),
 		KeyLabel: "m",
 		KeyDesc:  "display command menu",
 	}
 	NextScreenKey = uiKeyInfo{
-		Key:      tcell.Key(256),
+		Key:      tcell.Key(256), //nolint:gomnd
 		KeyRune:  rune('l'),
 		KeyLabel: "l",
 		KeyDesc:  "switch to next screen",
 	}
 	PreviousScreenKey = uiKeyInfo{
-		Key:      tcell.Key(256),
+		Key:      tcell.Key(256), //nolint:gomnd
 		KeyRune:  rune('h'),
 		KeyLabel: "h",
 		KeyDesc:  "switch to previous screen",
@@ -124,33 +125,31 @@ var (
 	}
 )
 
-var (
-	// UIKeysBindings user interface key bindings
-	UIKeysBindings = []uiKeyInfo{
-		CommandMenuKey,
-		NextScreenKey,
-		PreviousScreenKey,
-		MoveUpKey,
-		MoveDownKey,
-		CloseDialogKey,
-		SwitchFocusKey,
-		DeleteKey,
-		ArrowUpKey,
-		ArrowDownKey,
-		ArrowLeftKey,
-		ArrowRightKey,
-		ScrollUpKey,
-		ScrollDownKey,
-		AppExitKey,
-		HelpScreenKey,
-		SystemScreenKey,
-		PodsScreenKey,
-		ContainersScreenKey,
-		VolumesScreenKey,
-		ImagesScreenKey,
-		NetworksScreenKey,
-	}
-)
+// UIKeysBindings user interface key bindings.
+var UIKeysBindings = []uiKeyInfo{
+	CommandMenuKey,
+	NextScreenKey,
+	PreviousScreenKey,
+	MoveUpKey,
+	MoveDownKey,
+	CloseDialogKey,
+	SwitchFocusKey,
+	DeleteKey,
+	ArrowUpKey,
+	ArrowDownKey,
+	ArrowLeftKey,
+	ArrowRightKey,
+	ScrollUpKey,
+	ScrollDownKey,
+	AppExitKey,
+	HelpScreenKey,
+	SystemScreenKey,
+	PodsScreenKey,
+	ContainersScreenKey,
+	VolumesScreenKey,
+	ImagesScreenKey,
+	NetworksScreenKey,
+}
 
 type uiKeyInfo struct {
 	Key      tcell.Key
@@ -175,7 +174,7 @@ func (key *uiKeyInfo) Description() string {
 	return key.KeyDesc
 }
 
-// ParseKeyEventKey parsed and changes key events key and rune base on keyname
+// ParseKeyEventKey parsed and changes key events key and rune base on keyname.
 func ParseKeyEventKey(event *tcell.EventKey) *tcell.EventKey {
 	log.Debug().Msgf("utils: parse key event (%v) key=%v name=%v", event, event.Key(), event.Name())
 
@@ -186,7 +185,7 @@ func ParseKeyEventKey(event *tcell.EventKey) *tcell.EventKey {
 		return tcell.NewEventKey(MoveDownKey.Key, MoveDownKey.KeyRune, tcell.ModNone)
 	}
 
-	switch event.Key() {
+	switch event.Key() { //nolint:exhaustive
 	case ArrowLeftKey.Key:
 		return tcell.NewEventKey(PreviousScreenKey.Key, PreviousScreenKey.KeyRune, tcell.ModNone)
 	case ArrowRightKey.Key:
