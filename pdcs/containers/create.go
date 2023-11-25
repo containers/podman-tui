@@ -3,13 +3,13 @@ package containers
 import (
 	"net"
 	"strconv"
+	"strings"
 
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v4/libpod/define"
 	"github.com/containers/podman/v4/pkg/bindings/containers"
-	"github.com/containers/podman/v4/pkg/bindings/volumes"
 	"github.com/containers/podman/v4/pkg/domain/entities"
 	"github.com/containers/podman/v4/pkg/specgen"
 	"github.com/containers/podman/v4/pkg/specgenutil"
@@ -98,18 +98,7 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 	}
 
 	if opts.Volume != "" {
-		// get volume path
-		volFilter := make(map[string][]string)
-		volFilter["name"] = []string{opts.Volume}
-
-		volResponse, err := volumes.List(conn, new(volumes.ListOptions).WithFilters(volFilter))
-		if err != nil {
-			return warningResponse, err
-		}
-
-		if len(volResponse) > 0 {
-			createOptions.Volume = []string{volResponse[0].Mountpoint}
-		}
+		createOptions.Volume = strings.Split(opts.Volume, ",")
 	}
 
 	createOptions.ImageVolume = opts.ImageVolume

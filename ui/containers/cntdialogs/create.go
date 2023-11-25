@@ -125,7 +125,7 @@ type ContainerCreateDialog struct {
 	containerHealthStartupRetriesField  *tview.InputField
 	containerHealthStartupSuccessField  *tview.InputField
 	containerHealthStartupTimeoutField  *tview.InputField
-	containerVolumeField                *tview.DropDown
+	containerVolumeField                *tview.InputField
 	containerImageVolumeField           *tview.DropDown
 	cancelHandler                       func()
 	createHandler                       func()
@@ -177,7 +177,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerDNSServersField:            tview.NewInputField(),
 		containerDNSOptionsField:            tview.NewInputField(),
 		containerDNSSearchField:             tview.NewInputField(),
-		containerVolumeField:                tview.NewDropDown(),
+		containerVolumeField:                tview.NewInputField(),
 		containerImageVolumeField:           tview.NewDropDown(),
 		containerHealthCmdField:             tview.NewInputField(),
 		containerHealthIntervalField:        tview.NewInputField(),
@@ -647,7 +647,6 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 	d.containerVolumeField.SetLabelWidth(volumePageLabelWidth)
 	d.containerVolumeField.SetBackgroundColor(bgColor)
 	d.containerVolumeField.SetLabelColor(style.DialogFgColor)
-	d.containerVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// image volume
@@ -698,13 +697,12 @@ func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 	if d.containerImageField.HasFocus() || d.containerPodField.HasFocus() {
 		return true
 	}
-	if d.containerVolumeField.HasFocus() || d.containerImageVolumeField.HasFocus() {
+
+	if d.containerNetworkField.HasFocus() || d.containerImageVolumeField.HasFocus() {
 		return true
 	}
-	if d.containerNetworkField.HasFocus() || d.containerHealthOnFailureField.HasFocus() {
-		return true
-	}
-	return false
+
+	return d.containerHealthOnFailureField.HasFocus()
 }
 
 // Focus is called when this primitive receives focus.
@@ -841,11 +839,6 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 	})
 	// container network dropdown
 	d.containerNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		event = utils.ParseKeyEventKey(event)
-		return event
-	})
-	// container volume dropdown
-	d.containerVolumeField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
 		return event
 	})
@@ -1101,8 +1094,7 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerDNSServersField.SetText("")
 	d.containerDNSSearchField.SetText("")
 	d.containerDNSOptionsField.SetText("")
-	d.containerVolumeField.SetOptions(volumeOptions, nil)
-	d.containerVolumeField.SetCurrentOption(0)
+	d.containerVolumeField.SetText("")
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
 	d.containerImageVolumeField.SetCurrentOption(0)
 
@@ -1227,7 +1219,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		dnsSearchDomains []string
 		publish          []string
 		expose           []string
-		volume           string
 		imageVolume      string
 		selinuxOpts      []string
 	)
@@ -1274,7 +1265,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 			dnsSearchDomains = append(dnsSearchDomains, ds)
 		}
 	}
-	_, volume = d.containerVolumeField.GetCurrentOption()
 	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
 
 	// security options
@@ -1304,7 +1294,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		DNSServer:             dnsServers,
 		DNSOptions:            dnsOptions,
 		DNSSearchDomain:       dnsSearchDomains,
-		Volume:                volume,
+		Volume:                d.containerVolumeField.GetText(),
 		ImageVolume:           imageVolume,
 		SelinuxOpts:           selinuxOpts,
 		ApparmorProfile:       d.containerApparmorField.GetText(),
