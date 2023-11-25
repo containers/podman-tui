@@ -12,6 +12,7 @@ func (app *App) initUI() {
 		app.volumes.UpdateData()
 		app.initInfoBar()
 	}
+
 	app.system.UpdateConnectionsData()
 }
 
@@ -28,6 +29,7 @@ func (app *App) initInfoBar() {
 		app.infoBar.UpdateBasicInfo(hostname, kernel, ostype)
 		app.infoBar.UpdateSystemUsageInfo(memUsage, swapUsage)
 		app.infoBar.UpdatePodmanInfo(apiVer, runtime, conmonVer, buildahVer)
+
 		return
 	}
 

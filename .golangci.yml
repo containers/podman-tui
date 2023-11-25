@@ -3,7 +3,6 @@ run:
   skip-files:
     - ".*_test.go"
   skip-dirs:
-    - app
     - ui/containers
     - ui/dialogs
     - ui/images
