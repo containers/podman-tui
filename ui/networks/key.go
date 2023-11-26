@@ -8,39 +8,42 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return nets.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: networks event %v received", event)
 		if nets.progressDialog.IsDisplay() {
 			return
 		}
+
 		// error dialog handler
 		if nets.errorDialog.HasFocus() {
 			if errorDialogHandler := nets.errorDialog.InputHandler(); errorDialogHandler != nil {
 				errorDialogHandler(event, setFocus)
 			}
 		}
+
 		// message dialog handler
 		if nets.messageDialog.HasFocus() {
 			if messageDialogHandler := nets.messageDialog.InputHandler(); messageDialogHandler != nil {
 				messageDialogHandler(event, setFocus)
 			}
 		}
-		// create dialog dialog handler
+
+		// create dialog handler
 		if nets.createDialog.HasFocus() {
 			if createDialogHandler := nets.createDialog.InputHandler(); createDialogHandler != nil {
 				createDialogHandler(event, setFocus)
 			}
 		}
 
-		// connect dialog dialog handler
+		// connect dialog handler
 		if nets.connectDialog.HasFocus() {
 			if connectDialogHandler := nets.connectDialog.InputHandler(); connectDialogHandler != nil {
 				connectDialogHandler(event, setFocus)
 			}
 		}
 
-		// disconnect dialog dialog handler
+		// disconnect dialog handler
 		if nets.disconnectDialog.HasFocus() {
 			if disconnectDialogHandler := nets.disconnectDialog.InputHandler(); disconnectDialogHandler != nil {
 				disconnectDialogHandler(event, setFocus)
@@ -53,28 +56,39 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 				confirmDialogHandler(event, setFocus)
 			}
 		}
+
 		// command dialog handler
 		if nets.cmdDialog.HasFocus() {
 			if cmdHandler := nets.cmdDialog.InputHandler(); cmdHandler != nil {
 				cmdHandler(event, setFocus)
 			}
 		}
+
 		// table handlers
-		if nets.table.HasFocus() {
+		if nets.table.HasFocus() { //nolint:nestif
 			nets.selectedID, _ = nets.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if nets.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
+
 				nets.cmdDialog.Display()
-			} else if event.Key() == utils.DeleteKey.EventKey() {
+				setFocus(nets)
+
+				return
+			}
+			if event.Key() == utils.DeleteKey.EventKey() {
 				nets.rm()
-			} else {
-				if tableHandler := nets.table.InputHandler(); tableHandler != nil {
-					tableHandler(event, setFocus)
-				}
+				setFocus(nets)
+
+				return
+			}
+
+			if tableHandler := nets.table.InputHandler(); tableHandler != nil {
+				tableHandler(event, setFocus)
 			}
 		}
+
 		setFocus(nets)
 	})
 }

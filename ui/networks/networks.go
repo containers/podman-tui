@@ -1,6 +1,7 @@
 package networks
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,7 +11,20 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Networks implemnents the Networks page primitive
+const (
+	viewNetowrkNameColIndex = 0 + iota
+	viewNetowrkVersionColIndex
+	viewNetowrkPluginColIndex
+)
+
+var (
+	errNoNetworkRemove     = errors.New("there is no network to remove")
+	errNoNetworkInspect    = errors.New("there is no network to display inspect")
+	errNoNetworkDisconnect = errors.New("there is no network to disconnect")
+	errNoNetworkConnect    = errors.New("there is no network to connect")
+)
+
+// Networks implemnents the Networks page primitive.
 type Networks struct {
 	*tview.Box
 	title            string
@@ -28,7 +42,7 @@ type Networks struct {
 	confirmData      string
 }
 
-// NewNetworks returns nets page view
+// NewNetworks returns nets page view.
 func NewNetworks() *Networks {
 	nets := &Networks{
 		Box:              tview.NewBox(),
@@ -49,7 +63,7 @@ func NewNetworks() *Networks {
 		{"disconnect", "disconnect a container from a network"},
 		{"inspect", "displays the raw CNI network configuration"},
 		{"prune", "remove all unused networks"},
-		//{"reload", "reload the network for containers"},
+		// {"reload", "reload the network for containers"},
 		{"rm", "remove a CNI networks"},
 	})
 
@@ -86,6 +100,7 @@ func NewNetworks() *Networks {
 	nets.messageDialog.SetCancelFunc(func() {
 		nets.messageDialog.Hide()
 	})
+
 	// set confirm dialogs functions
 	nets.confirmDialog.SetSelectedFunc(func() {
 		nets.confirmDialog.Hide()
@@ -96,6 +111,7 @@ func NewNetworks() *Networks {
 			nets.remove()
 		}
 	})
+
 	nets.confirmDialog.SetCancelFunc(func() {
 		nets.confirmDialog.Hide()
 	})
@@ -104,6 +120,7 @@ func NewNetworks() *Networks {
 	nets.createDialog.SetCancelFunc(func() {
 		nets.createDialog.Hide()
 	})
+
 	nets.createDialog.SetCreateFunc(func() {
 		nets.createDialog.Hide()
 		nets.create()
@@ -120,13 +137,13 @@ func NewNetworks() *Networks {
 	return nets
 }
 
-// GetTitle returns primitive title
+// GetTitle returns primitive title.
 func (nets *Networks) GetTitle() string {
 	return nets.title
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (nets *Networks) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (nets *Networks) HasFocus() bool { //nolint:cyclop
 	if nets.table.HasFocus() || nets.errorDialog.HasFocus() {
 		return true
 	}
@@ -150,7 +167,7 @@ func (nets *Networks) HasFocus() bool {
 	return false
 }
 
-// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus.
 func (nets *Networks) SubDialogHasFocus() bool {
 	if nets.createDialog.HasFocus() || nets.errorDialog.HasFocus() {
 		return true
@@ -171,43 +188,54 @@ func (nets *Networks) SubDialogHasFocus() bool {
 	return false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 	// error dialog
 	if nets.errorDialog.IsDisplay() {
 		delegate(nets.errorDialog)
+
 		return
 	}
+
 	// command dialog
 	if nets.cmdDialog.IsDisplay() {
 		delegate(nets.cmdDialog)
+
 		return
 	}
+
 	// message dialog
 	if nets.messageDialog.IsDisplay() {
 		delegate(nets.messageDialog)
+
 		return
 	}
+
 	// confirm dialog
 	if nets.confirmDialog.IsDisplay() {
 		delegate(nets.confirmDialog)
+
 		return
 	}
+
 	// create dialog
 	if nets.createDialog.IsDisplay() {
 		delegate(nets.createDialog)
+
 		return
 	}
 
 	// connect dialog
 	if nets.connectDialog.IsDisplay() {
 		delegate(nets.connectDialog)
+
 		return
 	}
 
 	// disconnect dialog
 	if nets.disconnectDialog.IsDisplay() {
 		delegate(nets.disconnectDialog)
+
 		return
 	}
 
@@ -218,6 +246,7 @@ func (nets *Networks) getSelectedItem() (string, string) {
 	if nets.table.GetRowCount() <= 1 {
 		return "", ""
 	}
+
 	row, _ := nets.table.GetSelection()
 	netID := nets.table.GetCell(row, 0).Text
 	netName := nets.table.GetCell(row, 1).Text
@@ -225,7 +254,7 @@ func (nets *Networks) getSelectedItem() (string, string) {
 	return netID, netName
 }
 
-// HideAllDialogs hides all sub dialogs
+// HideAllDialogs hides all sub dialogs.
 func (nets *Networks) HideAllDialogs() {
 	if nets.errorDialog.IsDisplay() {
 		nets.errorDialog.Hide()

@@ -39,7 +39,7 @@ const (
 	ipSettingsPageIndex
 )
 
-// NetworkCreateDialog implements network create dialog
+// NetworkCreateDialog implements network create dialog.
 type NetworkCreateDialog struct {
 	*tview.Box
 	layout                    *tview.Flex
@@ -66,7 +66,7 @@ type NetworkCreateDialog struct {
 	createHandler             func()
 }
 
-// NewNetworkCreateDialog returns new network create dialog primitive NetworkCreateDialog
+// NewNetworkCreateDialog returns new network create dialog primitive NetworkCreateDialog.
 func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog := NetworkCreateDialog{
 		Box:                       tview.NewBox(),
@@ -200,6 +200,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.layout.AddItem(netDialog.form, dialogs.DialogFormHeight, 0, true)
 
 	netDialog.setActiveCategory(0)
+
 	return &netDialog
 }
 
@@ -239,32 +240,33 @@ func (d *NetworkCreateDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
 	d.layout.AddItem(layout, 0, 1, true)
-
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *NetworkCreateDialog) Display() {
 	d.display = true
+
 	d.initData()
+
 	d.focusElement = categoryPagesFocus
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *NetworkCreateDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *NetworkCreateDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *NetworkCreateDialog) HasFocus() bool {
 	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
 		return true
@@ -273,8 +275,8 @@ func (d *NetworkCreateDialog) HasFocus() bool {
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
-func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) {
+// Focus is called when this primitive receives focus.
+func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	switch d.focusElement {
 	// form has focus
 	case formFocus:
@@ -284,31 +286,39 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = categoriesFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
 			if event.Key() == tcell.KeyEnter {
-				//d.pullSelectHandler()
+				// d.pullSelectHandler()
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
+
 	// category text view
 	case categoriesFocus:
 		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = categoryPagesFocus // category page view
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			// scroll between categories
 			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
+
 			if event.Key() == tcell.KeyUp {
 				d.previousCategory()
 			}
+
 			return event
 		})
 		delegate(d.categories)
@@ -338,42 +348,51 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	case categoryPagesFocus:
 		delegate(d.categoryPages)
 	}
-
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("network create dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.basicInfoPage.HasFocus() {
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBasicInfoPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.ipSettingsPage.HasFocus() {
 			if handler := d.ipSettingsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setIPSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.categories.HasFocus() {
 			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
 				categroryHandler(event, setFocus)
+
 				return
 			}
 		}
-		if d.form.HasFocus() {
+
+		if d.form.HasFocus() { //nolint:nestif
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				if event.Key() == tcell.KeyEnter {
 					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
@@ -381,26 +400,26 @@ func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocu
 						d.createHandler()
 					}
 				}
+
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
-
 	})
 }
 
 // SetRect set rects for this primitive.
 func (d *NetworkCreateDialog) SetRect(x, y, width, height int) {
-
 	if width > networkCreateDialogMaxWidth {
-		emptySpace := (width - networkCreateDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - networkCreateDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = networkCreateDialogMaxWidth
 	}
 
 	if height > networkCreateDialogHeight {
-		emptySpace := (height - networkCreateDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - networkCreateDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = networkCreateDialogHeight
 	}
 
@@ -412,25 +431,31 @@ func (d *NetworkCreateDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *NetworkCreateDialog) SetCancelFunc(handler func()) *NetworkCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCreateFunc sets form create button selected function
+// SetCreateFunc sets form create button selected function.
 func (d *NetworkCreateDialog) SetCreateFunc(handler func()) *NetworkCreateDialog {
 	d.createHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -441,16 +466,23 @@ func (d *NetworkCreateDialog) setActiveCategory(index int) {
 	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
+
 	d.categories.Clear()
+
 	var ctgList []string
+
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
+
 	for i := 0; i < len(d.categoryLabels); i++ {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
+
 			continue
 		}
+
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))
 	}
+
 	d.categories.SetText(strings.Join(ctgList, "\n"))
 
 	// switch the page
@@ -460,20 +492,24 @@ func (d *NetworkCreateDialog) setActiveCategory(index int) {
 func (d *NetworkCreateDialog) nextCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex < len(d.categoryLabels)-1 {
-		activePage = activePage + 1
+		activePage++
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(0)
 }
 
 func (d *NetworkCreateDialog) previousCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex > 0 {
-		activePage = activePage - 1
+		activePage--
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(len(d.categoryLabels) - 1)
 }
 
@@ -494,33 +530,61 @@ func (d *NetworkCreateDialog) initData() {
 func (d *NetworkCreateDialog) setBasicInfoPageNextFocus() {
 	if d.networkNameField.HasFocus() {
 		d.focusElement = networkLabelFieldFocus
-	} else if d.networkLabelsField.HasFocus() {
-		d.focusElement = networkInternalCheckBoxFocus
-	} else if d.networkInternalCheckBox.HasFocus() {
-		d.focusElement = networkDriverFieldFocus
-	} else if d.networkDriverField.HasFocus() {
-		d.focusElement = networkDriverOptionsFieldFocus
-	} else {
-		d.focusElement = formFocus
+
+		return
 	}
+
+	if d.networkLabelsField.HasFocus() {
+		d.focusElement = networkInternalCheckBoxFocus
+
+		return
+	}
+
+	if d.networkInternalCheckBox.HasFocus() {
+		d.focusElement = networkDriverFieldFocus
+
+		return
+	}
+
+	if d.networkDriverField.HasFocus() {
+		d.focusElement = networkDriverOptionsFieldFocus
+
+		return
+	}
+
+	d.focusElement = formFocus
 }
 
 func (d *NetworkCreateDialog) setIPSettingsPageNextFocus() {
 	if d.networkIpv6CheckBox.HasFocus() {
 		d.focusElement = networkGatewatFieldFocus
-	} else if d.networkGatewayField.HasFocus() {
-		d.focusElement = networkIPRangeFieldFocus
-	} else if d.networkIPRangeField.HasFocus() {
-		d.focusElement = networkSubnetFieldFocus
-	} else if d.networkSubnetField.HasFocus() {
-		d.focusElement = networkDisableDNSCheckBoxFocus
-	} else {
-		d.focusElement = formFocus
+
+		return
 	}
+
+	if d.networkGatewayField.HasFocus() {
+		d.focusElement = networkIPRangeFieldFocus
+
+		return
+	}
+
+	if d.networkIPRangeField.HasFocus() {
+		d.focusElement = networkSubnetFieldFocus
+
+		return
+	}
+
+	if d.networkSubnetField.HasFocus() {
+		d.focusElement = networkDisableDNSCheckBoxFocus
+
+		return
+	}
+
+	d.focusElement = formFocus
 }
 
-// NetworkCreateOptions returns new network options
-func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions {
+// NetworkCreateOptions returns new network options.
+func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //nolint:cyclop
 	var (
 		labels   = make(map[string]string)
 		options  = make(map[string]string)
@@ -528,36 +592,43 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions {
 		gateways []string
 		ipranges []string
 	)
+
 	for _, label := range strings.Split(d.networkLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 {
+			if len(split) == 2 { //nolint:gomnd
 				key := split[0]
 				value := split[1]
+
 				if key != "" && value != "" {
 					labels[key] = value
 				}
 			}
 		}
 	}
+
 	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
-			if len(split) == 2 {
+			if len(split) == 2 { //nolint:gomnd
 				key := split[0]
 				value := split[1]
+
 				if key != "" && value != "" {
 					options[key] = value
 				}
 			}
 		}
 	}
+
 	if strings.Trim(d.networkGatewayField.GetText(), " ") != "" {
 		gateways = strings.Split(d.networkGatewayField.GetText(), " ")
 	}
+
 	if strings.Trim(d.networkSubnetField.GetText(), " ") != "" {
 		subnets = strings.Split(d.networkSubnetField.GetText(), " ")
 	}
+
 	if strings.Trim(d.networkIPRangeField.GetText(), " ") != "" {
 		ipranges = strings.Split(d.networkIPRangeField.GetText(), " ")
 	}
@@ -574,5 +645,6 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions {
 		IPRanges:       ipranges,
 		DisableDNS:     d.networkDisableDNSCheckBox.IsChecked(),
 	}
+
 	return opts
 }

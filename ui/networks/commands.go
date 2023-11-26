@@ -21,7 +21,7 @@ func (nets *Networks) runCommand(cmd string) {
 		nets.cdisconnect()
 	case "inspect":
 		nets.inspect()
-	case "prune":
+	case "prune": //nolint:goconst
 		nets.cprune()
 	case "rm":
 		nets.rm()
@@ -37,7 +37,8 @@ func (nets *Networks) displayError(title string, err error) {
 
 func (nets *Networks) cconnect() {
 	if nets.selectedID == "" {
-		nets.displayError("", fmt.Errorf("there is no network to connect"))
+		nets.displayError("", errNoNetworkConnect)
+
 		return
 	}
 
@@ -62,11 +63,9 @@ func (nets *Networks) cconnect() {
 	}
 
 	go initData()
-
 }
 
 func (nets *Networks) connect() {
-
 	connectOptions := nets.connectDialog.GetConnectOptions()
 
 	connect := func() {
@@ -80,16 +79,17 @@ func (nets *Networks) connect() {
 
 			return
 		}
+
 		nets.progressDialog.Hide()
 	}
 
 	go connect()
-
 }
 
 func (nets *Networks) cdisconnect() {
 	if nets.selectedID == "" {
-		nets.displayError("", fmt.Errorf("there is no network to disconnect"))
+		nets.displayError("", errNoNetworkDisconnect)
+
 		return
 	}
 
@@ -104,6 +104,7 @@ func (nets *Networks) cdisconnect() {
 
 			return
 		}
+
 		netID, netName := nets.getSelectedItem()
 
 		nets.disconnectDialog.SetNetworkInfo(netID, netName)
@@ -129,6 +130,7 @@ func (nets *Networks) disconnect() {
 
 			return
 		}
+
 		nets.progressDialog.Hide()
 	}
 
@@ -137,24 +139,30 @@ func (nets *Networks) disconnect() {
 
 func (nets *Networks) create() {
 	createOpts := nets.createDialog.NetworkCreateOptions()
+
 	_, err := networks.Create(createOpts)
 	if err != nil {
 		nets.displayError("NETWORK CREATE ERROR", err)
+
 		return
 	}
+
 	nets.UpdateData()
 }
 
 func (nets *Networks) inspect() {
 	netID, netName := nets.getSelectedItem()
 	if netID == "" {
-		nets.displayError("", fmt.Errorf("there is no network to display inspect"))
+		nets.displayError("", errNoNetworkInspect)
+
 		return
 	}
+
 	data, err := networks.Inspect(netID)
 	if err != nil {
 		title := fmt.Sprintf("NETWORK (%s) INSPECT ERROR", netID)
 		nets.displayError(title, err)
+
 		return
 	}
 
@@ -167,7 +175,9 @@ func (nets *Networks) inspect() {
 
 func (nets *Networks) cprune() {
 	nets.confirmDialog.SetTitle("podman network prune")
+
 	nets.confirmData = "prune"
+
 	nets.confirmDialog.SetText("Are you sure you want to remove all un used network ?")
 	nets.confirmDialog.Display()
 }
@@ -175,24 +185,30 @@ func (nets *Networks) cprune() {
 func (nets *Networks) prune() {
 	nets.progressDialog.SetTitle("network purne in progress")
 	nets.progressDialog.Display()
+
 	prune := func() {
 		if err := networks.Prune(); err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK PRUNE ERROR", err)
+
 			return
 		}
+
 		nets.UpdateData()
 		nets.progressDialog.Hide()
 	}
+
 	go prune()
 }
 
 func (nets *Networks) rm() {
 	netID, netName := nets.getSelectedItem()
 	if netID == "" {
-		nets.displayError("", fmt.Errorf("there is no network to remove"))
+		nets.displayError("", errNoNetworkRemove)
+
 		return
 	}
+
 	nets.confirmDialog.SetTitle("podman network remove")
 	nets.confirmData = "rm"
 
@@ -208,15 +224,21 @@ func (nets *Networks) rm() {
 func (nets *Networks) remove() {
 	nets.progressDialog.SetTitle("network remove in progress")
 	nets.progressDialog.Display()
+
 	remove := func(id string) {
 		err := networks.Remove(id)
+
 		nets.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("NETWORK (%s) REMOVE ERROR", nets.selectedID)
 			nets.displayError(title, err)
+
 			return
 		}
+
 		nets.UpdateData()
 	}
+
 	go remove(nets.selectedID)
 }
