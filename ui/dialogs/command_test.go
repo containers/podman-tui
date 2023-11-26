@@ -111,5 +111,4 @@ var _ = Describe("command dialog", Ordered, func() {
 	AfterAll(func() {
 		cmdDialogApp.Stop()
 	})
-
 })

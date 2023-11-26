@@ -92,5 +92,4 @@ var _ = Describe("progress bar dialog", Ordered, func() {
 	AfterAll(func() {
 		progressDialogApp.Stop()
 	})
-
 })

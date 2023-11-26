@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ConfirmDialog is a simple confirmation dialog primitive
+// ConfirmDialog is a simple confirmation dialog primitive.
 type ConfirmDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -26,7 +26,7 @@ type ConfirmDialog struct {
 	selectHandler func()
 }
 
-// NewConfirmDialog returns new confirm dialog primitive
+// NewConfirmDialog returns new confirm dialog primitive.
 func NewConfirmDialog() *ConfirmDialog {
 	dialog := &ConfirmDialog{
 		Box:     tview.NewBox(),
@@ -54,49 +54,51 @@ func NewConfirmDialog() *ConfirmDialog {
 	dialog.layout.SetBackgroundColor(style.DialogBgColor)
 
 	return dialog
-
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ConfirmDialog) Display() {
 	d.form.SetFocus(1)
+
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ConfirmDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ConfirmDialog) Hide() {
 	d.textview.SetText("")
 	d.message = ""
 	d.display = false
 }
 
-// SetTitle sets dialog title
+// SetTitle sets dialog title.
 func (d *ConfirmDialog) SetTitle(title string) {
 	d.layout.SetTitle(strings.ToUpper(title))
 	d.layout.SetTitleColor(style.DialogFgColor)
 }
 
-// SetText sets dialog title
+// SetText sets dialog title.
 func (d *ConfirmDialog) SetText(message string) {
 	d.message = message
 	d.textview.Clear()
+
 	msg := "\n" + message
+
 	d.textview.SetText(msg)
 	d.textview.ScrollToBeginning()
 	d.setRect()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ConfirmDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ConfirmDialog) HasFocus() bool {
 	return d.form.HasFocus()
 }
@@ -105,8 +107,8 @@ func (d *ConfirmDialog) HasFocus() bool {
 func (d *ConfirmDialog) SetRect(x, y, width, height int) {
 	d.x = x + DialogPadding
 	d.y = y + DialogPadding
-	d.width = width - (2 * DialogPadding)
-	d.height = height - (2 * DialogPadding)
+	d.width = width - (2 * DialogPadding)   //nolint:gomnd
+	d.height = height - (2 * DialogPadding) //nolint:gomnd
 	d.setRect()
 }
 
@@ -116,30 +118,31 @@ func (d *ConfirmDialog) setRect() {
 	messageHeight := len(strings.Split(d.message, "\n"))
 	messageWidth := getMessageWidth(d.message)
 
-	layoutHeight := messageHeight + 2
+	layoutHeight := messageHeight + 2 //nolint:gomnd
 
 	if maxHeight > layoutHeight+DialogFormHeight {
-		d.height = layoutHeight + DialogFormHeight + 2
+		d.height = layoutHeight + DialogFormHeight + 2 //nolint:gomnd
 	} else {
 		d.height = maxHeight
-		layoutHeight = d.height - DialogFormHeight - 2
+		layoutHeight = d.height - DialogFormHeight - 2 //nolint:gomnd
 	}
-	if maxHeight > d.height {
-		emptyHeight := (maxHeight - d.height) / 2
-		d.y = d.y + emptyHeight
 
+	if maxHeight > d.height {
+		emptyHeight := (maxHeight - d.height) / 2 //nolint:gomnd
+		d.y += emptyHeight
 	}
 
 	if d.width > DialogMinWidth {
 		if messageWidth < DialogMinWidth {
-			d.width = DialogMinWidth + 2
+			d.width = DialogMinWidth + 2 //nolint:gomnd
 		} else if messageWidth < d.width {
-			d.width = messageWidth + 2
+			d.width = messageWidth + 2 //nolint:gomnd
 		}
 	}
+
 	if maxWidth > d.width {
-		emptyWidth := (maxWidth - d.width) / 2
-		d.x = d.x + emptyWidth
+		emptyWidth := (maxWidth - d.width) / 2 //nolint:gomnd
+		d.x += emptyWidth
 	}
 
 	msgLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -167,33 +170,38 @@ func (d *ConfirmDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *ConfirmDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("confirm dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if formHandler := d.form.InputHandler(); formHandler != nil {
 			formHandler(event, setFocus)
+
 			return
 		}
 	})
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ConfirmDialog) SetCancelFunc(handler func()) *ConfirmDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetSelectedFunc sets form select button selected function
+// SetSelectedFunc sets form select button selected function.
 func (d *ConfirmDialog) SetSelectedFunc(handler func()) *ConfirmDialog {
 	d.selectHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }

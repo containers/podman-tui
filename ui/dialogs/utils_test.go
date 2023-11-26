@@ -6,7 +6,6 @@ import (
 )
 
 var _ = Describe("command dialog", Ordered, func() {
-
 	var sample1 string = "test\nabcdefghi\ntest"
 	var sample2 string = "abcdefghi\ntest\ntest"
 	var sample3 string = "test\ntest\nabcdefghi"
@@ -23,5 +22,4 @@ var _ = Describe("command dialog", Ordered, func() {
 			Expect(getMessageWidth(sample3)).To(Equal(wants))
 		})
 	})
-
 })

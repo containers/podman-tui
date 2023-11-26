@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// MessageDialog is a simaple message dialog primitive
+// MessageDialog is a simaple message dialog primitive.
 type MessageDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -34,7 +34,7 @@ const (
 	MessageNetworkInfo
 )
 
-// NewMessageDialog returns new message dialog primitive
+// NewMessageDialog returns new message dialog primitive.
 func NewMessageDialog(text string) *MessageDialog {
 	dialog := &MessageDialog{
 		Box:      tview.NewBox(),
@@ -87,31 +87,32 @@ func NewMessageDialog(text string) *MessageDialog {
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *MessageDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *MessageDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *MessageDialog) Hide() {
 	d.message = ""
 	d.textview.SetText("")
 	d.display = false
 }
 
-// SetTitle sets input dialog title
+// SetTitle sets input dialog title.
 func (d *MessageDialog) SetTitle(title string) {
 	d.layout.SetTitle(strings.ToUpper(title))
 }
 
-// SetText sets message dialog text messages
+// SetText sets message dialog text messages.
 func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, message string) {
 	msgTypeLabel := ""
+
 	switch headerType {
 	case MessageSystemInfo:
 		msgTypeLabel = "SERVICE NAME:"
@@ -148,17 +149,17 @@ func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, me
 	d.textview.ScrollToBeginning()
 }
 
-// TextScrollToEnd scroll downs the text view
+// TextScrollToEnd scroll downs the text view.
 func (d *MessageDialog) TextScrollToEnd() {
 	d.textview.ScrollToEnd()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *MessageDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *MessageDialog) HasFocus() bool {
 	return d.form.HasFocus()
 }
@@ -167,43 +168,44 @@ func (d *MessageDialog) HasFocus() bool {
 func (d *MessageDialog) SetRect(x, y, width, height int) {
 	messageHeight := 0
 	if d.message != "" {
-		messageHeight = len(strings.Split(d.message, "\n")) + 3
+		messageHeight = len(strings.Split(d.message, "\n")) + 3 //nolint:gomnd
 	}
 
 	messageWidth := getMessageWidth(d.message)
 
-	headerWidth := len(d.infoType.GetText()) + len(d.infoType.GetLabel()) + 4
+	headerWidth := len(d.infoType.GetText()) + len(d.infoType.GetLabel()) + 4 //nolint:gomnd
 	if messageWidth < headerWidth {
 		messageWidth = headerWidth
 	}
 
-	dWidth := width - (2 * DialogPadding)
+	dWidth := width - (2 * DialogPadding) //nolint:gomnd
 	if messageWidth+4 < dWidth {
-		dWidth = messageWidth + 4
+		dWidth = messageWidth + 4 //nolint:gomnd
 	}
+
 	if DialogMinWidth < width && dWidth < DialogMinWidth {
 		dWidth = DialogMinWidth
 	}
-	emptySpace := (width - dWidth) / 2
+
+	emptySpace := (width - dWidth) / 2 //nolint:gomnd
 	dX := x + emptySpace
 
 	dHeight := messageHeight + DialogFormHeight + DialogPadding + 1
 	if dHeight > height {
 		dHeight = height - DialogPadding - 1
 	}
-	textviewHeight := dHeight - DialogFormHeight - 2
-	hs := ((height - dHeight) / 2)
+
+	textviewHeight := dHeight - DialogFormHeight - 2 //nolint:gomnd
+	hs := ((height - dHeight) / 2)                   //nolint:gomnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 
 	d.layout.ResizeItem(d.textview, textviewHeight, 0)
-
 }
 
 // Draw draws this primitive onto the screen.
 func (d *MessageDialog) Draw(screen tcell.Screen) {
-
 	if !d.display {
 		return
 	}
@@ -214,34 +216,42 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 	d.layout.Draw(screen)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("message dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
+
 			return
 		}
+
 		if event.Key() == tcell.KeyTab {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// scroll between message textview
 		if textHandler := d.textview.InputHandler(); textHandler != nil {
 			textHandler(event, setFocus)
+
 			return
 		}
 	})
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *MessageDialog) SetCancelFunc(handler func()) *MessageDialog {
 	d.cancelHandler = handler
+
 	return d
 }

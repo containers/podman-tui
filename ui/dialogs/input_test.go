@@ -103,7 +103,6 @@ var _ = Describe("input dialog", Ordered, func() {
 		inputDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		inputDialogApp.Draw()
 		Expect(enterButton).To(Equal(enterButtonWants))
-
 	})
 
 	It("cancel button selected", func() {
@@ -144,5 +143,4 @@ var _ = Describe("input dialog", Ordered, func() {
 	AfterAll(func() {
 		inputDialogApp.Stop()
 	})
-
 })

@@ -91,5 +91,4 @@ var _ = Describe("top dialog", Ordered, func() {
 	AfterAll(func() {
 		topDialogApp.Stop()
 	})
-
 })
