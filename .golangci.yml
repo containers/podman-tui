@@ -7,7 +7,6 @@ run:
     - ui/dialogs
     - ui/images
     - ui/networks
-    - ui/pods
 linters:
   enable-all: true
   disable:

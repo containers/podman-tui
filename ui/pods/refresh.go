@@ -13,6 +13,7 @@ import (
 
 func (pods *Pods) refresh() {
 	pods.table.Clear()
+
 	expand := 1
 	alignment := tview.AlignLeft
 
@@ -25,11 +26,12 @@ func (pods *Pods) refresh() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
-	rowIndex := 1
 
+	rowIndex := 1
 	podList := pods.getData()
 
 	pods.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(pods.title), len(podList)))
+
 	for i := 0; i < len(podList); i++ {
 		podID := podList[i].Id
 		podID = podID[0:utils.IDLength]
@@ -55,45 +57,45 @@ func (pods *Pods) refresh() {
 			cellTextColor = style.PausedStatusFgColor
 		default:
 			podStatus = fmt.Sprintf("[red::]%s[-::] %s", "\u25BC", podStatus)
-			cellTextColor = style.FgColor
 		}
 
 		// id column
-		pods.table.SetCell(rowIndex, 0,
+		pods.table.SetCell(rowIndex, viewPodIDColIndex,
 			tview.NewTableCell(podID).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// name column
-		pods.table.SetCell(rowIndex, 1,
+		pods.table.SetCell(rowIndex, viewPodNameColIndex,
 			tview.NewTableCell(podName).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// status column
-		pods.table.SetCell(rowIndex, 2,
+		pods.table.SetCell(rowIndex, viewPodStatusColIndex,
 			tview.NewTableCell(podStatus).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// created column
-		pods.table.SetCell(rowIndex, 3,
+		pods.table.SetCell(rowIndex, viewPodCreatedColIndex,
 			tview.NewTableCell(podCreated).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// infra id at column
-		pods.table.SetCell(rowIndex, 4,
+		pods.table.SetCell(rowIndex, viewPodInfraIDColIndex,
 			tview.NewTableCell(podInfraID).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
+
 		// # of container column
-		pods.table.SetCell(rowIndex, 5,
+		pods.table.SetCell(rowIndex, viewPodContainersColIndex,
 			tview.NewTableCell(podNumCtn).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).

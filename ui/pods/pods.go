@@ -1,6 +1,7 @@
 package pods
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -12,7 +13,31 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Pods implemnents the pods page primitive
+const (
+	viewPodIDColIndex = 0 + iota
+	viewPodNameColIndex
+	viewPodStatusColIndex
+	viewPodCreatedColIndex
+	viewPodInfraIDColIndex
+	viewPodContainersColIndex
+)
+
+var (
+	errNoPodUnpause = errors.New("there is no pod to unpause")
+	errNoPodPause   = errors.New("there is no pod to pause")
+	errNoPodTop     = errors.New("there is no pod to display top")
+	errNoPodStop    = errors.New("there is no pod to stop")
+	errNoPodStart   = errors.New("there is no pod to start")
+	errNoPodRemove  = errors.New("there is no pod to remove")
+	errNoPodRestart = errors.New("there is no pod to restart")
+	errNoPodKill    = errors.New("there is no pod to kill")
+	errNoPodInspect = errors.New("there is no pod to display inspect")
+	errNoPodStat    = errors.New("there is no pod to display stats")
+	errPodRemove    = errors.New("remove error")
+	errPodPrune     = errors.New("prune error")
+)
+
+// Pods implemnents the pods page primitive.
 type Pods struct {
 	*tview.Box
 	title          string
@@ -36,7 +61,7 @@ type podsListReport struct {
 	report []*entities.ListPodsReport
 }
 
-// NewPods returns pods page view
+// NewPods returns pods page view.
 func NewPods() *Pods {
 	pods := &Pods{
 		Box:            tview.NewBox(),
@@ -63,7 +88,7 @@ func NewPods() *Pods {
 		{"rm", "remove the selected pod"},
 		{"start", "start  the selected pod"},
 		{"stats", "display live stream of resource usage"},
-		{"stop", "stop the the selected pod"},
+		{"stop", "stop the selected pod"},
 		{"top", "display the running processes of the pod's containers"},
 		{"unpause", "unpause  the selected pod"},
 	})
@@ -106,6 +131,7 @@ func NewPods() *Pods {
 	pods.topDialog.SetCancelFunc(func() {
 		pods.topDialog.Hide()
 	})
+
 	// set confirm dialogs functions
 	pods.confirmDialog.SetSelectedFunc(func() {
 		pods.confirmDialog.Hide()
@@ -116,6 +142,7 @@ func NewPods() *Pods {
 			pods.remove()
 		}
 	})
+
 	pods.confirmDialog.SetCancelFunc(func() {
 		pods.confirmDialog.Hide()
 	})
@@ -124,6 +151,7 @@ func NewPods() *Pods {
 	pods.createDialog.SetCancelFunc(func() {
 		pods.createDialog.Hide()
 	})
+
 	pods.createDialog.SetCreateFunc(func() {
 		pods.createDialog.Hide()
 		pods.create()
@@ -135,85 +163,108 @@ func NewPods() *Pods {
 	return pods
 }
 
-// GetTitle returns primitive title
+// GetTitle returns primitive title.
 func (pods *Pods) GetTitle() string {
 	return pods.title
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (pods *Pods) HasFocus() bool {
 	if pods.table.HasFocus() || pods.errorDialog.HasFocus() {
 		return true
 	}
+
 	if pods.cmdDialog.HasFocus() || pods.messageDialog.IsDisplay() {
 		return true
 	}
+
 	if pods.progressDialog.HasFocus() || pods.topDialog.HasFocus() {
 		return true
 	}
+
 	if pods.confirmDialog.HasFocus() || pods.createDialog.HasFocus() {
 		return true
 	}
+
 	if pods.statsDialog.HasFocus() {
 		return true
 	}
+
 	return pods.Box.HasFocus()
 }
 
-// SubDialogHasFocus returns whether or not sub dialog primitive has focus
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus.
 func (pods *Pods) SubDialogHasFocus() bool {
 	if pods.statsDialog.HasFocus() || pods.errorDialog.HasFocus() {
 		return true
 	}
+
 	if pods.cmdDialog.HasFocus() || pods.messageDialog.IsDisplay() {
 		return true
 	}
+
 	if pods.progressDialog.HasFocus() || pods.topDialog.HasFocus() {
 		return true
 	}
+
 	if pods.confirmDialog.HasFocus() || pods.createDialog.HasFocus() {
 		return true
 	}
+
 	return false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 	// error dialog
 	if pods.errorDialog.IsDisplay() {
 		delegate(pods.errorDialog)
+
 		return
 	}
+
 	// command dialog
 	if pods.cmdDialog.IsDisplay() {
 		delegate(pods.cmdDialog)
+
 		return
 	}
+
 	// message dialog
 	if pods.messageDialog.IsDisplay() {
 		delegate(pods.messageDialog)
+
 		return
 	}
+
 	// top dialog
 	if pods.topDialog.IsDisplay() {
 		delegate(pods.topDialog)
+
 		return
 	}
+
 	// confirm dialog
 	if pods.confirmDialog.IsDisplay() {
 		delegate(pods.confirmDialog)
+
 		return
 	}
+
 	// create dialog
 	if pods.createDialog.IsDisplay() {
 		delegate(pods.createDialog)
+
 		return
 	}
+
 	// stats dialog
 	if pods.statsDialog.IsDisplay() {
 		delegate(pods.statsDialog)
+
 		return
 	}
+
 	delegate(pods.table)
 }
 
@@ -236,41 +287,52 @@ func (pods *Pods) getSelectedItem() (string, string) {
 
 func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {
 	var items []poddialogs.PodStatsDropDownOptions
+
 	rows := pods.table.GetRowCount()
+
 	for i := 1; i < rows; i++ {
 		podID := pods.table.GetCell(i, 0).Text
 		podName := pods.table.GetCell(i, 1).Text
+
 		items = append(items, poddialogs.PodStatsDropDownOptions{
 			ID:   podID,
 			Name: podName,
 		})
 	}
+
 	return items
 }
 
-// HideAllDialogs hides all sub dialogs
+// HideAllDialogs hides all sub dialogs.
 func (pods *Pods) HideAllDialogs() {
 	if pods.errorDialog.IsDisplay() {
 		pods.errorDialog.Hide()
 	}
+
 	if pods.progressDialog.IsDisplay() {
 		pods.progressDialog.Hide()
 	}
+
 	if pods.confirmDialog.IsDisplay() {
 		pods.confirmDialog.Hide()
 	}
+
 	if pods.cmdDialog.IsDisplay() {
 		pods.cmdDialog.Hide()
 	}
+
 	if pods.messageDialog.IsDisplay() {
 		pods.messageDialog.Hide()
 	}
+
 	if pods.topDialog.IsDisplay() {
 		pods.topDialog.Hide()
 	}
+
 	if pods.createDialog.IsDisplay() {
 		pods.createDialog.Hide()
 	}
+
 	if pods.statsDialog.IsDisplay() {
 		pods.statsDialog.Hide()
 	}

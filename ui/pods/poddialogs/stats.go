@@ -33,7 +33,7 @@ const (
 	podStatTablePidsIndex
 )
 
-// PodStatsDialog implements the pods stats dialog primitive
+// PodStatsDialog implements the pods stats dialog primitive.
 type PodStatsDialog struct {
 	*tview.Box
 	layout               *tview.Flex
@@ -59,21 +59,23 @@ type PodStatsDropDownOptions struct {
 	Name string
 }
 
-// NewPodStatsDialog returns new pod stats dialog
+// NewPodStatsDialog returns new pod stats dialog.
 func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog := PodStatsDialog{
 		Box:                  tview.NewBox(),
 		podDropDown:          tview.NewDropDown(),
 		podSortByDropDown:    tview.NewDropDown(),
 		statQueryOpts:        &ppods.StatsOptions{},
-		queryRefreshInterval: 3000 * time.Millisecond,
+		queryRefreshInterval: 3000 * time.Millisecond, //nolint:gomnd
 	}
 
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
+
 	// pod dropdown
 	pddLabel := "POD ID:"
 	labelBgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
+
 	statsDialog.podDropDown.SetLabel(fmt.Sprintf("[:%s:b]%s[::-]", labelBgColor, pddLabel))
 	statsDialog.podDropDown.SetLabelWidth(len(pddLabel) + 1)
 	statsDialog.podDropDown.SetBackgroundColor(style.DialogBgColor)
@@ -83,6 +85,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 
 	// pod sortby dropdown
 	pddSortByLabel := "SORT BY:"
+
 	statsDialog.podSortByDropDown.SetLabel(fmt.Sprintf("[:%s:b]%s[::-]", labelBgColor, pddSortByLabel))
 	statsDialog.podSortByDropDown.SetLabelWidth(len(pddSortByLabel) + 1)
 	statsDialog.podSortByDropDown.SetBackgroundColor(style.DialogBgColor)
@@ -92,7 +95,8 @@ func NewPodStatsDialog() *PodStatsDialog {
 		"pod ID",
 		"container name",
 		"cpu %",
-		"mem %"}, statsDialog.setStatsQuerySortBy)
+		"mem %",
+	}, statsDialog.setStatsQuerySortBy)
 	statsDialog.podSortByDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// table
@@ -141,42 +145,49 @@ func NewPodStatsDialog() *PodStatsDialog {
 	return &statsDialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *PodStatsDialog) Display() {
 	d.display = true
+
 	d.podSortByDropDown.SetCurrentOption(0)
+
 	d.focusElement = podStatDialogResultTableFocus
 	d.doneChan = make(chan bool)
+
 	d.startStatsQueryLoop()
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *PodStatsDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *PodStatsDialog) Hide() {
 	d.display = false
 	d.doneChan <- true
+
 	d.SetPodsOptions([]PodStatsDropDownOptions{})
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	close(d.doneChan)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *PodStatsDialog) HasFocus() bool {
 	if d.podDropDown.HasFocus() || d.podSortByDropDown.HasFocus() {
 		return true
 	}
+
 	if d.table.HasFocus() || d.form.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *PodStatsDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	case podStatDialogFormFocus:
@@ -190,8 +201,8 @@ func (d *PodStatsDialog) Focus(delegate func(p tview.Primitive)) {
 	}
 }
 
-// InputHandler  returns input handler function for this primitive
-func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler  returns input handler function for this primitive.
+func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("pod stats dialog: event %v received", event)
 		// pod ID dropdown
@@ -199,58 +210,74 @@ func (d *PodStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = podStatDialogPodDropDownSoryByFocus
 				setFocus(d)
+
 				return
 			}
+
 			if podDropDownHandler := d.podDropDown.InputHandler(); podDropDownHandler != nil {
 				event = utils.ParseKeyEventKey(event)
 				podDropDownHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// sortby dropdown
 		if d.podSortByDropDown.HasFocus() {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = podStatDialogResultTableFocus
 				setFocus(d)
+
 				return
 			}
+
 			if podSortByDropDownHandler := d.podSortByDropDown.InputHandler(); podSortByDropDownHandler != nil {
 				event = utils.ParseKeyEventKey(event)
 				podSortByDropDownHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// Esc key shall be after drop down so it won't overwrite default
 		// dropdown handler
 		if event.Key() == tcell.KeyEsc {
 			d.doneHandler()
+
 			return
 		}
+
 		// form
 		if d.form.HasFocus() {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = podStatDialogPodDropDownFocus
 				setFocus(d)
+
 				return
 			}
+
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// stats table
 		if d.table.HasFocus() {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = podStatDialogFormFocus
 				setFocus(d)
+
 				return
 			}
+
 			if tableHanlder := d.table.InputHandler(); tableHanlder != nil {
 				tableHanlder(event, setFocus)
+
 				return
 			}
 		}
-
 	})
 }
 
@@ -259,49 +286,60 @@ func (d *PodStatsDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
-
 }
 
 // SetRect set rects for this primitive.
 func (d *PodStatsDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := height - (2 * (dialogs.DialogPadding - 1))
+	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:gomnd
+	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:gomnd
+
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
 
-// SetDoneFunc sets form cancel button selected function
+// SetDoneFunc sets form cancel button selected function.
 func (d *PodStatsDialog) SetDoneFunc(handler func()) *PodStatsDialog {
 	d.doneHandler = handler
 	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetPodsOptions sets pod drop down options
+// SetPodsOptions sets pod drop down options.
 func (d *PodStatsDialog) SetPodsOptions(options []PodStatsDropDownOptions) {
 	maxWidth := 0
 	d.podDropDownOptions = options
+
 	if len(options) == 0 {
 		return
 	}
+
 	podOptions := []string{"all"}
+
 	for i := 0; i < len(options); i++ {
 		item := options[i].ID
 		if options[i].Name != "" {
 			item = fmt.Sprintf("%s (%s)", item, options[i].Name)
 		}
+
 		if len(item) > maxWidth {
 			maxWidth = len(item)
 		}
+
 		podOptions = append(podOptions, item)
 	}
-	maxWidth = maxWidth + 11
+
+	maxWidth += 11
 	d.controlLayout.ResizeItem(d.podDropDown, maxWidth, 0)
 	d.podDropDown.SetOptions(podOptions, d.setStatsQueryPodIDs)
 	d.podDropDown.SetCurrentOption(0)
@@ -309,26 +347,32 @@ func (d *PodStatsDialog) SetPodsOptions(options []PodStatsDropDownOptions) {
 
 func (d *PodStatsDialog) query() {
 	opts := d.getStatsQueryOptions()
+
 	podStats, err := ppods.Stats(opts)
 	if err != nil {
 		log.Error().Msgf("pod stats dialog: query error: %v", err)
+
 		return
 	}
+
 	d.updateData(podStats)
 }
 
 func (d *PodStatsDialog) startStatsQueryLoop() {
 	log.Debug().Msgf("pod stats dialog: starting pod stats query loop")
+
 	go func() {
 		tick := time.NewTicker(d.queryRefreshInterval)
 		// initial query
 		d.query()
+
 		for {
 			select {
 			case <-tick.C:
 				d.query()
 			case <-d.doneChan:
 				log.Debug().Msgf("pod stats dialog: stats query loop stopped")
+
 				return
 			}
 		}
@@ -339,6 +383,7 @@ func (d *PodStatsDialog) getStatsQueryOptions() *ppods.StatsOptions {
 	d.mu.Lock()
 	opts := d.statQueryOpts
 	d.mu.Unlock()
+
 	return opts
 }
 
@@ -346,8 +391,10 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 	if index == -1 {
 		return
 	}
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if index == 0 {
 		d.statQueryOpts.IDs = d.getAllPodIDs()
 	} else {
@@ -355,6 +402,7 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 			d.podDropDownOptions[index-1].ID,
 		}
 	}
+
 	go d.query()
 }
 
@@ -362,25 +410,32 @@ func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) {
 	if index == -1 {
 		return
 	}
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.statQueryOpts.SortBy = index
+
 	go d.query()
 }
 
 func (d *PodStatsDialog) getAllPodIDs() []string {
-	var ids []string
+	ids := make([]string, 0)
+
 	for _, item := range d.podDropDownOptions {
 		ids = append(ids, item.ID)
 	}
+
 	return ids
 }
 
 func (d *PodStatsDialog) initTableUI() {
-	var tableHeaders = []string{"POD ID", "CID", "NAME", "CPU %", "MEM USAGE / LIMIT", "MEM %", "NET IO", "BLOCK IO", "PIDS"}
+	tableHeaders := []string{"POD ID", "CID", "NAME", "CPU %", "MEM USAGE / LIMIT", "MEM %", "NET IO", "BLOCK IO", "PIDS"}
+
 	headerBgColor := style.TableHeaderBgColor
 	headerFgColor := style.TableHeaderFgColor
+
 	d.table.Clear()
+
 	for index, header := range tableHeaders {
 		headerItem := fmt.Sprintf("[::b]%s[::-]", header)
 		d.table.SetCell(0, index,
@@ -391,6 +446,7 @@ func (d *PodStatsDialog) initTableUI() {
 				SetTextColor(headerFgColor).
 				SetSelectable(false))
 	}
+
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 }
@@ -399,9 +455,12 @@ func (d *PodStatsDialog) updateData(statReport []ppods.StatReporter) {
 	d.mu.Lock()
 	d.statsResult = statReport
 	d.mu.Unlock()
+
 	fgColor := style.DialogFgColor
 	row := 1
+
 	d.initTableUI()
+
 	for i := 0; i < len(d.statsResult); i++ {
 		podID := d.statsResult[i].Pod
 		cntID := d.statsResult[i].CID
@@ -476,6 +535,6 @@ func (d *PodStatsDialog) updateData(statReport []ppods.StatReporter) {
 				SetAlign(tview.AlignLeft).
 				SetTextColor(fgColor))
 
-		row = row + 1
+		row++
 	}
 }
