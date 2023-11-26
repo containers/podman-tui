@@ -54,7 +54,7 @@ const (
 	securityOptsPageIndex
 )
 
-// PodCreateDialog implements pod create dialog
+// PodCreateDialog implements pod create dialog.
 type PodCreateDialog struct {
 	*tview.Box
 	layout                   *tview.Flex
@@ -95,7 +95,7 @@ type PodCreateDialog struct {
 	createHandler            func()
 }
 
-// NewPodCreateDialog returns new pod create dialog primitive PodCreateDialog
+// NewPodCreateDialog returns new pod create dialog primitive PodCreateDialog.
 func NewPodCreateDialog() *PodCreateDialog {
 	podDialog := PodCreateDialog{
 		Box:              tview.NewBox(),
@@ -113,7 +113,8 @@ func NewPodCreateDialog() *PodCreateDialog {
 			"DNS Setup",
 			"Infra Setup",
 			"Networking",
-			"Security Options"},
+			"Security Options",
+		},
 		activePageIndex:          0,
 		display:                  false,
 		podNameField:             tview.NewInputField(),
@@ -330,6 +331,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.setActiveCategory(0)
 
 	podDialog.initCustomInputHanlers()
+
 	return &podDialog
 }
 
@@ -403,32 +405,31 @@ func (d *PodCreateDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
 	d.layout.AddItem(layout, 0, 1, true)
-
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *PodCreateDialog) Display() {
 	d.display = true
 	d.initData()
 	d.focusElement = categoryPagesFocus
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *PodCreateDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *PodCreateDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *PodCreateDialog) HasFocus() bool {
 	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
 		return true
@@ -437,14 +438,14 @@ func (d *PodCreateDialog) HasFocus() bool {
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
-// dropdownHasFocus returns true if pod create dialog dropdown primitives
-// has focus
+// dropdownHasFocus returns true if pod create dialog dropdown primitives.
+// has focus.
 func (d *PodCreateDialog) dropdownHasFocus() bool {
 	return d.podNetworkField.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
-func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
+// Focus is called when this primitive receives focus.
+func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	switch d.focusElement {
 	// form has focus
 	case podFormFocus:
@@ -454,14 +455,18 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = categoriesFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
-				//d.pullSelectHandler()
+				// d.pullSelectHandler()
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	// category text view
 	case categoriesFocus:
@@ -469,16 +474,20 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = categoryPagesFocus // category page view
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			// scroll between categories
 			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
+
 			if event.Key() == tcell.KeyUp {
 				d.previousCategory()
 			}
+
 			return nil
 		})
 		delegate(d.categories)
@@ -525,77 +534,97 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	case categoryPagesFocus:
 		delegate(d.categoryPages)
 	}
-
 }
 
 func (d *PodCreateDialog) initCustomInputHanlers() {
 	// newtwork dropdown
 	d.podNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
+
 		return event
 	})
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("pod create dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.basicInfoPage.HasFocus() {
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBasicInfoPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.dnsSetupPage.HasFocus() {
 			if handler := d.dnsSetupPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setDNSSetupPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.infraSetupPage.HasFocus() {
 			if handler := d.infraSetupPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setInfraSetupPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.networkingPage.HasFocus() {
 			if handler := d.networkingPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setNetworkingPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.securityOptsPage.HasFocus() {
 			if handler := d.securityOptsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setSecurityOptsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.categories.HasFocus() {
 			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
 				categroryHandler(event, setFocus)
+
 				return
 			}
 		}
-		if d.form.HasFocus() {
+
+		if d.form.HasFocus() { //nolint:nestif
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				if event.Key() == tcell.KeyEnter {
 					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
@@ -603,26 +632,26 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 						d.createHandler()
 					}
 				}
+
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
-
 	})
 }
 
 // SetRect set rects for this primitive.
 func (d *PodCreateDialog) SetRect(x, y, width, height int) {
-
 	if width > podCreateDialogMaxWidth {
-		emptySpace := (width - podCreateDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - podCreateDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = podCreateDialogMaxWidth
 	}
 
 	if height > podCreateDialogHeight {
-		emptySpace := (height - podCreateDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - podCreateDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = podCreateDialogHeight
 	}
 
@@ -634,25 +663,31 @@ func (d *PodCreateDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *PodCreateDialog) SetCancelFunc(handler func()) *PodCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCreateFunc sets form create button selected function
+// SetCreateFunc sets form create button selected function.
 func (d *PodCreateDialog) SetCreateFunc(handler func()) *PodCreateDialog {
 	d.createHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -663,18 +698,24 @@ func (d *PodCreateDialog) setActiveCategory(index int) {
 	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
+
 	d.categories.Clear()
+
 	var ctgList []string
+
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
+
 	for i := 0; i < len(d.categoryLabels); i++ {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
+
 			continue
 		}
+
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))
 	}
-	d.categories.SetText(strings.Join(ctgList, "\n"))
 
+	d.categories.SetText(strings.Join(ctgList, "\n"))
 	// switch the page
 	d.categoryPages.SwitchToPage(d.categoryLabels[index])
 }
@@ -682,20 +723,24 @@ func (d *PodCreateDialog) setActiveCategory(index int) {
 func (d *PodCreateDialog) nextCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex < len(d.categoryLabels)-1 {
-		activePage = activePage + 1
+		activePage++
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(0)
 }
 
 func (d *PodCreateDialog) previousCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex > 0 {
-		activePage = activePage - 1
+		activePage--
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(len(d.categoryLabels) - 1)
 }
 
@@ -703,6 +748,7 @@ func (d *PodCreateDialog) initData() {
 	// get available networks
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
+
 	for i := 0; i < len(networkList); i++ {
 		networkOptions = append(networkOptions, networkList[i][1])
 	}
@@ -735,74 +781,126 @@ func (d *PodCreateDialog) initData() {
 	d.podNetworkField.SetOptions(networkOptions, nil)
 	d.podNetworkField.SetCurrentOption(0)
 	d.podPublishField.SetText("")
-
 }
 
 func (d *PodCreateDialog) setBasicInfoPageNextFocus() {
 	if d.podNameField.HasFocus() {
 		d.focusElement = podNoHostsCheckBoxFocus
-	} else if d.podNoHostsCheckBox.HasFocus() {
-		d.focusElement = podLabelsFieldFocus
-	} else {
-		d.focusElement = podFormFocus
+
+		return
 	}
+
+	if d.podNoHostsCheckBox.HasFocus() {
+		d.focusElement = podLabelsFieldFocus
+
+		return
+	}
+
+	d.focusElement = podFormFocus
 }
 
 func (d *PodCreateDialog) setSecurityOptsPageNextFocus() {
 	if d.podSelinuxLabelField.HasFocus() {
 		d.focusElement = podApparmorFieldFocus
-	} else if d.podApparmorField.HasFocus() {
-		d.focusElement = podSeccompFieldFocus
-	} else if d.podSeccompField.HasFocus() {
-		d.focusElement = podMaskFieldFocus
-	} else if d.podMaskField.HasFocus() {
-		d.focusElement = podUnmaskFieldFocus
-	} else if d.podUnmaskField.HasFocus() {
-		d.focusElement = podNoNewPrivFieldFocus
-	} else {
-		d.focusElement = podFormFocus
+
+		return
 	}
+
+	if d.podApparmorField.HasFocus() {
+		d.focusElement = podSeccompFieldFocus
+
+		return
+	}
+
+	if d.podSeccompField.HasFocus() {
+		d.focusElement = podMaskFieldFocus
+
+		return
+	}
+
+	if d.podMaskField.HasFocus() {
+		d.focusElement = podUnmaskFieldFocus
+
+		return
+	}
+
+	if d.podUnmaskField.HasFocus() {
+		d.focusElement = podNoNewPrivFieldFocus
+
+		return
+	}
+
+	d.focusElement = podFormFocus
 }
 
 func (d *PodCreateDialog) setDNSSetupPageNextFocus() {
 	if d.podDNSServerField.HasFocus() {
 		d.focusElement = podDNSOptionsFieldFocus
-	} else if d.podDNSOptionsField.HasFocus() {
-		d.focusElement = podDNSSearchDomaindFieldFocus
-	} else {
-		d.focusElement = podFormFocus
+
+		return
 	}
+
+	if d.podDNSOptionsField.HasFocus() {
+		d.focusElement = podDNSSearchDomaindFieldFocus
+
+		return
+	}
+
+	d.focusElement = podFormFocus
 }
 
 func (d *PodCreateDialog) setInfraSetupPageNextFocus() {
 	if d.podInfraCheckBox.HasFocus() {
 		d.focusElement = podInfraCommandFieldFocus
-	} else if d.podInfraCommandField.HasFocus() {
-		d.focusElement = podInfraImageFieldFocus
-	} else {
-		d.focusElement = podFormFocus
+
+		return
 	}
+
+	if d.podInfraCommandField.HasFocus() {
+		d.focusElement = podInfraImageFieldFocus
+
+		return
+	}
+
+	d.focusElement = podFormFocus
 }
 
 func (d *PodCreateDialog) setNetworkingPageNextFocus() {
 	if d.podHostnameField.HasFocus() {
 		d.focusElement = podIPAddressFieldFocus
-	} else if d.podIPAddressField.HasFocus() {
-		d.focusElement = podMacAddressFieldFocus
-	} else if d.podMacAddressField.HasFocus() {
-		d.focusElement = podAddHostFieldFocus
-	} else if d.podAddHostField.HasFocus() {
-		d.focusElement = podNetworkFieldFocus
-	} else if d.podNetworkField.HasFocus() {
-		d.focusElement = podPublishFieldFocus
-	} else {
-		d.focusElement = podFormFocus
+
+		return
 	}
+
+	if d.podIPAddressField.HasFocus() {
+		d.focusElement = podMacAddressFieldFocus
+
+		return
+	}
+
+	if d.podMacAddressField.HasFocus() {
+		d.focusElement = podAddHostFieldFocus
+
+		return
+	}
+
+	if d.podAddHostField.HasFocus() {
+		d.focusElement = podNetworkFieldFocus
+
+		return
+	}
+
+	if d.podNetworkField.HasFocus() {
+		d.focusElement = podPublishFieldFocus
+
+		return
+	}
+
+	d.focusElement = podFormFocus
 }
 
-// GetPodSpec returns pod create option spec
-func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
-
+// GetPodSpec returns pod create option spec.
+func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cyclop
 	var (
 		labels           = make(map[string]string)
 		dnsServers       []string
@@ -817,9 +915,10 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 {
+			if len(split) == 2 { //nolint:gomnd
 				key := split[0]
 				value := split[1]
+
 				if key != "" && value != "" {
 					labels[key] = value
 				}
@@ -832,11 +931,13 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 			dnsServers = append(dnsServers, dns)
 		}
 	}
+
 	for _, do := range strings.Split(d.podDNSOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
+
 	for _, ds := range strings.Split(d.podDNSSearchDomaindField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
@@ -864,23 +965,28 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 	if d.podNoNewPrivField.IsChecked() {
 		securityOpts = append(securityOpts, "no-new-privileges")
 	}
+
 	apparmor := strings.TrimSpace(d.podApparmorField.GetText())
 	if apparmor != "" {
 		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor))
 	}
+
 	seccomp := strings.TrimSpace(d.podSeccompField.GetText())
 	if seccomp != "" {
 		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp))
 	}
+
 	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
 			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel))
 		}
 	}
+
 	mask := strings.TrimSpace(d.podMaskField.GetText())
 	if seccomp != "" {
 		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask))
 	}
+
 	unmask := strings.TrimSpace(d.podUnmaskField.GetText())
 	if seccomp != "" {
 		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask))
@@ -904,5 +1010,6 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions {
 		SecurityOpts:    securityOpts,
 		Publish:         publish,
 	}
+
 	return opts
 }

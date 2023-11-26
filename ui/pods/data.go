@@ -11,15 +11,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retrieves pods list data
+// UpdateData retrieves pods list data.
 func (pods *Pods) UpdateData() {
 	podList, err := ppods.List()
 	if err != nil {
 		log.Error().Msgf("view: pods update %v", err)
 		pods.errorDialog.SetText(fmt.Sprintf("%v", err))
 		pods.errorDialog.Display()
+
 		return
 	}
+
 	pods.podsList.mu.Lock()
 	pods.podsList.report = podList
 	pods.podsList.mu.Unlock()
@@ -29,15 +31,17 @@ func (pods *Pods) getData() []*entities.ListPodsReport {
 	pods.podsList.mu.Lock()
 	data := pods.podsList.report
 	pods.podsList.mu.Unlock()
+
 	return data
 }
 
-// ClearData clears table data
-func (pods *Pods) ClearData() {
+// ClearData clears table data.
+func (pods *Pods) ClearData() { //nolint:stylecheck
 	pods.podsList.mu.Lock()
 	pods.podsList.report = nil
 	pods.podsList.mu.Unlock()
 	pods.table.Clear()
+
 	expand := 1
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
@@ -51,6 +55,6 @@ func (pods *Pods) ClearData() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
-	pods.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(pods.title)))
 
+	pods.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(pods.title)))
 }
