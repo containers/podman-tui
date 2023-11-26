@@ -193,6 +193,7 @@ func (d *NetworkDisconnectDialog) InputHandler() func(event *tcell.EventKey, set
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -201,16 +202,15 @@ func (d *NetworkDisconnectDialog) InputHandler() func(event *tcell.EventKey, set
 
 // SetRect set rects for this primitive.
 func (d *NetworkDisconnectDialog) SetRect(x, y, width, height int) {
-
 	if width > netDisconnectDialogMaxWidth {
-		emptySpace := (width - netDisconnectDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - netDisconnectDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = netDisconnectDialogMaxWidth
 	}
 
 	if height > netDisconnectDialogMaxHeight {
-		emptySpace := (height - netDisconnectDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - netDisconnectDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = netDisconnectDialogMaxHeight
 	}
 
@@ -244,7 +244,7 @@ func (d *NetworkDisconnectDialog) SetDisconnectFunc(handler func()) *NetworkDisc
 // SetCancelFunc sets form cancel button selected function.
 func (d *NetworkDisconnectDialog) SetCancelFunc(handler func()) *NetworkDisconnectDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 
 	cancelButton.SetSelectedFunc(handler)
 
@@ -279,7 +279,6 @@ func (d *NetworkDisconnectDialog) SetNetworkInfo(id string, name string) {
 
 // GetDisconnectOptions returns network disconnect options.
 func (d *NetworkDisconnectDialog) GetDisconnectOptions() (string, string) {
-
 	_, selectedCnt := d.container.GetCurrentOption()
 	container := strings.Split(selectedCnt, " ")[0]
 

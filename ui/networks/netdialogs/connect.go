@@ -231,7 +231,7 @@ func (d *NetworkConnectDialog) Focus(delegate func(p tview.Primitive)) {
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *NetworkConnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (d *NetworkConnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("network connect dialog: event %v received", event)
 		if event.Key() == utils.CloseDialogKey.Key {
@@ -291,6 +291,7 @@ func (d *NetworkConnectDialog) InputHandler() func(event *tcell.EventKey, setFoc
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -299,16 +300,15 @@ func (d *NetworkConnectDialog) InputHandler() func(event *tcell.EventKey, setFoc
 
 // SetRect set rects for this primitive.
 func (d *NetworkConnectDialog) SetRect(x, y, width, height int) {
-
 	if width > netConnectDialogMaxWidth {
-		emptySpace := (width - netConnectDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - netConnectDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = netConnectDialogMaxWidth
 	}
 
 	if height > netConnectDialogMaxHeight {
-		emptySpace := (height - netConnectDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - netConnectDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = netConnectDialogMaxHeight
 	}
 
@@ -342,7 +342,7 @@ func (d *NetworkConnectDialog) SetConnectFunc(handler func()) *NetworkConnectDia
 // SetCancelFunc sets form cancel button selected function.
 func (d *NetworkConnectDialog) SetCancelFunc(handler func()) *NetworkConnectDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 
 	cancelButton.SetSelectedFunc(handler)
 

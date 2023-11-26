@@ -6,7 +6,6 @@ run:
     - ui/containers
     - ui/dialogs
     - ui/images
-    - ui/networks
 linters:
   enable-all: true
   disable:
