@@ -8,7 +8,6 @@ run:
     - ui/images
     - ui/networks
     - ui/pods
-    - ui/system
 linters:
   enable-all: true
   disable:
@@ -35,6 +34,8 @@ linters:
     - exhaustivestruct
     - gomoddirectives
 linters-settings:
+#  typecheck:
+#    enabled: false
   errcheck:
     check-blank: false
     ignore: fmt:.*
