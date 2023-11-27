@@ -99,5 +99,4 @@ var _ = Describe("confirm dialog", Ordered, func() {
 	AfterAll(func() {
 		confirmDialogApp.Stop()
 	})
-
 })

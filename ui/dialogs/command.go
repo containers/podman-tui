@@ -19,7 +19,7 @@ const (
 	cmdFormFocus
 )
 
-// CommandDialog is a commands list dialog
+// CommandDialog is a commands list dialog.
 type CommandDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -37,7 +37,6 @@ type CommandDialog struct {
 
 // NewCommandDialog returns a command list primitive.
 func NewCommandDialog(options [][]string) *CommandDialog {
-
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
@@ -57,6 +56,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetTextColor(style.TableHeaderFgColor).
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
+
 	cmdsTable.SetCell(0, 1,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
@@ -68,6 +68,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	// command table items
 	col1Width := 0
 	col2Width := 0
+
 	for i := 0; i < len(options); i++ {
 		cmdsTable.SetCell(i+1, 0,
 			tview.NewTableCell(options[i][0]).
@@ -81,11 +82,14 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		if len(options[i][0]) > col1Width {
 			col1Width = len(options[i][0])
 		}
+
 		if len(options[i][1]) > col2Width {
 			col2Width = len(options[i][1])
 		}
 	}
-	cmdWidth = col1Width + col2Width + 2
+
+	cmdWidth = col1Width + col2Width + 2 //nolint:gomnd
+
 	cmdsTable.SetFixed(1, 1)
 	cmdsTable.SetSelectable(true, false)
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
@@ -120,40 +124,43 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	}
 }
 
-// GetSelectedItem returns selected row item
+// GetSelectedItem returns selected row item.
 func (cmd *CommandDialog) GetSelectedItem() string {
 	row, _ := cmd.table.GetSelection()
 	if row >= 0 {
 		return cmd.options[row-1][0]
 	}
+
 	return ""
 }
 
-// GetCommandCount returns number of commands
+// GetCommandCount returns number of commands.
 func (cmd *CommandDialog) GetCommandCount() int {
 	return cmd.table.GetRowCount()
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (cmd *CommandDialog) Display() {
 	cmd.table.Select(1, 0)
 	cmd.form.SetFocus(1)
+
 	cmd.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (cmd *CommandDialog) IsDisplay() bool {
 	return cmd.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (cmd *CommandDialog) Hide() {
 	cmd.display = false
 	cmd.focusElement = cmdTableFocus
+
 	cmd.table.SetSelectedStyle(cmd.selectedStyle)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (cmd *CommandDialog) HasFocus() bool {
 	if cmd.table.HasFocus() || cmd.form.HasFocus() {
 		return true
@@ -162,7 +169,7 @@ func (cmd *CommandDialog) HasFocus() bool {
 	return false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (cmd *CommandDialog) Focus(delegate func(p tview.Primitive)) {
 	if cmd.focusElement == cmdTableFocus {
 		delegate(cmd.table)
@@ -188,12 +195,14 @@ func (cmd *CommandDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(cmd.form)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return cmd.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("commands dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.Key {
 			cmd.cancelHandler()
+
 			return
 		}
 
@@ -204,6 +213,7 @@ func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 		if cmd.form.HasFocus() {
 			if formHandler := cmd.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -218,55 +228,62 @@ func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 
 			if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
 				tableHandler(event, setFocus)
+
 				return
 			}
 		}
-
 	})
 }
 
-// SetSelectedFunc sets form enter button selected function
+// SetSelectedFunc sets form enter button selected function.
 func (cmd *CommandDialog) SetSelectedFunc(handler func()) *CommandDialog {
 	cmd.selectHandler = handler
+
 	return cmd
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (cmd *CommandDialog) SetCancelFunc(handler func()) *CommandDialog {
 	cmd.cancelHandler = handler
 	cancelButton := cmd.form.GetButton(cmd.form.GetButtonCount() - 1)
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return cmd
 }
 
 // SetRect set rects for this primitive.
 func (cmd *CommandDialog) SetRect(x, y, width, height int) {
-
-	ws := (width - cmd.width) / 2
-	hs := ((height - cmd.height) / 2)
+	ws := (width - cmd.width) / 2     //nolint:gomnd
+	hs := ((height - cmd.height) / 2) //nolint:gomnd
 	dy := y + hs
 	bWidth := cmd.width
+
 	if cmd.width > width {
 		ws = 0
 		bWidth = width - 1
 	}
+
 	bHeight := cmd.height
+
 	if cmd.height >= height {
 		dy = y + 1
 		bHeight = height - 1
 	}
-	cmd.Box.SetRect(x+ws, dy, bWidth, bHeight)
-	x, y, width, height = cmd.Box.GetInnerRect()
-	cmd.layout.SetRect(x, y, width, height)
 
+	cmd.Box.SetRect(x+ws, dy, bWidth, bHeight)
+
+	x, y, width, height = cmd.Box.GetInnerRect()
+
+	cmd.layout.SetRect(x, y, width, height)
 }
 
 // Draw draws this primitive onto the screen.
 func (cmd *CommandDialog) Draw(screen tcell.Screen) {
-
 	if !cmd.display {
 		return
 	}
+
 	cmd.Box.DrawForSubclass(screen, cmd)
 	cmd.layout.Draw(screen)
 }

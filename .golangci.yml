@@ -4,7 +4,6 @@ run:
     - ".*_test.go"
   skip-dirs:
     - ui/containers
-    - ui/dialogs
     - ui/images
 linters:
   enable-all: true

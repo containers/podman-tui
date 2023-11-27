@@ -62,5 +62,4 @@ var _ = Describe("error dialog", Ordered, func() {
 	AfterAll(func() {
 		errorDialogApp.Stop()
 	})
-
 })

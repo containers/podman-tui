@@ -95,5 +95,4 @@ var _ = Describe("message dialog", Ordered, func() {
 	AfterAll(func() {
 		messageDialogApp.Stop()
 	})
-
 })

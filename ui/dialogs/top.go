@@ -11,7 +11,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// TopDialog is a simple dialog with pod/container top result table
+const (
+	viewTopUserColIndex = 0 + iota
+	viewTopPIDColIndex
+	viewTopPPIDColIndex
+	viewTopCPUColIndex
+	viewTopElapsedColIndex
+	viewTopTTYColIndex
+	viewTopTimeColIndex
+	viewTopCommandColIndex
+)
+
+// TopDialog is a simple dialog with pod/container top result table.
 type TopDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -32,7 +43,7 @@ const (
 	TopContainerInfo
 )
 
-// NewTopDialog returns new TopDialog primitive
+// NewTopDialog returns new TopDialog primitive.
 func NewTopDialog() *TopDialog {
 	dialog := &TopDialog{
 		Box:          tview.NewBox(),
@@ -78,48 +89,52 @@ func NewTopDialog() *TopDialog {
 	return dialog
 }
 
-// SetTitle sets title for the dialog
+// SetTitle sets title for the dialog.
 func (d *TopDialog) SetTitle(title string) {
 	d.layout.SetTitle(strings.ToUpper(title))
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *TopDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *TopDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *TopDialog) Hide() {
 	d.display = false
 	d.info.SetText("")
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *TopDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// HasFocus returns true if this primitive has focus
+// HasFocus returns true if this primitive has focus.
 func (d *TopDialog) HasFocus() bool {
 	return d.form.HasFocus() || d.table.HasFocus()
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("top dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
+
 			return
 		}
+
 		// scroll between top items
 		if tableHandler := d.table.InputHandler(); tableHandler != nil {
 			tableHandler(event, setFocus)
+
 			return
 		}
 	})
@@ -128,26 +143,28 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 // SetRect set rects for this primitive.
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
-	dWidth := width - (2 * DialogPadding)
-	dHeight := len(d.results) + DialogFormHeight + 6
+	dWidth := width - (2 * DialogPadding)            //nolint:gomnd
+	dHeight := len(d.results) + DialogFormHeight + 6 //nolint:gomnd
 
 	if dHeight > height {
 		dHeight = height
 	}
-	tableHeight := dHeight - DialogFormHeight - 2
 
-	hs := ((height - dHeight) / 2)
+	tableHeight := dHeight - DialogFormHeight - 2 //nolint:gomnd
+
+	hs := ((height - dHeight) / 2) //nolint:gomnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
-	//set table height size
+	// set table height size
 	d.layout.ResizeItem(d.table, tableHeight, 0)
 
 	cWidth := d.getCommandWidth()
+
 	for i := 0; i < d.table.GetRowCount(); i++ {
-		cell := d.table.GetCell(i, 7)
-		cell.SetMaxWidth(cWidth / 2)
-		d.table.SetCell(i, 7, cell)
+		cell := d.table.GetCell(i, viewTopCommandColIndex)
+		cell.SetMaxWidth(cWidth / 2) //nolint:gomnd
+		d.table.SetCell(i, viewTopCommandColIndex, cell)
 	}
 }
 
@@ -156,15 +173,17 @@ func (d *TopDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form button selected function
+// SetCancelFunc sets form button selected function.
 func (d *TopDialog) SetCancelFunc(handler func()) *TopDialog {
 	d.cancelHandler = handler
+
 	return d
 }
 
@@ -175,6 +194,7 @@ func (d *TopDialog) initTable() {
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
@@ -186,7 +206,7 @@ func (d *TopDialog) initTable() {
 	}
 }
 
-// UpdateResults updates result table
+// UpdateResults updates result table.
 func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data [][]string) {
 	headerInfo := "CONTAINER ID:"
 	if infoType == TopPodInfo {
@@ -201,13 +221,15 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 
 	d.results = data
 	d.initTable()
+
 	alignment := tview.AlignLeft
 	rowIndex := 1
 	expand := 1
 
-	if len(data) < 2 {
+	if len(data) < 2 { //nolint:gomnd
 		return
 	}
+
 	for i := 1; i < len(data); i++ {
 		user := data[i][0]
 		pid := data[i][1]
@@ -219,55 +241,56 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 		command := data[i][7]
 
 		// user column
-		d.table.SetCell(rowIndex, 0,
+		d.table.SetCell(rowIndex, viewTopUserColIndex,
 			tview.NewTableCell(user).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// pid column
-		d.table.SetCell(rowIndex, 1,
+		d.table.SetCell(rowIndex, viewTopPIDColIndex,
 			tview.NewTableCell(pid).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// ppid column
-		d.table.SetCell(rowIndex, 2,
+		d.table.SetCell(rowIndex, viewTopPPIDColIndex,
 			tview.NewTableCell(ppid).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// cpu column
-		d.table.SetCell(rowIndex, 3,
+		d.table.SetCell(rowIndex, viewTopCPUColIndex,
 			tview.NewTableCell(cpu).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// elapsed column
-		d.table.SetCell(rowIndex, 4,
+		d.table.SetCell(rowIndex, viewTopElapsedColIndex,
 			tview.NewTableCell(elapsed).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// tty column
-		d.table.SetCell(rowIndex, 5,
+		d.table.SetCell(rowIndex, viewTopTTYColIndex,
 			tview.NewTableCell(tty).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// time column
-		d.table.SetCell(rowIndex, 6,
+		d.table.SetCell(rowIndex, viewTopTimeColIndex,
 			tview.NewTableCell(time).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// command column
-		d.table.SetCell(rowIndex, 7,
+		d.table.SetCell(rowIndex, viewTopCommandColIndex,
 			tview.NewTableCell(command).
 				SetExpansion(1).
 				SetAlign(alignment))
 
 		rowIndex++
 	}
+
 	if len(data) > 0 {
 		d.table.Select(1, 1)
 		d.table.ScrollToBeginning()
@@ -275,29 +298,34 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 }
 
 func (d *TopDialog) getCommandWidth() int {
-	var commandWidth int
-	var usedWidth int
+	var (
+		commandWidth int
+		usedWidth    int
+	)
+
 	// get table inner rect
-	_, _, width, _ := d.table.GetInnerRect()
+	_, _, width, _ := d.table.GetInnerRect() //nolint:dogsled
 
 	// get width used by other columns
 	for _, row := range d.results {
-		user := len(row[0])
-		pid := len(row[1])
-		ppid := len(row[2])
-		cpu := len(row[3])
-		elapsed := len(row[4])
-		tty := len(row[5])
-		time := len(row[6])
+		user := len(row[viewTopUserColIndex])
+		pid := len(row[viewTopPIDColIndex])
+		ppid := len(row[viewTopPPIDColIndex])
+		cpu := len(row[viewTopCPUColIndex])
+		elapsed := len(row[viewTopElapsedColIndex])
+		tty := len(row[viewTopTTYColIndex])
+		time := len(row[viewTopTimeColIndex])
 		tmpUsed := user + pid + ppid + cpu + elapsed + tty + time
+
 		if tmpUsed > usedWidth {
 			usedWidth = tmpUsed
 		}
 	}
 
-	commandWidth = width - usedWidth*2 + 8
+	commandWidth = width - usedWidth*2 + 8 //nolint:gomnd
 	if commandWidth <= 0 {
 		commandWidth = 0
 	}
+
 	return commandWidth
 }
