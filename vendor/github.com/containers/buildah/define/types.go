@@ -29,7 +29,7 @@ const (
 	// identify working containers.
 	Package = "buildah"
 	// Version for the Package. Also used by .packit.sh for Packit builds.
-	Version = "1.32.2"
+	Version = "1.33.2"
 
 	// DefaultRuntime if containers.conf fails.
 	DefaultRuntime = "runc"
@@ -58,8 +58,8 @@ const (
 type TeeType string
 
 var (
-	// DefaultCapabilities is the list of capabilities which we grant by
-	// default to containers which are running under UID 0.
+	// Deprecated: DefaultCapabilities values should be retrieved from
+	// github.com/containers/common/pkg/config
 	DefaultCapabilities = []string{
 		"CAP_AUDIT_WRITE",
 		"CAP_CHOWN",
@@ -75,8 +75,8 @@ var (
 		"CAP_SETUID",
 		"CAP_SYS_CHROOT",
 	}
-	// DefaultNetworkSysctl is the list of Kernel parameters which we
-	// grant by default to containers which are running under UID 0.
+	// Deprecated: DefaultNetworkSysctl values should be retrieved from
+	// github.com/containers/common/pkg/config
 	DefaultNetworkSysctl = map[string]string{
 		"net.ipv4.ping_group_range": "0 0",
 	}

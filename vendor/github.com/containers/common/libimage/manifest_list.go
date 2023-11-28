@@ -1,3 +1,6 @@
+//go:build !remote
+// +build !remote
+
 package libimage
 
 import (
@@ -440,6 +443,8 @@ func (m *ManifestList) Push(ctx context.Context, destination string, options *Ma
 		SignSigstorePrivateKeyPassphrase: options.SignSigstorePrivateKeyPassphrase,
 		RemoveSignatures:                 options.RemoveSignatures,
 		ManifestType:                     options.ManifestMIMEType,
+		MaxRetries:                       options.MaxRetries,
+		RetryDelay:                       options.RetryDelay,
 		ForceCompressionFormat:           options.ForceCompressionFormat,
 	}
 
