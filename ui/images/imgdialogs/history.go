@@ -16,7 +16,15 @@ const (
 	commentCellMaxWidth = 20
 )
 
-// ImageHistoryDialog represents image history dialog primitive
+const (
+	viewHistoryIDColIndex = 0 + iota
+	viewHistoryCreatedColIndex
+	viewHistoryCreatedByColIndex
+	viewHistorySizeColIndex
+	viewHistoryCommentColIndex
+)
+
+// ImageHistoryDialog represents image history dialog primitive.
 type ImageHistoryDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -29,7 +37,7 @@ type ImageHistoryDialog struct {
 	cancelHandler func()
 }
 
-// NewImageHistoryDialog returns new image history dialog
+// NewImageHistoryDialog returns new image history dialog.
 func NewImageHistoryDialog() *ImageHistoryDialog {
 	dialog := &ImageHistoryDialog{
 		Box:       tview.NewBox(),
@@ -45,6 +53,7 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 
 	// image info field.
 	imageInfoLabel := "IMAGE ID:"
+
 	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabel("[::b]" + imageInfoLabel)
 	dialog.imageInfo.SetLabelWidth(len(imageInfoLabel) + 1)
@@ -88,43 +97,46 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ImageHistoryDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ImageHistoryDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ImageHistoryDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ImageHistoryDialog) HasFocus() bool {
 	return d.Box.HasFocus() || d.form.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ImageHistoryDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image history dialog: event %v received", event)
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
+
 			return
 		}
+
 		event = utils.ParseKeyEventKey(event)
-		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp {
+		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { //nolint:lll
 			if tableHandler := d.table.InputHandler(); tableHandler != nil {
 				tableHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -134,27 +146,29 @@ func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus
 // SetRect set rects for this primitive.
 func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
-	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := len(d.results) + dialogs.DialogFormHeight + 5
+	dWidth := width - (2 * dialogs.DialogPadding)            //nolint:gomnd
+	dHeight := len(d.results) + dialogs.DialogFormHeight + 5 //nolint:gomnd
 
 	if dHeight > height {
 		dHeight = height
 	}
-	tableHeight := dHeight - dialogs.DialogFormHeight - 2
 
-	hs := ((height - dHeight) / 2)
+	tableHeight := dHeight - dialogs.DialogFormHeight - 2 //nolint:gomnd
+
+	hs := ((height - dHeight) / 2) //nolint:gomnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
-	//set table height size
+
+	// set table height size
 	d.layout.ResizeItem(d.table, tableHeight, 0)
 	cWidth := d.getCreatedByWidth()
-	for i := 0; i < d.table.GetRowCount(); i++ {
-		cell := d.table.GetCell(i, 2)
-		cell.SetMaxWidth(cWidth / 2)
-		d.table.SetCell(i, 2, cell)
-	}
 
+	for i := 0; i < d.table.GetRowCount(); i++ {
+		cell := d.table.GetCell(i, 2) //nolint:gomnd
+		cell.SetMaxWidth(cWidth / 2)  //nolint:gomnd
+		d.table.SetCell(i, 2, cell)   //nolint:gomnd
+	}
 }
 
 // Draw draws this primitive onto the screen.
@@ -162,17 +176,19 @@ func (d *ImageHistoryDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ImageHistoryDialog) SetCancelFunc(handler func()) *ImageHistoryDialog {
 	d.cancelHandler = handler
 	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -183,6 +199,7 @@ func (d *ImageHistoryDialog) initTable() {
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+
 	for i := 0; i < len(d.tableHeaders); i++ {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
@@ -194,58 +211,63 @@ func (d *ImageHistoryDialog) initTable() {
 	}
 }
 
-// UpdateResults updates result table
+// UpdateResults updates result table.
 func (d *ImageHistoryDialog) UpdateResults(data [][]string) {
 	d.results = data
 	d.initTable()
+
 	alignment := tview.AlignLeft
 	rowIndex := 1
 	expand := 0
+
 	for i := 0; i < len(data); i++ {
 		id := data[i][0]
 		if len(id) > utils.IDLength {
 			id = id[0:utils.IDLength]
 		}
+
 		created := data[i][1]
 		createdBy := data[i][2]
 		size := data[i][3]
 		comment := data[i][4]
+
 		if len(comment) > commentCellMaxWidth {
 			comment = comment[0:commentCellMaxWidth]
 		}
 
 		// id column
-		d.table.SetCell(rowIndex, 0,
+		d.table.SetCell(rowIndex, viewHistoryIDColIndex,
 			tview.NewTableCell(id).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// created column
-		d.table.SetCell(rowIndex, 1,
+		d.table.SetCell(rowIndex, viewHistoryCreatedColIndex,
 			tview.NewTableCell(created).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// createdBy column
-		d.table.SetCell(rowIndex, 2,
+		d.table.SetCell(rowIndex, viewHistoryCreatedByColIndex,
 			tview.NewTableCell(createdBy).
 				SetExpansion(1).
 				SetAlign(alignment))
 
 		// size column
-		d.table.SetCell(rowIndex, 3,
+		d.table.SetCell(rowIndex, viewHistorySizeColIndex,
 			tview.NewTableCell(size).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// comment column
-		d.table.SetCell(rowIndex, 4,
+		d.table.SetCell(rowIndex, viewHistoryCommentColIndex,
 			tview.NewTableCell(comment).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		rowIndex++
 	}
+
 	if len(data) > 0 {
 		d.table.Select(1, 1)
 		d.table.ScrollToBeginning()
@@ -258,34 +280,41 @@ func (d *ImageHistoryDialog) SetImageInfo(id string, name string) {
 }
 
 func (d *ImageHistoryDialog) getCreatedByWidth() int {
-	var idWidth int
-	var createdWidth int
-	var createdByWidth int
-	var sizeWidth int
-	var commentWidth int
+	var (
+		idWidth        int
+		createdWidth   int
+		createdByWidth int
+		sizeWidth      int
+		commentWidth   int
+	)
 	// get table inner rect
-	_, _, width, _ := d.table.GetInnerRect()
+	_, _, width, _ := d.table.GetInnerRect() //nolint:dogsled
 
 	// get width used by other columns
 	for _, row := range d.results {
-		if len(row[0]) > idWidth && len(row[0]) <= utils.IDLength {
-			idWidth = len(row[0])
+		if len(row[viewHistoryIDColIndex]) > idWidth && len(row[viewHistoryIDColIndex]) <= utils.IDLength {
+			idWidth = len(row[viewHistoryIDColIndex])
 		}
-		if len(row[1]) > createdWidth {
-			createdWidth = len(row[1])
+
+		if len(row[viewHistoryCreatedColIndex]) > createdWidth {
+			createdWidth = len(row[viewHistoryCreatedColIndex])
 		}
-		if len(row[3]) > sizeWidth {
-			sizeWidth = len(row[3])
+
+		if len(row[viewHistorySizeColIndex]) > sizeWidth {
+			sizeWidth = len(row[viewHistorySizeColIndex])
 		}
-		if len(row[4]) > commentWidth && len(row[4]) < 40 {
-			commentWidth = len(row[4])
+
+		if len(row[viewHistoryCommentColIndex]) > commentWidth && len(row[viewHistoryCommentColIndex]) < 40 {
+			commentWidth = len(row[viewHistoryCommentColIndex])
 		}
 	}
 
 	usedWidth := idWidth + createdWidth + sizeWidth + commentWidth
-	createdByWidth = width - usedWidth*2 + 8
+	createdByWidth = width - usedWidth*2 + 8 //nolint:gomnd
+
 	if createdByWidth <= 0 {
 		createdByWidth = 0
 	}
+
 	return createdByWidth
 }

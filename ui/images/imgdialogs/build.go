@@ -68,7 +68,7 @@ const (
 	buildDialogSecurityOptsPageIndex
 )
 
-// ImageBuildDialog represents image build dialog primitive
+// ImageBuildDialog represents image build dialog primitive.
 type ImageBuildDialog struct {
 	*tview.Box
 	layout                  *tview.Flex
@@ -121,18 +121,20 @@ type ImageBuildDialog struct {
 	buildHandler            func()
 }
 
-// NewImageBuildDialog returns new image build dialog primitive
-func NewImageBuildDialog() *ImageBuildDialog {
+// NewImageBuildDialog returns new image build dialog primitive.
+func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog := &ImageBuildDialog{
 		Box:    tview.NewBox(),
 		layout: tview.NewFlex().SetDirection(tview.FlexRow),
 		form:   tview.NewForm(),
-		categoryLabels: []string{"Basic Information",
+		categoryLabels: []string{
+			"Basic Information",
 			"Build Settings",
 			"Capability",
 			"CPU and Memory",
 			"Networking",
-			"Security Options"},
+			"Security Options",
+		},
 		categories:              tview.NewTextView(),
 		categoryPages:           tview.NewPages(),
 		basicInfoPage:           tview.NewFlex(),
@@ -174,6 +176,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 		memoryField:             tview.NewInputField(),
 		memorySwapField:         tview.NewInputField(),
 	}
+
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
 	inputFieldBgColor := style.InputFieldBgColor
@@ -213,7 +216,8 @@ func NewImageBuildDialog() *ImageBuildDialog {
 		define.PullIfMissing.String(),
 		define.PullAlways.String(),
 		define.PullIfNewer.String(),
-		define.PullNever.String()},
+		define.PullNever.String(),
+	},
 		nil)
 	buildDialog.pullPolicyField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	buildDialog.pullPolicyField.SetFieldBackgroundColor(inputFieldBgColor)
@@ -234,6 +238,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// build settings page
 	buildSettingFirstColWidth := 15
+
 	buildDialog.buildArgsField.SetLabel("runtime args:")
 	buildDialog.buildArgsField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.buildArgsField.SetBackgroundColor(bgColor)
@@ -242,6 +247,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// format dropdown
 	formatLabel := "output format:"
+
 	buildDialog.formatField.SetLabel(formatLabel)
 	buildDialog.formatField.SetTitleAlign(tview.AlignRight)
 	buildDialog.formatField.SetLabelWidth(buildSettingFirstColWidth)
@@ -249,13 +255,15 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.formatField.SetLabelColor(fgColor)
 	buildDialog.formatField.SetOptions([]string{
 		define.OCI,
-		define.DOCKER},
+		define.DOCKER,
+	},
 		nil)
 	buildDialog.formatField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	buildDialog.formatField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// squash
 	squashLabel := "squash:"
+
 	buildDialog.SquashField.SetBackgroundColor(bgColor)
 	buildDialog.SquashField.SetBorder(false)
 	buildDialog.SquashField.SetLabel(squashLabel)
@@ -265,6 +273,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// layers
 	layersLabel := "layers:"
+
 	buildDialog.layersField.SetBackgroundColor(bgColor)
 	buildDialog.layersField.SetBorder(false)
 	buildDialog.layersField.SetLabel(layersLabel)
@@ -274,6 +283,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// no-cache
 	noCacheLabel := "no cache:"
+
 	buildDialog.noCacheField.SetBackgroundColor(bgColor)
 	buildDialog.noCacheField.SetBorder(false)
 	buildDialog.noCacheField.SetLabel(noCacheLabel)
@@ -309,6 +319,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// security options page
 	securityOptionsPAgeLabelWidth := 10
+
 	// selinux Label
 	buildDialog.selinuxLabelField.SetLabel("label:")
 	buildDialog.selinuxLabelField.SetLabelWidth(securityOptionsPAgeLabelWidth)
@@ -330,6 +341,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// networking setup page
 	networkingPageLabelWidth := 13
+
 	// network dropdown
 	buildDialog.networkField.SetLabel("network:")
 	buildDialog.networkField.SetLabelWidth(networkingPageLabelWidth)
@@ -338,7 +350,8 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	buildDialog.networkField.SetOptions([]string{
 		define.NetworkDefault.String(),
 		define.NetworkDisabled.String(),
-		define.NetworkEnabled.String()},
+		define.NetworkEnabled.String(),
+	},
 		nil)
 	buildDialog.networkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	buildDialog.networkField.SetFieldBackgroundColor(inputFieldBgColor)
@@ -381,6 +394,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 
 	// capability page
 	capabilityPageLabelWidth := 12
+
 	// add capability field
 	buildDialog.addCapabilityField.SetLabel("add cap:")
 	buildDialog.addCapabilityField.SetLabelWidth(capabilityPageLabelWidth)
@@ -398,6 +412,7 @@ func NewImageBuildDialog() *ImageBuildDialog {
 	// cpu and memory page
 	cpuMemoryLabelWidth := 14
 	cpuMemoryFieldWidth := 17
+
 	// cpu period field
 	buildDialog.cpuPeriodField.SetLabel("cpu period:")
 	buildDialog.cpuPeriodField.SetLabelWidth(cpuMemoryLabelWidth)
@@ -493,7 +508,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	// layers setup page
 	secondRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	secondRowLayout.SetBackgroundColor(bgColor)
-	secondRowLayout.AddItem(d.formatField, 0, 2, true)
+	secondRowLayout.AddItem(d.formatField, 0, 2, true) //nolint:gomnd
 	secondRowLayout.AddItem(d.SquashField, 0, 1, true)
 	secondRowLayout.AddItem(d.layersField, 0, 1, true)
 	secondRowLayout.AddItem(d.noCacheField, 0, 1, true)
@@ -501,7 +516,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	cntRmRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	cntRmRowLayout.SetBackgroundColor(bgColor)
 	cntRmRowLayout.AddItem(d.forceRemoveCntField, 0, 1, true)
-	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true)
+	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true) //nolint:gomnd
 
 	// build setup page
 	d.buildInfoPage.SetDirection(tview.FlexRow)
@@ -579,43 +594,45 @@ func (d *ImageBuildDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
 	d.layout.AddItem(layout, 0, 1, true)
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ImageBuildDialog) Display() {
 	d.focusElement = buildDialogContextDirectoryPathFieldFocus
 	d.initData()
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ImageBuildDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ImageBuildDialog) Hide() {
 	d.display = false
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ImageBuildDialog) HasFocus() bool {
 	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
 		return true
 	}
+
 	if d.form.HasFocus() || d.layout.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
-func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
+// Focus is called when this primitive receives focus.
+func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop
 	switch d.focusElement {
 	// form focus
 	case buildDialogFormFocus:
@@ -625,10 +642,13 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = buildDialogCategoriesFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	// category text view
 	case buildDialogCategoriesFocus:
@@ -636,16 +656,20 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == utils.SwitchFocusKey.Key {
 				d.focusElement = buildDialogCategoryPagesFocus // category page view
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			// scroll between categories
 			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
+
 			if event.Key() == tcell.KeyUp {
 				d.previousCategory()
 			}
+
 			return event
 		})
 		delegate(d.categories)
@@ -722,17 +746,17 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) {
 	// category page
 	case buildDialogCategoryPagesFocus:
 		delegate(d.categoryPages)
-
 	}
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,gocyclo,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image build dialog: event %v received", event)
 		if event.Key() == utils.CloseDialogKey.Key {
 			if !(d.pullPolicyField.HasFocus() || d.networkField.HasFocus() || d.formatField.HasFocus()) {
 				d.cancelHandler()
+
 				return
 			}
 		}
@@ -743,20 +767,26 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 				if event.Key() == utils.SwitchFocusKey.Key {
 					d.setBasicInfoPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.formatField.HasFocus() {
 			event = utils.ParseKeyEventKey(event)
 			if handler := d.formatField.InputHandler(); handler != nil {
 				if event.Key() == utils.SwitchFocusKey.Key {
 					d.setBuildSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.networkField.HasFocus() {
 			event = utils.ParseKeyEventKey(event)
 			if handler := d.networkField.InputHandler(); handler != nil {
@@ -764,79 +794,102 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 					d.setNetworkingPageNextFocus()
 				}
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// basic info page
 		if d.basicInfoPage.HasFocus() {
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == utils.SwitchFocusKey.Key {
 					d.setBasicInfoPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// build settings page
 		if d.buildInfoPage.HasFocus() {
 			if handler := d.buildInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBuildSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// security options page
 		if d.securityOptsPage.HasFocus() {
 			if handler := d.securityOptsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setSecurityOptionsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// networking page
 		if d.networkingPage.HasFocus() {
 			if handler := d.networkingPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setNetworkingPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// capability page
 		if d.capabilityPage.HasFocus() {
 			if handler := d.capabilityPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setCapabilityPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		// cpu and memory page
 		if d.cpuMemoryPage.HasFocus() {
 			if handler := d.cpuMemoryPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setCPUMemoryPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.categories.HasFocus() {
 			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
 				categroryHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		// form
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -845,16 +898,15 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 
 // SetRect set rects for this primitive.
 func (d *ImageBuildDialog) SetRect(x, y, width, height int) {
-
 	if width > buildDialogMaxWidth {
-		emptySpace := (width - buildDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - buildDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = buildDialogMaxWidth
 	}
 
 	if height > buildDialogHeight {
-		emptySpace := (height - buildDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - buildDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = buildDialogHeight
 	}
 
@@ -866,25 +918,28 @@ func (d *ImageBuildDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ImageBuildDialog) SetCancelFunc(handler func()) *ImageBuildDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetBuildFunc sets form build button selected function
+// SetBuildFunc sets form build button selected function.
 func (d *ImageBuildDialog) SetBuildFunc(handler func()) *ImageBuildDialog {
 	d.buildHandler = handler
 	buildButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	buildButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -944,15 +999,21 @@ func (d *ImageBuildDialog) setActiveCategory(index int) {
 	ctgBgColor := style.GetColorHex(bgColor)
 	d.activePageIndex = index
 	d.categories.Clear()
+
 	var ctgList []string
+
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
+
 	for i := 0; i < len(alignedList); i++ {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgFgColor, ctgBgColor, alignedList[i]))
+
 			continue
 		}
+
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))
 	}
+
 	d.categories.SetText(strings.Join(ctgList, "\n"))
 
 	// switch the page
@@ -962,73 +1023,139 @@ func (d *ImageBuildDialog) setActiveCategory(index int) {
 func (d *ImageBuildDialog) nextCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex < len(d.categoryLabels)-1 {
-		activePage = activePage + 1
+		activePage++
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(0)
 }
 
 func (d *ImageBuildDialog) previousCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex > 0 {
-		activePage = activePage - 1
+		activePage--
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(len(d.categoryLabels) - 1)
 }
 
 func (d *ImageBuildDialog) setBasicInfoPageNextFocus() {
 	if d.contextDirectoryPath.HasFocus() {
 		d.focusElement = buildDialogContainerfilePathFocus
-	} else if d.containerFilePath.HasFocus() {
-		d.focusElement = buildDialogPullPolicyFieldFocus
-	} else if d.pullPolicyField.HasFocus() {
-		d.focusElement = buildDialogTagFieldFocus
-	} else if d.tagField.HasFocus() {
-		d.focusElement = buildDialogRegistryFieldFocus
-	} else {
-		d.focusElement = buildDialogFormFocus
+
+		return
 	}
+
+	if d.containerFilePath.HasFocus() {
+		d.focusElement = buildDialogPullPolicyFieldFocus
+
+		return
+	}
+
+	if d.pullPolicyField.HasFocus() {
+		d.focusElement = buildDialogTagFieldFocus
+
+		return
+	}
+
+	if d.tagField.HasFocus() {
+		d.focusElement = buildDialogRegistryFieldFocus
+
+		return
+	}
+
+	d.focusElement = buildDialogFormFocus
 }
 
 func (d *ImageBuildDialog) setNetworkingPageNextFocus() {
 	if d.networkField.HasFocus() {
 		d.focusElement = buildDialogHTTPProxyFieldFocus
-	} else if d.httpProxyField.HasFocus() {
-		d.focusElement = buildDialogAddHostFieldFocus
-	} else if d.addHostField.HasFocus() {
-		d.focusElement = buildDialogDNSServersFieldFocus
-	} else if d.dnsServersField.HasFocus() {
-		d.focusElement = buildDialogDNSOptionsFieldFocus
-	} else if d.dnsOptionsField.HasFocus() {
-		d.focusElement = buildDialogDNSSearchFieldFocus
-	} else {
-		d.focusElement = buildDialogFormFocus
+
+		return
 	}
+
+	if d.httpProxyField.HasFocus() {
+		d.focusElement = buildDialogAddHostFieldFocus
+
+		return
+	}
+
+	if d.addHostField.HasFocus() {
+		d.focusElement = buildDialogDNSServersFieldFocus
+
+		return
+	}
+
+	if d.dnsServersField.HasFocus() {
+		d.focusElement = buildDialogDNSOptionsFieldFocus
+
+		return
+	}
+
+	if d.dnsOptionsField.HasFocus() {
+		d.focusElement = buildDialogDNSSearchFieldFocus
+
+		return
+	}
+
+	d.focusElement = buildDialogFormFocus
 }
 
 func (d *ImageBuildDialog) setBuildSettingsPageNextFocus() {
 	if d.buildArgsField.HasFocus() {
 		d.focusElement = buildDialogFormatFieldFocus
-	} else if d.formatField.HasFocus() {
-		d.focusElement = buildDialogSquashFieldFocus
-	} else if d.SquashField.HasFocus() {
-		d.focusElement = buildDialogLayersFieldFocus
-	} else if d.layersField.HasFocus() {
-		d.focusElement = buildDialogNoCacheFieldfocus
-	} else if d.noCacheField.HasFocus() {
-		d.focusElement = buildDialogLabelsFieldFocus
-	} else if d.labelsField.HasFocus() {
-		d.focusElement = buildDialogAnnotationFieldFocus
-	} else if d.annotationsField.HasFocus() {
-		d.focusElement = buildDialogForceRemoveCntFieldFocus
-	} else if d.forceRemoveCntField.HasFocus() {
-		d.focusElement = buildDialogRemoveCntFieldFocus
-	} else {
-		d.focusElement = buildDialogFormFocus
+
+		return
 	}
+
+	if d.formatField.HasFocus() {
+		d.focusElement = buildDialogSquashFieldFocus
+
+		return
+	}
+
+	if d.SquashField.HasFocus() {
+		d.focusElement = buildDialogLayersFieldFocus
+
+		return
+	}
+
+	if d.layersField.HasFocus() {
+		d.focusElement = buildDialogNoCacheFieldfocus
+
+		return
+	}
+
+	if d.noCacheField.HasFocus() {
+		d.focusElement = buildDialogLabelsFieldFocus
+
+		return
+	}
+
+	if d.labelsField.HasFocus() {
+		d.focusElement = buildDialogAnnotationFieldFocus
+
+		return
+	}
+
+	if d.annotationsField.HasFocus() {
+		d.focusElement = buildDialogForceRemoveCntFieldFocus
+
+		return
+	}
+
+	if d.forceRemoveCntField.HasFocus() {
+		d.focusElement = buildDialogRemoveCntFieldFocus
+
+		return
+	}
+
+	d.focusElement = buildDialogFormFocus
 }
 
 func (d *ImageBuildDialog) setCapabilityPageNextFocus() {
@@ -1042,34 +1169,61 @@ func (d *ImageBuildDialog) setCapabilityPageNextFocus() {
 func (d *ImageBuildDialog) setCPUMemoryPageNextFocus() {
 	if d.cpuPeriodField.HasFocus() {
 		d.focusElement = buildDialogCPUQuataFieldFocus
-	} else if d.cpuQuataField.HasFocus() {
-		d.focusElement = buildDialogCPUSharesFieldFocus
-	} else if d.cpuSharesField.HasFocus() {
-		d.focusElement = buildDialogCPUSetCpusFieldFocus
-	} else if d.cpuSetCpusField.HasFocus() {
-		d.focusElement = buildDialogCPUSetMemsFieldFocus
-	} else if d.cpuSetMemsField.HasFocus() {
-		d.focusElement = buildDialogMemoryFieldFocus
-	} else if d.memoryField.HasFocus() {
-		d.focusElement = buildDialogMemorySwapFieldFocus
-	} else {
-		d.focusElement = buildDialogFormFocus
+
+		return
 	}
+
+	if d.cpuQuataField.HasFocus() {
+		d.focusElement = buildDialogCPUSharesFieldFocus
+
+		return
+	}
+
+	if d.cpuSharesField.HasFocus() {
+		d.focusElement = buildDialogCPUSetCpusFieldFocus
+
+		return
+	}
+
+	if d.cpuSetCpusField.HasFocus() {
+		d.focusElement = buildDialogCPUSetMemsFieldFocus
+
+		return
+	}
+
+	if d.cpuSetMemsField.HasFocus() {
+		d.focusElement = buildDialogMemoryFieldFocus
+
+		return
+	}
+
+	if d.memoryField.HasFocus() {
+		d.focusElement = buildDialogMemorySwapFieldFocus
+
+		return
+	}
+
+	d.focusElement = buildDialogFormFocus
 }
 
 func (d *ImageBuildDialog) setSecurityOptionsPageNextFocus() {
 	if d.selinuxLabelField.HasFocus() {
 		d.focusElement = buildDialogApparmorProfileFieldFocus
-	} else if d.apparmorProfileField.HasFocus() {
-		d.focusElement = buildDialogSeccompProfilePathFieldFocus
-	} else {
-		d.focusElement = buildDialogFormFocus
+
+		return
 	}
+
+	if d.apparmorProfileField.HasFocus() {
+		d.focusElement = buildDialogSeccompProfilePathFieldFocus
+
+		return
+	}
+
+	d.focusElement = buildDialogFormFocus
 }
 
-// ImageBuildOptions returns image build options
-func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error) {
-
+// ImageBuildOptions returns image build options.
+func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error) { //nolint:gocognit,gocyclo,cyclop,maintidx,lll
 	var (
 		memoryLimit        int64
 		memorySwap         int64
@@ -1087,6 +1241,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		apparmorProfile    string
 		seccompProfilePath string
 	)
+
 	// basic info page
 	// Containerfiles
 	for _, cntFile := range strings.Split(d.containerFilePath.GetText(), " ") {
@@ -1095,6 +1250,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 			if err != nil {
 				return images.ImageBuildOptions{}, err
 			}
+
 			containerFiles = append(containerFiles, cFile)
 		}
 	}
@@ -1106,10 +1262,10 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 
 	dir, err := utils.ResolveHomeDir(d.contextDirectoryPath.GetText())
 	if err != nil {
-		return images.ImageBuildOptions{}, fmt.Errorf("cannot resolve home directory %v", err)
+		return images.ImageBuildOptions{}, fmt.Errorf("cannot resolve home directory %w", err)
 	}
-	opts.BuildOptions.ContextDirectory = dir
 
+	opts.BuildOptions.ContextDirectory = dir
 	opts.BuildOptions.AdditionalTags = append(opts.BuildOptions.AdditionalTags, d.tagField.GetText())
 	opts.BuildOptions.Registry = d.registryField.GetText()
 
@@ -1139,10 +1295,12 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	opts.BuildOptions.NoCache = d.noCacheField.IsChecked()
 	opts.BuildOptions.RemoveIntermediateCtrs = d.removeCntField.IsChecked()
 	opts.BuildOptions.ForceRmIntermediateCtrs = d.forceRemoveCntField.IsChecked()
+
 	labels := strings.TrimSpace(d.labelsField.GetText())
 	if labels != "" {
 		opts.BuildOptions.Labels = strings.Split(labels, " ")
 	}
+
 	annotations := strings.TrimSpace(d.annotationsField.GetText())
 	if annotations != "" {
 		opts.BuildOptions.Annotations = strings.Split(annotations, " ")
@@ -1161,12 +1319,14 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 
 	// cpu and memory page
 	opts.BuildOptions.CommonBuildOpts = &define.CommonBuildOptions{}
+
 	cpuPeriodVal := d.cpuPeriodField.GetText()
 	if cpuPeriodVal != "" {
 		period, err := strconv.Atoi(cpuPeriodVal)
 		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU period value %q %v", cpuPeriodVal, err)
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU period value %q %w", cpuPeriodVal, err)
 		}
+
 		cpuPeriod = uint64(period)
 	}
 
@@ -1174,8 +1334,9 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	if cpuQuotaVal != "" {
 		quota, err := strconv.Atoi(cpuQuotaVal)
 		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %v", cpuQuotaVal, err)
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuQuotaVal, err)
 		}
+
 		cpuQuota = int64(quota)
 	}
 
@@ -1183,8 +1344,9 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	if cpuSharesVal != "" {
 		shares, err := strconv.Atoi(cpuSharesVal)
 		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %v", cpuSharesVal, err)
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuSharesVal, err)
 		}
+
 		cpuShares = uint64(shares)
 	}
 
@@ -1192,6 +1354,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	if cpuSetCpusVal != "" {
 		cpuSetCpus = cpuSetCpusVal
 	}
+
 	cpuSetMemsVal := d.cpuSetMemsField.GetText()
 	if cpuSetMemsVal != "" {
 		cpuSetMems = cpuSetMemsVal
@@ -1201,16 +1364,19 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	if memoryVal != "" {
 		memory, err := strconv.Atoi(memoryVal)
 		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory value %q %v", memoryVal, err)
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory value %q %w", memoryVal, err)
 		}
+
 		memoryLimit = int64(memory)
 	}
+
 	memorySwapVal := d.memorySwapField.GetText()
 	if memorySwapVal != "" {
 		swap, err := strconv.Atoi(memorySwapVal)
 		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory swap value %q %v", memorySwapVal, err)
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory swap value %q %w", memorySwapVal, err)
 		}
+
 		memorySwap = int64(swap)
 	}
 
@@ -1238,11 +1404,13 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 			dnsServers = append(dnsServers, dns)
 		}
 	}
+
 	for _, do := range strings.Split(d.dnsOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
+
 	for _, ds := range strings.Split(d.dnsSearchField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
@@ -1255,10 +1423,12 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 			labelOpts = append(labelOpts, selinuxLabel)
 		}
 	}
+
 	apparmor := strings.TrimSpace(d.apparmorProfileField.GetText())
 	if apparmor != "" {
 		apparmorProfile = apparmor
 	}
+
 	seccomp := strings.TrimSpace(d.seccompProfilePathField.GetText())
 	if seccomp != "" {
 		seccompProfilePath = seccomp
@@ -1283,5 +1453,6 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 	}
 
 	opts.BuildOptions.CommonBuildOpts = commonOpts
+
 	return opts, nil
 }

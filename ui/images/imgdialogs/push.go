@@ -29,7 +29,7 @@ const (
 	imagePushFormFocus
 )
 
-// ImagePushDialog represents image push dialog primitive
+// ImagePushDialog represents image push dialog primitive.
 type ImagePushDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -48,7 +48,7 @@ type ImagePushDialog struct {
 	focusElement  int
 }
 
-// NewImagePushDialog returns a new image push dialog primitive
+// NewImagePushDialog returns a new image push dialog primitive.
 func NewImagePushDialog() *ImagePushDialog {
 	dialog := &ImagePushDialog{
 		Box:           tview.NewBox(),
@@ -104,13 +104,15 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.format.SetOptions([]string{
 		"oci",
 		"v2v2",
-		"v2v1"},
+		"v2v1",
+	},
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// skipTLSVerify checkbox
 	skipTLSVerifyLabel := "skip tls verify:"
+
 	dialog.skipTLSVerify.SetBackgroundColor(bgColor)
 	dialog.skipTLSVerify.SetLabelColor(fgColor)
 	dialog.skipTLSVerify.SetLabel(skipTLSVerifyLabel)
@@ -133,6 +135,7 @@ func NewImagePushDialog() *ImagePushDialog {
 
 	// password input field
 	passwordLabel := "password:"
+
 	dialog.password.SetBackgroundColor(bgColor)
 	dialog.password.SetLabelColor(fgColor)
 	dialog.password.SetLabel(passwordLabel)
@@ -151,15 +154,15 @@ func NewImagePushDialog() *ImagePushDialog {
 	// dropdowns and checkbox row layour
 	dcLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	dcLayout.AddItem(dialog.compress, labelWidth+1, 1, true)
-	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)
-	dcLayout.AddItem(dialog.format, len(formatLabel)+5, 0, true)
-	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)
+	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:gomnd
+	dcLayout.AddItem(dialog.format, len(formatLabel)+5, 0, true) //nolint:gomnd
+	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:gomnd
 	dcLayout.AddItem(dialog.skipTLSVerify, 0, 1, true)
 
 	// username and password row layout
 	userPassLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	userPassLayout.AddItem(dialog.username, 0, 1, true)
-	userPassLayout.AddItem(utils.EmptyBoxSpace(bgColor), 3, 0, false)
+	userPassLayout.AddItem(utils.EmptyBoxSpace(bgColor), 3, 0, false) //nolint:gomnd
 	userPassLayout.AddItem(dialog.password, 0, 1, true)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -189,23 +192,25 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	dialog.Hide()
+
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ImagePushDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ImagePushDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ImagePushDialog) Hide() {
 	d.display = false
 	d.focusElement = imagePushDesitnationFocus
+
 	d.destination.SetText("")
 	d.compress.SetChecked(false)
 	d.format.SetCurrentOption(0)
@@ -215,33 +220,38 @@ func (d *ImagePushDialog) Hide() {
 	d.password.SetText("")
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (d *ImagePushDialog) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (d *ImagePushDialog) HasFocus() bool { //nolint:cyclop
 	if d.destination.HasFocus() || d.compress.HasFocus() {
 		return true
 	}
+
 	if d.format.HasFocus() || d.skipTLSVerify.HasFocus() {
 		return true
 	}
+
 	if d.username.HasFocus() || d.password.HasFocus() {
 		return true
 	}
+
 	if d.authFile.HasFocus() || d.form.HasFocus() {
 		return true
 	}
+
 	if d.layout.HasFocus() || d.Box.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// dropdownHasFocus returns true if image push dialog dropdown primitives
-// has focus
+// dropdownHasFocus returns true if image push dialog dropdown primitives.
+// has focus.
 func (d *ImagePushDialog) dropdownHasFocus() bool {
 	return d.format.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ImagePushDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	case imagePushDesitnationFocus:
@@ -265,71 +275,90 @@ func (d *ImagePushDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = imagePushDesitnationFocus
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	}
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image push dialog: event %v received", event)
+
 		if event.Key() == utils.SwitchFocusKey.Key {
 			d.setFocusElement()
 		}
+
 		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.destination.HasFocus() {
 			if destinationHandler := d.destination.InputHandler(); destinationHandler != nil {
 				destinationHandler(event, setFocus)
+
 				return
 			}
 		}
 		if d.compress.HasFocus() {
 			if compressHandler := d.compress.InputHandler(); compressHandler != nil {
 				compressHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.format.HasFocus() {
 			if formatHandler := d.format.InputHandler(); formatHandler != nil {
 				event = utils.ParseKeyEventKey(event)
 				formatHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.skipTLSVerify.HasFocus() {
 			if skipTLSVerifyHandler := d.skipTLSVerify.InputHandler(); skipTLSVerifyHandler != nil {
 				skipTLSVerifyHandler(event, setFocus)
+
 				return
 			}
 		}
 		if d.authFile.HasFocus() {
 			if authFileHandler := d.authFile.InputHandler(); authFileHandler != nil {
 				authFileHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.username.HasFocus() {
 			if usernameHandler := d.username.InputHandler(); usernameHandler != nil {
 				usernameHandler(event, setFocus)
+
 				return
 			}
 		}
 		if d.password.HasFocus() {
 			if passwordHandler := d.password.InputHandler(); passwordHandler != nil {
 				passwordHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -357,16 +386,15 @@ func (d *ImagePushDialog) setFocusElement() {
 
 // SetRect set rects for this primitive.
 func (d *ImagePushDialog) SetRect(x, y, width, height int) {
-
 	if width > imagePushDialogMaxWidth {
-		emptySpace := (width - imagePushDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - imagePushDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = imagePushDialogMaxWidth
 	}
 
 	if height > imagePushDialogMaxHeight {
-		emptySpace := (height - imagePushDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - imagePushDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = imagePushDialogMaxHeight
 	}
 
@@ -378,35 +406,39 @@ func (d *ImagePushDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetPushFunc sets form push button selected function
+// SetPushFunc sets form push button selected function.
 func (d *ImagePushDialog) SetPushFunc(handler func()) *ImagePushDialog {
 	d.pushHandler = handler
 	pushButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	pushButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ImagePushDialog) SetCancelFunc(handler func()) *ImagePushDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetImageInfo sets selected image ID and name in push dialog
+// SetImageInfo sets selected image ID and name in push dialog.
 func (d *ImagePushDialog) SetImageInfo(id string, name string) {
 	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
 	d.imageInfo.SetText(containerInfo)
 }
 
-// GetImagePushOptions returns image push options based on user inputs
+// GetImagePushOptions returns image push options based on user inputs.
 func (d *ImagePushDialog) GetImagePushOptions() images.ImagePushOptions {
 	var opts images.ImagePushOptions
 

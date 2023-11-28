@@ -1,7 +1,7 @@
 package imgdialogs
 
 import (
-	"fmt"
+	"errors"
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/images"
@@ -19,6 +19,8 @@ const (
 	imageImportDialogMaxHeight = 13
 )
 
+var errImportEmptySource = errors.New("empty source value for the image tarball")
+
 const (
 	imageImportPathFocus = 0 + iota
 	imageImportCommitMessageFocus
@@ -27,7 +29,7 @@ const (
 	imageImportFormFocus
 )
 
-// ImageImportDialog represents image import dialog primitive
+// ImageImportDialog represents image import dialog primitive.
 type ImageImportDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -42,7 +44,7 @@ type ImageImportDialog struct {
 	focusElement  int
 }
 
-// NewImageImportDialog returns new image import dialog
+// NewImageImportDialog returns new image import dialog.
 func NewImageImportDialog() *ImageImportDialog {
 	dialog := &ImageImportDialog{
 		Box:           tview.NewBox(),
@@ -122,41 +124,45 @@ func NewImageImportDialog() *ImageImportDialog {
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ImageImportDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ImageImportDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ImageImportDialog) Hide() {
 	d.display = false
 	d.focusElement = imageImportPathFocus
+
 	d.path.SetText("")
 	d.change.SetText("")
 	d.commitMessage.SetText("")
 	d.reference.SetText("")
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ImageImportDialog) HasFocus() bool {
 	if d.path.HasFocus() || d.commitMessage.HasFocus() {
 		return true
 	}
+
 	if d.form.HasFocus() || d.reference.HasFocus() {
 		return true
 	}
+
 	if d.change.HasFocus() || d.layout.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ImageImportDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	case imageImportPathFocus:
@@ -174,46 +180,60 @@ func (d *ImageImportDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = imageImportPathFocus
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	}
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *ImageImportDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *ImageImportDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:cyclop,lll
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image import dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if event.Key() == utils.SwitchFocusKey.Key {
 			d.setFocusElement()
 		}
+
 		if d.path.HasFocus() {
 			if pathHandler := d.path.InputHandler(); pathHandler != nil {
 				pathHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.change.HasFocus() {
 			if changeHandler := d.change.InputHandler(); changeHandler != nil {
 				changeHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.commitMessage.HasFocus() {
 			if commitHandler := d.commitMessage.InputHandler(); commitHandler != nil {
 				commitHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.reference.HasFocus() {
 			if referenceHandler := d.reference.InputHandler(); referenceHandler != nil {
 				referenceHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -221,6 +241,7 @@ func (d *ImageImportDialog) InputHandler() func(event *tcell.EventKey, setFocus 
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -229,16 +250,15 @@ func (d *ImageImportDialog) InputHandler() func(event *tcell.EventKey, setFocus 
 
 // SetRect set rects for this primitive.
 func (d *ImageImportDialog) SetRect(x, y, width, height int) {
-
 	if width > imageImportDialogMaxWidth {
-		emptySpace := (width - imageImportDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - imageImportDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = imageImportDialogMaxWidth
 	}
 
 	if height > imageImportDialogMaxHeight {
-		emptySpace := (height - imageImportDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - imageImportDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = imageImportDialogMaxHeight
 	}
 
@@ -250,6 +270,7 @@ func (d *ImageImportDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
@@ -269,23 +290,25 @@ func (d *ImageImportDialog) setFocusElement() {
 	}
 }
 
-// SetImportFunc sets form import button selected function
+// SetImportFunc sets form import button selected function.
 func (d *ImageImportDialog) SetImportFunc(handler func()) *ImageImportDialog {
 	d.importHandler = handler
 	importButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	importButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ImageImportDialog) SetCancelFunc(handler func()) *ImageImportDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// ImageImportOptions return image import options
+// ImageImportOptions return image import options.
 func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, error) {
 	var (
 		path      string
@@ -306,8 +329,9 @@ func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, err
 
 	path = strings.TrimSpace(d.path.GetText())
 	if path == "" {
-		return opts, fmt.Errorf("empty source value for the image tarball")
+		return opts, errImportEmptySource
 	}
+
 	path, err := utils.ResolveHomeDir(path)
 	if err != nil {
 		return opts, err
@@ -315,12 +339,15 @@ func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, err
 
 	errFileName := utils.ValidateFileName(path)
 	errURL := utils.ValidURL(path)
+
 	if errURL == nil {
 		opts.URL = true
 	}
+
 	if errFileName != nil && errURL != nil {
 		return opts, multierror.Append(errFileName, errURL)
 	}
+
 	opts.Source = path
 
 	return opts, nil

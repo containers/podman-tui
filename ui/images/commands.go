@@ -7,12 +7,10 @@ import (
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
-
 	"github.com/rs/zerolog/log"
 )
 
-func (img *Images) runCommand(cmd string) {
-
+func (img *Images) runCommand(cmd string) { //nolint:cyclop
 	switch cmd {
 	case "build":
 		img.buildDialog.Display()
@@ -24,7 +22,7 @@ func (img *Images) runCommand(cmd string) {
 		img.importDialog.Display()
 	case "inspect":
 		img.inspect()
-	case "prune":
+	case "prune": //nolint:goconst
 		img.cprune()
 	case "push":
 		img.cpush()
@@ -52,16 +50,21 @@ func (img *Images) displayError(title string, err error) {
 
 func (img *Images) build() {
 	img.buildDialog.Hide()
+
 	opts, err := img.buildDialog.ImageBuildOptions()
 	if err != nil {
 		img.buildPrgDialog.Hide()
 		img.displayError("IMAGE BUILD ERROR", err)
+
 		return
 	}
+
 	if opts.BuildOptions.ContextDirectory == "" && len(opts.ContainerFiles) == 0 {
-		img.displayError("IMAGE BUILD ERROR", fmt.Errorf("both context directory path and container files fields are empty"))
+		img.displayError("IMAGE BUILD ERROR", errNoBuildDirOrCntFile)
+
 		return
 	}
+
 	img.buildPrgDialog.Display()
 	writer := img.buildPrgDialog.LogWriter()
 	opts.BuildOptions.Out = writer
@@ -69,15 +72,20 @@ func (img *Images) build() {
 
 	buildFunc := func() {
 		report, err := images.Build(opts)
+
 		img.buildPrgDialog.Hide()
+
 		if err != nil {
 			img.displayError("IMAGE BUILD ERROR", err)
+
 			return
 		}
+
 		img.messageDialog.SetTitle("podman image build")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, report, "")
 		img.messageDialog.Display()
 	}
+
 	go buildFunc()
 }
 
@@ -85,17 +93,23 @@ func (img *Images) diff() {
 	imageID, imageName := img.getSelectedItem()
 
 	if imageID == "" {
-		img.displayError("", fmt.Errorf("there is no image to display diff"))
+		img.displayError("", errNoImageToDiff)
+
 		return
 	}
+
 	img.progressDialog.SetTitle("image diff in progress")
 	img.progressDialog.Display()
+
 	diff := func() {
 		data, err := images.Diff(imageID)
+
 		img.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) DIFF ERROR", imageID)
 			img.displayError(title, err)
+
 			return
 		}
 
@@ -105,14 +119,17 @@ func (img *Images) diff() {
 		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 		img.messageDialog.Display()
 	}
+
 	go diff()
 }
 
 func (img *Images) history() {
 	if img.selectedID == "" {
-		img.displayError("", fmt.Errorf("there is no image to display history"))
+		img.displayError("", errNoImageToHistory)
+
 		return
 	}
+
 	result, err := images.History(img.selectedID)
 	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) HISTORY ERROR", img.selectedID)
@@ -122,45 +139,52 @@ func (img *Images) history() {
 	img.historyDialog.SetImageInfo(img.selectedID, img.selectedName)
 	img.historyDialog.UpdateResults(result)
 	img.historyDialog.Display()
-
 }
 
 func (img *Images) imageImport() {
 	importOpts, err := img.importDialog.ImageImportOptions()
 	if err != nil {
 		img.displayError("IMAGE IMPORT ERROR", err)
+
 		return
 	}
+
 	img.importDialog.Hide()
 	img.progressDialog.SetTitle("image import in progress")
 	img.progressDialog.Display()
+
 	importFunc := func() {
 		newImageID, err := images.Import(importOpts)
+
 		img.progressDialog.Hide()
+
 		if err != nil {
 			img.displayError("IMAGE IMPORT ERROR", err)
+
 			return
 		}
 
-		headerLabel := fmt.Sprintf("%s", newImageID)
-
 		img.messageDialog.SetTitle("podman image import")
-		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, "")
+		img.messageDialog.SetText(dialogs.MessageImageInfo, newImageID, "")
 		img.messageDialog.Display()
 	}
+
 	go importFunc()
 }
 
 func (img *Images) inspect() {
 	imageID, imageName := img.getSelectedItem()
 	if imageID == "" {
-		img.displayError("", fmt.Errorf("there is no image to display inspect"))
+		img.displayError("", errNoImageToInspect)
+
 		return
 	}
+
 	data, err := images.Inspect(imageID)
 	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) INSPECT ERROR", imageID)
 		img.displayError(title, err)
+
 		return
 	}
 
@@ -181,23 +205,30 @@ func (img *Images) cprune() {
 func (img *Images) prune() {
 	img.progressDialog.SetTitle("image purne in progress")
 	img.progressDialog.Display()
+
 	prune := func() {
 		err := images.Prune()
+
 		img.progressDialog.Hide()
+
 		if err != nil {
 			img.displayError("IMAGE PRUNE ERROR", err)
+
 			return
 		}
 	}
+
 	go prune()
 }
 
 func (img *Images) cpush() {
 	id, name := img.getSelectedItem()
 	if id == "" {
-		img.displayError("", fmt.Errorf("there is no image to push"))
+		img.displayError("", errNoImageToPush)
+
 		return
 	}
+
 	img.pushDialog.SetImageInfo(id, name)
 	img.pushDialog.Display()
 }
@@ -213,20 +244,24 @@ func (img *Images) push() {
 			img.progressDialog.Hide()
 			title := fmt.Sprintf("IMAGE (%s) PUSH ERROR", img.selectedID)
 			img.displayError(title, err)
+
 			return
 		}
+
 		img.progressDialog.Hide()
 	}
-	go push()
 
+	go push()
 }
 
 func (img *Images) rm() {
 	imageID, imageName := img.getSelectedItem()
 	if imageID == "" {
-		img.displayError("", fmt.Errorf("there is no image to remove"))
+		img.displayError("", errNoImageToRemove)
+
 		return
 	}
+
 	img.confirmDialog.SetTitle("podman image remove")
 	img.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
@@ -242,9 +277,12 @@ func (img *Images) remove() {
 	imageID, imageName := img.getSelectedItem()
 	img.progressDialog.SetTitle("image remove in progress")
 	img.progressDialog.Display()
+
 	remove := func() {
 		data, err := images.Remove(imageID)
+
 		img.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) REMOVE ERROR", imageID)
 			img.displayError(title, err)
@@ -255,17 +293,19 @@ func (img *Images) remove() {
 			img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 			img.messageDialog.Display()
 		}
-
 	}
+
 	go remove()
 }
 
 func (img *Images) csave() {
 	id, name := img.getSelectedItem()
 	if id == "" {
-		img.displayError("", fmt.Errorf("there is no image to save"))
+		img.displayError("", errNoImageToSave)
+
 		return
 	}
+
 	img.saveDialog.SetImageInfo(id, name)
 	img.saveDialog.Display()
 }
@@ -275,22 +315,28 @@ func (img *Images) save() {
 	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
 		img.displayError(title, err)
+
 		return
 	}
+
 	img.saveDialog.Hide()
 	img.progressDialog.SetTitle("image save in progress")
 	img.progressDialog.Display()
+
 	saveFunc := func() {
 		err := images.Save(img.selectedID, saveOpts)
+
 		img.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
 			img.displayError(title, err)
+
 			return
 		}
 	}
-	go saveFunc()
 
+	go saveFunc()
 }
 
 func (img *Images) search(term string) {
@@ -304,23 +350,29 @@ func (img *Images) search(term string) {
 			title := fmt.Sprintf("IMAGE (%s) SEARCH ERROR", img.selectedID)
 			img.displayError(title, err)
 		}
+
 		img.searchDialog.UpdateResults(result)
 		img.progressDialog.Hide()
 	}
+
 	go search(term)
 }
 
 func (img *Images) ctag() {
 	if img.selectedID == "" {
-		img.displayError("", fmt.Errorf("there is no image to tag"))
+		img.displayError("", errNoImageToTag)
+
 		return
 	}
+
 	img.cmdInputDialog.SetTitle("podman image tag")
+
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 
 	description := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)",
 		fgColor, bgColor, img.selectedID, img.selectedName)
+
 	img.cmdInputDialog.SetDescription(description)
 	img.cmdInputDialog.SetSelectButtonLabel("tag")
 	img.cmdInputDialog.SetLabel("target name")
@@ -328,6 +380,7 @@ func (img *Images) ctag() {
 		img.tag(img.cmdInputDialog.GetInputText())
 		img.cmdInputDialog.Hide()
 	})
+
 	img.cmdInputDialog.Display()
 }
 
@@ -340,9 +393,11 @@ func (img *Images) tag(tag string) {
 
 func (img *Images) cuntag() {
 	if img.selectedID == "" {
-		img.displayError("", fmt.Errorf("there is no image to untag"))
+		img.displayError("", errNoImageToUntag)
+
 		return
 	}
+
 	img.cmdInputDialog.SetTitle("podman image untag")
 	img.cmdInputDialog.SetDescription("")
 	img.cmdInputDialog.SetSelectButtonLabel("untag")
@@ -352,13 +407,15 @@ func (img *Images) cuntag() {
 		img.untag(img.cmdInputDialog.GetInputText())
 		img.cmdInputDialog.Hide()
 	})
+
 	img.cmdInputDialog.Display()
 }
 
 func (img *Images) tree() {
 	imageID, imageName := img.getSelectedItem()
 	if imageID == "" {
-		img.displayError("", fmt.Errorf("there is no image to display tree"))
+		img.displayError("", errNoImageToTree)
+
 		return
 	}
 
@@ -367,23 +424,28 @@ func (img *Images) tree() {
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) TREE ERROR", imageID)
 			img.displayError(title, err)
+
 			return
 		}
 
 		headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
+
 		img.progressDialog.Hide()
 		img.messageDialog.SetTitle("podman image tree")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, tree)
 		img.messageDialog.Display()
 	}
+
 	img.progressDialog.SetTitle("image tree in progress")
 	img.progressDialog.Display()
+
 	go retTree()
 }
 
 func (img *Images) untag(id string) {
 	if err := images.Untag(id); err != nil {
 		title := fmt.Sprintf("IMAGE (%s) UNTAG ERROR", img.selectedID)
+
 		img.displayError(title, err)
 	}
 }
@@ -392,13 +454,16 @@ func (img *Images) pull(image string) {
 	img.progressDialog.SetTitle("image pull in progress")
 
 	img.progressDialog.Display()
+
 	pull := func(name string) {
 		err := images.Pull(name)
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) PULL ERROR", img.selectedID)
 			img.displayError(title, err)
 		}
+
 		img.progressDialog.Hide()
 	}
+
 	go pull(image)
 }
