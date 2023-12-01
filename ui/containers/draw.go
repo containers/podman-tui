@@ -5,7 +5,7 @@ import (
 )
 
 // Draw draws this primitive onto the screen.
-func (cnt *Containers) Draw(screen tcell.Screen) {
+func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 	cnt.refresh()
 	cnt.Box.DrawForSubclass(screen, cnt)
 	cnt.Box.SetBorder(false)
@@ -22,13 +22,15 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.errorDialog.IsDisplay() {
 		cnt.errorDialog.SetRect(x, y, width, height)
 		cnt.errorDialog.Draw(screen)
+
 		return
 	}
 
-	// command dialog dialog
+	// command dialog
 	if cnt.cmdDialog.IsDisplay() {
 		cnt.cmdDialog.SetRect(x, y, width, height)
 		cnt.cmdDialog.Draw(screen)
+
 		return
 	}
 
@@ -36,19 +38,22 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.cmdInputDialog.IsDisplay() {
 		cnt.cmdInputDialog.SetRect(x, y, width, height)
 		cnt.cmdInputDialog.Draw(screen)
+
 		return
 	}
 
-	// create dialog dialog
+	// create dialog
 	if cnt.createDialog.IsDisplay() {
 		cnt.createDialog.SetRect(x, y, width, height)
 		cnt.createDialog.Draw(screen)
+
 		return
 	}
 	// message dialog
 	if cnt.messageDialog.IsDisplay() {
 		cnt.messageDialog.SetRect(x, y, width, height+1)
 		cnt.messageDialog.Draw(screen)
+
 		return
 	}
 
@@ -56,6 +61,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.confirmDialog.IsDisplay() {
 		cnt.confirmDialog.SetRect(x, y, width, height)
 		cnt.confirmDialog.Draw(screen)
+
 		return
 	}
 
@@ -63,13 +69,13 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.progressDialog.IsDisplay() {
 		cnt.progressDialog.SetRect(x, y, width, height)
 		cnt.progressDialog.Draw(screen)
-
 	}
 
 	// top dialog
 	if cnt.topDialog.IsDisplay() {
 		cnt.topDialog.SetRect(x, y, width, height)
 		cnt.topDialog.Draw(screen)
+
 		return
 	}
 
@@ -77,6 +83,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.execDialog.IsDisplay() {
 		cnt.execDialog.SetRect(x, y, width, height)
 		cnt.execDialog.Draw(screen)
+
 		return
 	}
 
@@ -84,6 +91,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.statsDialog.IsDisplay() {
 		cnt.statsDialog.SetRect(x, y, width, height)
 		cnt.statsDialog.Draw(screen)
+
 		return
 	}
 
@@ -91,6 +99,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.commitDialog.IsDisplay() {
 		cnt.commitDialog.SetRect(x, y, width, height)
 		cnt.commitDialog.Draw(screen)
+
 		return
 	}
 
@@ -98,6 +107,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.checkpointDialog.IsDisplay() {
 		cnt.checkpointDialog.SetRect(x, y, width, height)
 		cnt.checkpointDialog.Draw(screen)
+
 		return
 	}
 
@@ -105,6 +115,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.restoreDialog.IsDisplay() {
 		cnt.restoreDialog.SetRect(x, y, width, height)
 		cnt.restoreDialog.Draw(screen)
+
 		return
 	}
 
@@ -112,6 +123,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) {
 	if cnt.terminalDialog.IsDisplay() {
 		cnt.terminalDialog.SetRect(x, y, width, height)
 		cnt.terminalDialog.Draw(screen)
+
 		return
 	}
 }

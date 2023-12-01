@@ -14,7 +14,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// ContainerStatsDialog implements the containers stats dialog primitive
+// ContainerStatsDialog implements the containers stats dialog primitive.
 type ContainerStatsDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -31,13 +31,13 @@ type ContainerStatsDialog struct {
 	maxWidth      int
 }
 
-// NewContainerStatsDialog returns new container stats dialog
+// NewContainerStatsDialog returns new container stats dialog.
 func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog := ContainerStatsDialog{
 		Box:           tview.NewBox(),
 		containerInfo: tview.NewInputField(),
-		maxHeight:     14,
-		maxWidth:      92,
+		maxHeight:     14, //nolint:gomnd
+		maxWidth:      92, //nolint:gomnd
 	}
 
 	// table
@@ -49,6 +49,7 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 
 	// container info text view
 	cntInfoLabel := "CONTAINER ID:"
+
 	statsDialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.containerInfo.SetLabel("[::b]" + cntInfoLabel)
 	statsDialog.containerInfo.SetLabelWidth(len(cntInfoLabel) + 1)
@@ -94,22 +95,23 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	return &statsDialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ContainerStatsDialog) Display() {
 	d.display = true
 	d.doneChan = make(chan bool)
 	d.startReportReader()
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ContainerStatsDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ContainerStatsDialog) Hide() {
 	d.display = false
 	d.doneChan <- true
+
 	d.SetContainerInfo("", "")
 	d.setContainerPID(0)
 	d.setContainerCPUPerc(0.0)
@@ -121,34 +123,40 @@ func (d *ContainerStatsDialog) Hide() {
 	d.setContainerNetOutput(0)
 	d.mu.Lock()
 	defer d.mu.Unlock()
-	*d.statsStream = false
-	close(d.doneChan)
 
+	*d.statsStream = false
+
+	close(d.doneChan)
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ContainerStatsDialog) HasFocus() bool {
 	if d.form.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ContainerStatsDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.form)
 }
 
-// InputHandler  returns input handler function for this primitive
+// InputHandler  returns input handler function for this primitive.
 func (d *ContainerStatsDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container stats dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.doneHandler()
+
 			return
 		}
+
 		if formHandler := d.form.InputHandler(); formHandler != nil {
 			formHandler(event, setFocus)
+
 			return
 		}
 	})
@@ -159,73 +167,78 @@ func (d *ContainerStatsDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
-
 }
 
 // SetRect set rects for this primitive.
 func (d *ContainerStatsDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)
-	dHeight := height - (2 * (dialogs.DialogPadding - 1))
+	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:gomnd
+	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:gomnd
 
 	if dHeight > d.maxHeight {
 		emptySpace := dHeight - d.maxHeight
-		dY = dY + (emptySpace / 2)
+		dY += (emptySpace / 2) //nolint:gomnd
 		dHeight = d.maxHeight
 	}
 
 	if dWidth > d.maxWidth {
 		emptySpace := dWidth - d.maxWidth
-		dX = dX + (emptySpace / 2)
+		dX += (emptySpace / 2) //nolint:gomnd
 		dWidth = d.maxWidth
 	}
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
 
-// SetDoneFunc sets form cancel button selected function
+// SetDoneFunc sets form cancel button selected function.
 func (d *ContainerStatsDialog) SetDoneFunc(handler func()) *ContainerStatsDialog {
 	d.doneHandler = handler
 	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetContainerInfo sets container ID and name
+// SetContainerInfo sets container ID and name.
 func (d *ContainerStatsDialog) SetContainerInfo(id string, name string) {
 	info := fmt.Sprintf("%s (%s)", id, name)
 
 	d.containerInfo.SetText(info)
 }
 
-// SetStatsChannel sets stats result read channel
+// SetStatsChannel sets stats result read channel.
 func (d *ContainerStatsDialog) SetStatsChannel(reportChan *chan entities.ContainerStatsReport) {
 	d.resultChan = reportChan
 }
 
 // SetStatsStream sets stats stream state. if true it will stream the stats
-// and false will stop the process
+// and false will stop the process.
 func (d *ContainerStatsDialog) SetStatsStream(stream *bool) {
 	d.statsStream = stream
 }
 
 func (d *ContainerStatsDialog) startReportReader() {
 	log.Debug().Msgf("container stats dialog: starting stats reader")
+
 	go func() {
 		for {
 			select {
 			case result := <-*d.resultChan:
-
 				log.Debug().Msgf("%v", result)
+
 				if result.Error != nil {
 					log.Error().Msgf("container stats error: %v", result.Error)
+
 					continue
 				}
+
 				if len(result.Stats) > 0 {
 					metric := result.Stats[0]
 					d.setContainerPID(metric.PIDs)
@@ -240,6 +253,7 @@ func (d *ContainerStatsDialog) startReportReader() {
 
 			case <-d.doneChan:
 				log.Debug().Msgf("container stats dialog: stats reader stopped")
+
 				return
 			}
 		}
@@ -256,28 +270,28 @@ var (
 		col: 1,
 	}
 	containerBlockInputCell = tableCell{
-		row: 2,
+		row: 2, //nolint:gomnd
 		col: 1,
 	}
 	containerBlockOutputCell = tableCell{
-		row: 3,
+		row: 3, //nolint:gomnd
 		col: 1,
 	}
 	containerPidsCell = tableCell{
 		row: 0,
-		col: 3,
+		col: 3, //nolint:gomnd
 	}
 	containerCPUPercCell = tableCell{
 		row: 1,
-		col: 3,
+		col: 3, //nolint:gomnd
 	}
 	containerNetInputCell = tableCell{
-		row: 2,
-		col: 3,
+		row: 2, //nolint:gomnd
+		col: 3, //nolint:gomnd
 	}
 	containerNetOutputCell = tableCell{
-		row: 3,
-		col: 3,
+		row: 3, //nolint:gomnd
+		col: 3, //nolint:gomnd
 	}
 )
 
@@ -287,117 +301,149 @@ type tableCell struct {
 }
 
 func (d *ContainerStatsDialog) initTableUI() {
-	//d.table.SetCell(0, 0, tview.NewTableCell(""))
 	headerFgColor := style.TableHeaderFgColor
 
 	// first column
-	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col-1, tview.NewTableCell("mem usage/limit:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col-1,
+		tview.NewTableCell("mem usage/limit:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerMemUsageCell.row, containerMemUsageCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col-1, tview.NewTableCell("memory %:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col-1,
+		tview.NewTableCell("memory %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col, tview.NewTableCell(""))
-	d.setContainerMemPerc(0.00)
+	d.setContainerMemPerc(0.00) //nolint:gomnd
 
-	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col-1, tview.NewTableCell("block input:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col-1,
+		tview.NewTableCell("block input:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col-1, tview.NewTableCell("block output:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col-1,
+		tview.NewTableCell("block output:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerBlockOutputCell.row, containerBlockOutputCell.col, tview.NewTableCell(""))
 
 	// second column
-	d.table.SetCell(containerPidsCell.row, containerPidsCell.col-1, tview.NewTableCell("pids:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerPidsCell.row, containerPidsCell.col-1,
+		tview.NewTableCell("pids:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerPidsCell.row, containerPidsCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col-1, tview.NewTableCell("cpu %:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col-1,
+		tview.NewTableCell("cpu %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col, tview.NewTableCell(""))
-	d.setContainerCPUPerc(0.00)
+	d.setContainerCPUPerc(0.00) //nolint:gomnd
 
-	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col-1, tview.NewTableCell("net input:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col-1,
+		tview.NewTableCell("net input:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col, tview.NewTableCell(""))
 
-	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col-1, tview.NewTableCell("net output:").SetTextColor(headerFgColor))
+	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col-1,
+		tview.NewTableCell("net output:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerNetOutputCell.row, containerNetOutputCell.col, tview.NewTableCell(""))
-
 }
 
 func (d *ContainerStatsDialog) setContainerPID(pids uint64) {
-	var cntPIDS = "--"
+	cntPIDS := "--"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if pids != 0 {
 		cntPIDS = fmt.Sprintf("%d", pids)
 	}
+
 	d.table.GetCell(containerPidsCell.row, containerPidsCell.col).SetText(cntPIDS).SetTextColor(fgColor)
 }
 
 func (d *ContainerStatsDialog) setContainerCPUPerc(usage float64) {
-
 	usageBar := utils.ProgressUsageString(usage)
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	d.table.GetCell(containerCPUPercCell.row, containerCPUPercCell.col).SetText(usageBar)
 }
 
 func (d *ContainerStatsDialog) setContainerMemPerc(usage float64) {
 	usageBar := utils.ProgressUsageString(usage)
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	d.table.GetCell(containerMemPercCell.row, containerMemPercCell.col).SetText(usageBar)
 }
 
 func (d *ContainerStatsDialog) setContainerMemUsage(memUsage uint64, memLimit uint64) {
-	var usage = "-- / --"
+	usage := "-- / --"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if memUsage != 0 && memLimit != 0 {
 		usage = fmt.Sprintf("%s / %s", units.HumanSize(float64(memUsage)), units.HumanSize(float64(memLimit)))
 	}
+
 	d.table.GetCell(containerMemUsageCell.row, containerMemUsageCell.col).SetText(usage).SetTextColor(fgColor)
 }
 
 func (d *ContainerStatsDialog) setContainerBlockInput(binput uint64) {
-	var blockInput = "--"
+	blockInput := "--"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if binput != 0 {
 		blockInput = units.HumanSize(float64(binput))
 	}
+
 	d.table.GetCell(containerBlockInputCell.row, containerBlockInputCell.col).SetText(blockInput).SetTextColor(fgColor)
 }
 
 func (d *ContainerStatsDialog) setContainerBlockOutput(boutput uint64) {
-	var blockOutput = "--"
+	blockOutput := "--"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if boutput != 0 {
 		blockOutput = units.HumanSize(float64(boutput))
 	}
+
 	d.table.GetCell(containerBlockOutputCell.row, containerBlockOutputCell.col).SetText(blockOutput).SetTextColor(fgColor)
 }
 
 func (d *ContainerStatsDialog) setContainerNetInput(ninput uint64) {
-	var netInput = "--"
+	netInput := "--"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if ninput != 0 {
 		netInput = units.HumanSize(float64(ninput))
 	}
+
 	d.table.GetCell(containerNetInputCell.row, containerNetInputCell.col).SetText(netInput).SetTextColor(fgColor)
 }
 
 func (d *ContainerStatsDialog) setContainerNetOutput(noutput uint64) {
-	var netOutput = "--"
+	netOutput := "--"
+
 	fgColor := style.DialogFgColor
+
 	d.mu.Lock()
 	defer d.mu.Unlock()
+
 	if noutput != 0 {
 		netOutput = units.HumanSize(float64(noutput))
-
 	}
+
 	d.table.GetCell(containerNetOutputCell.row, containerNetOutputCell.col).SetText(netOutput).SetTextColor(fgColor)
 }

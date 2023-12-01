@@ -1,6 +1,7 @@
 package containers
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -13,7 +14,39 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Containers implements the containers page primitive
+const (
+	viewContainersIDColIndex = 0 + iota
+	viewContainersImageColIndex
+	viewContainersPodColIndex
+	viewContainersCreatedAtColIndex
+	viewContainersStatusColIndex
+	viewContainersNamesColIndex
+	viewContainersPortsColIndex
+)
+
+var (
+	errNoContainerAttach       = errors.New("there is no container to attach")
+	errNoContainerHealthCheck  = errors.New("there is no container to perform healthcheck")
+	errNoContainerCommit       = errors.New("there is no container to commit")
+	errNoContainerStat         = errors.New("there is no container to display stats")
+	errNoContainerCheckpoint   = errors.New("there is no container to perform checkpoint")
+	errNoContainerExec         = errors.New("there is no container to perform exec")
+	errNoContainerDiff         = errors.New("there is no container to display diff")
+	errNoContainerInspect      = errors.New("there is no container to inspect")
+	errNoContainerKill         = errors.New("there is no container to kill")
+	errNoContainerLogs         = errors.New("there is no container to display logs")
+	errNoContainerPause        = errors.New("there is no container to pause")
+	errNoContainerUnpause      = errors.New("there is no container to unpause")
+	errNoContainerPorts        = errors.New("there is no container to display ports")
+	errNoContainerRename       = errors.New("there is no container to rename")
+	errNoContainerRemove       = errors.New("there is no container to remove")
+	errNoContainerStart        = errors.New("there is no container to start")
+	errNoContainerStop         = errors.New("there is no container to stop")
+	errNoContainerTop          = errors.New("there is no container to display top")
+	errEmptyContainerImageName = errors.New("empty container name or image name")
+)
+
+// Containers implements the containers page primitive.
 type Containers struct {
 	*tview.Box
 	title            string
@@ -45,7 +78,7 @@ type containerListReport struct {
 	report []entities.ListContainer
 }
 
-// NewContainers returns containers page view
+// NewContainers returns containers page view.
 func NewContainers() *Containers {
 	containers := &Containers{
 		Box:              tview.NewBox(),
@@ -138,12 +171,14 @@ func NewContainers() *Containers {
 			containers.remove()
 		}
 	})
+
 	containers.confirmDialog.SetCancelFunc(containers.confirmDialog.Hide)
 
 	// set create dialog functions
 	containers.createDialog.SetCancelFunc(func() {
 		containers.createDialog.Hide()
 	})
+
 	containers.createDialog.SetCreateFunc(func() {
 		containers.createDialog.Hide()
 		containers.create()
@@ -177,31 +212,37 @@ func NewContainers() *Containers {
 	return containers
 }
 
-// GetTitle returns primitive title
+// GetTitle returns primitive title.
 func (cnt *Containers) GetTitle() string {
 	return cnt.title
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (cnt *Containers) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (cnt *Containers) HasFocus() bool { //nolint:cyclop
 	if cnt.table.HasFocus() || cnt.errorDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.cmdDialog.HasFocus() || cnt.progressDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.topDialog.HasFocus() || cnt.messageDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.statsDialog.HasFocus() || cnt.commitDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.checkpointDialog.HasFocus() || cnt.restoreDialog.HasFocus() {
 		return true
 	}
@@ -213,23 +254,28 @@ func (cnt *Containers) HasFocus() bool {
 	return false
 }
 
-// SubDialogHasFocus returns whether or not sub dialog primitive has focus
-func (cnt *Containers) SubDialogHasFocus() bool {
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus.
+func (cnt *Containers) SubDialogHasFocus() bool { //nolint:cyclop
 	if cnt.statsDialog.HasFocus() || cnt.errorDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.cmdDialog.HasFocus() || cnt.progressDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.topDialog.HasFocus() || cnt.messageDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.confirmDialog.HasFocus() || cnt.cmdInputDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.createDialog.HasFocus() || cnt.execDialog.HasFocus() {
 		return true
 	}
+
 	if cnt.commitDialog.HasFocus() || cnt.checkpointDialog.HasFocus() {
 		return true
 	}
@@ -241,77 +287,89 @@ func (cnt *Containers) SubDialogHasFocus() bool {
 	return false
 }
 
-// Focus is called when this primitive receives focus
-func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
+// Focus is called when this primitive receives focus.
+func (cnt *Containers) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	// error dialog
 	if cnt.errorDialog.IsDisplay() {
 		delegate(cnt.errorDialog)
+
 		return
 	}
 
 	// command dialog
 	if cnt.cmdDialog.IsDisplay() {
 		delegate(cnt.cmdDialog)
+
 		return
 	}
 
 	// command input dialog
 	if cnt.cmdInputDialog.IsDisplay() {
 		delegate(cnt.cmdInputDialog)
+
 		return
 	}
 
 	// message dialog
 	if cnt.messageDialog.IsDisplay() {
 		delegate(cnt.messageDialog)
+
 		return
 	}
 
 	// container top dialog
 	if cnt.topDialog.IsDisplay() {
 		delegate(cnt.topDialog)
+
 		return
 	}
 
 	// confirm dialog
 	if cnt.confirmDialog.IsDisplay() {
 		delegate(cnt.confirmDialog)
+
 		return
 	}
 
 	// create dialog
 	if cnt.createDialog.IsDisplay() {
 		delegate(cnt.createDialog)
+
 		return
 	}
 
 	// exec dialog
 	if cnt.execDialog.IsDisplay() {
 		delegate(cnt.execDialog)
+
 		return
 	}
 
 	// stats dialog
 	if cnt.statsDialog.IsDisplay() {
 		delegate(cnt.statsDialog)
+
 		return
 	}
 
 	// commit dialog
 	if cnt.commitDialog.IsDisplay() {
 		delegate(cnt.commitDialog)
+
 		return
 	}
 
 	// checkpoint dialog
 	if cnt.checkpointDialog.IsDisplay() {
 		delegate(cnt.checkpointDialog)
+
 		return
 	}
 
 	// restore dialog
 	if cnt.restoreDialog.IsDisplay() {
 		delegate(cnt.restoreDialog)
+
 		return
 	}
 
@@ -326,24 +384,29 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) {
 }
 
 func (cnt *Containers) getSelectedItem() (string, string) {
-	var cntID string
-	var cntName string
+	var (
+		cntID   string
+		cntName string
+	)
+
 	if cnt.table.GetRowCount() <= 1 {
 		return cntID, cntName
 	}
+
 	row, _ := cnt.table.GetSelection()
-	cntID = cnt.table.GetCell(row, 0).Text
-	cntName = cnt.table.GetCell(row, 5).Text
+	cntID = cnt.table.GetCell(row, viewContainersIDColIndex).Text
+	cntName = cnt.table.GetCell(row, viewContainersNamesColIndex).Text
+
 	return cntID, cntName
 }
 
-// SetFastRefreshChannel sets channel for fastRefresh func
+// SetFastRefreshChannel sets channel for fastRefresh func.
 func (cnt *Containers) SetFastRefreshChannel(refresh chan bool) {
 	cnt.fastRefreshChan = refresh
 }
 
-// HideAllDialogs hides all sub dialogs
-func (cnt *Containers) HideAllDialogs() {
+// HideAllDialogs hides all sub dialogs.
+func (cnt *Containers) HideAllDialogs() { //nolint:cyclop
 	if cnt.errorDialog.IsDisplay() {
 		cnt.errorDialog.Hide()
 	}

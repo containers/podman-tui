@@ -2,6 +2,7 @@ package vterm
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -30,7 +31,7 @@ const (
 
 // VtermDialog implements virtual terminal that can be used during
 // exec, attach, run activity.
-type VtermDialog struct {
+type VtermDialog struct { //nolint:revive
 	*tview.Box
 	layout                *tview.Flex
 	form                  *tview.Form
@@ -77,6 +78,7 @@ func NewVtermDialog() *VtermDialog {
 	}
 
 	dialog.initLayoutUI()
+
 	return dialog
 }
 
@@ -89,6 +91,7 @@ func (d *VtermDialog) initLayoutUI() {
 	// container information field
 	// label
 	cntInfoLabel := "CONTAINER ID:"
+
 	d.containerInfo.SetBackgroundColor(bgColor)
 	d.containerInfo.SetLabel("[::b]" + cntInfoLabel)
 	d.containerInfo.SetLabelWidth(len(cntInfoLabel) + 1)
@@ -136,7 +139,7 @@ func (d *VtermDialog) initLayoutUI() {
 }
 
 func (d *VtermDialog) initChannelsCommon() {
-	d.sessionOutputDoneChan = make(chan bool, 2)
+	d.sessionOutputDoneChan = make(chan bool, 2) //nolint:gomnd
 	d.vtTerminal = vt10x.New()
 	sessionStdinPipeIn, sessionStdinPipeOut := io.Pipe()
 	d.sessionStdin = bufio.NewReader(sessionStdinPipeIn)
@@ -151,8 +154,10 @@ func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 	log.Debug().Msg("view: container terminal dialog init channels (attach)")
 
 	d.sessionMode = sessionModeAttach
+
 	d.initChannelsCommon()
-	c := make(chan []byte, 1000)
+
+	c := make(chan []byte, 1000) //nolint:gomnd
 	d.sessionStdout = NewWriter(c)
 
 	d.init = true
@@ -161,15 +166,19 @@ func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 }
 
 // InitChannels will init buffers and channels for exec.
-func (d *VtermDialog) InitExecChannels() (*bufio.Reader, channel.WriteCloser) {
+func (d *VtermDialog) InitExecChannels() (*bufio.Reader, channel.WriteCloser) { //nolint:ireturn
 	log.Debug().Msg("view: container terminal dialog init channels (exec)")
+
 	d.sessionMode = sessionModeExec
 
 	d.initChannelsCommon()
-	c := make(chan []byte, 1000)
+
+	c := make(chan []byte, 1000) //nolint:gomnd
+
 	d.execSessionStdout = channel.NewWriter(c)
 
 	d.init = true
+
 	return d.sessionStdin, d.execSessionStdout
 }
 
@@ -177,6 +186,7 @@ func (d *VtermDialog) InitExecChannels() (*bufio.Reader, channel.WriteCloser) {
 func (d *VtermDialog) Display() {
 	if !d.init {
 		log.Error().Msg("view: container terminal dialog is not read, init first")
+
 		return
 	}
 
@@ -243,6 +253,7 @@ func (d *VtermDialog) Focus(delegate func(p tview.Primitive)) {
 				d.focusElement = vtermDialogFormFieldFocus
 
 				d.Focus(delegate)
+
 				return nil
 			}
 
@@ -255,7 +266,9 @@ func (d *VtermDialog) Focus(delegate func(p tview.Primitive)) {
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = vtermDialogScreenFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
 
@@ -282,6 +295,7 @@ func (d *VtermDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p
 				handler(event, setFocus)
 
 				d.writeToSession(event)
+
 				return
 			}
 		}
@@ -300,8 +314,8 @@ func (d *VtermDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p
 func (d *VtermDialog) SetRect(x, y, width, height int) {
 	dX := x + 1
 	dY := y + 1
-	dWidth := width - 2
-	dHeight := height - 2
+	dWidth := width - 2   //nolint:gomnd
+	dHeight := height - 2 //nolint:gomnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
@@ -332,13 +346,17 @@ func (d *VtermDialog) Draw(screen tcell.Screen) {
 			tview.PrintJoinedSemigraphics(screen, x+tcol, y+trow, rune(0), terminalStyle)
 		}
 	}
+
 	content, cursor := d.vtContent()
+
 	contentLines := strings.Split(content, "\n")
 	for row := 0; row < len(contentLines); row++ {
 		tview.PrintSimple(screen, contentLines[row], x, y+row)
 	}
+
 	cursorX := x + cursor.X
 	cursorY := y + cursor.Y
+
 	if cursor.Y < height && cursor.X < width {
 		tview.Print(screen, "▉", cursorX, cursorY, 1, tview.AlignCenter, terminalFgColor)
 	}
@@ -355,17 +373,18 @@ func (d *VtermDialog) setTTYSize(width int, height int) {
 	d.vtTerminal.Resize(width, height)
 
 	if d.sessionMode == sessionModeAttach {
-		go containers.ResizeContainerTTY(d.containerID, width, height)
+		go containers.ResizeContainerTTY(d.containerID, width, height) //nolint:errcheck
 	} else if d.sessionMode == sessionModeExec {
 		go containers.ResizeExecTty(d.sessionID, d.ttyHeight, d.ttyWidth)
 	}
 }
 
-// SetCancelFunc sets form close button selected function
+// SetCancelFunc sets form close button selected function.
 func (d *VtermDialog) SetCancelFunc(handler func()) *VtermDialog {
 	d.cancelHandler = handler
 	// closeButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	// closeButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -395,33 +414,33 @@ func (d *VtermDialog) DetachKeys() string {
 }
 
 // SetFastRefreshHandler sets fast refresh handler
-// fast refresh is used to print the outputs as fast as possible
+// fast refresh is used to print the outputs as fast as possible.
 func (d *VtermDialog) SetFastRefreshHandler(handler func()) {
 	d.fastRefreshHandler = handler
 }
 
 func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
-	switch event.Key() {
+	switch event.Key() { //nolint:exhaustive
 	case tcell.KeyUp:
-		d.sessionStdinWriter.WriteRune(rune(27))
-		d.sessionStdinWriter.WriteRune(rune(91))
-		d.sessionStdinWriter.WriteRune(rune(65))
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(65)) //nolint:errcheck,gomnd
 	case tcell.KeyDown:
-		d.sessionStdinWriter.WriteRune(rune(27))
-		d.sessionStdinWriter.WriteRune(rune(91))
-		d.sessionStdinWriter.WriteRune(rune(66))
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(66)) //nolint:errcheck,gomnd
 	case tcell.KeyRight:
-		d.sessionStdinWriter.WriteRune(rune(27))
-		d.sessionStdinWriter.WriteRune(rune(91))
-		d.sessionStdinWriter.WriteRune(rune(67))
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(67)) //nolint:errcheck,gomnd
 	case tcell.KeyLeft:
-		d.sessionStdinWriter.WriteRune(rune(27))
-		d.sessionStdinWriter.WriteRune(rune(91))
-		d.sessionStdinWriter.WriteRune(rune(68))
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(68)) //nolint:errcheck,gomnd
 	case tcell.KeyEsc:
-		d.sessionStdinWriter.WriteRune(rune(27))
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
 	default:
-		d.sessionStdinWriter.WriteRune(event.Rune())
+		d.sessionStdinWriter.WriteRune(event.Rune()) //nolint:errcheck
 	}
 
 	d.sessionStdinWriter.Flush()
@@ -431,8 +450,9 @@ func (d *VtermDialog) sendDetachToSession() {
 	log.Debug().Msg("view: container terminal dialog sending detached keys")
 
 	keys := d.detachKeys.keys()
+
 	for i := 0; i < len(keys); i++ {
-		d.sessionStdinWriter.WriteRune(rune(keys[i]))
+		d.sessionStdinWriter.WriteRune(rune(keys[i])) //nolint:errcheck
 	}
 
 	d.sessionStdinWriter.Flush()
@@ -440,8 +460,10 @@ func (d *VtermDialog) sendDetachToSession() {
 
 // vtContent returns current content and cursor location of vt10x terminal.
 func (d *VtermDialog) vtContent() (string, vt10x.Cursor) {
-	var content string
-	var cursor vt10x.Cursor
+	var (
+		content string
+		cursor  vt10x.Cursor
+	)
 
 	content = d.vtTerminal.String()
 	cursor = d.vtTerminal.Cursor()
@@ -451,10 +473,11 @@ func (d *VtermDialog) vtContent() (string, vt10x.Cursor) {
 
 func (d *VtermDialog) startVTBuffer() {
 	log.Debug().Msg("view: vterm dialog vt buffer reader started")
+
 	for {
 		err := d.vtTerminal.Parse(d.vtTermBuffer)
 		if err != nil {
-			if err != io.EOF && err != io.ErrClosedPipe {
+			if !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrClosedPipe) {
 				log.Error().Msgf("view: vterm dialog vt buffer reader error %v", err)
 			}
 
@@ -475,7 +498,7 @@ func (d *VtermDialog) execSessionOutputStreamer() {
 
 			return
 		case data := <-d.execSessionStdout.Chan():
-			d.vtTermPipeWriter.Write(data)
+			d.vtTermPipeWriter.Write(data) //nolint:errcheck
 			d.fastRefreshHandler()
 		}
 	}
@@ -494,7 +517,7 @@ func (d *VtermDialog) sessionOutputStreamer() {
 			dataString := string(data)
 			dataString = strings.ReplaceAll(dataString, "\n", "\r\n")
 
-			d.vtTermPipeWriter.Write([]byte(dataString))
+			d.vtTermPipeWriter.Write([]byte(dataString)) //nolint:errcheck
 			d.fastRefreshHandler()
 		}
 	}

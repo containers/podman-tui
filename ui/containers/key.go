@@ -8,9 +8,10 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,gocyclo,lll,cyclop
 	return cnt.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: containers event %v received", event)
+
 		if cnt.progressDialog.IsDisplay() {
 			return
 		}
@@ -36,14 +37,14 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
-		// create dialog dialog handler
+		// create dialog handler
 		if cnt.createDialog.HasFocus() {
 			if createDialogHandler := cnt.createDialog.InputHandler(); createDialogHandler != nil {
 				createDialogHandler(event, setFocus)
 			}
 		}
 
-		// exec dialog dialog handler
+		// exec dialog handler
 		if cnt.execDialog.HasFocus() {
 			if execDialogHandler := cnt.execDialog.InputHandler(); execDialogHandler != nil {
 				execDialogHandler(event, setFocus)
@@ -107,19 +108,28 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 		}
 
 		// table handlers
-		if cnt.table.HasFocus() {
+		if cnt.table.HasFocus() { //nolint:nestif
 			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if cnt.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
+
 				cnt.cmdDialog.Display()
-			} else if event.Key() == utils.DeleteKey.EventKey() {
+				setFocus(cnt)
+
+				return
+			}
+
+			if event.Key() == utils.DeleteKey.EventKey() {
 				cnt.rm()
-			} else {
-				if tableHandler := cnt.table.InputHandler(); tableHandler != nil {
-					tableHandler(event, setFocus)
-				}
+				setFocus(cnt)
+
+				return
+			}
+
+			if tableHandler := cnt.table.InputHandler(); tableHandler != nil {
+				tableHandler(event, setFocus)
 			}
 		}
 

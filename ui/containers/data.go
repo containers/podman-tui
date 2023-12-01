@@ -14,15 +14,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retrieves containers list data
+// UpdateData retrieves containers list data.
 func (cnt *Containers) UpdateData() {
 	cntList, err := containers.List()
 	if err != nil {
 		log.Error().Msgf("view: containers update %v", err)
 		cnt.errorDialog.SetText(fmt.Sprintf("%v", err))
 		cnt.errorDialog.Display()
+
 		return
 	}
+
 	cnt.containersList.mu.Lock()
 	cnt.containersList.report = cntList
 	cnt.containersList.mu.Unlock()
@@ -32,18 +34,21 @@ func (cnt *Containers) getData() []entities.ListContainer {
 	cnt.containersList.mu.Lock()
 	data := cnt.containersList.report
 	cnt.containersList.mu.Unlock()
+
 	return data
 }
 
-// ClearData clears table data
+// ClearData clears table data.
 func (cnt *Containers) ClearData() {
 	cnt.containersList.mu.Lock()
 	cnt.containersList.report = nil
 	cnt.containersList.mu.Unlock()
 	cnt.table.Clear()
+
 	expand := 1
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
+
 	for i := 0; i < len(cnt.headers); i++ {
 		cnt.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))).
@@ -53,6 +58,7 @@ func (cnt *Containers) ClearData() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
+
 	cnt.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(cnt.title)))
 }
 
@@ -66,6 +72,7 @@ func (con conReporter) names() string {
 
 func (con conReporter) state() string {
 	var state string
+
 	switch con.ListContainer.State {
 	case "running":
 		t := units.HumanDuration(time.Since(time.Unix(con.StartedAt, 0)))
@@ -78,6 +85,7 @@ func (con conReporter) state() string {
 	default:
 		state = con.ListContainer.State
 	}
+
 	return state
 }
 
@@ -86,6 +94,7 @@ func (con conReporter) status() string {
 	if hc != "" {
 		return con.state() + " (" + hc + ")"
 	}
+
 	return con.state()
 }
 
@@ -93,5 +102,6 @@ func (con conReporter) ports() string {
 	if len(con.ListContainer.Ports) < 1 {
 		return ""
 	}
+
 	return putils.PortsToString(con.ListContainer.Ports)
 }

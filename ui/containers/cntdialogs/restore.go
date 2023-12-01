@@ -39,10 +39,10 @@ const (
 	cntRestoreDialogMaxWidth              = cntRestoreDialogLabelWidth +
 		cntRestoreDialogChkGroupColTwoWidth +
 		cntRestoreDialogChkGroupColThreeWidth +
-		cntRestoreDialogChkGroupColFourWidth + (6 * cntRestoreDialogPadding)
+		cntRestoreDialogChkGroupColFourWidth + (6 * cntRestoreDialogPadding) //nolint:gomnd
 	cntRestoreDialogMaxHeight        = 17
 	cntRestoreDialogSingleFieldWidth = cntRestoreDialogMaxWidth -
-		cntRestoreDialogLabelWidth - (2 * cntRestoreDialogPadding)
+		cntRestoreDialogLabelWidth - (2 * cntRestoreDialogPadding) //nolint:gomnd
 )
 
 // ContainerRestoreDialog implements container restore dialog primitive.
@@ -98,6 +98,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// containers
 	containersLabel := fmt.Sprintf("[:#%x:b]CONTAINER ID:[:-:-]", style.DialogBorderColor.Hex())
+
 	dialog.containers.SetLabel(containersLabel)
 	dialog.containers.SetLabelWidth(cntRestoreDialogLabelWidth)
 	dialog.containers.SetFieldWidth(cntRestoreDialogSingleFieldWidth)
@@ -132,6 +133,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	publishLabelWidth := len(publishLabel) + cntRestoreDialogPadding
 	publishPortsLabel := fmt.Sprintf("%*s ",
 		publishLabelWidth, publishLabel)
+
 	dialog.publishPorts.SetLabel(publishPortsLabel)
 	dialog.publishPorts.SetBackgroundColor(bgColor)
 	dialog.publishPorts.SetLabelColor(fgColor)
@@ -155,6 +157,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// ignoreStaticIP
 	ignoreStaticIPLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColTwoWidth, "ignore static IP:")
+
 	dialog.ignoreStaticIP.SetLabel(ignoreStaticIPLabel)
 	dialog.ignoreStaticIP.SetChecked(false)
 	dialog.ignoreStaticIP.SetBackgroundColor(bgColor)
@@ -164,6 +167,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// ignoreStaticMAC
 	ignoreStaticMACLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColThreeWidth, "ignore static MAC:")
+
 	dialog.ignoreStaticMAC.SetLabel(ignoreStaticMACLabel)
 	dialog.ignoreStaticMAC.SetChecked(false)
 	dialog.ignoreStaticMAC.SetBackgroundColor(bgColor)
@@ -173,6 +177,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// fileLocks
 	fileLocksLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColFourWidth, "file locks:")
+
 	dialog.fileLocks.SetLabel(fileLocksLabel)
 	dialog.fileLocks.SetChecked(false)
 	dialog.fileLocks.SetBackgroundColor(bgColor)
@@ -190,6 +195,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColTwoWidth, "tcp established:")
+
 	dialog.tcpEstablished.SetLabel(tcpEstablishedLabel)
 	dialog.tcpEstablished.SetChecked(false)
 	dialog.tcpEstablished.SetBackgroundColor(bgColor)
@@ -199,6 +205,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// ignoreVolumes
 	ignoreVolumesLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColThreeWidth, "ignore volumes:")
+
 	dialog.ignoreVolumes.SetLabel(ignoreVolumesLabel)
 	dialog.ignoreVolumes.SetChecked(false)
 	dialog.ignoreVolumes.SetBackgroundColor(bgColor)
@@ -208,6 +215,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ",
 		cntRestoreDialogChkGroupColFourWidth, "ignore rootfs:")
+
 	dialog.ignoreRootFS.SetLabel(ignoreRootFSLabel)
 	dialog.ignoreRootFS.SetChecked(false)
 	dialog.ignoreRootFS.SetBackgroundColor(bgColor)
@@ -223,6 +231,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
+
 	// layout row #one
 	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	layout.AddItem(dialog.containers, 0, 1, true)
@@ -243,6 +252,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// layout row #five
 	row = tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	row.AddItem(dialog.keep,
 		cntRestoreDialogLabelWidth+cntRestoreDialogPadding,
 		0, true)
@@ -260,6 +270,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	// layout row #six
 	row = tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	row.AddItem(dialog.printStats,
 		cntRestoreDialogLabelWidth+cntRestoreDialogPadding,
 		0, true)
@@ -276,6 +287,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	layout.AddItem(row, 0, 1, true)
 
 	mainOptsLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	mainOptsLayout.SetBackgroundColor(bgColor)
 	mainOptsLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	mainOptsLayout.AddItem(layout, 0, 1, true)
@@ -296,6 +308,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 func (d *ContainerRestoreDialog) Display() {
 	d.display = true
 	d.focusElement = cntRestoreContainersFocus
+
 	d.containers.SetCurrentOption(0)
 	d.pods.SetCurrentOption(0)
 	d.name.SetText("")
@@ -365,7 +378,7 @@ func (d *ContainerRestoreDialog) Focus(delegate func(p tview.Primitive)) {
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *ContainerRestoreDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (d *ContainerRestoreDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:cyclop,lll
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container restore dialog: event %v received", event)
 
@@ -387,6 +400,7 @@ func (d *ContainerRestoreDialog) InputHandler() func(event *tcell.EventKey, setF
 				if d.containers.HasFocus() || d.pods.HasFocus() {
 					event = utils.ParseKeyEventKey(event)
 				}
+
 				if handler := primitive.InputHandler(); handler != nil {
 					handler(event, setFocus)
 
@@ -399,16 +413,15 @@ func (d *ContainerRestoreDialog) InputHandler() func(event *tcell.EventKey, setF
 
 // SetRect set rects for this primitive.
 func (d *ContainerRestoreDialog) SetRect(x, y, width, height int) {
-
 	if width > cntRestoreDialogMaxWidth {
-		emptySpace := (width - cntRestoreDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - cntRestoreDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = cntRestoreDialogMaxWidth
 	}
 
 	if height > cntRestoreDialogMaxHeight {
-		emptySpace := (height - cntRestoreDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - cntRestoreDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = cntRestoreDialogMaxHeight
 	}
 
@@ -442,7 +455,7 @@ func (d *ContainerRestoreDialog) SetRestoreFunc(handler func()) *ContainerRestor
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerRestoreDialog) SetCancelFunc(handler func()) *ContainerRestoreDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 
 	cancelButton.SetSelectedFunc(handler)
 
