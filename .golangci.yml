@@ -2,8 +2,6 @@ run:
   deadline: 5m
   skip-files:
     - ".*_test.go"
-  skip-dirs:
-    - ui/containers
 linters:
   enable-all: true
   disable:

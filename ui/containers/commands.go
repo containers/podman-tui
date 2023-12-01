@@ -12,7 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (cnt *Containers) runCommand(cmd string) {
+func (cnt *Containers) runCommand(cmd string) { //nolint:cyclop
 	switch cmd {
 	case "attach":
 		cnt.attach()
@@ -36,7 +36,7 @@ func (cnt *Containers) runCommand(cmd string) {
 		cnt.logs()
 	case "pause":
 		cnt.pause()
-	case "prune":
+	case "prune": //nolint:goconst
 		cnt.cprune()
 	case "rename":
 		cnt.rename()
@@ -69,7 +69,7 @@ func (cnt *Containers) displayError(title string, err error) {
 func (cnt *Containers) attach() {
 	cntID, cntName := cnt.getSelectedItem()
 	if cntID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform attach command"))
+		cnt.displayError("", errNoContainerAttach)
 
 		return
 	}
@@ -85,9 +85,12 @@ func (cnt *Containers) attach() {
 		err := containers.Attach(cntID, stdin, stdout, attachReady, detachKeys)
 		if err != nil {
 			attachReady <- false
+
 			title := fmt.Sprintf("CONTAINER (%s) ATTACH ERROR", cntID)
+
 			cnt.progressDialog.Hide()
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
@@ -108,7 +111,7 @@ func (cnt *Containers) attach() {
 func (cnt *Containers) preHealthcheck() {
 	cntID, cntName := cnt.getSelectedItem()
 	if cntID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform healthcheck command"))
+		cnt.displayError("", errNoContainerHealthCheck)
 
 		return
 	}
@@ -118,6 +121,7 @@ func (cnt *Containers) preHealthcheck() {
 
 	cntHealthCheck := func() {
 		report, err := containers.HealthCheck(cntID)
+
 		cnt.progressDialog.Hide()
 
 		if err != nil {
@@ -139,7 +143,7 @@ func (cnt *Containers) preHealthcheck() {
 }
 
 func (cnt *Containers) preRestore() {
-	var (
+	var ( //nolint:prealloc
 		containersList [][]string
 		podsList       [][]string
 	)
@@ -152,6 +156,7 @@ func (cnt *Containers) preRestore() {
 	if err != nil {
 		cnt.progressDialog.Hide()
 		cnt.displayError("CONTAINER RESTORE ERROR", err)
+
 		return
 	}
 
@@ -169,6 +174,7 @@ func (cnt *Containers) preRestore() {
 	if err != nil {
 		cnt.progressDialog.Hide()
 		cnt.displayError("CONTAINER RESTORE ERROR", err)
+
 		return
 	}
 
@@ -204,6 +210,7 @@ func (cnt *Containers) restore() {
 		}
 
 		headerLabel := fmt.Sprintf("%s (%s)", restoreOptions.ContainerID, restoreOptions.Name)
+
 		cnt.progressDialog.Hide()
 		cnt.messageDialog.SetTitle("podman container restore")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
@@ -215,9 +222,11 @@ func (cnt *Containers) restore() {
 
 func (cnt *Containers) preCheckpoint() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform checkpoint command"))
+		cnt.displayError("", errNoContainerCheckpoint)
+
 		return
 	}
+
 	cntID, cntName := cnt.getSelectedItem()
 	cnt.checkpointDialog.SetContainerInfo(cntID, cntName)
 	cnt.checkpointDialog.Display()
@@ -240,6 +249,7 @@ func (cnt *Containers) checkpoint() {
 
 			return
 		}
+
 		headerLabel := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
 
 		cnt.progressDialog.Hide()
@@ -253,25 +263,33 @@ func (cnt *Containers) checkpoint() {
 
 func (cnt *Containers) preCommit() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform commit command"))
+		cnt.displayError("", errNoContainerCommit)
+
 		return
 	}
+
 	cntID, cntName := cnt.getSelectedItem()
+
 	cnt.commitDialog.SetContainerInfo(cntID, cntName)
 	cnt.commitDialog.Display()
 }
 
 func (cnt *Containers) commit() {
 	commitOpts := cnt.commitDialog.GetContainerCommitOptions()
+
 	cnt.commitDialog.Hide()
 	cnt.progressDialog.SetTitle("container commit in progress")
 	cnt.progressDialog.Display()
+
 	cntCommit := func() {
 		response, err := containers.Commit(cnt.selectedID, commitOpts)
 		if err != nil {
 			cnt.progressDialog.Hide()
+
 			title := fmt.Sprintf("CONTAINER (%s) COMMIT ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
 
@@ -282,32 +300,43 @@ func (cnt *Containers) commit() {
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, response)
 		cnt.messageDialog.Display()
 	}
+
 	go cntCommit()
 }
 
 func (cnt *Containers) stats() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform stats command"))
+		cnt.displayError("", errNoContainerStat)
+
 		return
 	}
+
 	cntID, cntName := cnt.getSelectedItem()
+
 	cntStatus, err := containers.Status(cntID)
 	if err != nil {
-		cnt.displayError("", fmt.Errorf("there is no container to perform stats command"))
+		cnt.displayError("", err)
+
 		return
 	}
+
 	if cntStatus != "running" {
-		cnt.displayError("", fmt.Errorf("container (%s) status improper", cntID))
+		cnt.displayError("", fmt.Errorf("container (%s) status improper", cntID)) //nolint:goerr113
+
 		return
 	}
+
 	stream := true
 	statOption := new(bcontainers.StatsOptions)
 	statOption.Stream = &stream
+
 	statsChan, err := containers.Stats(cntID, statOption)
 	if err != nil {
 		cnt.displayError("CONTAINER STATS ERROR", err)
+
 		return
 	}
+
 	cnt.statsDialog.SetContainerInfo(cntID, cntName)
 	cnt.statsDialog.SetStatsChannel(&statsChan)
 	cnt.statsDialog.SetStatsStream(&stream)
@@ -318,7 +347,7 @@ func (cnt *Containers) cexec() {
 	cntID, cntName := cnt.getSelectedItem()
 
 	if cntID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to perform exec command"))
+		cnt.displayError("", errNoContainerExec)
 
 		return
 	}
@@ -332,9 +361,9 @@ func (cnt *Containers) exec() {
 
 	cntID, cntName := cnt.getSelectedItem()
 	_, _, width, height := cnt.table.GetInnerRect()
-	// TODO better calculation
-	width = width - (2 * dialogs.DialogPadding) - 6
-	height = height - (2 * (dialogs.DialogPadding - 1)) - 2*dialogs.DialogFormHeight - 4
+
+	width = width - (2 * dialogs.DialogPadding) - 6                                      //nolint:gomnd
+	height = height - (2 * (dialogs.DialogPadding - 1)) - 2*dialogs.DialogFormHeight - 4 //nolint:gomnd
 
 	execOpts := cnt.execDialog.ContainerExecOptions()
 	execOpts.TtyWidth = width
@@ -344,6 +373,7 @@ func (cnt *Containers) exec() {
 	execOpts.DetachKeys = cnt.terminalDialog.DetachKeys()
 
 	cnt.terminalDialog.SetContainerInfo(cntID, cntName)
+
 	prepareAndExec := func() {
 		execSessionID, err := containers.NewExecSession(cnt.selectedID, execOpts)
 		if err != nil {
@@ -361,43 +391,54 @@ func (cnt *Containers) exec() {
 	go prepareAndExec()
 
 	cnt.terminalDialog.Display()
-
 }
 
 func (cnt *Containers) create() {
 	createOpts := cnt.createDialog.ContainerCreateOptions()
 	if createOpts.Name == "" || createOpts.Image == "" {
-		cnt.displayError("CONTAINER CREATE ERROR", fmt.Errorf("container name or image name is empty"))
+		cnt.displayError("CONTAINER CREATE ERROR", errEmptyContainerImageName)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container create in progress")
 	cnt.progressDialog.Display()
+
 	create := func() {
 		warnings, err := containers.Create(createOpts)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			cnt.displayError("CONTAINER CREATE ERROR", err)
+
 			return
 		}
+
 		if len(warnings) > 0 {
 			headerLabel := fmt.Sprintf("%s (%s)", "", createOpts.Name)
+
 			cnt.messageDialog.SetTitle("CONTAINER CREATE WARNINGS")
 			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
 			cnt.messageDialog.Display()
 		}
 	}
+
 	go create()
 }
 
 func (cnt *Containers) diff() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to display diff"))
+		cnt.displayError("", errNoContainerDiff)
+
 		return
 	}
+
 	data, err := containers.Diff(cnt.selectedID)
 	if err != nil {
 		title := fmt.Sprintf("CONTAINER (%s) DIFF ERROR", cnt.selectedID)
 		cnt.displayError(title, err)
+
 		return
 	}
 
@@ -410,13 +451,16 @@ func (cnt *Containers) diff() {
 
 func (cnt *Containers) inspect() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to display inspect"))
+		cnt.displayError("", errNoContainerInspect)
+
 		return
 	}
+
 	data, err := containers.Inspect(cnt.selectedID)
 	if err != nil {
 		title := fmt.Sprintf("CONTAINER (%s) INSPECT ERROR", cnt.selectedID)
 		cnt.displayError(title, err)
+
 		return
 	}
 
@@ -429,27 +473,35 @@ func (cnt *Containers) inspect() {
 
 func (cnt *Containers) kill() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to kill"))
+		cnt.displayError("", errNoContainerKill)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container kill in progress")
 	cnt.progressDialog.Display()
+
 	kill := func(id string) {
 		err := containers.Kill(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) KILL ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
+
 	go kill(cnt.selectedID)
 }
 
 func (cnt *Containers) logs() {
 	cntID, cntName := cnt.getSelectedItem()
 	if cntID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to display log"))
+		cnt.displayError("", errNoContainerLogs)
+
 		return
 	}
 
@@ -458,11 +510,14 @@ func (cnt *Containers) logs() {
 
 	getLogs := func() {
 		logData, err := containers.Logs(cntID)
+
 		cnt.progressDialog.Hide()
 
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) DISPLAY LOG ERROR", cntID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
 
@@ -471,6 +526,7 @@ func (cnt *Containers) logs() {
 		cntLogs := strings.Join(logData, "\n")
 		cntLogs = strings.ReplaceAll(cntLogs, "[", "")
 		cntLogs = strings.ReplaceAll(cntLogs, "]", "")
+
 		cnt.messageDialog.SetTitle("podman container logs")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
 		cnt.messageDialog.TextScrollToEnd()
@@ -478,37 +534,47 @@ func (cnt *Containers) logs() {
 	}
 
 	go getLogs()
-
 }
 
 func (cnt *Containers) pause() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to pause"))
+		cnt.displayError("", errNoContainerPause)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container pause in progress")
 	cnt.progressDialog.Display()
+
 	pause := func(id string) {
 		err := containers.Pause(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) PAUSE ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
+
 	go pause(cnt.selectedID)
 }
 
 func (cnt *Containers) port() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to display port"))
+		cnt.displayError("", errNoContainerPorts)
+
 		return
 	}
+
 	data, err := containers.Port(cnt.selectedID)
 	if err != nil {
 		title := fmt.Sprintf("CONTAINER (%s) DISPLAY PORT ERROR", cnt.selectedID)
+
 		cnt.displayError(title, err)
+
 		return
 	}
 
@@ -521,7 +587,9 @@ func (cnt *Containers) port() {
 
 func (cnt *Containers) cprune() {
 	cnt.confirmDialog.SetTitle("podman container prune")
+
 	cnt.confirmData = "prune"
+
 	cnt.confirmDialog.SetText("Are you sure you want to remove all unused containers ?")
 	cnt.confirmDialog.Display()
 }
@@ -529,32 +597,41 @@ func (cnt *Containers) cprune() {
 func (cnt *Containers) prune() {
 	cnt.progressDialog.SetTitle("container purne in progress")
 	cnt.progressDialog.Display()
+
 	prune := func() {
 		errData, err := containers.Prune()
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			cnt.displayError("CONTAINER PRUNE ERROR", err)
+
 			return
 		}
-		if len(errData) > 0 {
-			cnt.displayError("CONTAINER PRUNE ERROR", fmt.Errorf("%v", errData))
-		}
 
+		if len(errData) > 0 {
+			cnt.displayError("CONTAINER PRUNE ERROR", fmt.Errorf("%v", errData)) //nolint:goerr113
+		}
 	}
+
 	go prune()
 }
 
 func (cnt *Containers) rename() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to rename"))
+		cnt.displayError("", errNoContainerRename)
+
 		return
 	}
+
 	cnt.cmdInputDialog.SetTitle("podman container rename")
+
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	bgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
 	containerInfo := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
 	description := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s",
 		fgColor, bgColor, containerInfo)
+
 	cnt.cmdInputDialog.SetDescription(description)
 	cnt.cmdInputDialog.SetSelectButtonLabel("rename")
 	cnt.cmdInputDialog.SetLabel("target name ")
@@ -564,38 +641,47 @@ func (cnt *Containers) rename() {
 		cnt.cmdInputDialog.Hide()
 		cnt.renameContainer(cnt.selectedID, newName)
 	})
+
 	cnt.cmdInputDialog.Display()
 }
 
 func (cnt *Containers) renameContainer(id string, newName string) {
 	cnt.progressDialog.SetTitle("container rename in progress")
 	cnt.progressDialog.Display()
+
 	renameFunc := func() {
 		err := containers.Rename(id, newName)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) RENAME ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+
 			return
 		}
+
 		cnt.UpdateData()
 	}
+
 	go renameFunc()
 }
 
 func (cnt *Containers) rm() {
 	cntID, cntName := cnt.getSelectedItem()
 	if cntID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to remove"))
+		cnt.displayError("", errNoContainerRemove)
+
 		return
 	}
+
 	cnt.confirmDialog.SetTitle("podman container remove")
 	cnt.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	containerItem := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s(%s)", fgColor, bgColor, cntID, cntName)
-
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", containerItem)
+
 	cnt.confirmDialog.SetText(description)
 	cnt.confirmDialog.Display()
 }
@@ -603,35 +689,50 @@ func (cnt *Containers) rm() {
 func (cnt *Containers) remove() {
 	cnt.progressDialog.SetTitle("container remove in progress")
 	cnt.progressDialog.Display()
+
 	remove := func(id string) {
 		errData, err := containers.Remove(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
+
 		if len(errData) > 0 {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
-			cnt.displayError(title, fmt.Errorf("%v", errData))
+
+			cnt.displayError(title, fmt.Errorf("%v", errData)) //nolint:goerr113
 		}
 	}
+
 	go remove(cnt.selectedID)
 }
 
 func (cnt *Containers) start() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to start"))
+		cnt.displayError("", errNoContainerStart)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container start in progress")
 	cnt.progressDialog.Display()
+
 	start := func(id string) {
 		err := containers.Start(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) START ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
@@ -640,55 +741,76 @@ func (cnt *Containers) start() {
 
 func (cnt *Containers) stop() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to stop"))
+		cnt.displayError("", errNoContainerStop)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container stop in progress")
 	cnt.progressDialog.Display()
+
 	stop := func(id string) {
 		err := containers.Stop(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) STOP ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
+
 	go stop(cnt.selectedID)
 }
 
 func (cnt *Containers) top() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to display top"))
+		cnt.displayError("", errNoContainerTop)
+
 		return
 	}
+
 	data, err := containers.Top(cnt.selectedID)
 	if err != nil {
 		title := fmt.Sprintf("CONTAINER (%s) TOP ERROR", cnt.selectedID)
+
 		cnt.displayError(title, err)
+
 		return
 	}
 
 	cntID, cntName := cnt.getSelectedItem()
+
 	cnt.topDialog.UpdateResults(dialogs.TopContainerInfo, cntID, cntName, data)
 	cnt.topDialog.Display()
 }
 
 func (cnt *Containers) unpause() {
 	if cnt.selectedID == "" {
-		cnt.displayError("", fmt.Errorf("there is no container to unpause"))
+		cnt.displayError("", errNoContainerUnpause)
+
 		return
 	}
+
 	cnt.progressDialog.SetTitle("container unpause in progress")
 	cnt.progressDialog.Display()
+
 	unpause := func(id string) {
 		err := containers.Unpause(id)
+
 		cnt.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) UNPAUSE ERROR", cnt.selectedID)
+
 			cnt.displayError(title, err)
+
 			return
 		}
 	}
+
 	go unpause(cnt.selectedID)
 }

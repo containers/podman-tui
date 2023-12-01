@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	// maxheight = button height + total input widgets row + 11
+	// maxheight = button height + total input widgets row + 11.
 	execDialogMaxHeight  = dialogs.DialogFormHeight + 7 + 9
 	execDialogMaxWidth   = 80
 	execDialogLabelWidth = 14
@@ -33,7 +33,7 @@ const (
 	execFormFieldFocus
 )
 
-// ContainerExecDialog represents container exec dialog primitive
+// ContainerExecDialog represents container exec dialog primitive.
 type ContainerExecDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -55,7 +55,7 @@ type ContainerExecDialog struct {
 	cancelHandler func()
 }
 
-// NewContainerExecDialog returns new container exec dialog
+// NewContainerExecDialog returns new container exec dialog.
 func NewContainerExecDialog() *ContainerExecDialog {
 	dialog := &ContainerExecDialog{
 		Box:          tview.NewBox(),
@@ -71,12 +71,14 @@ func NewContainerExecDialog() *ContainerExecDialog {
 		user:         tview.NewInputField(),
 		display:      false,
 	}
+
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
 	inputFieldBgColor := style.InputFieldBgColor
 
 	// label (container ID and Name)
 	cntInfoLabel := "CONTAINER ID:"
+
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
 	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
@@ -103,6 +105,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	// tty
 	tLabel := "tty:"
+
 	dialog.tty.SetBackgroundColor(bgColor)
 	dialog.tty.SetBorder(false)
 	dialog.tty.SetLabel(tLabel)
@@ -112,6 +115,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	// privileged
 	pLabel := "privileged:"
+
 	dialog.privileged.SetBackgroundColor(bgColor)
 	dialog.privileged.SetBorder(false)
 	dialog.privileged.SetLabel(pLabel)
@@ -121,6 +125,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	// detach
 	dLabel := "detach:"
+
 	dialog.detach.SetBackgroundColor(bgColor)
 	dialog.detach.SetBorder(false)
 	dialog.detach.SetLabel(dLabel)
@@ -182,10 +187,12 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	// command
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.command, 1, 0, true)
+
 	// interactive, tty, privileged and detach
-	checkBoxWidth := execDialogLabelWidth + 4
+	checkBoxWidth := execDialogLabelWidth + 4 //nolint:gomnd
 	labelPaddings := 5
 	checkBoxLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	checkBoxLayout.SetBackgroundColor(bgColor)
 	checkBoxLayout.AddItem(dialog.interactive, checkBoxWidth, 0, false)
 	checkBoxLayout.AddItem(dialog.tty, len(tLabel)+labelPaddings, 0, false)
@@ -194,6 +201,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	checkBoxLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(checkBoxLayout, 1, 0, true)
+
 	// user
 	mLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	mLayout.AddItem(dialog.user, 1, 0, true)
@@ -215,12 +223,14 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	dialog.layout.AddItem(mainLayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
+
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ContainerExecDialog) Display() {
 	d.focusElement = execCommandFieldFocus
+
 	d.command.SetText("")
 	d.tty.SetChecked(true)
 	d.interactive.SetChecked(false)
@@ -230,43 +240,48 @@ func (d *ContainerExecDialog) Display() {
 	d.envVariables.SetText("")
 	d.envFile.SetText("")
 	d.user.SetText("")
+
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ContainerExecDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ContainerExecDialog) Hide() {
 	d.SetContainerID("", "")
 	d.display = false
-
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (d *ContainerExecDialog) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (d *ContainerExecDialog) HasFocus() bool { //nolint:cyclop
 	if d.command.HasFocus() || d.tty.HasFocus() {
 		return true
 	}
+
 	if d.interactive.HasFocus() || d.privileged.HasFocus() {
 		return true
 	}
+
 	if d.workingDir.HasFocus() || d.envVariables.HasFocus() {
 		return true
 	}
+
 	if d.envFile.HasFocus() || d.user.HasFocus() {
 		return true
 	}
+
 	if d.detach.HasFocus() || d.form.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus() || d.layout.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
-func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) {
+// Focus is called when this primitive receives focus.
+func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocognit,cyclop
 	switch d.focusElement {
 	// command field focus
 	case execCommandFieldFocus:
@@ -274,112 +289,157 @@ func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execInteractiveFieldFocus
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				d.execHandler()
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.command)
+
 		return
 	// interactive field focus
 	case execInteractiveFieldFocus:
 		d.interactive.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execTtyFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.interactive)
+
 		return
 	// tty field focus
 	case execTtyFieldFocus:
 		d.tty.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execPrivilegedFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
-		delegate(d.tty)
-		return
 
+		delegate(d.tty)
+
+		return
 	// privileged field focus
 	case execPrivilegedFieldFocus:
 		d.privileged.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execDetachFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.privileged)
+
 		return
 	// detach field focus
 	case execDetachFieldFocus:
 		d.detach.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execUserFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.detach)
+
 		return
 	// user field focus
 	case execUserFieldFocus:
 		d.user.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execWorkingDirFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.user)
+
 		return
 	// working directory field focus
 	case execWorkingDirFieldFocus:
 		d.workingDir.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execEnvVariablesFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.workingDir)
+
 		return
 	// env variable field focus
 	case execEnvVariablesFieldFocus:
 		d.envVariables.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execEnvFileFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.envVariables)
+
 		return
 	// env file field focus
 	case execEnvFileFieldFocus:
 		d.envFile.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execFormFieldFocus
+
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.envFile)
+
 		return
 	// form field focus
 	case execFormFieldFocus:
@@ -387,105 +447,122 @@ func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) {
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = execCommandFieldFocus
+
 				d.Focus(delegate)
 				d.form.SetFocus(execCommandFieldFocus)
+
 				return nil
 			}
 			if event.Key() == tcell.KeyEnter {
 				d.execHandler()
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	}
-
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *ContainerExecDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *ContainerExecDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container exec dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		// command field
 		if d.command.HasFocus() {
 			if commandHandler := d.command.InputHandler(); commandHandler != nil {
 				commandHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// interactive field
 		if d.interactive.HasFocus() {
 			if interactiveHandler := d.interactive.InputHandler(); interactiveHandler != nil {
 				interactiveHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// privileged field
 		if d.privileged.HasFocus() {
 			if privilegedHandler := d.privileged.InputHandler(); privilegedHandler != nil {
 				privilegedHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// tty field
 		if d.tty.HasFocus() {
 			if ttyHandler := d.tty.InputHandler(); ttyHandler != nil {
 				ttyHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// detach field
 		if d.detach.HasFocus() {
 			if detachHandler := d.detach.InputHandler(); detachHandler != nil {
 				detachHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// working directory field
 		if d.workingDir.HasFocus() {
 			if workingDirHandler := d.workingDir.InputHandler(); workingDirHandler != nil {
 				workingDirHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// env variables field
 		if d.envVariables.HasFocus() {
 			if envVariablesHandler := d.envVariables.InputHandler(); envVariablesHandler != nil {
 				envVariablesHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// env file field
 		if d.envFile.HasFocus() {
 			if envFileHandler := d.envFile.InputHandler(); envFileHandler != nil {
 				envFileHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// user field
 		if d.user.HasFocus() {
 			if userHandler := d.user.InputHandler(); userHandler != nil {
 				userHandler(event, setFocus)
+
 				return
 			}
-
 		}
+
 		// form primitive
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -494,27 +571,31 @@ func (d *ContainerExecDialog) InputHandler() func(event *tcell.EventKey, setFocu
 
 // SetRect set rects for this primitive.
 func (d *ContainerExecDialog) SetRect(x, y, width, height int) {
-
 	dWidth := width
 	dX := x
+
 	if width > execDialogMaxWidth {
 		wEmptySpace := width - execDialogMaxWidth
 		if wEmptySpace > 0 {
-			dX = x + (wEmptySpace / 2)
+			dX = x + (wEmptySpace / 2) //nolint:gomnd
 		}
+
 		dWidth = execDialogMaxWidth
 	}
 
 	dHeight := height
 	dY := y
+
 	if height > execDialogMaxHeight {
 		hEmptySpace := height - execDialogMaxHeight
-		if hEmptySpace > 0 {
-			dY = y + (hEmptySpace / 2)
-		}
-		dHeight = execDialogMaxHeight
 
+		if hEmptySpace > 0 {
+			dY = y + (hEmptySpace / 2) //nolint:gomnd
+		}
+
+		dHeight = execDialogMaxHeight
 	}
+
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
 
@@ -523,30 +604,37 @@ func (d *ContainerExecDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 
 	d.layout.Draw(screen)
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ContainerExecDialog) SetCancelFunc(handler func()) *ContainerExecDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetExecFunc sets form execute button selected function
+// SetExecFunc sets form execute button selected function.
 func (d *ContainerExecDialog) SetExecFunc(handler func()) *ContainerExecDialog {
 	d.execHandler = handler
 	execButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	execButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetContainerID sets container ID label
+// SetContainerID sets container ID label.
 func (d *ContainerExecDialog) SetContainerID(id string, name string) {
 	d.containerID = id
 	containerInfo := fmt.Sprintf("%s (%s)", id, name)
@@ -554,13 +642,11 @@ func (d *ContainerExecDialog) SetContainerID(id string, name string) {
 	d.cntInfo.SetText(containerInfo)
 }
 
-// ContainerExecOptions returns new container exec options
+// ContainerExecOptions returns new container exec options.
 func (d *ContainerExecDialog) ContainerExecOptions() containers.ExecOption {
 	execOptions := containers.ExecOption{}
-
 	cmdString := strings.TrimSpace(d.command.GetText())
 	execOptions.Cmd = strings.Split(cmdString, " ")
-
 	execOptions.Tty = d.tty.IsChecked()
 	execOptions.Interactive = d.interactive.IsChecked()
 	execOptions.Detach = d.detach.IsChecked()

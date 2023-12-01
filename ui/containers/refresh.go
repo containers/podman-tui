@@ -8,11 +8,13 @@ import (
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/docker/go-units"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 func (cnt *Containers) refresh() {
 	cnt.table.Clear()
+
 	expand := 1
 	alignment := tview.AlignLeft
 
@@ -25,15 +27,18 @@ func (cnt *Containers) refresh() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
-	rowIndex := 1
 
+	rowIndex := 1
 	cntList := cnt.getData()
+
 	cnt.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(cnt.title), len(cntList)))
+
 	for i := 0; i < len(cntList); i++ {
 		cntID := cntList[i].ID
 		if len(cntID) > utils.IDLength {
 			cntID = cntID[:utils.IDLength]
 		}
+
 		cntImage := cntList[i].Image
 		cntPodName := cntList[i].PodName
 		cntCreated := units.HumanDuration(time.Since(cntList[i].Created)) + " ago"
@@ -41,7 +46,7 @@ func (cnt *Containers) refresh() {
 		cntPorts := conReporter{cntList[i]}.ports()
 		cntNames := conReporter{cntList[i]}.names()
 
-		cellTextColor := style.FgColor
+		var cellTextColor tcell.Color
 
 		cntShortStatus := strings.Split(strings.ToLower(cntStatus), " ")[0]
 
@@ -58,49 +63,49 @@ func (cnt *Containers) refresh() {
 		}
 
 		// id name column
-		cnt.table.SetCell(rowIndex, 0,
+		cnt.table.SetCell(rowIndex, viewContainersIDColIndex,
 			tview.NewTableCell(cntID).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// image name column
-		cnt.table.SetCell(rowIndex, 1,
+		cnt.table.SetCell(rowIndex, viewContainersImageColIndex,
 			tview.NewTableCell(cntImage).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// pod column
-		cnt.table.SetCell(rowIndex, 2,
+		cnt.table.SetCell(rowIndex, viewContainersPodColIndex,
 			tview.NewTableCell(cntPodName).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// created at column
-		cnt.table.SetCell(rowIndex, 3,
+		cnt.table.SetCell(rowIndex, viewContainersCreatedAtColIndex,
 			tview.NewTableCell(cntCreated).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// status column
-		cnt.table.SetCell(rowIndex, 4,
+		cnt.table.SetCell(rowIndex, viewContainersStatusColIndex,
 			tview.NewTableCell(cntStatus).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// names column
-		cnt.table.SetCell(rowIndex, 5,
+		cnt.table.SetCell(rowIndex, viewContainersNamesColIndex,
 			tview.NewTableCell(cntNames).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// ports column
-		cnt.table.SetCell(rowIndex, 6,
+		cnt.table.SetCell(rowIndex, viewContainersPortsColIndex,
 			tview.NewTableCell(cntPorts).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
@@ -108,5 +113,4 @@ func (cnt *Containers) refresh() {
 
 		rowIndex++
 	}
-
 }

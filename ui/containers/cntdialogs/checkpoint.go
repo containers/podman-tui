@@ -27,7 +27,7 @@ const (
 	cntCheckpointLeaveRunningFocus
 	cntCheckpointPreCheckpointFocus
 	cntCheckpointPrintStatsFocus
-	cntCheckpointTcpEstablishedFocus
+	cntCheckpointTCPEstablishedFocus
 	cntCheckpointWithPreviousFocus
 	cntCheckpointFormFocus
 )
@@ -121,6 +121,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "ignore rootFS:")
+
 	dialog.ignoreRootFS.SetLabel(ignoreRootFSLabel)
 	dialog.ignoreRootFS.SetChecked(false)
 	dialog.ignoreRootFS.SetBackgroundColor(style.DialogBgColor)
@@ -129,6 +130,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// keep
 	keepLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "keep:")
+
 	dialog.keep.SetLabel(keepLabel)
 	dialog.keep.SetChecked(false)
 	dialog.keep.SetBackgroundColor(style.DialogBgColor)
@@ -137,6 +139,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "tcp established:")
+
 	dialog.tcpEstablished.SetLabel(tcpEstablishedLabel)
 	dialog.tcpEstablished.SetChecked(false)
 	dialog.tcpEstablished.SetBackgroundColor(style.DialogBgColor)
@@ -145,6 +148,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// leaveRunning
 	leaveRunningLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "leave running:")
+
 	dialog.leaveRunning.SetLabel(leaveRunningLabel)
 	dialog.leaveRunning.SetChecked(false)
 	dialog.leaveRunning.SetBackgroundColor(style.DialogBgColor)
@@ -153,6 +157,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// preCheckpoint
 	preCheckPointLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "pre checkpoint:")
+
 	dialog.preCheckpoint.SetLabel(preCheckPointLabel)
 	dialog.preCheckpoint.SetChecked(false)
 	dialog.preCheckpoint.SetBackgroundColor(style.DialogBgColor)
@@ -161,6 +166,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// withPrevious
 	withPreviousLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "with previous:")
+
 	dialog.withPrevious.SetLabel(withPreviousLabel)
 	dialog.withPrevious.SetChecked(false)
 	dialog.withPrevious.SetBackgroundColor(style.DialogBgColor)
@@ -184,18 +190,19 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	optionsLayoutRow01.AddItem(dialog.export, 1, 0, true)
 
 	optionsLayoutRow02 := tview.NewFlex().SetDirection(tview.FlexColumn)
-	optionsLayoutRow02.AddItem(dialog.fileLock, labelWidth+2, 0, true)
+	optionsLayoutRow02.AddItem(dialog.fileLock, labelWidth+2, 0, true) //nolint:gomnd
 	optionsLayoutRow02.AddItem(dialog.ignoreRootFS, 0, 1, true)
 	optionsLayoutRow02.AddItem(dialog.tcpEstablished, 0, 1, true)
 	optionsLayoutRow02.AddItem(dialog.preCheckpoint, 0, 1, true)
 
 	optionsLayoutRow03 := tview.NewFlex().SetDirection(tview.FlexColumn)
-	optionsLayoutRow03.AddItem(dialog.printStats, labelWidth+2, 1, true)
+	optionsLayoutRow03.AddItem(dialog.printStats, labelWidth+2, 1, true) //nolint:gomnd
 	optionsLayoutRow03.AddItem(dialog.keep, 0, 1, true)
 	optionsLayoutRow03.AddItem(dialog.leaveRunning, 0, 1, true)
 	optionsLayoutRow03.AddItem(dialog.withPrevious, 0, 1, true)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
+
 	layout.AddItem(optionsLayoutRow01, 0, 1, true)
 	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	layout.AddItem(optionsLayoutRow02, 1, 0, true)
@@ -203,6 +210,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	layout.AddItem(optionsLayoutRow03, 1, 0, true)
 
 	mainOptsLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
 	mainOptsLayout.SetBackgroundColor(style.DialogBgColor)
 	mainOptsLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	mainOptsLayout.AddItem(layout, 0, 1, true)
@@ -233,7 +241,6 @@ func (d *ContainerCheckpointDialog) Display() {
 	d.printStats.SetChecked(false)
 	d.tcpEstablished.SetChecked(false)
 	d.withPrevious.SetChecked(false)
-
 }
 
 // IsDisplay returns true if this primitive is shown.
@@ -248,7 +255,7 @@ func (d *ContainerCheckpointDialog) Hide() {
 }
 
 // HasFocus returns whether or not this primitive has focus.
-func (d *ContainerCheckpointDialog) HasFocus() bool {
+func (d *ContainerCheckpointDialog) HasFocus() bool { //nolint:cyclop
 	if d.createImage.HasFocus() || d.export.HasFocus() {
 		return true
 	}
@@ -277,7 +284,7 @@ func (d *ContainerCheckpointDialog) HasFocus() bool {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *ContainerCheckpointDialog) Focus(delegate func(p tview.Primitive)) {
+func (d *ContainerCheckpointDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	switch d.focusElement {
 	case cntCheckpointImageFocus:
 		delegate(d.createImage)
@@ -295,7 +302,7 @@ func (d *ContainerCheckpointDialog) Focus(delegate func(p tview.Primitive)) {
 		delegate(d.preCheckpoint)
 	case cntCheckpointPrintStatsFocus:
 		delegate(d.printStats)
-	case cntCheckpointTcpEstablishedFocus:
+	case cntCheckpointTCPEstablishedFocus:
 		delegate(d.tcpEstablished)
 	case cntCheckpointWithPreviousFocus:
 		delegate(d.withPrevious)
@@ -320,7 +327,7 @@ func (d *ContainerCheckpointDialog) Focus(delegate func(p tview.Primitive)) {
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container checkpoint dialog: event %v received", event)
 
@@ -416,6 +423,7 @@ func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, s
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -424,16 +432,15 @@ func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, s
 
 // SetRect set rects for this primitive.
 func (d *ContainerCheckpointDialog) SetRect(x, y, width, height int) {
-
 	if width > cntCheckpointDialogMaxWidth {
-		emptySpace := (width - cntCheckpointDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - cntCheckpointDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = cntCheckpointDialogMaxWidth
 	}
 
 	if height > cntCheckpointDialogMaxHeight {
-		emptySpace := (height - cntCheckpointDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - cntCheckpointDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = cntCheckpointDialogMaxHeight
 	}
 
@@ -467,14 +474,14 @@ func (d *ContainerCheckpointDialog) SetCheckpointFunc(handler func()) *Container
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCheckpointDialog) SetCancelFunc(handler func()) *ContainerCheckpointDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
 
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
 }
 
-func (d *ContainerCheckpointDialog) setFocusElement() {
+func (d *ContainerCheckpointDialog) setFocusElement() { //nolint:cyclop
 	switch d.focusElement {
 	case cntCheckpointImageFocus:
 		d.focusElement = cntCheckpointExportFocus
@@ -483,8 +490,8 @@ func (d *ContainerCheckpointDialog) setFocusElement() {
 	case cntCheckpointFileLockFocus:
 		d.focusElement = cntCheckpointIgnoreRootFsFocus
 	case cntCheckpointIgnoreRootFsFocus:
-		d.focusElement = cntCheckpointTcpEstablishedFocus
-	case cntCheckpointTcpEstablishedFocus:
+		d.focusElement = cntCheckpointTCPEstablishedFocus
+	case cntCheckpointTCPEstablishedFocus:
 		d.focusElement = cntCheckpointPreCheckpointFocus
 	case cntCheckpointPreCheckpointFocus:
 		d.focusElement = cntCheckpointPrintStatsFocus
@@ -507,7 +514,7 @@ func (d *ContainerCheckpointDialog) SetContainerInfo(id string, name string) {
 	d.containerInfo.SetText(containerInfo)
 }
 
-// GetOptions returns checkpoint options
+// GetOptions returns checkpoint options.
 func (d *ContainerCheckpointDialog) GetCheckpointOptions() containers.CntCheckPointOptions {
 	var opts containers.CntCheckPointOptions
 
@@ -517,6 +524,7 @@ func (d *ContainerCheckpointDialog) GetCheckpointOptions() containers.CntCheckPo
 	if strings.Index(exportPath, "~") == 0 {
 		exportPath, _ = utils.ResolveHomeDir(exportPath)
 	}
+
 	opts.Export = exportPath
 
 	opts.FileLocks = d.fileLock.IsChecked()

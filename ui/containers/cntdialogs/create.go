@@ -74,7 +74,7 @@ const (
 	volumePageIndex
 )
 
-// ContainerCreateDialog implements container create dialog
+// ContainerCreateDialog implements container create dialog.
 type ContainerCreateDialog struct {
 	*tview.Box
 	layout                              *tview.Flex
@@ -155,7 +155,8 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 			"Network Settings",
 			"Ports Settings",
 			"Security Options",
-			"Volumes Settings"},
+			"Volumes Settings",
+		},
 		activePageIndex:                     0,
 		display:                             false,
 		containerNameField:                  tview.NewInputField(),
@@ -218,7 +219,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	d.setupBasicInfoPageUI()
-	d.setupDnsPageUI()
+	d.setupDNSPageUI()
 	d.setupHealthPageUI()
 	d.setupNetworkPageUI()
 	d.setupPortsPageUI()
@@ -250,7 +251,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-	layout.AddItem(d.categories, layoutWidth+6, 0, true)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 	d.layout.AddItem(layout, 0, 1, true)
@@ -315,7 +316,7 @@ func (d *ContainerCreateDialog) setupBasicInfoPageUI() {
 	d.basicInfoPage.SetBackgroundColor(bgColor)
 }
 
-func (d *ContainerCreateDialog) setupDnsPageUI() {
+func (d *ContainerCreateDialog) setupDNSPageUI() {
 	bgColor := style.DialogBgColor
 	inputFieldBgColor := style.InputFieldBgColor
 	dnsPageLabelWidth := 13
@@ -718,7 +719,7 @@ func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
+func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop
 	switch d.focusElement {
 	// form has focus
 	case createContainerFormFocus:
@@ -726,16 +727,20 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = createCategoriesFocus // category text view
+
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
-				//d.pullSelectHandler()
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	// category text view
 	case createCategoriesFocus:
@@ -743,18 +748,23 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) {
 			if event.Key() == tcell.KeyTab {
 				d.focusElement = createCategoryPagesFocus // category page view
 				d.Focus(delegate)
+
 				return nil
 			}
+
 			// scroll between categories
 			event = utils.ParseKeyEventKey(event)
 			if event.Key() == tcell.KeyDown {
 				d.nextCategory()
 			}
+
 			if event.Key() == tcell.KeyUp {
 				d.previousCategory()
 			}
+
 			return event
 		})
+
 		delegate(d.categories)
 	// basic info page
 	case createContainerNameFieldFocus:
@@ -844,84 +854,111 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 	// pod name dropdown
 	d.containerPodField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
+
 		return event
 	})
+
 	// container image volume
 	d.containerImageField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
+
 		return event
 	})
+
 	// container network dropdown
 	d.containerNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
+
 		return event
 	})
+
 	// container image volume dropdown
 	d.containerImageVolumeField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
+
 		return event
 	})
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container create dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.basicInfoPage.HasFocus() {
 			if handler := d.basicInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setBasicInfoPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.dnsPage.HasFocus() {
 			if handler := d.dnsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setDNSSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.networkingPage.HasFocus() {
 			if handler := d.networkingPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setNetworkSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.portPage.HasFocus() {
 			if handler := d.portPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setPortPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.securityOptsPage.HasFocus() {
 			if handler := d.securityOptsPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setSecurityOptionsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.volumePage.HasFocus() {
 			if handler := d.volumePage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setVolumeSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
@@ -931,7 +968,9 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 				if event.Key() == tcell.KeyTab {
 					d.setHealthSettingsPageNextFocus()
 				}
+
 				handler(event, setFocus)
+
 				return
 			}
 		}
@@ -939,10 +978,12 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 		if d.categories.HasFocus() {
 			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
 				categroryHandler(event, setFocus)
+
 				return
 			}
 		}
-		if d.form.HasFocus() {
+
+		if d.form.HasFocus() { //nolint:nestif
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				if event.Key() == tcell.KeyEnter {
 					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
@@ -950,26 +991,26 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 						d.createHandler()
 					}
 				}
+
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
-
 	})
 }
 
 // SetRect set rects for this primitive.
 func (d *ContainerCreateDialog) SetRect(x, y, width, height int) {
-
 	if width > containerCreateDialogMaxWidth {
-		emptySpace := (width - containerCreateDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - containerCreateDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = containerCreateDialogMaxWidth
 	}
 
 	if height > containerCreateDialogHeight {
-		emptySpace := (height - containerCreateDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - containerCreateDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = containerCreateDialogHeight
 	}
 
@@ -981,8 +1022,11 @@ func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -990,8 +1034,10 @@ func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -999,7 +1045,9 @@ func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDi
 func (d *ContainerCreateDialog) SetCreateFunc(handler func()) *ContainerCreateDialog {
 	d.createHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	enterButton.SetSelectedFunc(handler)
+
 	return d
 }
 
@@ -1010,16 +1058,23 @@ func (d *ContainerCreateDialog) setActiveCategory(index int) {
 	ctgBgColor := style.GetColorHex(bgColor)
 
 	d.activePageIndex = index
+
 	d.categories.Clear()
+
 	var ctgList []string
+
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
+
 	for i := 0; i < len(alignedList); i++ {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
+
 			continue
 		}
+
 		ctgList = append(ctgList, fmt.Sprintf("[-:-:-]   %s ", alignedList[i]))
 	}
+
 	d.categories.SetText(strings.Join(ctgList, "\n"))
 
 	// switch the page
@@ -1029,20 +1084,26 @@ func (d *ContainerCreateDialog) setActiveCategory(index int) {
 func (d *ContainerCreateDialog) nextCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex < len(d.categoryLabels)-1 {
-		activePage = activePage + 1
+		activePage++
+
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(0)
 }
 
 func (d *ContainerCreateDialog) previousCategory() {
 	activePage := d.activePageIndex
 	if d.activePageIndex > 0 {
-		activePage = activePage - 1
+		activePage--
+
 		d.setActiveCategory(activePage)
+
 		return
 	}
+
 	d.setActiveCategory(len(d.categoryLabels) - 1)
 }
 
@@ -1051,11 +1112,14 @@ func (d *ContainerCreateDialog) initData() {
 	imgList, _ := images.List()
 	d.imageList = imgList
 	imgOptions := []string{""}
+
 	for i := 0; i < len(d.imageList); i++ {
 		if d.imageList[i].ID == "<none>" {
 			imgOptions = append(imgOptions, d.imageList[i].ID)
+
 			continue
 		}
+
 		imgname := d.imageList[i].Repository + ":" + d.imageList[i].Tag
 		imgOptions = append(imgOptions, imgname)
 	}
@@ -1064,6 +1128,7 @@ func (d *ContainerCreateDialog) initData() {
 	podOptions := []string{""}
 	podList, _ := pods.List()
 	d.podList = podList
+
 	for i := 0; i < len(podList); i++ {
 		podOptions = append(podOptions, podList[i].Name)
 	}
@@ -1071,6 +1136,7 @@ func (d *ContainerCreateDialog) initData() {
 	// get available networks
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
+
 	for i := 0; i < len(networkList); i++ {
 		networkOptions = append(networkOptions, networkList[i][1])
 	}
@@ -1079,6 +1145,7 @@ func (d *ContainerCreateDialog) initData() {
 	imageVolumeOptions := []string{"", "ignore", "tmpfs", "anonymous"}
 	volumeOptions := []string{""}
 	volList, _ := volumes.List()
+
 	for i := 0; i < len(volList); i++ {
 		volumeOptions = append(volumeOptions, volList[i].Name)
 	}
@@ -1130,103 +1197,201 @@ func (d *ContainerCreateDialog) initData() {
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
 	if d.containerPortPublishField.HasFocus() {
 		d.focusElement = createContainerPortPublishAllFieldFocus
-	} else if d.ContainerPortPublishAllField.HasFocus() {
-		d.focusElement = createContainerPortExposeFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.ContainerPortPublishAllField.HasFocus() {
+		d.focusElement = createContainerPortExposeFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 func (d *ContainerCreateDialog) setBasicInfoPageNextFocus() {
 	if d.containerNameField.HasFocus() {
 		d.focusElement = createContainerImageFieldFocus
-	} else if d.containerImageField.HasFocus() {
-		d.focusElement = createcontainerPodFieldFocis
-	} else if d.containerPodField.HasFocus() {
-		d.focusElement = createContainerLabelsFieldFocus
-	} else if d.containerLabelsField.HasFocus() {
-		d.focusElement = createContainerRemoveFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerImageField.HasFocus() {
+		d.focusElement = createcontainerPodFieldFocis
+
+		return
+	}
+
+	if d.containerPodField.HasFocus() {
+		d.focusElement = createContainerLabelsFieldFocus
+
+		return
+	}
+
+	if d.containerLabelsField.HasFocus() {
+		d.focusElement = createContainerRemoveFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 func (d *ContainerCreateDialog) setSecurityOptionsPageNextFocus() {
 	if d.containerSelinuxLabelField.HasFocus() {
 		d.focusElement = createContainerApprarmorFieldFocus
-	} else if d.containerApparmorField.HasFocus() {
-		d.focusElement = createContainerSeccompFeildFocus
-	} else if d.containerSeccompField.HasFocus() {
-		d.focusElement = createContainerMaskFieldFocus
-	} else if d.containerMaskField.HasFocus() {
-		d.focusElement = createContainerUnmaskFieldFocus
-	} else if d.containerUnmaskField.HasFocus() {
-		d.focusElement = createContainerNoNewPrivFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerApparmorField.HasFocus() {
+		d.focusElement = createContainerSeccompFeildFocus
+
+		return
+	}
+
+	if d.containerSeccompField.HasFocus() {
+		d.focusElement = createContainerMaskFieldFocus
+
+		return
+	}
+
+	if d.containerMaskField.HasFocus() {
+		d.focusElement = createContainerUnmaskFieldFocus
+
+		return
+	}
+
+	if d.containerUnmaskField.HasFocus() {
+		d.focusElement = createContainerNoNewPrivFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 func (d *ContainerCreateDialog) setNetworkSettingsPageNextFocus() {
 	if d.containerHostnameField.HasFocus() {
 		d.focusElement = createContainerIPAddrFieldFocus
-	} else if d.containerIPAddrField.HasFocus() {
-		d.focusElement = createContainerMacAddrFieldFocus
-	} else if d.containerMacAddrField.HasFocus() {
-		d.focusElement = createContainerNetworkFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerIPAddrField.HasFocus() {
+		d.focusElement = createContainerMacAddrFieldFocus
+
+		return
+	}
+
+	if d.containerMacAddrField.HasFocus() {
+		d.focusElement = createContainerNetworkFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	if d.containerDNSServersField.HasFocus() {
 		d.focusElement = createContainerDNSOptionsFieldFocus
-	} else if d.containerDNSOptionsField.HasFocus() {
-		d.focusElement = createContainerDNSSearchFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerDNSOptionsField.HasFocus() {
+		d.focusElement = createContainerDNSSearchFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() {
+func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop
 	if d.containerHealthCmdField.HasFocus() {
 		d.focusElement = containerHealthStartupCmdFieldFocus
-	} else if d.containerHealthStartupCmdField.HasFocus() {
-		d.focusElement = containerHealthOnFailureFieldFocus
-	} else if d.containerHealthOnFailureField.HasFocus() {
-		d.focusElement = containerHealthStartupSuccessFieldFocus
-	} else if d.containerHealthStartupSuccessField.HasFocus() {
-		d.focusElement = containerHealthStartPeriodFieldFocus
-	} else if d.containerHealthStartPeriodField.HasFocus() {
-		d.focusElement = containerHealthIntervalFieldFocus
-	} else if d.containerHealthIntervalField.HasFocus() {
-		d.focusElement = containerHealthStartupIntervalFieldFocus
-	} else if d.containerHealthStartupIntervalField.HasFocus() {
-		d.focusElement = containerHealthRetriesFieldFocus
-	} else if d.containerHealthRetriesField.HasFocus() {
-		d.focusElement = containerHealthStartupRetriesFieldFocus
-	} else if d.containerHealthStartupRetriesField.HasFocus() {
-		d.focusElement = containerHealthTimeoutFieldFocus
-	} else if d.containerHealthTimeoutField.HasFocus() {
-		d.focusElement = containerHealthStartupTimeoutFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerHealthStartupCmdField.HasFocus() {
+		d.focusElement = containerHealthOnFailureFieldFocus
+
+		return
+	}
+
+	if d.containerHealthOnFailureField.HasFocus() {
+		d.focusElement = containerHealthStartupSuccessFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartupSuccessField.HasFocus() {
+		d.focusElement = containerHealthStartPeriodFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartPeriodField.HasFocus() {
+		d.focusElement = containerHealthIntervalFieldFocus
+
+		return
+	}
+
+	if d.containerHealthIntervalField.HasFocus() {
+		d.focusElement = containerHealthStartupIntervalFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartupIntervalField.HasFocus() {
+		d.focusElement = containerHealthRetriesFieldFocus
+
+		return
+	}
+
+	if d.containerHealthRetriesField.HasFocus() {
+		d.focusElement = containerHealthStartupRetriesFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartupRetriesField.HasFocus() {
+		d.focusElement = containerHealthTimeoutFieldFocus
+
+		return
+	}
+
+	if d.containerHealthTimeoutField.HasFocus() {
+		d.focusElement = containerHealthStartupTimeoutFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	if d.containerVolumeField.HasFocus() {
 		d.focusElement = createContainerImageVolumeFieldFocus
-	} else if d.containerImageVolumeField.HasFocus() {
-		d.focusElement = createContainerMountFieldFocus
-	} else {
-		d.focusElement = createContainerFormFocus
+
+		return
 	}
+
+	if d.containerImageVolumeField.HasFocus() {
+		d.focusElement = createContainerMountFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
 }
 
 // ContainerCreateOptions returns new network options.
-func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions {
+func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop
 	var (
 		labels           []string
 		imageID          string
@@ -1250,6 +1415,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	if len(d.imageList) > 0 && selectedImageIndex > 0 {
 		imageID = d.imageList[selectedImageIndex-1].ID
 	}
+
 	selectedPodIndex, _ := d.containerPodField.GetCurrentOption()
 	if len(d.podList) > 0 && selectedPodIndex > 0 {
 		podID = d.podList[selectedPodIndex-1].Id
@@ -1261,27 +1427,32 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 			publish = append(publish, p)
 		}
 	}
+
 	for _, e := range strings.Split(d.containerPortExposeField.GetText(), " ") {
 		if e != "" {
 			expose = append(expose, e)
 		}
 	}
+
 	// DNS setting
 	for _, dns := range strings.Split(d.containerDNSServersField.GetText(), " ") {
 		if dns != "" {
 			dnsServers = append(dnsServers, dns)
 		}
 	}
+
 	for _, do := range strings.Split(d.containerDNSOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
+
 	for _, ds := range strings.Split(d.containerDNSSearchField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
 		}
 	}
+
 	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
 
 	// security options
@@ -1332,5 +1503,6 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
 		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
 	}
+
 	return opts
 }

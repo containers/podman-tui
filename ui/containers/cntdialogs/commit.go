@@ -30,7 +30,7 @@ const (
 	cntCommitFormFocus
 )
 
-// ContainerCommitDialog represents container commit dialog primitive
+// ContainerCommitDialog represents container commit dialog primitive.
 type ContainerCommitDialog struct {
 	*tview.Box
 	layout        *tview.Flex
@@ -49,7 +49,7 @@ type ContainerCommitDialog struct {
 	focusElement  int
 }
 
-// NewContainerCommitDialog returns new container commit dialog primitive
+// NewContainerCommitDialog returns new container commit dialog primitive.
 func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog := &ContainerCommitDialog{
 		Box:     tview.NewBox(),
@@ -71,7 +71,8 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	labelWidth := 9
 
 	// container info input field
-	cntInfoLabel := "CONTAINER ID:"
+	cntInfoLabel := "CONTAINER ID:" //nolint:goconst
+
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
 	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
@@ -89,6 +90,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 
 	// author field
 	authorLabel := "author:"
+
 	dialog.author.SetBackgroundColor(style.DialogBgColor)
 	dialog.author.SetLabelColor(style.DialogFgColor)
 	dialog.author.SetLabel(authorLabel)
@@ -110,7 +112,8 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.format.SetBackgroundColor(style.DialogBgColor)
 	dialog.format.SetOptions([]string{
 		define.OCI,
-		define.DOCKER},
+		define.DOCKER,
+	},
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
@@ -124,6 +127,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 
 	// pause checkbox
 	pauseLabel := "pause container:"
+
 	dialog.pause.SetBackgroundColor(style.DialogBgColor)
 	dialog.pause.SetLabelColor(style.DialogFgColor)
 	dialog.pause.SetLabel(pauseLabel)
@@ -132,6 +136,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 
 	// squash checkbox
 	squashLabel := "squash layers:"
+
 	dialog.squash.SetBackgroundColor(style.DialogBgColor)
 	dialog.squash.SetLabelColor(style.DialogFgColor)
 	dialog.squash.SetLabel(squashLabel)
@@ -149,7 +154,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	iaLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	iaLayout.SetBackgroundColor(style.DialogBgColor)
 	iaLayout.AddItem(dialog.image, 0, 1, true)
-	iaLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 2, 0, false)
+	iaLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 2, 0, false) //nolint:gomnd
 	iaLayout.AddItem(dialog.author, 0, 1, true)
 
 	// dropdown and checkbox layout row
@@ -189,20 +194,21 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	dialog.Hide()
+
 	return dialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ContainerCommitDialog) Display() {
 	d.display = true
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ContainerCommitDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ContainerCommitDialog) Hide() {
 	d.display = false
 	d.focusElement = cntCommitImageFocus
@@ -216,27 +222,32 @@ func (d *ContainerCommitDialog) Hide() {
 	d.SetContainerInfo("", "")
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (d *ContainerCommitDialog) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (d *ContainerCommitDialog) HasFocus() bool { //nolint:cyclop
 	if d.image.HasFocus() || d.author.HasFocus() {
 		return true
 	}
+
 	if d.change.HasFocus() || d.format.HasFocus() {
 		return true
 	}
+
 	if d.pause.HasFocus() || d.squash.HasFocus() {
 		return true
 	}
+
 	if d.message.HasFocus() || d.form.HasFocus() {
 		return true
 	}
+
 	if d.layout.HasFocus() || d.Box.HasFocus() {
 		return true
 	}
+
 	return false
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ContainerCommitDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	case cntCommitImageFocus:
@@ -258,74 +269,97 @@ func (d *ContainerCommitDialog) Focus(delegate func(p tview.Primitive)) {
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == utils.SwitchFocusKey.Key {
 				d.focusElement = cntCommitImageFocus
+
 				d.Focus(delegate)
 				d.form.SetFocus(0)
+
 				return nil
 			}
+
 			return event
 		})
+
 		delegate(d.form)
 	}
 }
 
-// InputHandler returns input handler function for this primitive
-func (d *ContainerCommitDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+// InputHandler returns input handler function for this primitive.
+func (d *ContainerCommitDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container commit dialog: event %v received", event)
+
 		if event.Key() == utils.SwitchFocusKey.Key {
 			d.setFocusElement()
 		}
+
 		// dropdown widgets shall handle events before "Esc" key handler
 		if d.format.HasFocus() {
 			event = utils.ParseKeyEventKey(event)
 			if formatHandler := d.format.InputHandler(); formatHandler != nil {
 				formatHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
+
 			return
 		}
+
 		if d.image.HasFocus() {
 			if imageHandler := d.image.InputHandler(); imageHandler != nil {
 				imageHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.author.HasFocus() {
 			if authorHandler := d.author.InputHandler(); authorHandler != nil {
 				authorHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.change.HasFocus() {
 			if changeHandler := d.change.InputHandler(); changeHandler != nil {
 				changeHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.message.HasFocus() {
 			if messageHandler := d.message.InputHandler(); messageHandler != nil {
 				messageHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.pause.HasFocus() {
 			if pauseHandler := d.pause.InputHandler(); pauseHandler != nil {
 				pauseHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.squash.HasFocus() {
 			if squashHandler := d.squash.InputHandler(); squashHandler != nil {
 				squashHandler(event, setFocus)
+
 				return
 			}
 		}
+
 		if d.form.HasFocus() {
 			if formHandler := d.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
+
 				return
 			}
 		}
@@ -353,16 +387,15 @@ func (d *ContainerCommitDialog) setFocusElement() {
 
 // SetRect set rects for this primitive.
 func (d *ContainerCommitDialog) SetRect(x, y, width, height int) {
-
 	if width > cntCommitDialogMaxWidth {
-		emptySpace := (width - cntCommitDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - cntCommitDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = cntCommitDialogMaxWidth
 	}
 
 	if height > cntCommitDialogMaxHeight {
-		emptySpace := (height - cntCommitDialogMaxHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - cntCommitDialogMaxHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = cntCommitDialogMaxHeight
 	}
 
@@ -374,35 +407,43 @@ func (d *ContainerCommitDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
+
 	x, y, width, height := d.Box.GetInnerRect()
+
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
 
-// SetCommitFunc sets form commit button selected function
+// SetCommitFunc sets form commit button selected function.
 func (d *ContainerCommitDialog) SetCommitFunc(handler func()) *ContainerCommitDialog {
 	d.commitHandler = handler
 	commitButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
 	commitButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetCancelFunc sets form cancel button selected function
+// SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCommitDialog) SetCancelFunc(handler func()) *ContainerCommitDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2)
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+
 	cancelButton.SetSelectedFunc(handler)
+
 	return d
 }
 
-// SetContainerInfo sets selected container ID and name in commit dialog
+// SetContainerInfo sets selected container ID and name in commit dialog.
 func (d *ContainerCommitDialog) SetContainerInfo(id string, name string) {
 	containerInfo := fmt.Sprintf("%s (%s)", id, name)
+
 	d.cntInfo.SetText(containerInfo)
 }
 
-// GetContainerCommitOptions returns container commit options based on user inputs
+// GetContainerCommitOptions returns container commit options based on user inputs.
 func (d *ContainerCommitDialog) GetContainerCommitOptions() containers.CntCommitOptions {
 	var opts containers.CntCommitOptions
 
@@ -410,12 +451,14 @@ func (d *ContainerCommitDialog) GetContainerCommitOptions() containers.CntCommit
 	opts.Author = strings.TrimSpace(d.author.GetText())
 	opts.Changes = strings.Split(d.change.GetText(), " ")
 	_, format := d.format.GetCurrentOption()
+
 	switch format {
 	case "oci":
 		opts.Format = define.OCIv1ImageManifest
 	case "docker":
 		opts.Format = define.Dockerv2ImageManifest
 	}
+
 	opts.Pause = d.pause.IsChecked()
 	opts.Squash = d.squash.IsChecked()
 	opts.Message = strings.TrimSpace(d.message.GetText())
