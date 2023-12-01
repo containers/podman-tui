@@ -11,8 +11,8 @@ import (
 )
 
 func (img *Images) refresh() {
-
 	img.table.Clear()
+
 	expand := 1
 	alignment := tview.AlignLeft
 
@@ -25,47 +25,51 @@ func (img *Images) refresh() {
 				SetAlign(tview.AlignLeft).
 				SetSelectable(false))
 	}
+
 	rowIndex := 1
 	images := img.getData()
 
 	img.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(img.title), len(images)))
+
 	for i := 0; i < len(images); i++ {
 		repo := images[i].Repository
 		tag := images[i].Tag
 		imgID := images[i].ID
 		imgIDString := imgID
+
 		if len(imgID) > utils.IDLength {
 			imgIDString = imgIDString[:utils.IDLength]
 		}
+
 		size := putils.SizeToStr(images[i].Size)
 		created := putils.CreatedToStr(images[i].Created)
 
 		// repository name column
-		img.table.SetCell(rowIndex, 0,
+		img.table.SetCell(rowIndex, viewImageRepoNameColIndex,
 			tview.NewTableCell(repo).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// tag column
-		img.table.SetCell(rowIndex, 1,
+		img.table.SetCell(rowIndex, viewImageTagColIndex,
 			tview.NewTableCell(tag).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// id column
-		img.table.SetCell(rowIndex, 2,
+		img.table.SetCell(rowIndex, viewImageIDColIndex,
 			tview.NewTableCell(imgIDString).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// created at column
-		img.table.SetCell(rowIndex, 3,
+		img.table.SetCell(rowIndex, viewImageCreatedAtColIndex,
 			tview.NewTableCell(created).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// size column
-		img.table.SetCell(rowIndex, 4,
+		img.table.SetCell(rowIndex, viewImageSizeColIndex,
 			tview.NewTableCell(size).
 				SetExpansion(expand).
 				SetAlign(alignment))

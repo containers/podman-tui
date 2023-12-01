@@ -1,6 +1,7 @@
 package images
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -9,11 +10,31 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/images/imgdialogs"
 	"github.com/containers/podman-tui/ui/style"
-
 	"github.com/rivo/tview"
 )
 
-// Images implements the images primitive
+const (
+	viewImageRepoNameColIndex = 0 + iota
+	viewImageTagColIndex
+	viewImageIDColIndex
+	viewImageCreatedAtColIndex
+	viewImageSizeColIndex
+)
+
+var (
+	errNoImageToTree       = errors.New("here is no image to display tree")
+	errNoImageToUntag      = errors.New("here is no image to untag")
+	errNoImageToTag        = errors.New("here is no image to tag")
+	errNoImageToSave       = errors.New("here is no image to save")
+	errNoImageToPush       = errors.New("here is no image to push")
+	errNoImageToHistory    = errors.New("here is no image to display history")
+	errNoImageToDiff       = errors.New("here is no image to display diff")
+	errNoImageToRemove     = errors.New("there is no image to remove")
+	errNoImageToInspect    = errors.New("there is no image to display inspect")
+	errNoBuildDirOrCntFile = errors.New("both context directory path and container files fields are empty")
+)
+
+// Images implements the images primitive.
 type Images struct {
 	*tview.Box
 	title           string
@@ -44,7 +65,7 @@ type imageListReport struct {
 	report []images.ImageListReporter
 }
 
-// NewImages returns images page view
+// NewImages returns images page view.
 func NewImages() *Images {
 	images := &Images{
 		Box:            tview.NewBox(),
@@ -134,9 +155,11 @@ func NewImages() *Images {
 			images.remove()
 		}
 	})
+
 	images.confirmDialog.SetCancelFunc(func() {
 		images.confirmDialog.Hide()
 	})
+
 	// set history dialogs functions
 	images.historyDialog.SetCancelFunc(func() {
 		images.historyDialog.Hide()
@@ -146,13 +169,16 @@ func NewImages() *Images {
 	images.searchDialog.SetCancelFunc(func() {
 		images.searchDialog.Hide()
 	})
+
 	images.searchDialog.SetSearchFunc(func() {
 		term := images.searchDialog.GetSearchText()
 		if term == "" {
 			return
 		}
+
 		images.search(term)
 	})
+
 	images.searchDialog.SetPullFunc(func() {
 		name := images.searchDialog.GetSelectedItem()
 		images.pull(name)
@@ -180,123 +206,158 @@ func NewImages() *Images {
 	return images
 }
 
-// GetTitle returns primitive title
+// GetTitle returns primitive title.
 func (img *Images) GetTitle() string {
 	return img.title
 }
 
-// HasFocus returns whether or not this primitive has focus
-func (img *Images) HasFocus() bool {
+// HasFocus returns whether or not this primitive has focus.
+func (img *Images) HasFocus() bool { //nolint:cyclop
 	if img.table.HasFocus() || img.messageDialog.HasFocus() {
 		return true
 	}
+
 	if img.cmdDialog.HasFocus() || img.cmdInputDialog.HasFocus() {
 		return true
 	}
+
 	if img.confirmDialog.HasFocus() || img.errorDialog.HasFocus() {
 		return true
 	}
+
 	if img.searchDialog.HasFocus() || img.progressDialog.HasFocus() {
 		return true
 	}
+
 	if img.historyDialog.HasFocus() || img.buildDialog.HasFocus() {
 		return true
 	}
+
 	if img.buildPrgDialog.HasFocus() || img.saveDialog.HasFocus() {
 		return true
 	}
+
 	if img.importDialog.HasFocus() || img.pushDialog.HasFocus() {
 		return true
 	}
+
 	return img.Box.HasFocus()
 }
 
-// SubDialogHasFocus returns whether or not sub dialog primitive has focus
-func (img *Images) SubDialogHasFocus() bool {
+// SubDialogHasFocus returns whether or not sub dialog primitive has focus.
+func (img *Images) SubDialogHasFocus() bool { //nolint:cyclop
 	if img.historyDialog.HasFocus() || img.messageDialog.HasFocus() {
 		return true
 	}
+
 	if img.cmdDialog.HasFocus() || img.cmdInputDialog.HasFocus() {
 		return true
 	}
+
 	if img.confirmDialog.HasFocus() || img.errorDialog.HasFocus() {
 		return true
 	}
+
 	if img.searchDialog.HasFocus() || img.progressDialog.HasFocus() {
 		return true
 	}
+
 	if img.buildDialog.HasFocus() || img.buildPrgDialog.HasFocus() {
 		return true
 	}
+
 	if img.saveDialog.HasFocus() || img.importDialog.HasFocus() {
 		return true
 	}
+
 	return img.pushDialog.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
-func (img *Images) Focus(delegate func(p tview.Primitive)) {
-
+// Focus is called when this primitive receives focus.
+func (img *Images) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	// error dialog
 	if img.errorDialog.IsDisplay() {
 		delegate(img.errorDialog)
+
 		return
 	}
+
 	// command dialog
 	if img.cmdDialog.IsDisplay() {
 		delegate(img.cmdDialog)
+
 		return
 	}
+
 	// command input dialog
 	if img.cmdInputDialog.IsDisplay() {
 		delegate(img.cmdInputDialog)
+
 		return
 	}
+
 	// message dialog
 	if img.messageDialog.IsDisplay() {
 		delegate(img.messageDialog)
+
 		return
 	}
+
 	// confirm dialog
 	if img.confirmDialog.IsDisplay() {
 		delegate(img.confirmDialog)
+
 		return
 	}
+
 	// search dialog
 	if img.searchDialog.IsDisplay() {
 		delegate(img.searchDialog)
+
 		return
 	}
+
 	// history dialog
 	if img.historyDialog.IsDisplay() {
 		delegate(img.historyDialog)
+
 		return
 	}
+
 	// build dialog
 	if img.buildDialog.IsDisplay() {
 		delegate(img.buildDialog)
+
 		return
 	}
+
 	// build progress dialog
 	if img.buildPrgDialog.IsDisplay() {
 		delegate(img.buildPrgDialog)
+
 		return
 	}
+
 	// save dialog
 	if img.saveDialog.IsDisplay() {
 		delegate(img.saveDialog)
+
 		return
 	}
 	// import dialog
 	if img.importDialog.IsDisplay() {
 		delegate(img.importDialog)
+
 		return
 	}
+
 	// push dialog
 	if img.pushDialog.IsDisplay() {
 		delegate(img.pushDialog)
+
 		return
 	}
+
 	delegate(img.table)
 }
 
@@ -304,58 +365,72 @@ func (img *Images) getSelectedItem() (string, string) {
 	if img.table.GetRowCount() <= 1 {
 		return "", ""
 	}
+
 	row, _ := img.table.GetSelection()
 	imageRepo := img.table.GetCell(row, 0).Text
 	imageTag := img.table.GetCell(row, 1).Text
 	imageName := imageRepo + ":" + imageTag
-	imageID := img.table.GetCell(row, 2).Text
+	imageID := img.table.GetCell(row, 2).Text //nolint:gomnd
+
 	return imageID, imageName
 }
 
-// HideAllDialogs hides all sub dialogs
-func (img *Images) HideAllDialogs() {
+// HideAllDialogs hides all sub dialogs.
+func (img *Images) HideAllDialogs() { //nolint:cyclop
 	if img.errorDialog.IsDisplay() {
 		img.errorDialog.Hide()
 	}
+
 	if img.progressDialog.IsDisplay() {
 		img.progressDialog.Hide()
 	}
+
 	if img.cmdDialog.IsDisplay() {
 		img.cmdDialog.Hide()
 	}
+
 	if img.cmdInputDialog.IsDisplay() {
 		img.cmdInputDialog.Hide()
 	}
+
 	if img.messageDialog.IsDisplay() {
 		img.messageDialog.Hide()
 	}
+
 	if img.searchDialog.IsDisplay() {
 		img.searchDialog.Hide()
 	}
+
 	if img.confirmDialog.IsDisplay() {
 		img.confirmDialog.Hide()
 	}
+
 	if img.historyDialog.IsDisplay() {
 		img.historyDialog.Hide()
 	}
+
 	if img.buildDialog.IsDisplay() {
 		img.buildDialog.Hide()
 	}
+
 	if img.buildPrgDialog.IsDisplay() {
 		img.buildPrgDialog.Hide()
 	}
+
 	if img.saveDialog.IsDisplay() {
 		img.saveDialog.Hide()
 	}
+
 	if img.importDialog.IsDisplay() {
 		img.importDialog.Hide()
 	}
+
 	if img.pushDialog.IsDisplay() {
 		img.pushDialog.Hide()
 	}
 }
 
-// SetFastRefreshChannel sets channel for fastRefresh func
+// SetFastRefreshChannel sets channel for fastRefresh func.
 func (img *Images) SetFastRefreshChannel(refresh chan bool) {
 	img.fastRefreshChan = refresh
 }

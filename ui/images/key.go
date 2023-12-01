@@ -8,12 +8,14 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,gocyclo,lll,cyclop
 	return img.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: images event %v received", event)
+
 		if img.progressDialog.IsDisplay() {
 			return
 		}
+
 		// error dialog handler
 		if img.errorDialog.HasFocus() || img.errorDialog.IsDisplay() {
 			if errorDialogHandler := img.errorDialog.InputHandler(); errorDialogHandler != nil {
@@ -21,6 +23,7 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 				setFocus(img.errorDialog)
 			}
 		}
+
 		// message dialog handler
 		if img.messageDialog.HasFocus() || img.messageDialog.IsDisplay() {
 			if messageDialogHandler := img.messageDialog.InputHandler(); messageDialogHandler != nil {
@@ -99,19 +102,28 @@ func (img *Images) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 		}
 
 		// table handlers
-		if img.table.HasFocus() {
+		if img.table.HasFocus() { //nolint:nestif
 			img.selectedID, img.selectedName = img.getSelectedItem()
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if img.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
+
 				img.cmdDialog.Display()
-			} else if event.Key() == utils.DeleteKey.EventKey() {
+				setFocus(img)
+
+				return
+			}
+
+			if event.Key() == utils.DeleteKey.EventKey() {
 				img.rm()
-			} else {
-				if tableHandler := img.table.InputHandler(); tableHandler != nil {
-					tableHandler(event, setFocus)
-				}
+				setFocus(img)
+
+				return
+			}
+
+			if tableHandler := img.table.InputHandler(); tableHandler != nil {
+				tableHandler(event, setFocus)
 			}
 		}
 

@@ -18,7 +18,7 @@ const (
 	buildPrgDialogHeight   = 20
 )
 
-// ImageBuildProgressDialog implements build progress dialog primitive
+// ImageBuildProgressDialog implements build progress dialog primitive.
 type ImageBuildProgressDialog struct {
 	*tview.Box
 	layout             *tview.Flex
@@ -31,7 +31,7 @@ type ImageBuildProgressDialog struct {
 	fastRefreshHandler func()
 }
 
-// NewImageBuildProgressDialog returns new build progress dialog
+// NewImageBuildProgressDialog returns new build progress dialog.
 func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	buildPrgDialog := &ImageBuildProgressDialog{
 		Box:         tview.NewBox(),
@@ -39,6 +39,7 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 		output:      tview.NewTextView(),
 		progressBar: tvxwidgets.NewActivityModeGauge(),
 	}
+
 	bgColor := style.DialogBgColor
 	outputBgColor := style.TerminalBgColor
 	outputFgColor := style.TerminalFgColor
@@ -62,7 +63,7 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	buildPrgDialog.layout.SetBorder(true)
 	buildPrgDialog.layout.SetBorderColor(style.DialogBorderColor)
 	buildPrgDialog.layout.SetTitle("PODMAN IMAGE BUILD")
-	buildPrgDialog.layout.AddItem(buildPrgDialog.progressBar, 3, 0, false)
+	buildPrgDialog.layout.AddItem(buildPrgDialog.progressBar, 3, 0, false) //nolint:gomnd
 
 	outputLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	outputLayout.AddItem(utils.EmptyBoxSpace(outputBgColor), 1, 0, false)
@@ -73,20 +74,21 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	return buildPrgDialog
 }
 
-// Display displays this primitive
+// Display displays this primitive.
 func (d *ImageBuildProgressDialog) Display() {
 	d.display = true
 	d.cancelChan = make(chan bool)
-	d.writerChan = make(chan []byte, 100)
+	d.writerChan = make(chan []byte, 100) //nolint:gomnd
+
 	go d.outputReaderLoop()
 }
 
-// IsDisplay returns true if primitive is shown
+// IsDisplay returns true if primitive is shown.
 func (d *ImageBuildProgressDialog) IsDisplay() bool {
 	return d.display
 }
 
-// Hide stops displaying this primitive
+// Hide stops displaying this primitive.
 func (d *ImageBuildProgressDialog) Hide() {
 	d.display = false
 	d.cancelChan <- true
@@ -95,39 +97,38 @@ func (d *ImageBuildProgressDialog) Hide() {
 	d.progressBar.Reset()
 }
 
-// HasFocus returns whether or not this primitive has focus
+// HasFocus returns whether or not this primitive has focus.
 func (d *ImageBuildProgressDialog) HasFocus() bool {
 	if d.layout.HasFocus() || d.output.HasFocus() {
 		return true
 	}
+
 	return d.Box.HasFocus()
 }
 
-// Focus is called when this primitive receives focus
+// Focus is called when this primitive receives focus.
 func (d *ImageBuildProgressDialog) Focus(delegate func(p tview.Primitive)) {
 	delegate(d.layout)
 }
 
-// InputHandler returns input handler function for this primitive
+// InputHandler returns input handler function for this primitive.
 func (d *ImageBuildProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image build progress dialog: event %v received", event)
-
 	})
 }
 
 // SetRect set rects for this primitive.
 func (d *ImageBuildProgressDialog) SetRect(x, y, width, height int) {
-
 	if width > buildPrgDialogMaxWidth {
-		emptySpace := (width - buildPrgDialogMaxWidth) / 2
-		x = x + emptySpace
+		emptySpace := (width - buildPrgDialogMaxWidth) / 2 //nolint:gomnd
+		x += emptySpace
 		width = buildPrgDialogMaxWidth
 	}
 
 	if height > buildPrgDialogHeight {
-		emptySpace := (height - buildPrgDialogHeight) / 2
-		y = y + emptySpace
+		emptySpace := (height - buildPrgDialogHeight) / 2 //nolint:gomnd
+		y += emptySpace
 		height = buildPrgDialogHeight
 	}
 
@@ -139,6 +140,7 @@ func (d *ImageBuildProgressDialog) Draw(screen tcell.Screen) {
 	if !d.display {
 		return
 	}
+
 	d.Box.DrawForSubclass(screen, d)
 	x, y, width, height := d.Box.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
@@ -147,7 +149,9 @@ func (d *ImageBuildProgressDialog) Draw(screen tcell.Screen) {
 
 func (d *ImageBuildProgressDialog) outputReaderLoop() {
 	tick := time.NewTicker(utils.RefreshInterval)
+
 	log.Debug().Msg("image build progress dialog: output reader started")
+
 	for {
 		select {
 		case <-tick.C:
@@ -156,23 +160,24 @@ func (d *ImageBuildProgressDialog) outputReaderLoop() {
 			log.Debug().Msg("image build progress dialog: output reader stopped")
 			close(d.cancelChan)
 			tick.Stop()
+
 			return
 		case data := <-d.writerChan:
 			d.mu.Lock()
-			d.output.Write(data)
+			d.output.Write(data) //nolint:errcheck
 			d.mu.Unlock()
 			d.fastRefreshHandler()
 		}
 	}
 }
 
-// LogWriter returns output log writer
-func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser {
+// LogWriter returns output log writer.
+func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser { //nolint:ireturn
 	return channel.NewWriter(d.writerChan)
 }
 
 // SetFastRefreshHandler sets fast refresh handler
-// fast refresh is used to print image build output as fast as possible
+// fast refresh is used to print image build output as fast as possible.
 func (d *ImageBuildProgressDialog) SetFastRefreshHandler(handler func()) {
 	d.fastRefreshHandler = handler
 }
