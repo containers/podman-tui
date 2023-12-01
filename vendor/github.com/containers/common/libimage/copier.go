@@ -1,3 +1,6 @@
+//go:build !remote
+// +build !remote
+
 package libimage
 
 import (
@@ -11,6 +14,7 @@ import (
 	"time"
 
 	"github.com/containers/common/libimage/manifests"
+	"github.com/containers/common/libimage/platform"
 	"github.com/containers/common/pkg/config"
 	"github.com/containers/common/pkg/retry"
 	"github.com/containers/image/v5/copy"
@@ -72,7 +76,7 @@ type CopyOptions struct {
 	// Default 3.
 	MaxRetries *uint
 	// RetryDelay used for the exponential back off of MaxRetries.
-	// Default 1 time.Scond.
+	// Default 1 time.Second.
 	RetryDelay *time.Duration
 	// ManifestMIMEType is the desired media type the image will be
 	// converted to if needed.  Note that it must contain the exact MIME
@@ -239,7 +243,7 @@ func (r *Runtime) newCopier(options *CopyOptions) (*copier, error) {
 
 	c.systemContext.DockerArchiveAdditionalTags = options.dockerArchiveAdditionalTags
 
-	c.systemContext.OSChoice, c.systemContext.ArchitectureChoice, c.systemContext.VariantChoice = NormalizePlatform(options.OS, options.Architecture, options.Variant)
+	c.systemContext.OSChoice, c.systemContext.ArchitectureChoice, c.systemContext.VariantChoice = platform.Normalize(options.OS, options.Architecture, options.Variant)
 
 	if options.SignaturePolicyPath != "" {
 		c.systemContext.SignaturePolicyPath = options.SignaturePolicyPath
@@ -360,7 +364,11 @@ func (c *copier) copy(ctx context.Context, source, destination types.ImageRefere
 		defer cancel()
 		defer timer.Stop()
 
-		fmt.Fprintf(c.imageCopyOptions.ReportWriter, "Pulling image %s inside systemd: setting pull timeout to %s\n", source.DockerReference(), time.Duration(numExtensions)*extension)
+		fmt.Fprintf(c.imageCopyOptions.ReportWriter,
+			"Pulling image %s inside systemd: setting pull timeout to %s\n",
+			source.StringWithinTransport(),
+			time.Duration(numExtensions)*extension,
+		)
 
 		// From `man systemd.service(5)`:
 		//
