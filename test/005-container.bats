@@ -6,7 +6,46 @@
 load helpers
 load helpers_tui
 
-@test "container create" {
+@test "container create (privileged, timeout, remove)" {
+    podman container rm -f $TEST_CONTAINER_NAME || echo done
+
+    httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
+    if [ "${httpd_image}" == "" ] ; then
+        podman image pull docker.io/library/httpd
+    fi
+
+    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
+
+    # switch to containers view
+    # select create command from container commands dialog
+    podman_tui_set_view "containers"
+    podman_tui_select_container_cmd "create"
+
+    # fillout name field
+    # select image from dropdown widget
+    # select privileged
+    # set timeout to 10
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
+    podman_tui_send_inputs "Down"
+    podman_tui_select_item $image_index
+    podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Space" "Tab" "Space" "Tab" "$TEST_CONTAINER_TIMEOUT"
+    podman_tui_send_inputs "Tab" "Tab"
+    sleep 2
+    podman_tui_send_inputs "Enter"
+    sleep 3
+
+    cnt_status=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .State.Status }}")
+    cnt_annotations=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Annotations }}")
+    cnt_timeout=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Timeout }}")
+
+    assert "$cnt_status" =~ "created" "expected container status to be: created"
+    assert "$cnt_annotations" =~ '"io.podman.annotations.autoremove":"TRUE"' "expected container annotations to include: io.podman.annotations.autoremove:TRUE"
+    assert "$cnt_annotations" =~ '"io.podman.annotations.autoremove":"TRUE"' "expected container annotations to include: io.podman.annotations.privileged:TRUE"
+    assert "$cnt_timeout" =~ "$TEST_CONTAINER_TIMEOUT" "expected container config timeout to be: $TEST_CONTAINER_TIMEOUT"
+}
+
+@test "container create (pod, network, volume, security options, health)" {
     podman pod rm -f $TEST_CONTAINER_POD_NAME || echo done
     podman container rm -f $TEST_CONTAINER_NAME || echo done
     podman container rm -f ${TEST_CONTAINER_NAME}_renamed || echo done
@@ -14,11 +53,6 @@ load helpers_tui
     podman volume rm $TEST_CONTAINER_VOLUME_NAME || echo done
 
     [ ! -d "${TEST_CONTAINER_MOUNT_SOURCE}" ] && mkdir $TEST_CONTAINER_MOUNT_SOURCE
-
-    httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
-    if [ "${httpd_image}" == "" ] ; then
-        podman image pull docker.io/library/httpd
-    fi
 
     podman network create $TEST_CONTAINER_NETWORK_NAME || echo done
     podman volume create $TEST_CONTAINER_VOLUME_NAME || echo done
@@ -47,7 +81,7 @@ load helpers_tui
     podman_tui_send_inputs "Down"
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
-    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep 1
     podman_tui_send_inputs "Tab"
     sleep 1
