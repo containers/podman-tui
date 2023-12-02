@@ -9,12 +9,12 @@ load helpers_tui
 @test "container create (privileged, timeout, remove)" {
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
-    httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
-    if [ "${httpd_image}" == "" ] ; then
-        podman image pull docker.io/library/httpd
+    buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
+    if [ "${buysbox_image}" == "" ] ; then
+        podman image pull docker.io/library/busybox
     fi
 
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
+    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
 
     # switch to containers view
     # select create command from container commands dialog
@@ -39,13 +39,62 @@ load helpers_tui
     cnt_annotations=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Annotations }}")
     cnt_timeout=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Timeout }}")
 
-    assert "$cnt_status" =~ "created" "expected container status to be: created"
+    assert "$cnt_status" =~ "created" "expected container status to match: created"
     assert "$cnt_annotations" =~ '"io.podman.annotations.autoremove":"TRUE"' "expected container annotations to include: io.podman.annotations.autoremove:TRUE"
     assert "$cnt_annotations" =~ '"io.podman.annotations.autoremove":"TRUE"' "expected container annotations to include: io.podman.annotations.privileged:TRUE"
-    assert "$cnt_timeout" =~ "$TEST_CONTAINER_TIMEOUT" "expected container config timeout to be: $TEST_CONTAINER_TIMEOUT"
+    assert "$cnt_timeout" =~ "$TEST_CONTAINER_TIMEOUT" "expected container config timeout to match: $TEST_CONTAINER_TIMEOUT"
+}
+
+@test "container create (environment page)" {
+    podman container rm -f $TEST_CONTAINER_NAME || echo done
+
+    buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
+    if [ "${buysbox_image}" == "" ] ; then
+        podman image pull docker.io/library/busybox
+    fi
+
+    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
+
+    # switch to containers view
+    # select create command from container commands dialog
+    podman_tui_set_view "containers"
+    podman_tui_select_container_cmd "create"
+
+    # fillout name field
+    # select image from dropdown widget
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
+    podman_tui_send_inputs "Down"
+    podman_tui_select_item $image_index
+    podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
+    sleep 2
+
+    # switch to environmen page
+    podman_tui_send_inputs "Down" "Tab"
+    podman_tui_send_inputs "$TEST_CONTAINER_WORKDIR" "Tab"
+    podman_tui_send_inputs "$TEST_CONTAINER_ENV1" "Space" "$TEST_CONTAINER_ENV2"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "$TEST_CONTAINER_UMASK"
+    podman_tui_send_inputs "Tab" "Tab"
+    sleep 2
+    podman_tui_send_inputs "Enter"
+    sleep 3
+
+    cnt_workdir=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.WorkingDir }}")
+    cnt_vars=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Env }}")
+    cnt_umask=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .Config.Umask }}")
+
+    assert "$cnt_workdir" =~ "$TEST_CONTAINER_WORKDIR" "expected container work dir to match: $TEST_CONTAINER_WORKDIR"
+    assert "$cnt_umask" =~ "$TEST_CONTAINER_UMASK" "expected container umask to match: $TEST_CONTAINER_UMASK"
+    assert "$cnt_vars" =~ "$TEST_CONTAINER_ENV1" "expected container env to match: $TEST_CONTAINER_ENV1"
+    assert "$cnt_vars" =~ "$TEST_CONTAINER_ENV2" "expected container env to match: $TEST_CONTAINER_ENV2"
 }
 
 @test "container create (pod, network, volume, security options, health)" {
+    httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
+    if [ "${httpd_image}" == "" ] ; then
+        podman image pull docker.io/library/httpd
+    fi
+
     podman pod rm -f $TEST_CONTAINER_POD_NAME || echo done
     podman container rm -f $TEST_CONTAINER_NAME || echo done
     podman container rm -f ${TEST_CONTAINER_NAME}_renamed || echo done
@@ -87,7 +136,7 @@ load helpers_tui
     sleep 1
 
     # switch to "health check"  create view
-    podman_tui_send_inputs "Down" "Down" "Tab"
+    podman_tui_send_inputs "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs $TEST_CONTAINER_HEALTH_CMD "Tab" "Tab"
     podman_tui_send_inputs "Enter" "Down" "Down" "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab"
@@ -239,7 +288,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
 
-    sleep 5
+    sleep 8
     run_helper podman container ls --all --format "{{ .Names }}"
     assert "$output" =~ "${TEST_CONTAINER_CHECKPOINT_NAME}_restore" "expected container to be restored"
 }

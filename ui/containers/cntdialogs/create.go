@@ -33,13 +33,21 @@ const (
 	createContainerLabelsFieldFocus
 	createContainerRemoveFieldFocus
 	createContainerPrivilegedFieldFocus
-	createContainerTimeoutFocus
-	createContainerSelinuxLabelFieldFocus
+	createContainerTimeoutFieldFocus
+	createContainerEnvHostFieldFocus
+	createContainerEnvVarsFieldFocus
+	createContainerEnvFileFieldFocus
+	createContainerEnvMergeFieldFocus
+	createContainerWorkDirFieldFocus
+	createContainerUmaskFieldFocus
+	createContainerUnsetEnvFieldFocus
+	createContainerUnsetEnvAllFieldFocus
+	createcontainerSecLabelFieldFocus
 	createContainerApprarmorFieldFocus
 	createContainerSeccompFeildFocus
-	createContainerMaskFieldFocus
-	createContainerUnmaskFieldFocus
-	createContainerNoNewPrivFieldFocus
+	createcontainerSecMaskFieldFocus
+	createcontainerSecUnmaskFieldFocus
+	createcontainerSecNoNewPrivFieldFocus
 	createContainerPortExposeFieldFocus
 	createContainerPortPublishFieldFocus
 	createContainerPortPublishAllFieldFocus
@@ -68,6 +76,7 @@ const (
 
 const (
 	containerInfoPageIndex = 0 + iota
+	environmentPageIndex
 	dnsPageIndex
 	healthPageIndex
 	networkingPageIndex
@@ -84,6 +93,7 @@ type ContainerCreateDialog struct {
 	categories                          *tview.TextView
 	categoryPages                       *tview.Pages
 	containerInfoPage                   *tview.Flex
+	environmentPage                     *tview.Flex
 	securityOptsPage                    *tview.Flex
 	portPage                            *tview.Flex
 	networkingPage                      *tview.Flex
@@ -103,12 +113,20 @@ type ContainerCreateDialog struct {
 	containerRemoveField                *tview.Checkbox
 	containerPrivilegedField            *tview.Checkbox
 	containerTimeoutField               *tview.InputField
-	containerSelinuxLabelField          *tview.InputField
-	containerApparmorField              *tview.InputField
+	containerWorkDirField               *tview.InputField
+	containerEnvHostField               *tview.Checkbox
+	containerEnvVarsField               *tview.InputField
+	containerEnvFileField               *tview.InputField
+	containerEnvMergeField              *tview.InputField
+	containerUmaskField                 *tview.InputField
+	containerUnsetEnvField              *tview.InputField
+	containerUnsetEnvAllField           *tview.Checkbox
+	containerSecLabelField              *tview.InputField
+	containerSecApparmorField           *tview.InputField
 	containerSeccompField               *tview.InputField
-	containerMaskField                  *tview.InputField
-	containerUnmaskField                *tview.InputField
-	containerNoNewPrivField             *tview.Checkbox
+	containerSecMaskField               *tview.InputField
+	containerSecUnmaskField             *tview.InputField
+	containerSecNoNewPrivField          *tview.Checkbox
 	containerPortExposeField            *tview.InputField
 	containerPortPublishField           *tview.InputField
 	ContainerPortPublishAllField        *tview.Checkbox
@@ -145,6 +163,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		categories:        tview.NewTextView(),
 		categoryPages:     tview.NewPages(),
 		containerInfoPage: tview.NewFlex(),
+		environmentPage:   tview.NewFlex(),
 		securityOptsPage:  tview.NewFlex(),
 		networkingPage:    tview.NewFlex(),
 		dnsPage:           tview.NewFlex(),
@@ -154,6 +173,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		form:              tview.NewForm(),
 		categoryLabels: []string{
 			"Container",
+			"Environment",
 			"DNS Settings",
 			"Health check",
 			"Network Settings",
@@ -170,12 +190,20 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerRemoveField:                tview.NewCheckbox(),
 		containerPrivilegedField:            tview.NewCheckbox(),
 		containerTimeoutField:               tview.NewInputField(),
-		containerSelinuxLabelField:          tview.NewInputField(),
-		containerApparmorField:              tview.NewInputField(),
+		containerWorkDirField:               tview.NewInputField(),
+		containerEnvHostField:               tview.NewCheckbox(),
+		containerEnvVarsField:               tview.NewInputField(),
+		containerEnvFileField:               tview.NewInputField(),
+		containerEnvMergeField:              tview.NewInputField(),
+		containerUmaskField:                 tview.NewInputField(),
+		containerUnsetEnvField:              tview.NewInputField(),
+		containerUnsetEnvAllField:           tview.NewCheckbox(),
+		containerSecLabelField:              tview.NewInputField(),
+		containerSecApparmorField:           tview.NewInputField(),
 		containerSeccompField:               tview.NewInputField(),
-		containerMaskField:                  tview.NewInputField(),
-		containerUnmaskField:                tview.NewInputField(),
-		containerNoNewPrivField:             tview.NewCheckbox(),
+		containerSecMaskField:               tview.NewInputField(),
+		containerSecUnmaskField:             tview.NewInputField(),
+		containerSecNoNewPrivField:          tview.NewCheckbox(),
 		containerPortExposeField:            tview.NewInputField(),
 		containerPortPublishField:           tview.NewInputField(),
 		ContainerPortPublishAllField:        tview.NewCheckbox(),
@@ -225,6 +253,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.categoryPages.SetBorderColor(style.DialogSubBoxBorderColor)
 
 	d.setupContainerInfoPageUI()
+	d.setupEnvironmentPageUI()
 	d.setupDNSPageUI()
 	d.setupHealthPageUI()
 	d.setupNetworkPageUI()
@@ -241,6 +270,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[containerInfoPageIndex], d.containerInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[environmentPageIndex], d.environmentPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[healthPageIndex], d.healthPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
@@ -348,6 +378,94 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.containerInfoPage.AddItem(checkBoxLayout, 1, 0, true)
 	d.containerInfoPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	envPageLabelWidth := 12
+
+	// environment host
+	d.containerEnvHostField.SetLabel("env host:")
+	d.containerEnvHostField.SetLabelWidth(envPageLabelWidth)
+	d.containerEnvHostField.SetBackgroundColor(bgColor)
+	d.containerEnvHostField.SetLabelColor(style.DialogFgColor)
+	d.containerEnvHostField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// unset all
+	unsetEnvAllLabel := "unsetenv all"
+	d.containerUnsetEnvAllField.SetLabel(unsetEnvAllLabel)
+	d.containerUnsetEnvAllField.SetLabelWidth(len(unsetEnvAllLabel) + 1)
+	d.containerUnsetEnvAllField.SetBackgroundColor(bgColor)
+	d.containerUnsetEnvAllField.SetLabelColor(style.DialogFgColor)
+	d.containerUnsetEnvAllField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// environment variables
+	d.containerEnvVarsField.SetLabel("env vars:")
+	d.containerEnvVarsField.SetLabelWidth(envPageLabelWidth)
+	d.containerEnvVarsField.SetBackgroundColor(bgColor)
+	d.containerEnvVarsField.SetLabelColor(style.DialogFgColor)
+	d.containerEnvVarsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// environment variables file
+	d.containerEnvFileField.SetLabel("env file:")
+	d.containerEnvFileField.SetLabelWidth(envPageLabelWidth)
+	d.containerEnvFileField.SetBackgroundColor(bgColor)
+	d.containerEnvFileField.SetLabelColor(style.DialogFgColor)
+	d.containerEnvFileField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// environment merge
+	d.containerEnvMergeField.SetLabel("env merge:")
+	d.containerEnvMergeField.SetLabelWidth(envPageLabelWidth)
+	d.containerEnvMergeField.SetBackgroundColor(bgColor)
+	d.containerEnvMergeField.SetLabelColor(style.DialogFgColor)
+	d.containerEnvMergeField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// environment unset variables
+	d.containerUnsetEnvField.SetLabel("unset env:")
+	d.containerUnsetEnvField.SetLabelWidth(envPageLabelWidth)
+	d.containerUnsetEnvField.SetBackgroundColor(bgColor)
+	d.containerUnsetEnvField.SetLabelColor(style.DialogFgColor)
+	d.containerUnsetEnvField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// working directory
+	d.containerWorkDirField.SetLabel("work dir:")
+	d.containerWorkDirField.SetLabelWidth(envPageLabelWidth)
+	d.containerWorkDirField.SetBackgroundColor(bgColor)
+	d.containerWorkDirField.SetLabelColor(style.DialogFgColor)
+	d.containerWorkDirField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// umask
+	umaskLabel := "umask:"
+	d.containerUmaskField.SetLabel(umaskLabel)
+	d.containerUmaskField.SetLabelWidth(len(umaskLabel) + 1)
+	d.containerUmaskField.SetBackgroundColor(bgColor)
+	d.containerUmaskField.SetLabelColor(style.DialogFgColor)
+	d.containerUmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// layout
+	labelPaddings := 4
+	checkBoxLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	checkBoxLayout.SetBackgroundColor(bgColor)
+	checkBoxLayout.AddItem(d.containerEnvHostField, envPageLabelWidth+labelPaddings, 0, false)
+	checkBoxLayout.AddItem(d.containerUnsetEnvAllField, len(unsetEnvAllLabel)+labelPaddings, 0, false)
+	checkBoxLayout.AddItem(d.containerUmaskField, 0, 1, false)
+	checkBoxLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+
+	d.environmentPage.SetDirection(tview.FlexRow)
+	d.environmentPage.AddItem(d.containerWorkDirField, 1, 0, true)
+	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.environmentPage.AddItem(d.containerEnvVarsField, 1, 0, true)
+	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.environmentPage.AddItem(d.containerEnvFileField, 1, 0, true)
+	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.environmentPage.AddItem(d.containerEnvMergeField, 1, 0, true)
+	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.environmentPage.AddItem(d.containerUnsetEnvField, 1, 0, true)
+	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.environmentPage.AddItem(checkBoxLayout, 1, 0, true)
+	d.environmentPage.SetBackgroundColor(bgColor)
 }
 
 func (d *ContainerCreateDialog) setupDNSPageUI() {
@@ -616,18 +734,18 @@ func (d *ContainerCreateDialog) setupSecurityPageUI() {
 	securityOptsLabelWidth := 10
 
 	// selinux label
-	d.containerSelinuxLabelField.SetLabel("label:")
-	d.containerSelinuxLabelField.SetLabelWidth(securityOptsLabelWidth)
-	d.containerSelinuxLabelField.SetBackgroundColor(bgColor)
-	d.containerSelinuxLabelField.SetLabelColor(style.DialogFgColor)
-	d.containerSelinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecLabelField.SetLabel("label:")
+	d.containerSecLabelField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSecLabelField.SetBackgroundColor(bgColor)
+	d.containerSecLabelField.SetLabelColor(style.DialogFgColor)
+	d.containerSecLabelField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// apparmor
-	d.containerApparmorField.SetLabel("apparmor:")
-	d.containerApparmorField.SetLabelWidth(securityOptsLabelWidth)
-	d.containerApparmorField.SetBackgroundColor(bgColor)
-	d.containerApparmorField.SetLabelColor(style.DialogFgColor)
-	d.containerApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecApparmorField.SetLabel("apparmor:")
+	d.containerSecApparmorField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSecApparmorField.SetBackgroundColor(bgColor)
+	d.containerSecApparmorField.SetLabelColor(style.DialogFgColor)
+	d.containerSecApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// seccomp
 	d.containerSeccompField.SetLabel("seccomp:")
@@ -637,40 +755,40 @@ func (d *ContainerCreateDialog) setupSecurityPageUI() {
 	d.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// mask
-	d.containerMaskField.SetLabel("mask:")
-	d.containerMaskField.SetLabelWidth(securityOptsLabelWidth)
-	d.containerMaskField.SetBackgroundColor(bgColor)
-	d.containerMaskField.SetLabelColor(style.DialogFgColor)
-	d.containerMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecMaskField.SetLabel("mask:")
+	d.containerSecMaskField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSecMaskField.SetBackgroundColor(bgColor)
+	d.containerSecMaskField.SetLabelColor(style.DialogFgColor)
+	d.containerSecMaskField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// unmask
-	d.containerUnmaskField.SetLabel("unmask:")
-	d.containerUnmaskField.SetLabelWidth(securityOptsLabelWidth)
-	d.containerUnmaskField.SetBackgroundColor(bgColor)
-	d.containerUnmaskField.SetLabelColor(style.DialogFgColor)
-	d.containerUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecUnmaskField.SetLabel("unmask:")
+	d.containerSecUnmaskField.SetLabelWidth(securityOptsLabelWidth)
+	d.containerSecUnmaskField.SetBackgroundColor(bgColor)
+	d.containerSecUnmaskField.SetLabelColor(style.DialogFgColor)
+	d.containerSecUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// no-new-privileges
-	d.containerNoNewPrivField.SetLabel("no new privileges ")
-	d.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	d.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
-	d.containerNoNewPrivField.SetBackgroundColor(bgColor)
-	d.containerNoNewPrivField.SetLabelColor(style.DialogFgColor)
-	d.containerNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecNoNewPrivField.SetLabel("no new privileges ")
+	d.containerSecNoNewPrivField.SetBackgroundColor(bgColor)
+	d.containerSecNoNewPrivField.SetLabelColor(style.DialogFgColor)
+	d.containerSecNoNewPrivField.SetBackgroundColor(bgColor)
+	d.containerSecNoNewPrivField.SetLabelColor(style.DialogFgColor)
+	d.containerSecNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
-	d.securityOptsPage.AddItem(d.containerSelinuxLabelField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSecLabelField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.containerApparmorField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSecApparmorField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.securityOptsPage.AddItem(d.containerSeccompField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.containerMaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSecMaskField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.containerUnmaskField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSecUnmaskField, 1, 0, true)
 	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.containerNoNewPrivField, 1, 0, true)
+	d.securityOptsPage.AddItem(d.containerSecNoNewPrivField, 1, 0, true)
 }
 
 func (d *ContainerCreateDialog) setupVolumePageUI() {
@@ -813,21 +931,38 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerRemoveField)
 	case createContainerPrivilegedFieldFocus:
 		delegate(d.containerPrivilegedField)
-	case createContainerTimeoutFocus:
+	case createContainerTimeoutFieldFocus:
 		delegate(d.containerTimeoutField)
+	// environment options page
+	case createContainerWorkDirFieldFocus:
+		delegate(d.containerWorkDirField)
+	case createContainerEnvVarsFieldFocus:
+		delegate(d.containerEnvVarsField)
+	case createContainerEnvFileFieldFocus:
+		delegate(d.containerEnvFileField)
+	case createContainerEnvMergeFieldFocus:
+		delegate(d.containerEnvMergeField)
+	case createContainerUnsetEnvFieldFocus:
+		delegate(d.containerUnsetEnvField)
+	case createContainerEnvHostFieldFocus:
+		delegate(d.containerEnvHostField)
+	case createContainerUnsetEnvAllFieldFocus:
+		delegate(d.containerUnsetEnvAllField)
+	case createContainerUmaskFieldFocus:
+		delegate(d.containerUmaskField)
 	// security options page
-	case createContainerSelinuxLabelFieldFocus:
-		delegate(d.containerSelinuxLabelField)
+	case createcontainerSecLabelFieldFocus:
+		delegate(d.containerSecLabelField)
 	case createContainerApprarmorFieldFocus:
-		delegate(d.containerApparmorField)
+		delegate(d.containerSecApparmorField)
 	case createContainerSeccompFeildFocus:
 		delegate(d.containerSeccompField)
-	case createContainerMaskFieldFocus:
-		delegate(d.containerMaskField)
-	case createContainerUnmaskFieldFocus:
-		delegate(d.containerUnmaskField)
-	case createContainerNoNewPrivFieldFocus:
-		delegate(d.containerNoNewPrivField)
+	case createcontainerSecMaskFieldFocus:
+		delegate(d.containerSecMaskField)
+	case createcontainerSecUnmaskFieldFocus:
+		delegate(d.containerSecUnmaskField)
+	case createcontainerSecNoNewPrivFieldFocus:
+		delegate(d.containerSecNoNewPrivField)
 	// networking page
 	case createContainerHostnameFieldFocus:
 		delegate(d.containerHostnameField)
@@ -919,7 +1054,7 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 }
 
 // InputHandler returns input handler function for this primitive.
-func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
+func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop,gocyclo
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("container create dialog: event %v received", event)
 
@@ -933,6 +1068,18 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 			if handler := d.containerInfoPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setContainerInfoPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.environmentPage.HasFocus() {
+			if handler := d.environmentPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setEnvironmentPageNextFocus()
 				}
 
 				handler(event, setFocus)
@@ -1189,6 +1336,7 @@ func (d *ContainerCreateDialog) initData() {
 	}
 
 	d.setActiveCategory(0)
+	// container category
 	d.containerNameField.SetText("")
 	d.containerImageField.SetOptions(imgOptions, nil)
 	d.containerImageField.SetCurrentOption(0)
@@ -1198,29 +1346,23 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerRemoveField.SetChecked(false)
 	d.containerPrivilegedField.SetChecked(false)
 	d.containerTimeoutField.SetText("")
-	d.containerSelinuxLabelField.SetText("")
-	d.containerApparmorField.SetText("")
-	d.containerSeccompField.SetText("")
-	d.containerMaskField.SetText("")
-	d.containerUnmaskField.SetText("")
-	d.containerNoNewPrivField.SetChecked(false)
-	d.containerPortPublishField.SetText("")
-	d.ContainerPortPublishAllField.SetChecked(false)
-	d.containerPortExposeField.SetText("")
-	d.containerHostnameField.SetText("")
-	d.containerIPAddrField.SetText("")
-	d.containerMacAddrField.SetText("")
-	d.containerNetworkField.SetOptions(networkOptions, nil)
-	d.containerNetworkField.SetCurrentOption(0)
+
+	// environment category
+	d.containerWorkDirField.SetText("")
+	d.containerEnvVarsField.SetText("")
+	d.containerEnvFileField.SetText("")
+	d.containerEnvMergeField.SetText("")
+	d.containerUnsetEnvField.SetText("")
+	d.containerEnvHostField.SetChecked(false)
+	d.containerUnsetEnvAllField.SetChecked(false)
+	d.containerUmaskField.SetText("")
+
+	// dns settings category
 	d.containerDNSServersField.SetText("")
 	d.containerDNSSearchField.SetText("")
 	d.containerDNSOptionsField.SetText("")
-	d.containerVolumeField.SetText("")
-	d.containerMountField.SetText("")
-	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
-	d.containerImageVolumeField.SetCurrentOption(0)
 
-	// health options
+	// health options category
 	d.containerHealthCmdField.SetText("")
 	d.containerHealthStartupCmdField.SetText("")
 	d.containerHealthOnFailureField.SetCurrentOption(0)
@@ -1232,6 +1374,32 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerHealthStartupRetriesField.SetText("")
 	d.containerHealthStartPeriodField.SetText("")
 	d.containerHealthStartupSuccessField.SetText("")
+
+	// network settings category
+	d.containerHostnameField.SetText("")
+	d.containerIPAddrField.SetText("")
+	d.containerMacAddrField.SetText("")
+	d.containerNetworkField.SetOptions(networkOptions, nil)
+	d.containerNetworkField.SetCurrentOption(0)
+
+	// ports settings category
+	d.containerPortPublishField.SetText("")
+	d.ContainerPortPublishAllField.SetChecked(false)
+	d.containerPortExposeField.SetText("")
+
+	// security options category
+	d.containerSecLabelField.SetText("")
+	d.containerSecApparmorField.SetText("")
+	d.containerSeccompField.SetText("")
+	d.containerSecMaskField.SetText("")
+	d.containerSecUnmaskField.SetText("")
+	d.containerSecNoNewPrivField.SetChecked(false)
+
+	// volumes options category
+	d.containerVolumeField.SetText("")
+	d.containerMountField.SetText("")
+	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
+	d.containerImageVolumeField.SetCurrentOption(0)
 }
 
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
@@ -1282,7 +1450,53 @@ func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() {
 	}
 
 	if d.containerRemoveField.HasFocus() {
-		d.focusElement = createContainerTimeoutFocus
+		d.focusElement = createContainerTimeoutFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
+}
+
+func (d *ContainerCreateDialog) setEnvironmentPageNextFocus() {
+	if d.containerWorkDirField.HasFocus() {
+		d.focusElement = createContainerEnvVarsFieldFocus
+
+		return
+	}
+
+	if d.containerEnvVarsField.HasFocus() {
+		d.focusElement = createContainerEnvFileFieldFocus
+
+		return
+	}
+
+	if d.containerEnvFileField.HasFocus() {
+		d.focusElement = createContainerEnvMergeFieldFocus
+
+		return
+	}
+
+	if d.containerEnvMergeField.HasFocus() {
+		d.focusElement = createContainerUnsetEnvFieldFocus
+
+		return
+	}
+
+	if d.containerUnsetEnvField.HasFocus() {
+		d.focusElement = createContainerEnvHostFieldFocus
+
+		return
+	}
+
+	if d.containerEnvHostField.HasFocus() {
+		d.focusElement = createContainerUnsetEnvAllFieldFocus
+
+		return
+	}
+
+	if d.containerUnsetEnvAllField.HasFocus() {
+		d.focusElement = createContainerUmaskFieldFocus
 
 		return
 	}
@@ -1291,32 +1505,32 @@ func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() {
 }
 
 func (d *ContainerCreateDialog) setSecurityOptionsPageNextFocus() {
-	if d.containerSelinuxLabelField.HasFocus() {
+	if d.containerSecLabelField.HasFocus() {
 		d.focusElement = createContainerApprarmorFieldFocus
 
 		return
 	}
 
-	if d.containerApparmorField.HasFocus() {
+	if d.containerSecApparmorField.HasFocus() {
 		d.focusElement = createContainerSeccompFeildFocus
 
 		return
 	}
 
 	if d.containerSeccompField.HasFocus() {
-		d.focusElement = createContainerMaskFieldFocus
+		d.focusElement = createcontainerSecMaskFieldFocus
 
 		return
 	}
 
-	if d.containerMaskField.HasFocus() {
-		d.focusElement = createContainerUnmaskFieldFocus
+	if d.containerSecMaskField.HasFocus() {
+		d.focusElement = createcontainerSecUnmaskFieldFocus
 
 		return
 	}
 
-	if d.containerUnmaskField.HasFocus() {
-		d.focusElement = createContainerNoNewPrivFieldFocus
+	if d.containerSecUnmaskField.HasFocus() {
+		d.focusElement = createcontainerSecNoNewPrivFieldFocus
 
 		return
 	}
@@ -1443,7 +1657,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 }
 
 // ContainerCreateOptions returns new network options.
-func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop
+func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit
 	var (
 		labels           []string
 		imageID          string
@@ -1455,6 +1669,10 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		expose           []string
 		imageVolume      string
 		selinuxOpts      []string
+		envVars          []string
+		envFile          []string
+		envMerge         []string
+		unsetEnv         []string
 	)
 
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
@@ -1508,7 +1726,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
 
 	// security options
-	for _, selinuxLabel := range strings.Split(d.containerSelinuxLabelField.GetText(), " ") {
+	for _, selinuxLabel := range strings.Split(d.containerSecLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
 			selinuxOpts = append(selinuxOpts, selinuxLabel)
 		}
@@ -1516,6 +1734,34 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 
 	// health check
 	_, healthOnFailure := d.containerHealthOnFailureField.GetCurrentOption()
+
+	// env vars
+	for _, evar := range strings.Split(d.containerEnvVarsField.GetText(), " ") {
+		if evar != "" {
+			envVars = append(envVars, evar)
+		}
+	}
+
+	// env file
+	for _, efile := range strings.Split(d.containerEnvFileField.GetText(), " ") {
+		if efile != "" {
+			envFile = append(envFile, efile)
+		}
+	}
+
+	// env merge
+	for _, emerge := range strings.Split(d.containerEnvMergeField.GetText(), " ") {
+		if emerge != "" {
+			envMerge = append(envMerge, emerge)
+		}
+	}
+
+	// unset env
+	for _, eunset := range strings.Split(d.containerUnsetEnvField.GetText(), " ") {
+		if eunset != "" {
+			unsetEnv = append(unsetEnv, eunset)
+		}
+	}
 
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
@@ -1526,6 +1772,14 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		Remove:                d.containerRemoveField.IsChecked(),
 		Privileged:            d.containerPrivilegedField.IsChecked(),
 		Timeout:               d.containerTimeoutField.GetText(),
+		WorkDir:               d.containerWorkDirField.GetText(),
+		EnvVars:               envVars,
+		EnvFile:               envFile,
+		EnvMerge:              envMerge,
+		UnsetEnv:              unsetEnv,
+		EnvHost:               d.containerEnvHostField.IsChecked(),
+		UnsetEnvAll:           d.containerUnsetEnvAllField.IsChecked(),
+		Umask:                 d.containerUmaskField.GetText(),
 		Hostname:              d.containerHostnameField.GetText(),
 		MacAddress:            d.containerMacAddrField.GetText(),
 		IPAddress:             d.containerIPAddrField.GetText(),
@@ -1540,11 +1794,11 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		ImageVolume:           imageVolume,
 		Mount:                 d.containerMountField.GetText(),
 		SelinuxOpts:           selinuxOpts,
-		ApparmorProfile:       d.containerApparmorField.GetText(),
+		ApparmorProfile:       d.containerSecApparmorField.GetText(),
 		Seccomp:               d.containerSeccompField.GetText(),
-		NoNewPriv:             d.containerNoNewPrivField.IsChecked(),
-		Mask:                  d.containerMaskField.GetText(),
-		Unmask:                d.containerUnmaskField.GetText(),
+		SecNoNewPriv:          d.containerSecNoNewPrivField.IsChecked(),
+		SecMask:               d.containerSecMaskField.GetText(),
+		SecUnmask:             d.containerSecUnmaskField.GetText(),
 		HealthCmd:             strings.TrimSpace(d.containerHealthCmdField.GetText()),
 		HealthInterval:        strings.TrimSpace(d.containerHealthIntervalField.GetText()),
 		HealthRetries:         strings.TrimSpace(d.containerHealthRetriesField.GetText()),

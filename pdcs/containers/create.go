@@ -28,6 +28,14 @@ type CreateOptions struct {
 	Remove                bool
 	Privileged            bool
 	Timeout               string
+	WorkDir               string
+	EnvVars               []string
+	EnvFile               []string
+	EnvMerge              []string
+	UnsetEnv              []string
+	EnvHost               bool
+	UnsetEnvAll           bool
+	Umask                 string
 	Pod                   string
 	Hostname              string
 	IPAddress             string
@@ -45,9 +53,9 @@ type CreateOptions struct {
 	SelinuxOpts           []string
 	ApparmorProfile       string
 	Seccomp               string
-	NoNewPriv             bool
-	Mask                  string
-	Unmask                string
+	SecNoNewPriv          bool
+	SecMask               string
+	SecUnmask             string
 	HealthCmd             string
 	HealthInterval        string
 	HealthRetries         string
@@ -62,7 +70,7 @@ type CreateOptions struct {
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
+func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit
 	var (
 		warningResponse []string
 		createOptions   entities.ContainerCreateOptions
@@ -132,19 +140,19 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "apparmor="+opts.ApparmorProfile)
 	}
 
-	if opts.Mask != "" {
-		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "mask="+opts.Mask)
+	if opts.SecMask != "" {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "mask="+opts.SecMask)
 	}
 
-	if opts.Unmask != "" {
-		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "unmask="+opts.Unmask)
+	if opts.SecUnmask != "" {
+		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "unmask="+opts.SecUnmask)
 	}
 
 	if opts.Seccomp != "" {
 		createOptions.SeccompPolicy = opts.Seccomp
 	}
 
-	if opts.NoNewPriv {
+	if opts.SecNoNewPriv {
 		createOptions.SecurityOpt = append(createOptions.SecurityOpt, "no-new-privileges")
 	}
 
@@ -152,6 +160,34 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 		for _, selinuxLabel := range opts.SelinuxOpts {
 			createOptions.SecurityOpt = append(createOptions.SecurityOpt, "label="+selinuxLabel)
 		}
+	}
+
+	// environment options
+	if opts.WorkDir != "" {
+		createOptions.Workdir = opts.WorkDir
+	}
+
+	if len(opts.EnvVars) > 0 {
+		createOptions.Env = opts.EnvVars
+	}
+
+	if len(opts.EnvFile) > 0 {
+		createOptions.EnvFile = opts.EnvFile
+	}
+
+	if len(opts.EnvMerge) > 0 {
+		createOptions.EnvMerge = opts.EnvMerge
+	}
+
+	if len(opts.UnsetEnv) > 0 {
+		createOptions.UnsetEnv = opts.UnsetEnv
+	}
+
+	createOptions.EnvHost = opts.EnvHost
+	createOptions.UnsetEnvAll = opts.UnsetEnvAll
+
+	if opts.Umask != "" {
+		createOptions.Umask = opts.Umask
 	}
 
 	// add healthcheck options
