@@ -1,6 +1,7 @@
 package containers
 
 import (
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -17,12 +18,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+var ErrInvalidCreateTimeout = errors.New("invalid container create timeout value")
+
 // CreateOptions container create options.
 type CreateOptions struct {
 	Name                  string
 	Labels                []string
 	Image                 string
 	Remove                bool
+	Privileged            bool
+	Timeout               string
 	Pod                   string
 	Hostname              string
 	IPAddress             string
@@ -77,6 +82,16 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop
 
 	createOptions.Name = opts.Name
 	createOptions.Rm = opts.Remove
+	createOptions.Privileged = opts.Privileged
+
+	if opts.Timeout != "" {
+		timeout, err := strconv.Atoi(opts.Timeout)
+		if err != nil {
+			return warningResponse, fmt.Errorf("%w: %s", ErrInvalidCreateTimeout, opts.Timeout)
+		}
+
+		createOptions.Timeout = uint(timeout)
+	}
 
 	createOptions.Hostname = opts.Hostname
 
