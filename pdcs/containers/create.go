@@ -36,6 +36,10 @@ type CreateOptions struct {
 	EnvHost               bool
 	UnsetEnvAll           bool
 	Umask                 string
+	User                  string
+	HostUsers             []string
+	GroupEntry            string
+	PasswdEntry           string
 	Pod                   string
 	Hostname              string
 	IPAddress             string
@@ -70,7 +74,7 @@ type CreateOptions struct {
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit
+func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,gocyclo
 	var (
 		warningResponse []string
 		createOptions   entities.ContainerCreateOptions
@@ -188,6 +192,23 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit
 
 	if opts.Umask != "" {
 		createOptions.Umask = opts.Umask
+	}
+
+	// user and groups
+	if opts.User != "" {
+		createOptions.User = opts.User
+	}
+
+	if len(opts.HostUsers) > 0 {
+		createOptions.HostUsers = opts.HostUsers
+	}
+
+	if opts.PasswdEntry != "" {
+		createOptions.PasswdEntry = opts.PasswdEntry
+	}
+
+	if opts.GroupEntry != "" {
+		createOptions.GroupEntry = opts.GroupEntry
 	}
 
 	// add healthcheck options

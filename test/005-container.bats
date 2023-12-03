@@ -136,7 +136,7 @@ load helpers_tui
     sleep 1
 
     # switch to "health check"  create view
-    podman_tui_send_inputs "Down" "Down" "Down" "Tab"
+    podman_tui_send_inputs "Down" "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs $TEST_CONTAINER_HEALTH_CMD "Tab" "Tab"
     podman_tui_send_inputs "Enter" "Down" "Down" "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab"
