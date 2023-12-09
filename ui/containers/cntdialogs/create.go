@@ -42,6 +42,10 @@ const (
 	createContainerUmaskFieldFocus
 	createContainerUnsetEnvFieldFocus
 	createContainerUnsetEnvAllFieldFocus
+	createContainerUserFieldFocus
+	createContainerHostUsersFieldFocus
+	createContainerPasswdEntryFieldFocus
+	createContainerGroupEntryFieldFocus
 	createcontainerSecLabelFieldFocus
 	createContainerApprarmorFieldFocus
 	createContainerSeccompFeildFocus
@@ -77,6 +81,7 @@ const (
 const (
 	containerInfoPageIndex = 0 + iota
 	environmentPageIndex
+	userGroupsPageIndex
 	dnsPageIndex
 	healthPageIndex
 	networkingPageIndex
@@ -94,6 +99,7 @@ type ContainerCreateDialog struct {
 	categoryPages                       *tview.Pages
 	containerInfoPage                   *tview.Flex
 	environmentPage                     *tview.Flex
+	userGroupsPage                      *tview.Flex
 	securityOptsPage                    *tview.Flex
 	portPage                            *tview.Flex
 	networkingPage                      *tview.Flex
@@ -121,6 +127,10 @@ type ContainerCreateDialog struct {
 	containerUmaskField                 *tview.InputField
 	containerUnsetEnvField              *tview.InputField
 	containerUnsetEnvAllField           *tview.Checkbox
+	containerUserField                  *tview.InputField
+	containerHostUsersField             *tview.InputField
+	containerPasswdEntryField           *tview.InputField
+	containerGroupEntryField            *tview.InputField
 	containerSecLabelField              *tview.InputField
 	containerSecApparmorField           *tview.InputField
 	containerSeccompField               *tview.InputField
@@ -164,6 +174,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		categoryPages:     tview.NewPages(),
 		containerInfoPage: tview.NewFlex(),
 		environmentPage:   tview.NewFlex(),
+		userGroupsPage:    tview.NewFlex(),
 		securityOptsPage:  tview.NewFlex(),
 		networkingPage:    tview.NewFlex(),
 		dnsPage:           tview.NewFlex(),
@@ -174,6 +185,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		categoryLabels: []string{
 			"Container",
 			"Environment",
+			"User and groups",
 			"DNS Settings",
 			"Health check",
 			"Network Settings",
@@ -198,6 +210,10 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerUmaskField:                 tview.NewInputField(),
 		containerUnsetEnvField:              tview.NewInputField(),
 		containerUnsetEnvAllField:           tview.NewCheckbox(),
+		containerUserField:                  tview.NewInputField(),
+		containerHostUsersField:             tview.NewInputField(),
+		containerPasswdEntryField:           tview.NewInputField(),
+		containerGroupEntryField:            tview.NewInputField(),
 		containerSecLabelField:              tview.NewInputField(),
 		containerSecApparmorField:           tview.NewInputField(),
 		containerSeccompField:               tview.NewInputField(),
@@ -254,6 +270,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 
 	d.setupContainerInfoPageUI()
 	d.setupEnvironmentPageUI()
+	d.setupUserGroupsPageUI()
 	d.setupDNSPageUI()
 	d.setupHealthPageUI()
 	d.setupNetworkPageUI()
@@ -271,6 +288,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[containerInfoPageIndex], d.containerInfoPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[environmentPageIndex], d.environmentPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[userGroupsPageIndex], d.userGroupsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[healthPageIndex], d.healthPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
@@ -466,6 +484,52 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 	d.environmentPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.environmentPage.AddItem(checkBoxLayout, 1, 0, true)
 	d.environmentPage.SetBackgroundColor(bgColor)
+}
+
+func (d *ContainerCreateDialog) setupUserGroupsPageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	userGroupLabelWidth := 14
+	userFieldWidth := 30
+
+	// user
+	d.containerUserField.SetLabel("user:")
+	d.containerUserField.SetLabelWidth(userGroupLabelWidth)
+	d.containerUserField.SetBackgroundColor(bgColor)
+	d.containerUserField.SetLabelColor(style.DialogFgColor)
+	d.containerUserField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerUserField.SetFieldWidth(userFieldWidth)
+
+	// host users
+	d.containerHostUsersField.SetLabel("host user:")
+	d.containerHostUsersField.SetLabelWidth(userGroupLabelWidth)
+	d.containerHostUsersField.SetBackgroundColor(bgColor)
+	d.containerHostUsersField.SetLabelColor(style.DialogFgColor)
+	d.containerHostUsersField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// passwd entry
+	d.containerPasswdEntryField.SetLabel("passwd entry:")
+	d.containerPasswdEntryField.SetLabelWidth(userGroupLabelWidth)
+	d.containerPasswdEntryField.SetBackgroundColor(bgColor)
+	d.containerPasswdEntryField.SetLabelColor(style.DialogFgColor)
+	d.containerPasswdEntryField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// group entry
+	d.containerGroupEntryField.SetLabel("group entry:")
+	d.containerGroupEntryField.SetLabelWidth(userGroupLabelWidth)
+	d.containerGroupEntryField.SetBackgroundColor(bgColor)
+	d.containerGroupEntryField.SetLabelColor(style.DialogFgColor)
+	d.containerGroupEntryField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	d.userGroupsPage.SetDirection(tview.FlexRow)
+	d.userGroupsPage.AddItem(d.containerUserField, 1, 0, true)
+	d.userGroupsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.userGroupsPage.AddItem(d.containerHostUsersField, 1, 0, true)
+	d.userGroupsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.userGroupsPage.AddItem(d.containerPasswdEntryField, 1, 0, true)
+	d.userGroupsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.userGroupsPage.AddItem(d.containerGroupEntryField, 1, 0, true)
+	d.userGroupsPage.SetBackgroundColor(bgColor)
 }
 
 func (d *ContainerCreateDialog) setupDNSPageUI() {
@@ -871,7 +935,7 @@ func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop
+func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop,maintidx
 	switch d.focusElement {
 	// form has focus
 	case createContainerFormFocus:
@@ -950,6 +1014,15 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerUnsetEnvAllField)
 	case createContainerUmaskFieldFocus:
 		delegate(d.containerUmaskField)
+	// user and groups page
+	case createContainerUserFieldFocus:
+		delegate(d.containerUserField)
+	case createContainerHostUsersFieldFocus:
+		delegate(d.containerHostUsersField)
+	case createContainerPasswdEntryFieldFocus:
+		delegate(d.containerPasswdEntryField)
+	case createContainerGroupEntryFieldFocus:
+		delegate(d.containerGroupEntryField)
 	// security options page
 	case createcontainerSecLabelFieldFocus:
 		delegate(d.containerSecLabelField)
@@ -1080,6 +1153,18 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 			if handler := d.environmentPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setEnvironmentPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.userGroupsPage.HasFocus() {
+			if handler := d.userGroupsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setUserGroupsPageNextFocus()
 				}
 
 				handler(event, setFocus)
@@ -1357,6 +1442,12 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerUnsetEnvAllField.SetChecked(false)
 	d.containerUmaskField.SetText("")
 
+	// user and groups category
+	d.containerUserField.SetText("")
+	d.containerHostUsersField.SetText("")
+	d.containerPasswdEntryField.SetText("")
+	d.containerGroupEntryField.SetText("")
+
 	// dns settings category
 	d.containerDNSServersField.SetText("")
 	d.containerDNSSearchField.SetText("")
@@ -1497,6 +1588,28 @@ func (d *ContainerCreateDialog) setEnvironmentPageNextFocus() {
 
 	if d.containerUnsetEnvAllField.HasFocus() {
 		d.focusElement = createContainerUmaskFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
+}
+
+func (d *ContainerCreateDialog) setUserGroupsPageNextFocus() {
+	if d.containerUserField.HasFocus() {
+		d.focusElement = createContainerHostUsersFieldFocus
+
+		return
+	}
+
+	if d.containerHostUsersField.HasFocus() {
+		d.focusElement = createContainerPasswdEntryFieldFocus
+
+		return
+	}
+
+	if d.containerPasswdEntryField.HasFocus() {
+		d.focusElement = createContainerGroupEntryFieldFocus
 
 		return
 	}
@@ -1673,6 +1786,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		envFile          []string
 		envMerge         []string
 		unsetEnv         []string
+		hostUsers        []string
 	)
 
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
@@ -1763,6 +1877,13 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		}
 	}
 
+	// host users
+	for _, huser := range strings.Split(d.containerHostUsersField.GetText(), " ") {
+		if huser != "" {
+			hostUsers = append(hostUsers, huser)
+		}
+	}
+
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
 		Name:                  d.containerNameField.GetText(),
@@ -1780,6 +1901,10 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		EnvHost:               d.containerEnvHostField.IsChecked(),
 		UnsetEnvAll:           d.containerUnsetEnvAllField.IsChecked(),
 		Umask:                 d.containerUmaskField.GetText(),
+		User:                  d.containerUserField.GetText(),
+		HostUsers:             hostUsers,
+		PasswdEntry:           d.containerPasswdEntryField.GetText(),
+		GroupEntry:            d.containerGroupEntryField.GetText(),
 		Hostname:              d.containerHostnameField.GetText(),
 		MacAddress:            d.containerMacAddrField.GetText(),
 		IPAddress:             d.containerIPAddrField.GetText(),
