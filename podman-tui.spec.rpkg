@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.14.0
+Version: 0.15.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,7 +60,17 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Fri Dec 01 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.14.0-dev-1
+* Sat Dec 09 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.15.0-dev-1
+
+* Sat Dec 09 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.14.0-1
+- Container create dialog - user/groups category options
+- Container create dialog - environment category options
+- Container create dialog - privileged and timeout options
+- Bump github.com/containers/common from 0.57.0 to 0.57.1
+- Bump github.com/containers/podman/v4 from 4.8.0 to 4.8.1
+- Bump actions/stale from 8 to 9
+- Bump actions/setup-python from 4 to 5
+- Bump actions/setup-go from 4 to 5
 
 * Fri Dec 01 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.13.0-1
 - EPEL rpm package
