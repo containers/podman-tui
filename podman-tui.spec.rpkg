@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.15.0
-Release: 1%{?dist}
+Version: 0.16.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Wed Dec 20 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.16.0-dev-1
+
 * Wed Dec 20 2023 Navid Yaghoobi <navidys@fedoraproject.org> 0.15.0-1
 - Bump golang.org/x/crypto from 0.16.0 to 0.17.0 [CVE-2023-48795]
 - Bump github.com/gdamore/tcell/v2 from 2.6.0 to 2.7.0
