@@ -48,11 +48,6 @@ func NewUtilModeGauge() *UtilModeGauge {
 	return gauge
 }
 
-// SetTitle sets title for this primitive.
-func (g *UtilModeGauge) SetTitle(title string) {
-	g.Box.SetTitle(title)
-}
-
 // SetLabel sets label for this primitive.
 func (g *UtilModeGauge) SetLabel(label string) {
 	g.label = label

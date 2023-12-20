@@ -9,7 +9,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-// Marker represents plot drawing marker (brialle or dot).
+// Marker represents plot drawing marker (braille or dot).
 type Marker uint
 
 const (
@@ -29,7 +29,6 @@ const (
 const (
 	plotHorizontalScale   = 1
 	plotXAxisLabelsHeight = 1
-	plotYAxisLabelsWidth  = 4
 	plotXAxisLabelsGap    = 2
 	plotYAxisLabelsGap    = 1
 )
@@ -43,6 +42,7 @@ type brailleCell struct {
 type Plot struct {
 	*tview.Box
 	data           [][]float64
+	maxVal         float64
 	marker         Marker
 	ptype          PlotType
 	dotMarkerRune  rune
@@ -126,6 +126,7 @@ func (plot *Plot) SetData(data [][]float64) {
 
 	plot.brailleCellMap = make(map[image.Point]brailleCell)
 	plot.data = data
+	plot.maxVal = getMaxFloat64From2dSlice(data)
 }
 
 // SetDotMarkerRune sets dot marker rune.
@@ -133,8 +134,14 @@ func (plot *Plot) SetDotMarkerRune(r rune) {
 	plot.dotMarkerRune = r
 }
 
+// Figure out the text width necessary to display the largest data value.
+func (plot *Plot) getYAxisLabelsWidth() int {
+	return len(fmt.Sprintf("%.2f", plot.maxVal))
+}
+
 func (plot *Plot) getChartAreaRect() (int, int, int, int) {
 	x, y, width, height := plot.Box.GetInnerRect()
+	plotYAxisLabelsWidth := plot.getYAxisLabelsWidth()
 
 	if plot.drawAxes {
 		x = x + plotYAxisLabelsWidth + 1
@@ -162,6 +169,7 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 	}
 
 	x, y, width, height := plot.Box.GetInnerRect()
+	plotYAxisLabelsWidth := plot.getYAxisLabelsWidth()
 
 	axesStyle := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.axesColor)
 
@@ -204,25 +212,23 @@ func (plot *Plot) drawAxesToScreen(screen tcell.Screen) {
 	}
 
 	// draw Y axis labels
-	maxVal := getMaxFloat64From2dSlice(plot.getData())
-	verticalScale := maxVal / float64(height-plotXAxisLabelsHeight-1)
+	verticalScale := plot.maxVal / float64(height-plotXAxisLabelsHeight-1)
 
 	for i := 0; i*(plotYAxisLabelsGap+1) < height-1; i++ {
 		label := fmt.Sprintf("%.2f", float64(i)*verticalScale*(plotYAxisLabelsGap+1))
 		tview.Print(screen,
 			label,
 			x,
-			y+height-(i*(plotYAxisLabelsGap+1))-2, // nolint:gomnd
+			y+height-(i*(plotYAxisLabelsGap+1))-2, //nolint:gomnd
 			plotYAxisLabelsWidth,
 			tview.AlignLeft, plot.axesLabelColor)
 	}
 }
 
-// nolint:gocognit,cyclop
+//nolint:gocognit,cyclop
 func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 	x, y, width, height := plot.getChartAreaRect()
 	chartData := plot.getData()
-	maxVal := getMaxFloat64From2dSlice(chartData)
 
 	switch plot.ptype {
 	case PlotTypeLineChart:
@@ -231,7 +237,7 @@ func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 
 			for j := 0; j < len(line) && j*plotHorizontalScale < width; j++ {
 				val := line[j]
-				lheight := int((val / maxVal) * float64(height-1))
+				lheight := int((val / plot.maxVal) * float64(height-1))
 
 				if (x+(j*plotHorizontalScale) < x+width) && (y+height-1-lheight < y+height) {
 					tview.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, style)
@@ -244,7 +250,7 @@ func (plot *Plot) drawDotMarkerToScreen(screen tcell.Screen) {
 			style := tcell.StyleDefault.Background(plot.GetBackgroundColor()).Foreground(plot.lineColors[i])
 
 			for j, val := range line {
-				lheight := int((val / maxVal) * float64(height-1))
+				lheight := int((val / plot.maxVal) * float64(height-1))
 
 				if (x+(j*plotHorizontalScale) < x+width) && (y+height-1-lheight < y+height) {
 					tview.PrintJoinedSemigraphics(screen, x+(j*plotHorizontalScale), y+height-1-lheight, plot.dotMarkerRune, style)
@@ -271,26 +277,25 @@ func (plot *Plot) drawBrailleMarkerToScreen(screen tcell.Screen) {
 func (plot *Plot) calcBrailleLines() {
 	x, y, _, height := plot.getChartAreaRect()
 	chartData := plot.getData()
-	maxVal := getMaxFloat64From2dSlice(chartData)
 
 	for i, line := range chartData {
 		if len(line) <= 1 {
 			continue
 		}
 
-		previousHeight := int((line[0] / maxVal) * float64(height-1))
+		previousHeight := int((line[0] / plot.maxVal) * float64(height-1))
 
 		for j, val := range line[1:] {
-			lheight := int((val / maxVal) * float64(height-1))
+			lheight := int((val / plot.maxVal) * float64(height-1))
 
 			plot.setBrailleLine(
 				image.Pt(
-					(x+(j*plotHorizontalScale))*2, // nolint:gomnd
-					(y+height-previousHeight-1)*4, // nolint:gomnd
+					(x+(j*plotHorizontalScale))*2, //nolint:gomnd
+					(y+height-previousHeight-1)*4, //nolint:gomnd
 				),
 				image.Pt(
-					(x+((j+1)*plotHorizontalScale))*2, // nolint:gomnd
-					(y+height-lheight-1)*4,            // nolint:gomnd
+					(x+((j+1)*plotHorizontalScale))*2, //nolint:gomnd
+					(y+height-lheight-1)*4,            //nolint:gomnd
 				),
 				plot.lineColors[i],
 			)
@@ -301,7 +306,7 @@ func (plot *Plot) calcBrailleLines() {
 }
 
 func (plot *Plot) setBraillePoint(p image.Point, color tcell.Color) {
-	point := image.Pt(p.X/2, p.Y/4) // nolint:gomnd
+	point := image.Pt(p.X/2, p.Y/4) //nolint:gomnd
 	plot.brailleCellMap[point] = brailleCell{
 		plot.brailleCellMap[point].cRune | brailleRune[p.Y%4][p.X%2],
 		color,

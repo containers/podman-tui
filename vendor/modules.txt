@@ -584,8 +584,8 @@ github.com/modern-go/reflect2
 # github.com/morikuni/aec v1.0.0
 ## explicit
 github.com/morikuni/aec
-# github.com/navidys/tvxwidgets v0.4.1
-## explicit; go 1.17
+# github.com/navidys/tvxwidgets v0.5.0
+## explicit; go 1.18
 github.com/navidys/tvxwidgets
 # github.com/nxadm/tail v1.4.11
 ## explicit; go 1.13
@@ -597,7 +597,7 @@ github.com/nxadm/tail/winfile
 # github.com/oklog/ulid v1.3.1
 ## explicit
 github.com/oklog/ulid
-# github.com/onsi/ginkgo/v2 v2.13.1
+# github.com/onsi/ginkgo/v2 v2.13.2
 ## explicit; go 1.18
 github.com/onsi/ginkgo/v2
 github.com/onsi/ginkgo/v2/config
@@ -679,8 +679,8 @@ github.com/pkg/sftp/internal/encoding/ssh/filexfer
 # github.com/proglottis/gpgme v0.1.3
 ## explicit; go 1.11
 github.com/proglottis/gpgme
-# github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
-## explicit; go 1.12
+# github.com/rivo/tview v0.0.0-20231206124440-5f078138442e
+## explicit; go 1.18
 github.com/rivo/tview
 # github.com/rivo/uniseg v0.4.4
 ## explicit; go 1.18

@@ -2,12 +2,21 @@ run:
   deadline: 5m
   skip-dirs:
     - demos
+  skip-files:
+    - ".*_test.go"
 linters:
   enable-all: true
   disable:
-    - exhaustruct
     - varnamelen
+    - exhaustruct
     # deprecated
+    - rowserrcheck
+    - wastedassign
+    - structcheck
+    - deadcode
+    - varcheck
+    - nosnakecase
+    - ifshort
     - golint
     - maligned
     - interfacer

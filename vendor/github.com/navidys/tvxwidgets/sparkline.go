@@ -18,7 +18,7 @@ type Sparkline struct {
 	mu             sync.Mutex
 }
 
-// NewSparkline returns a a new sparkline widget.
+// NewSparkline returns a new sparkline widget.
 func NewSparkline() *Sparkline {
 	return &Sparkline{
 		Box: tview.NewBox(),

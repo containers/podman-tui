@@ -61,14 +61,14 @@ func (c *BarChart) HasFocus() bool {
 }
 
 // Draw draws this primitive onto the screen.
-func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
+func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
 	c.Box.DrawForSubclass(screen, c)
 
 	x, y, width, height := c.Box.GetInnerRect()
 
 	maxValY := y + 1
-	xAxisStartY := y + height - 2 // nolint:gomnd
-	barStartY := y + height - 3   // nolint:gomnd
+	xAxisStartY := y + height - 2 //nolint:gomnd
+	barStartY := y + height - 3   //nolint:gomnd
 	borderPadding := 0
 
 	if c.hasBorder {

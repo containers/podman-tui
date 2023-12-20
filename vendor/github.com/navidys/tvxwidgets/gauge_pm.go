@@ -69,11 +69,6 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 	}
 }
 
-// SetTitle sets title for this primitive.
-func (g *PercentageModeGauge) SetTitle(title string) {
-	g.Box.SetTitle(title)
-}
-
 // Focus is called when this primitive receives focus.
 func (g *PercentageModeGauge) Focus(delegate func(p tview.Primitive)) {
 }

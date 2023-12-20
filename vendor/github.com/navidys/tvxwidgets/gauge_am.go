@@ -39,11 +39,6 @@ func (g *ActivityModeGauge) Draw(screen tcell.Screen) {
 	}
 }
 
-// SetTitle sets title for this primitive.
-func (g *ActivityModeGauge) SetTitle(title string) {
-	g.Box.SetTitle(title)
-}
-
 // Focus is called when this primitive receives focus.
 func (g *ActivityModeGauge) Focus(delegate func(p tview.Primitive)) {
 }

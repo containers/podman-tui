@@ -14,11 +14,11 @@ require (
 	github.com/gdamore/tcell/v2 v2.7.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
-	github.com/navidys/tvxwidgets v0.4.1
-	github.com/onsi/ginkgo/v2 v2.13.1
+	github.com/navidys/tvxwidgets v0.5.0
+	github.com/onsi/ginkgo/v2 v2.13.2
 	github.com/onsi/gomega v1.30.0
 	github.com/pkg/errors v0.9.1
-	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
+	github.com/rivo/tview v0.0.0-20231206124440-5f078138442e
 	github.com/rs/zerolog v1.31.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/cobra v1.8.0
