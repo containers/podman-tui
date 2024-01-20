@@ -78,7 +78,7 @@ github.com/containerd/stargz-snapshotter/estargz/errorutil
 # github.com/containers/buildah v1.33.2
 ## explicit; go 1.20
 github.com/containers/buildah/define
-# github.com/containers/common v0.57.1
+# github.com/containers/common v0.57.2
 ## explicit; go 1.18
 github.com/containers/common/internal/attributedstring
 github.com/containers/common/libimage
@@ -109,7 +109,7 @@ github.com/containers/common/pkg/supplemented
 github.com/containers/common/pkg/timetype
 github.com/containers/common/pkg/util
 github.com/containers/common/version
-# github.com/containers/image/v5 v5.29.0
+# github.com/containers/image/v5 v5.29.1
 ## explicit; go 1.19
 github.com/containers/image/v5/copy
 github.com/containers/image/v5/directory
