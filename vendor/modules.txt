@@ -75,7 +75,7 @@ github.com/containerd/log
 ## explicit; go 1.19
 github.com/containerd/stargz-snapshotter/estargz
 github.com/containerd/stargz-snapshotter/estargz/errorutil
-# github.com/containers/buildah v1.33.2
+# github.com/containers/buildah v1.33.3
 ## explicit; go 1.20
 github.com/containers/buildah/define
 # github.com/containers/common v0.57.2
@@ -194,7 +194,7 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/containers/podman/v4 v4.8.3
+# github.com/containers/podman/v4 v4.9.0
 ## explicit; go 1.18
 github.com/containers/podman/v4/cmd/podman/parse
 github.com/containers/podman/v4/libpod/define
@@ -814,7 +814,7 @@ golang.org/x/net/internal/socks
 golang.org/x/net/internal/timeseries
 golang.org/x/net/proxy
 golang.org/x/net/trace
-# golang.org/x/sync v0.5.0
+# golang.org/x/sync v0.6.0
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore

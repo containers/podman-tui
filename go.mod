@@ -4,9 +4,9 @@ go 1.18
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/containers/buildah v1.33.2
+	github.com/containers/buildah v1.33.3
 	github.com/containers/common v0.57.2
-	github.com/containers/podman/v4 v4.8.3
+	github.com/containers/podman/v4 v4.9.0
 	github.com/containers/storage v1.51.0
 	github.com/distribution/reference v0.5.0
 	github.com/docker/docker v24.0.7+incompatible
@@ -132,7 +132,7 @@ require (
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/mod v0.13.0 // indirect
 	golang.org/x/net v0.18.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/term v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
