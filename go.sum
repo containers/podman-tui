@@ -227,8 +227,8 @@ github.com/containernetworking/cni v0.8.0/go.mod h1:LGwApLUm2FpoOfxTDEeq8T9ipbpZ
 github.com/containernetworking/cni v0.8.1/go.mod h1:LGwApLUm2FpoOfxTDEeq8T9ipbpZ61X79hmU3w8FmsY=
 github.com/containernetworking/plugins v0.8.6/go.mod h1:qnw5mN19D8fIwkqW7oHHYDHVlzhJpcY6TQxn/fUyDDM=
 github.com/containernetworking/plugins v0.9.1/go.mod h1:xP/idU2ldlzN6m4p5LmGiwRDjeJr6FLK6vuiUwoH7P8=
-github.com/containers/buildah v1.33.4 h1:/bDy0j7oSEVs8JcnLrw8dnULR3sJptUwd18ct6sGpHE=
-github.com/containers/buildah v1.33.4/go.mod h1:ky0YuDFagXa0KSEaCWMdeSSt0ywJhBffQxUIrC3H63o=
+github.com/containers/buildah v1.33.5 h1:BGzGAbK6B5VLOQlqX0V8DrteMbKGh6Q8ntHTahGqGMY=
+github.com/containers/buildah v1.33.5/go.mod h1:w3paMzMa5/3uaNSi2xq4hsQDTH9aFkoBmrHyPQ8Ixjo=
 github.com/containers/common v0.57.4 h1:kmfBad92kUjP5X44BPpOwMe+eZQqaKETfS+ASeL0g+g=
 github.com/containers/common v0.57.4/go.mod h1:o3L3CyOI9yr+JC8l4dZgvqTxcjs3qdKmkek00uchgvw=
 github.com/containers/image/v5 v5.29.2 h1:b8U0XYWhaQbKucK73IbmSm8WQyKAhKDbAHQc45XlsOw=
@@ -240,8 +240,8 @@ github.com/containers/ocicrypt v1.1.0/go.mod h1:b8AOe0YR67uU8OqfVNcznfFpAzu3rdgU
 github.com/containers/ocicrypt v1.1.1/go.mod h1:Dm55fwWm1YZAjYRaJ94z2mfZikIyIN4B0oB3dj3jFxY=
 github.com/containers/ocicrypt v1.1.9 h1:2Csfba4jse85Raxk5HIyEk8OwZNjRvfkhEGijOjIdEM=
 github.com/containers/ocicrypt v1.1.9/go.mod h1:dTKx1918d8TDkxXvarscpNVY+lyPakPNFN4jwA9GBys=
-github.com/containers/podman/v4 v4.9.1 h1:HZyX1h4HTlRyMRNnhUNhz+6fx8P8H0PHgeYpPMLcttQ=
-github.com/containers/podman/v4 v4.9.1/go.mod h1:KYL1F3EnqYzAhXDTt95OB3a1vilGT1GGtZr9vQUlJhY=
+github.com/containers/podman/v4 v4.9.2 h1:qURD2JZ//J/CaUSgu3lnYoKULfyxY39IdfDcv3H3Yts=
+github.com/containers/podman/v4 v4.9.2/go.mod h1:J2qLop+mWjAOxh0QQyYPdnPA3jI6ay2eU0OKakgMniQ=
 github.com/containers/psgo v1.8.0 h1:2loGekmGAxM9ir5OsXWEfGwFxorMPYnc6gEDsGFQvhY=
 github.com/containers/psgo v1.8.0/go.mod h1:T8ZxnX3Ur4RvnhxFJ7t8xJ1F48RhiZB4rSrOaR/qGHc=
 github.com/containers/storage v1.43.0/go.mod h1:uZ147thiIFGdVTjMmIw19knttQnUCl3y9zjreHrg11s=
