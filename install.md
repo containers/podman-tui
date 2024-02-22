@@ -1,12 +1,13 @@
 ## Installation Guide
 
 - [**Building From Source**](#building-from-source)
-- [**Installing Packaged Versions**](#installing-packaged-versions)
+- [**Installing on Linux**](#installing-on-linux)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
   - [**CentOS Stream**](#centos-stream)
   - [**Fedora**](#fedora)
   - [**Gentoo**](#gentoo)
   - [**RHEL**](#rhel)
+- [**Installing on Mac**](#installing-on-mac)
 - [**Container Image**](#container-image)
 - [**Configuration Files**](#configurations-files)
 
@@ -21,7 +22,7 @@ $ make binary-win # Windows
 $ make binary-darwin # MacOS
 ```
 
-## Installing Packaged Versions
+## Installing on Linux
 
 ### Arch Linux (AUR)
 
@@ -55,6 +56,14 @@ Enable [EPEL repository](https://docs.fedoraproject.org/en-US/epel/) and then ru
 
 ```shell
 $ sudo dnf -y install podman-tui
+```
+
+## Installing on Mac
+
+podman-tui can be obtained through Homebrew package manager.
+
+```shell
+$ brew install podman-tui
 ```
 
 ## Container image
