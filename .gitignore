@@ -1,6 +1,7 @@
 bin/
 .vagrant/
 .vscode/
+.idea/
 .coverage
 *.log
 *.out

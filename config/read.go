@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/rs/zerolog/log"
@@ -13,7 +14,14 @@ func (c *Config) readConfigFromFile(path string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	meta, err := toml.DecodeFile(path, c)
+	rawConfig, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("config: %w read configuration %q", err, path)
+	}
+
+	config := os.ExpandEnv(string(rawConfig))
+
+	meta, err := toml.Decode(config, c)
 	if err != nil {
 		return fmt.Errorf("config: %w decode configuration %q", err, path)
 	}
