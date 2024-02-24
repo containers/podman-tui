@@ -3,6 +3,7 @@
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/containers/podman-tui)](https://pkg.go.dev/github.com/containers/podman-tui)
 ![Go](https://github.com/containers/podman-tui/workflows/Go/badge.svg)
 [![Go Report](https://goreportcard.com/badge/github.com/containers/podman-tui)](https://goreportcard.com/report/github.com/containers/podman-tui)
+[![codecov](https://codecov.io/gh/navidys/podman-tui/branch/main/graph/badge.svg)](https://codecov.io/gh/navidys/podman-tui)
 
 Terminal user interface for Podman v4.
 
