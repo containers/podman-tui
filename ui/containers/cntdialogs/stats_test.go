@@ -50,6 +50,20 @@ var _ = Describe("container stat", Ordered, func() {
 		Expect(statDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+		statDialog.SetDoneFunc(cancelFunc)
+		statDialogApp.SetFocus(statDialog)
+		statDialogApp.Draw()
+		statDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		statDialogApp.Draw()
+		Expect(cancelAction).To(Equal(cancelWants))
+	})
+
 	It("hide", func() {
 		statDialog.Hide()
 		Expect(statDialog.IsDisplay()).To(Equal(false))

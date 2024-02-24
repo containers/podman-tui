@@ -45,6 +45,23 @@ var _ = Describe("image history", Ordered, func() {
 		Expect(historyDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+
+		historyDialog.SetCancelFunc(cancelFunc)
+		historyDialogApp.Draw()
+		historyDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		historyDialogApp.Draw()
+		historyDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		historyDialogApp.Draw()
+		Expect(cancelWants).To(Equal(cancelAction))
+	})
+
 	It("hide", func() {
 		historyDialog.Hide()
 		Expect(historyDialog.IsDisplay()).To(Equal(false))
