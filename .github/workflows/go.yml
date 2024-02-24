@@ -46,6 +46,15 @@ jobs:
           make .install.ginkgo
           make test-unit
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: .coverage/coverprofile
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: codecov-umbrella
+          slug: navidys/podman-tui
+          fail_ci_if_error: true
+
   build_binaries:
     runs-on: ubuntu-latest
     steps:
