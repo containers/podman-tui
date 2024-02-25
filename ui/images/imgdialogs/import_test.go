@@ -46,6 +46,50 @@ var _ = Describe("image import", Ordered, func() {
 		Expect(importDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+		importDialog.SetCancelFunc(cancelFunc)
+		importDialog.focusElement = imageImportFormFocus
+		importDialogApp.SetFocus(importDialog)
+		importDialogApp.Draw()
+		importDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		importDialogApp.Draw()
+		Expect(cancelAction).To(Equal(cancelWants))
+	})
+
+	It("import button selected", func() {
+		importWants := "import selected"
+		importAction := "import init"
+		importFunc := func() {
+			importAction = importWants
+		}
+		importDialog.SetImportFunc(importFunc)
+		importDialog.focusElement = imageImportFormFocus
+		importDialogApp.SetFocus(importDialog)
+		importDialogApp.Draw()
+		importDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTAB, 0, tcell.ModNone))
+		importDialogApp.Draw()
+		importDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		importDialogApp.Draw()
+		Expect(importAction).To(Equal(importWants))
+	})
+
+	It("import options", func() {
+		importDialog.focusElement = imageImportPathFocus
+		importDialogApp.SetFocus(importDialog)
+		importDialogApp.Draw()
+		importDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // (256,99,0) c character
+		importDialogApp.Draw()
+
+		opts, err := importDialog.ImageImportOptions()
+		Expect(err).To(BeNil())
+		Expect(opts.Source).To(Equal("c"))
+	})
+
 	It("hide", func() {
 		importDialog.Hide()
 		Expect(importDialog.IsDisplay()).To(Equal(false))

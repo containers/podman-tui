@@ -68,6 +68,49 @@ var _ = Describe("container create", Ordered, func() {
 		Expect(createDialog.dropdownHasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+		createDialog.SetCancelFunc(cancelFunc)
+		createDialog.focusElement = createContainerFormFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		createDialogApp.Draw()
+		Expect(cancelAction).To(Equal(cancelWants))
+	})
+
+	It("create button selected", func() {
+		createWants := "create selected"
+		createAction := "create init"
+		createFunc := func() {
+			createAction = createWants
+		}
+		createDialog.SetCreateFunc(createFunc)
+		createDialog.focusElement = createContainerFormFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTAB, 0, tcell.ModNone))
+		createDialogApp.Draw()
+		createDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		createDialogApp.Draw()
+		Expect(createAction).To(Equal(createWants))
+	})
+
+	It("create options", func() {
+		createDialog.focusElement = createContainerNameFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // (256,99,0) c character
+		createDialogApp.Draw()
+
+		opts := createDialog.ContainerCreateOptions()
+		Expect(opts.Name).To(Equal("c"))
+	})
+
 	It("hide", func() {
 		createDialog.Hide()
 		Expect(createDialog.IsDisplay()).To(Equal(false))

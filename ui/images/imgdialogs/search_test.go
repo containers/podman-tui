@@ -46,6 +46,39 @@ var _ = Describe("image search", Ordered, func() {
 		Expect(searchDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+
+		searchDialog.SetCancelFunc(cancelFunc)
+		searchDialog.focusElement = sInputElement
+		searchDialogApp.Draw()
+		searchDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		searchDialogApp.Draw()
+		searchDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		searchDialogApp.Draw()
+		searchDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
+		searchDialogApp.Draw()
+		searchDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		searchDialogApp.Draw()
+		Expect(cancelWants).To(Equal(cancelAction))
+	})
+
+	It("search options", func() {
+		searchDialog.focusElement = sInputElement
+		searchDialogApp.SetFocus(searchDialog)
+		searchDialogApp.Draw()
+		searchDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // (256,99,0) c character
+		searchDialogApp.Draw()
+
+		opts := searchDialog.GetSearchText()
+		Expect(opts).To(Equal("c"))
+	})
+
 	It("hide", func() {
 		searchDialog.Hide()
 		Expect(searchDialog.IsDisplay()).To(Equal(false))

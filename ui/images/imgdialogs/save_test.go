@@ -46,6 +46,33 @@ var _ = Describe("image save", Ordered, func() {
 		Expect(saveDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+		saveDialog.SetCancelFunc(cancelFunc)
+		saveDialog.focusElement = imageSaveFormFocus
+		saveDialogApp.SetFocus(saveDialog)
+		saveDialogApp.Draw()
+		saveDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		saveDialogApp.Draw()
+		Expect(cancelAction).To(Equal(cancelWants))
+	})
+
+	It("save options", func() {
+		saveDialog.focusElement = imageSaveOutputFocus
+		saveDialogApp.SetFocus(saveDialog)
+		saveDialogApp.Draw()
+		saveDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // (256,99,0) c character
+		saveDialogApp.Draw()
+
+		opts, err := saveDialog.ImageSaveOptions()
+		Expect(err).To(BeNil())
+		Expect(opts.Output).To(Equal("c"))
+	})
+
 	It("hide", func() {
 		saveDialog.Hide()
 		Expect(saveDialog.IsDisplay()).To(Equal(false))

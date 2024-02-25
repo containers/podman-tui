@@ -46,6 +46,50 @@ var _ = Describe("image build", Ordered, func() {
 		Expect(buildDialog.HasFocus()).To(Equal(true))
 	})
 
+	It("cancel button selected", func() {
+		cancelWants := "cancel selected"
+		cancelAction := "cancel init"
+		cancelFunc := func() {
+			cancelAction = cancelWants
+		}
+		buildDialog.SetCancelFunc(cancelFunc)
+		buildDialog.focusElement = buildDialogFormFocus
+		buildDialogApp.SetFocus(buildDialog)
+		buildDialogApp.Draw()
+		buildDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		buildDialogApp.Draw()
+		Expect(cancelAction).To(Equal(cancelWants))
+	})
+
+	It("build button selected", func() {
+		buildWants := "build selected"
+		buildAction := "build init"
+		buildFunc := func() {
+			buildAction = buildWants
+		}
+		buildDialog.SetBuildFunc(buildFunc)
+		buildDialog.focusElement = buildDialogFormFocus
+		buildDialogApp.SetFocus(buildDialog)
+		buildDialogApp.Draw()
+		buildDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTAB, 0, tcell.ModNone))
+		buildDialogApp.Draw()
+		buildDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
+		buildDialogApp.Draw()
+		Expect(buildAction).To(Equal(buildWants))
+	})
+
+	It("build options", func() {
+		buildDialog.focusElement = buildDialogContextDirectoryPathFieldFocus
+		buildDialogApp.SetFocus(buildDialog)
+		buildDialogApp.Draw()
+		buildDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // (256,99,0) c character
+		buildDialogApp.Draw()
+
+		opts, err := buildDialog.ImageBuildOptions()
+		Expect(err).To(BeNil())
+		Expect(opts.BuildOptions.ContextDirectory).To(Equal("c"))
+	})
+
 	It("hide", func() {
 		buildDialog.Hide()
 		Expect(buildDialog.IsDisplay()).To(Equal(false))
