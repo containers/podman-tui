@@ -93,6 +93,37 @@ var _ = Describe("system connection add", Ordered, func() {
 		Expect(connAddDialog.IsDisplay()).To(Equal(false))
 	})
 
+	It("get items", func() {
+		connAddDialog.Hide()
+		connAddDialogApp.Draw()
+		connAddDialog.Display()
+		connAddDialogApp.SetFocus(connAddDialog)
+		connAddDialogApp.Draw()
+
+		connAddDialog.focusElement = connNameFieldFocus
+		connAddDialogApp.SetFocus(connAddDialog)
+		connAddDialogApp.Draw()
+		connAddDialogApp.QueueEvent(tcell.NewEventKey(256, 97, tcell.ModNone)) // a character
+		connAddDialogApp.Draw()
+
+		connAddDialog.focusElement = connURIFieldFocus
+		connAddDialogApp.SetFocus(connAddDialog)
+		connAddDialogApp.Draw()
+		connAddDialogApp.QueueEvent(tcell.NewEventKey(256, 98, tcell.ModNone)) // b character
+		connAddDialogApp.Draw()
+
+		connAddDialog.focusElement = connIdentityFieldFocus
+		connAddDialogApp.SetFocus(connAddDialog)
+		connAddDialogApp.Draw()
+		connAddDialogApp.QueueEvent(tcell.NewEventKey(256, 99, tcell.ModNone)) // c character
+		connAddDialogApp.Draw()
+
+		name, uri, identiry := connAddDialog.GetItems()
+		Expect(name).To(Equal("a"))
+		Expect(uri).To(Equal("b"))
+		Expect(identiry).To(Equal("c"))
+	})
+
 	AfterAll(func() {
 		connAddDialogApp.Stop()
 	})
