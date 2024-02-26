@@ -111,6 +111,187 @@ var _ = Describe("container create", Ordered, func() {
 		Expect(opts.Name).To(Equal("c"))
 	})
 
+	It("setPortPageNextFocus", func() {
+		createDialog.focusElement = createContainerPortPublishFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setPortPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerPortPublishAllFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setPortPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerPortExposeFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setPortPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
+
+	It("setNetworkSettingsPageNextFocus", func() {
+		createDialog.focusElement = createContainerHostnameFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setNetworkSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerIPAddrFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setNetworkSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerMacAddrFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setNetworkSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerNetworkFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setNetworkSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
+	It("setSecurityOptionsPageNextFocus", func() {
+		createDialog.focusElement = createcontainerSecLabelFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerApprarmorFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerSeccompFeildFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createcontainerSecMaskFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createcontainerSecUnmaskFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createcontainerSecNoNewPrivFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setSecurityOptionsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
+
+	It("setUserGroupsPageNextFocus", func() {
+		createDialog.focusElement = createContainerUserFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setUserGroupsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerHostUsersFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setUserGroupsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerPasswdEntryFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setUserGroupsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerGroupEntryFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setUserGroupsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
+	It("setContainerInfoPageNextFocus", func() {
+		createDialog.focusElement = createContainerNameFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerImageFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createcontainerPodFieldFocis))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerLabelsFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerPrivilegedFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerRemoveFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerTimeoutFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
+
+	It("setEnvironmentPageNextFocus", func() {
+		createDialog.focusElement = createContainerWorkDirFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerEnvVarsFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerEnvFileFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerEnvMergeFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerUnsetEnvFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerEnvHostFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerUnsetEnvAllFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerUmaskFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setEnvironmentPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
+	})
+
 	It("hide", func() {
 		createDialog.Hide()
 		Expect(createDialog.IsDisplay()).To(Equal(false))
