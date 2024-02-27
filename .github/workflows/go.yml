@@ -47,7 +47,7 @@ jobs:
           make test-unit
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: .coverage/coverprofile
           token: ${{ secrets.CODECOV_TOKEN }}
