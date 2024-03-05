@@ -79,7 +79,7 @@ func NewSystem() *System {
 	sys.connTable.SetSelectable(true, false)
 
 	for i := 0; i < len(sys.connTableHeaders); i++ {
-		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i]))
+		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i])) //nolint:perfsprint
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
 				SetExpansion(1).
@@ -114,6 +114,7 @@ func NewSystem() *System {
 	// set confirm dialogs functions.
 	sys.confirmDialog.SetSelectedFunc(func() {
 		sys.confirmDialog.Hide()
+
 		switch sys.confirmData {
 		case "prune":
 			sys.prune()

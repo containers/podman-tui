@@ -753,6 +753,7 @@ func (d *ImageBuildDialog) Focus(delegate func(p tview.Primitive)) { //nolint:go
 func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,gocyclo,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image build dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.Key {
 			if !(d.pullPolicyField.HasFocus() || d.networkField.HasFocus() || d.formatField.HasFocus()) {
 				d.cancelHandler()
@@ -793,6 +794,7 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 				if event.Key() == utils.SwitchFocusKey.Key {
 					d.setNetworkingPageNextFocus()
 				}
+
 				handler(event, setFocus)
 
 				return

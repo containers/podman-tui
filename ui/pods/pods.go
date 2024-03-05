@@ -102,12 +102,12 @@ func NewPods() *Pods {
 
 	for i := 0; i < len(pods.headers); i++ {
 		pods.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(pods.headers[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(pods.headers[i]))). //nolint:perfsprint
+														SetExpansion(1).
+														SetBackgroundColor(style.PageHeaderBgColor).
+														SetTextColor(style.PageHeaderFgColor).
+														SetAlign(tview.AlignLeft).
+														SetSelectable(false))
 	}
 
 	pods.table.SetFixed(1, 1)
@@ -135,6 +135,7 @@ func NewPods() *Pods {
 	// set confirm dialogs functions
 	pods.confirmDialog.SetSelectedFunc(func() {
 		pods.confirmDialog.Hide()
+
 		switch pods.confirmData {
 		case "prune":
 			pods.prune()

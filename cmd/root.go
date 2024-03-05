@@ -29,7 +29,7 @@ func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
-func run(cmd *cobra.Command, args []string) error { //nolint:cyclop
+func run(cmd *cobra.Command, args []string) error { //nolint:cyclop,revive
 	var (
 		logOutput = io.Discard
 		runLog    = fmt.Sprintf("starting %s version %s", appName, appVersion)

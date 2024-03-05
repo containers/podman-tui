@@ -968,28 +968,28 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 
 	apparmor := strings.TrimSpace(d.podApparmorField.GetText())
 	if apparmor != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor))
+		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor)) //nolint:perfsprint
 	}
 
 	seccomp := strings.TrimSpace(d.podSeccompField.GetText())
 	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp))
+		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp)) //nolint:perfsprint
 	}
 
 	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
-			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel))
+			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel)) //nolint:perfsprint
 		}
 	}
 
 	mask := strings.TrimSpace(d.podMaskField.GetText())
 	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask))
+		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask)) //nolint:perfsprint
 	}
 
 	unmask := strings.TrimSpace(d.podUnmaskField.GetText())
 	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask))
+		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask)) //nolint:perfsprint
 	}
 
 	opts := pods.CreateOptions{

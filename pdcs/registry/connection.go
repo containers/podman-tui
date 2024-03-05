@@ -40,8 +40,8 @@ func GetConnection() (context.Context, error) {
 
 		ctx := context.Background()
 		ctx, cancel := context.WithCancel(ctx)
-		conn, err = bindings.NewConnectionWithIdentity(ctx, connURI.String(), ConnectionIdentity(), false)
 
+		conn, err = bindings.NewConnectionWithIdentity(ctx, connURI.String(), ConnectionIdentity(), false)
 		if err != nil {
 			cancel()
 

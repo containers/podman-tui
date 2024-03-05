@@ -2,6 +2,7 @@ package sysinfo
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/system"
@@ -124,12 +125,12 @@ func (dfsum *DfSummary) Type() string {
 
 // Total returns total value of df summary.
 func (dfsum *DfSummary) Total() string {
-	return fmt.Sprintf("%d", dfsum.total)
+	return strconv.Itoa(dfsum.total)
 }
 
 // Active returns active value of df summary.
 func (dfsum *DfSummary) Active() string {
-	return fmt.Sprintf("%d", dfsum.active)
+	return strconv.Itoa(dfsum.active)
 }
 
 // Size returns size value of df summary.

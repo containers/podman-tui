@@ -680,7 +680,8 @@ func (cnt *Containers) rm() {
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	containerItem := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s(%s)", fgColor, bgColor, cntID, cntName)
-	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", containerItem)
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", //nolint:perfsprint
+		containerItem)
 
 	cnt.confirmDialog.SetText(description)
 	cnt.confirmDialog.Display()

@@ -216,7 +216,8 @@ func (nets *Networks) rm() {
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	networkItem := fmt.Sprintf("[%s:%s:b]NETWORK ID:[:-:-] %s (%s)", fgColor, bgColor, netID, netName)
 
-	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected network?", networkItem)
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected network?", //nolint:perfsprint
+		networkItem)
 	nets.confirmDialog.SetText(description)
 	nets.confirmDialog.Display()
 }

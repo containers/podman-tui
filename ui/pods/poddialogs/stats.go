@@ -387,7 +387,7 @@ func (d *PodStatsDialog) getStatsQueryOptions() *ppods.StatsOptions {
 	return opts
 }
 
-func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
+func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) { //nolint:revive
 	if index == -1 {
 		return
 	}
@@ -406,7 +406,7 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 	go d.query()
 }
 
-func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) {
+func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) { //nolint:revive
 	if index == -1 {
 		return
 	}

@@ -70,12 +70,12 @@ func (vols *Volumes) initUI() {
 
 	for i := 0; i < len(vols.headers); i++ {
 		vols.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
+														SetExpansion(1).
+														SetBackgroundColor(style.PageHeaderBgColor).
+														SetTextColor(style.PageHeaderFgColor).
+														SetAlign(tview.AlignLeft).
+														SetSelectable(false))
 	}
 
 	vols.table.SetFixed(1, 1)
@@ -99,6 +99,7 @@ func (vols *Volumes) initUI() {
 	// set confirm dialogs functions
 	vols.confirmDialog.SetSelectedFunc(func() {
 		vols.confirmDialog.Hide()
+
 		switch vols.confirmData {
 		case "prune":
 			vols.prune()

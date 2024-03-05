@@ -289,6 +289,7 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint
 
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				// d.pullSelectHandler()
 				return nil
@@ -354,6 +355,7 @@ func (d *NetworkCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint
 func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("network create dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 

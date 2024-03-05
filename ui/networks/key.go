@@ -11,6 +11,7 @@ import (
 func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return nets.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: networks event %v received", event)
+
 		if nets.progressDialog.IsDisplay() {
 			return
 		}
@@ -77,6 +78,7 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 
 				return
 			}
+
 			if event.Key() == utils.DeleteKey.EventKey() {
 				nets.rm()
 				setFocus(nets)

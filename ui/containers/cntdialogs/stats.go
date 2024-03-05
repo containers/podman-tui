@@ -349,7 +349,7 @@ func (d *ContainerStatsDialog) setContainerPID(pids uint64) {
 	defer d.mu.Unlock()
 
 	if pids != 0 {
-		cntPIDS = fmt.Sprintf("%d", pids)
+		cntPIDS = fmt.Sprintf("%d", pids) //nolint:perfsprint
 	}
 
 	d.table.GetCell(containerPidsCell.row, containerPidsCell.col).SetText(cntPIDS).SetTextColor(fgColor)

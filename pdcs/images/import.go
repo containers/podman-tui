@@ -39,7 +39,9 @@ func Import(opts ImageImportOptions) (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		defer tarFile.Close()
+
 		reader = bufio.NewReader(tarFile)
 	}
 

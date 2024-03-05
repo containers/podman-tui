@@ -76,12 +76,12 @@ func NewNetworks() *Networks {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
+													SetExpansion(1).
+													SetBackgroundColor(style.PageHeaderBgColor).
+													SetTextColor(style.PageHeaderFgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	nets.table.SetFixed(1, 1)
@@ -104,6 +104,7 @@ func NewNetworks() *Networks {
 	// set confirm dialogs functions
 	nets.confirmDialog.SetSelectedFunc(func() {
 		nets.confirmDialog.Hide()
+
 		switch nets.confirmData {
 		case "prune":
 			nets.prune()
