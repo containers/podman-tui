@@ -29,7 +29,7 @@ const (
 	// identify working containers.
 	Package = "buildah"
 	// Version for the Package. Also used by .packit.sh for Packit builds.
-	Version = "1.33.5"
+	Version = "1.34.1"
 
 	// DefaultRuntime if containers.conf fails.
 	DefaultRuntime = "runc"
@@ -53,6 +53,9 @@ const (
 	// SNP is a known trusted execution environment type: AMD-SNP (SEV secure nested pages) (requires epyc 3000 "milan")
 	SNP TeeType = "snp"
 )
+
+// DefaultRlimitValue is the value set by default for nofile and nproc
+const RLimitDefaultValue = uint64(1048576)
 
 // TeeType is a supported trusted execution environment type.
 type TeeType string
@@ -121,7 +124,7 @@ type ConfidentialWorkloadOptions struct {
 	AttestationURL           string
 	CPUs                     int
 	Memory                   int
-	TempDir                  string
+	TempDir                  string // used for the temporary plaintext copy of the disk image
 	TeeType                  TeeType
 	IgnoreAttestationErrors  bool
 	WorkloadID               string
