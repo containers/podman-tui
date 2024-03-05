@@ -74,7 +74,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	cntInfoLabel := "CONTAINER ID:" //nolint:goconst
 
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
+	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel) //nolint:goconst
 	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.

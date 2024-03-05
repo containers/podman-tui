@@ -152,6 +152,7 @@ func (d *ConnectDialog) Draw(screen tcell.Screen) {
 func (d *ConnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("connection progress dialog: event %v received", event)
+
 		if cancelButtonHandler := d.cancelButton.InputHandler(); cancelButtonHandler != nil {
 			cancelButtonHandler(event, setFocus)
 
@@ -162,7 +163,7 @@ func (d *ConnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 
 // SetDestinationName sets progress bar title destination name.
 func (d *ConnectDialog) SetDestinationName(name string) {
-	title := fmt.Sprintf("connecting to %s", name)
+	title := fmt.Sprintf("connecting to %s", name) //nolint:perfsprint
 
 	d.layout.SetTitle(title)
 }

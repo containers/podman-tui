@@ -1,7 +1,7 @@
 package images
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v4/pkg/bindings/images"
@@ -29,7 +29,7 @@ func Search(term string) ([][]string, error) {
 			sReport.Index,
 			sReport.Name,
 			sReport.Description,
-			fmt.Sprintf("%d", sReport.Stars),
+			strconv.Itoa(sReport.Stars),
 			sReport.Official,
 			sReport.Automated,
 		})

@@ -227,6 +227,7 @@ func (d *ImageSaveDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *ImageSaveDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image save dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			if !d.format.HasFocus() {
 				d.cancelHandler()

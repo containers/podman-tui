@@ -204,6 +204,7 @@ func (addDialog *AddConnectionDialog) Focus(delegate func(p tview.Primitive)) {
 func (addDialog *AddConnectionDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return addDialog.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("connection create dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.EventKey() {
 			addDialog.cancelHandler()
 

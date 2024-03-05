@@ -168,6 +168,7 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				return nil
 			}
@@ -191,6 +192,7 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("volume create dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 

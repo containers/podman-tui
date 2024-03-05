@@ -115,7 +115,8 @@ func (vols *Volumes) removePrep() {
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	volumeItem := fmt.Sprintf("[%s:%s:b]VOLUME NAME:[:-:-] %s", fgColor, bgColor, volID)
-	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected volume?", volumeItem)
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected volume?", //nolint:perfsprint
+		volumeItem)
 
 	vols.confirmDialog.SetText(description)
 	vols.confirmDialog.Display()

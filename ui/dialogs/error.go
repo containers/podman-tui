@@ -29,7 +29,7 @@ func NewErrorDialog() *ErrorDialog {
 
 	dialog.modal.SetButtonBackgroundColor(style.ErrorDialogButtonBgColor)
 
-	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) { //nolint:revive
 		dialog.Hide()
 	})
 
@@ -78,6 +78,7 @@ func (d *ErrorDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *ErrorDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("error dialog: event %v received", event)
+
 		if modalHandler := d.modal.InputHandler(); modalHandler != nil {
 			modalHandler(event, setFocus)
 
@@ -115,7 +116,7 @@ func (d *ErrorDialog) Draw(screen tcell.Screen) {
 
 // SetDoneFunc sets modal done function.
 func (d *ErrorDialog) SetDoneFunc(handler func()) *ErrorDialog {
-	d.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+	d.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) { //nolint:revive
 		handler()
 	})
 

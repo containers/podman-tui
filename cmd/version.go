@@ -15,7 +15,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: fmt.Sprintf("Display %s version and exit.\n", appName),
 	Long:  fmt.Sprintf("Display %s version and exit.\n", appName),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, args []string) { //nolint:revive
 		fmt.Printf("%s v%s\n", appName, appVersion) //nolint:forbidigo
 	},
 }

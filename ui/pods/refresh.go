@@ -2,6 +2,7 @@ package pods
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,12 +20,12 @@ func (pods *Pods) refresh() {
 
 	for i := 0; i < len(pods.headers); i++ {
 		pods.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(pods.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(pods.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(style.PageHeaderBgColor).
+													SetTextColor(style.PageHeaderFgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	rowIndex := 1
@@ -44,7 +45,7 @@ func (pods *Pods) refresh() {
 			podInfraID = podInfraID[0:utils.IDLength]
 		}
 
-		podNumCtn := fmt.Sprintf("%d", len(podList[i].Containers))
+		podNumCtn := strconv.Itoa(len(podList[i].Containers))
 
 		cellTextColor := style.FgColor
 

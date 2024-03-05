@@ -453,6 +453,7 @@ func (d *ContainerExecDialog) Focus(delegate func(p tview.Primitive)) { //nolint
 
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				d.execHandler()
 

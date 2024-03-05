@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/containers/podman/v4/libpod/define"
 	"github.com/containers/podman/v4/pkg/domain/entities"
@@ -14,13 +14,13 @@ const (
 
 var (
 	// ErrEmptyVolDest empty volume destination error.
-	ErrEmptyVolDest = fmt.Errorf("volume destination cannot be empty")
+	ErrEmptyVolDest = errors.New("volume destination cannot be empty")
 	// ErrTopPodNotRunning top error while pod not running.
-	ErrTopPodNotRunning = fmt.Errorf("pods top can only be used on running pods")
+	ErrTopPodNotRunning = errors.New("pods top can only be used on running pods")
 	// ErrInvalidIPAddress invalid IP address error.
-	ErrInvalidIPAddress = fmt.Errorf("invalid IP address")
+	ErrInvalidIPAddress = errors.New("invalid IP address")
 	// ErrInvalidDNSAddress invalid DNS server address error.
-	ErrInvalidDNSAddress = fmt.Errorf("invalid DNS address")
+	ErrInvalidDNSAddress = errors.New("invalid DNS address")
 )
 
 // DefineCreateDefaults sets default container create options.

@@ -179,7 +179,7 @@ func (d *SimpleInputDialog) SetLabel(text string) {
 
 	d.input.SetFieldWidth(d.inputWidth)
 
-	label := fmt.Sprintf("%s: ", text)
+	label := fmt.Sprintf("%s: ", text) //nolint:perfsprint
 
 	d.input.SetLabel(label)
 }
@@ -228,6 +228,7 @@ func (d *SimpleInputDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *SimpleInputDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("input dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc {
 			d.cancelHandler()
 

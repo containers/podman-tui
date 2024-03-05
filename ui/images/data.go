@@ -47,12 +47,12 @@ func (img *Images) ClearData() {
 
 	for i := 0; i < len(img.headers); i++ {
 		img.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(bgColor).
+													SetTextColor(fgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	img.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(img.title)))

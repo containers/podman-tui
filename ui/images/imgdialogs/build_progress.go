@@ -113,7 +113,7 @@ func (d *ImageBuildProgressDialog) Focus(delegate func(p tview.Primitive)) {
 
 // InputHandler returns input handler function for this primitive.
 func (d *ImageBuildProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:revive
 		log.Debug().Msgf("image build progress dialog: event %v received", event)
 	})
 }

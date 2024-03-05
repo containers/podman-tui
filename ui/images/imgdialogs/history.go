@@ -126,6 +126,7 @@ func (d *ImageHistoryDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image history dialog: event %v received", event)
+
 		if event.Key() == tcell.KeyEsc || event.Key() == tcell.KeyEnter {
 			d.cancelHandler()
 

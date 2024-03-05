@@ -234,6 +234,7 @@ func (d *NetworkConnectDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *NetworkConnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("network connect dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.Key {
 			if !d.container.HasFocus() {
 				d.cancelHandler()

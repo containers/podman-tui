@@ -110,12 +110,12 @@ func NewImages() *Images {
 
 	for i := 0; i < len(images.headers); i++ {
 		imgTable.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(images.headers[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(images.headers[i]))). //nolint:perfsprint
+														SetExpansion(1).
+														SetBackgroundColor(style.PageHeaderBgColor).
+														SetTextColor(style.PageHeaderFgColor).
+														SetAlign(tview.AlignLeft).
+														SetSelectable(false))
 	}
 
 	imgTable.SetFixed(1, 1)
@@ -148,6 +148,7 @@ func NewImages() *Images {
 	// set confirm dialogs functions
 	images.confirmDialog.SetSelectedFunc(func() {
 		images.confirmDialog.Hide()
+
 		switch images.confirmData {
 		case "prune":
 			images.prune()

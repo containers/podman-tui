@@ -11,6 +11,7 @@ import (
 func (vols *Volumes) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return vols.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: volumes event %v received", event)
+
 		if vols.progressDialog.IsDisplay() {
 			return
 		}

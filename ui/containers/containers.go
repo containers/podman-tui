@@ -133,12 +133,12 @@ func NewContainers() *Containers {
 
 	for i := 0; i < len(containers.headers); i++ {
 		containers.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(containers.headers[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(containers.headers[i]))). //nolint:perfsprint
+															SetExpansion(1).
+															SetBackgroundColor(style.PageHeaderBgColor).
+															SetTextColor(style.PageHeaderFgColor).
+															SetAlign(tview.AlignLeft).
+															SetSelectable(false))
 	}
 
 	containers.table.SetFixed(1, 1)
@@ -164,6 +164,7 @@ func NewContainers() *Containers {
 	// set confirm dialogs functions
 	containers.confirmDialog.SetSelectedFunc(func() {
 		containers.confirmDialog.Hide()
+
 		switch containers.confirmData {
 		case "prune":
 			containers.prune()

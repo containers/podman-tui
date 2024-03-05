@@ -284,6 +284,7 @@ func (d *ImageSearchDialog) Focus(delegate func(p tview.Primitive)) { //nolint:c
 
 				return nil
 			}
+
 			if event.Key() == tcell.KeyEnter {
 				d.pullSelectHandler()
 

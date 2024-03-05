@@ -26,12 +26,12 @@ func (nets *Networks) UpdateData() {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(style.PageHeaderBgColor).
+													SetTextColor(style.PageHeaderFgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	rowIndex := 1
@@ -75,12 +75,12 @@ func (nets *Networks) ClearData() {
 
 	for i := 0; i < len(nets.headers); i++ {
 		nets.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(bgColor).
+													SetTextColor(fgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	nets.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(nets.title)))

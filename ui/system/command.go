@@ -201,7 +201,8 @@ func (sys *System) cremove() {
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	serviceItem := fmt.Sprintf("[%s:%s:b]SERVICE NAME:[:-:-] %s", fgColor, bgColor, selectedItem.name)
 
-	confirmMsg := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected service connection ?", serviceItem)
+	confirmMsg := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected service connection ?", //nolint:perfsprint,lll
+		serviceItem)
 	sys.confirmDialog.SetText(confirmMsg)
 	sys.confirmDialog.Display()
 }

@@ -66,10 +66,10 @@ func NewHelp(appName string, appVersion string) *Help {
 		}
 
 		keyinfo.SetCell(rowIndex, colIndex,
-			tview.NewTableCell(fmt.Sprintf("%s:", utils.UIKeysBindings[i].KeyLabel)).
-				SetAlign(tview.AlignRight).
-				SetBackgroundColor(bgColor).
-				SetSelectable(true).SetTextColor(headerColor))
+			tview.NewTableCell(fmt.Sprintf("%s:", utils.UIKeysBindings[i].KeyLabel)). //nolint:perfsprint
+													SetAlign(tview.AlignRight).
+													SetBackgroundColor(bgColor).
+													SetSelectable(true).SetTextColor(headerColor))
 
 		keyinfo.SetCell(rowIndex, colIndex+1,
 			tview.NewTableCell(utils.UIKeysBindings[i].KeyDesc).

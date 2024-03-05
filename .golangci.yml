@@ -12,6 +12,7 @@ linters:
     - wrapcheck
     - execinquery
     - funlen
+    - depguard
     # generics disabled
     - wastedassign
     - rowserrcheck

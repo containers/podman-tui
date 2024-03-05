@@ -90,7 +90,7 @@ func (d *ProgressDialog) IsDisplay() bool {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *ProgressDialog) Focus(delegate func(p tview.Primitive)) {}
+func (d *ProgressDialog) Focus(delegate func(p tview.Primitive)) {} //nolint:revive
 
 // HasFocus returns whether or not this primitive has focus.
 func (d *ProgressDialog) HasFocus() bool {
@@ -99,7 +99,7 @@ func (d *ProgressDialog) HasFocus() bool {
 
 // InputHandler returns input handler function for this primitive.
 func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:revive
 		log.Debug().Msgf("progress dialog: event %v received", event)
 	})
 }
@@ -120,14 +120,14 @@ func (d *ProgressDialog) tickStr(max int) string {
 	prgStr := ""
 
 	for i := 0; i < d.counterValue; i++ {
-		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell)
+		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
 		hWidth++
 	}
 
 	prgStr = prgCell + prgCell + prgCell + prgCell
 
 	for i := 0; i < max+hWidth+4; i++ {
-		prgEndStr += fmt.Sprintf("[black::]%s", prgCell)
+		prgEndStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
 	}
 
 	progress := fmt.Sprintf("%s[%s::]%s%s", prgHeadStr, barColor, prgStr, prgEndStr)

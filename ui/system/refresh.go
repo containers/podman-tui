@@ -23,7 +23,7 @@ func (sys *System) refresh() {
 			headerAlignment = defaultAlignment
 		}
 
-		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i]))
+		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i])) //nolint:perfsprint
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
 				SetExpansion(1).

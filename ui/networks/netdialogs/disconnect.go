@@ -168,6 +168,7 @@ func (d *NetworkDisconnectDialog) Focus(delegate func(p tview.Primitive)) {
 func (d *NetworkDisconnectDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("network disconnect dialog: event %v received", event)
+
 		if event.Key() == utils.CloseDialogKey.Key {
 			if !d.container.HasFocus() {
 				d.cancelHandler()

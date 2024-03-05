@@ -54,7 +54,7 @@ func NewInfoBar() *InfoBar {
 		tview.NewTableCell(fmt.Sprintf("[%s::]%s", headerColor, "Connection:")),
 	)
 
-	disconnectStatus := fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark)
+	disconnectStatus := fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark) //nolint:perfsprint
 	table.SetCell(connectionCellRow, dataCol2Index, tview.NewTableCell(disconnectStatus))
 
 	table.SetCell(
@@ -168,11 +168,11 @@ func (info *InfoBar) UpdateConnStatus(status registry.ConnStatus) {
 
 	switch info.connStatus {
 	case registry.ConnectionStatusConnected:
-		connStatus = fmt.Sprintf("%s STATUS_OK", style.HeavyGreenCheckMark)
+		connStatus = fmt.Sprintf("%s STATUS_OK", style.HeavyGreenCheckMark) //nolint:perfsprint
 	case registry.ConnectionStatusConnectionError:
-		connStatus = fmt.Sprintf("%s STATUS_ERROR", style.HeavyRedCrossMark)
+		connStatus = fmt.Sprintf("%s STATUS_ERROR", style.HeavyRedCrossMark) //nolint:perfsprint
 	default:
-		connStatus = fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark)
+		connStatus = fmt.Sprintf("%s DISCONNECTED", style.HeavyRedCrossMark) //nolint:perfsprint
 	}
 
 	info.table.GetCell(connectionCellRow, dataCol2Index).SetText(connStatus)

@@ -308,6 +308,7 @@ func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 				return
 			}
 		}
+
 		if d.compress.HasFocus() {
 			if compressHandler := d.compress.InputHandler(); compressHandler != nil {
 				compressHandler(event, setFocus)
@@ -332,6 +333,7 @@ func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 				return
 			}
 		}
+
 		if d.authFile.HasFocus() {
 			if authFileHandler := d.authFile.InputHandler(); authFileHandler != nil {
 				authFileHandler(event, setFocus)
@@ -347,6 +349,7 @@ func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 				return
 			}
 		}
+
 		if d.password.HasFocus() {
 			if passwordHandler := d.password.InputHandler(); passwordHandler != nil {
 				passwordHandler(event, setFocus)

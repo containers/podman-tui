@@ -49,7 +49,7 @@ func (c *Config) add(name string, newService Service) error {
 
 // most of codes are from:
 // https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go.
-func validateNewService(name string, dest string, identity string) (Service, error) { //nolint:gocognit,cyclop
+func validateNewService(name string, dest string, identity string) (Service, error) { //nolint:cyclop
 	var (
 		service         Service
 		serviceIdentity string
@@ -63,7 +63,7 @@ func validateNewService(name string, dest string, identity string) (Service, err
 		return service, ErrEmptyURIDestination
 	}
 
-	if match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)); err != nil {
+	if match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)); err != nil { //nolint:mirror
 		return service, fmt.Errorf("%w invalid destition", err)
 	} else if !match {
 		dest = "ssh://" + dest

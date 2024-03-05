@@ -49,12 +49,12 @@ func (vols *Volumes) ClearData() {
 
 	for i := 0; i < len(vols.headers); i++ {
 		vols.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(bgColor).
+													SetTextColor(fgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))

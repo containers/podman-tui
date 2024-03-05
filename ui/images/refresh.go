@@ -18,12 +18,12 @@ func (img *Images) refresh() {
 
 	for i := 0; i < len(img.headers); i++ {
 		img.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(style.PageHeaderBgColor).
-				SetTextColor(style.PageHeaderFgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(style.PageHeaderBgColor).
+													SetTextColor(style.PageHeaderFgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	rowIndex := 1

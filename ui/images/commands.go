@@ -267,7 +267,7 @@ func (img *Images) rm() {
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	imageItem := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)", fgColor, bgColor, imageID, imageName)
-	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected image?", imageItem)
+	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected image?", imageItem) //nolint:perfsprint
 
 	img.confirmDialog.SetText(description)
 	img.confirmDialog.Display()

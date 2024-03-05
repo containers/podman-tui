@@ -51,12 +51,12 @@ func (cnt *Containers) ClearData() {
 
 	for i := 0; i < len(cnt.headers); i++ {
 		cnt.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))).
-				SetExpansion(expand).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
+			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))). //nolint:perfsprint
+													SetExpansion(expand).
+													SetBackgroundColor(bgColor).
+													SetTextColor(fgColor).
+													SetAlign(tview.AlignLeft).
+													SetSelectable(false))
 	}
 
 	cnt.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(cnt.title)))
