@@ -2,6 +2,8 @@
 
 - [**Building From Source**](#building-from-source)
 - [**Installing on Linux**](#installing-on-linux)
+  - [**Alpine Linux**](#alpine-linux)
+  - [**AlmaLinux, Rocky Linux**](#almalinux-rocky-linux)
   - [**Arch Linux (AUR)**](#arch-linux-aur)
   - [**CentOS Stream**](#centos-stream)
   - [**Fedora**](#fedora)
@@ -13,7 +15,7 @@
 
 ## Building From Source
 
-podman-tui is using go version >= 1.17.
+podman-tui is using go version >= 1.20.
 
 ```shell
 $ git clone <repository>
@@ -24,10 +26,24 @@ $ make binary-darwin # MacOS
 
 ## Installing on Linux
 
+### Alpine Linux
+
+```shell
+$ sudo apk add podman-tui
+```
+
+### AlmaLinux, Rocky Linux
+
+Enable [EPEL repository](https://docs.fedoraproject.org/en-US/epel/) and then run:
+
+```shell
+$ sudo dnf -y install podman-tui
+```
+
 ### Arch Linux (AUR)
 
 ```shell
-$ yay -S podman-tui
+$ sudo yay -S podman-tui
 ```
 
 ### CentOS Stream
