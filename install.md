@@ -43,7 +43,7 @@ $ sudo dnf -y install podman-tui
 ### Arch Linux (AUR)
 
 ```shell
-$ sudo yay -S podman-tui
+$ yay -S podman-tui
 ```
 
 ### CentOS Stream
