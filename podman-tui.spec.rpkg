@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 0.18.0
-Release: 1%{?dist}
+Version: 0.19.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Mar 16 2024 Navid Yaghoobi <navidys@fedoraproject.org> 0.19.0-dev-1
+
 * Sat Mar 16 2024 Navid Yaghoobi <navidys@fedoraproject.org> 0.18.0-1
 - Resolves Substitute env variables in config file
 - Golangci-lint update 1.56.2
