@@ -7,7 +7,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/docker/go-units"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -241,14 +241,25 @@ func (d *ContainerStatsDialog) startReportReader() {
 
 				if len(result.Stats) > 0 {
 					metric := result.Stats[0]
+
+					var (
+						netInput  uint64
+						netOutput uint64
+					)
+
+					for _, net := range metric.Network {
+						netInput += net.RxBytes
+						netOutput += net.TxBytes
+					}
+
 					d.setContainerPID(metric.PIDs)
 					d.setContainerMemPerc(metric.MemPerc)
 					d.setContainerMemUsage(metric.MemUsage, metric.MemLimit)
 					d.setContainerCPUPerc(metric.CPU)
 					d.setContainerBlockInput(metric.BlockInput)
 					d.setContainerBlockOutput(metric.BlockOutput)
-					d.setContainerNetInput(metric.NetInput)
-					d.setContainerNetOutput(metric.NetOutput)
+					d.setContainerNetInput(netInput)
+					d.setContainerNetOutput(netOutput)
 				}
 
 			case <-d.doneChan:

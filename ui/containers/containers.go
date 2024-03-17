@@ -10,7 +10,7 @@ import (
 	"github.com/containers/podman-tui/ui/containers/cntdialogs/vterm"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
 

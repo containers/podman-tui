@@ -6,8 +6,8 @@ import (
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/common/libnetwork/util"
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v4/pkg/bindings/network"
-	"github.com/containers/podman/v4/pkg/errorhandling"
+	"github.com/containers/podman/v5/pkg/bindings/network"
+	"github.com/containers/podman/v5/pkg/errorhandling"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

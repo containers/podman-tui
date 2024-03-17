@@ -24,7 +24,9 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Enter"
 
-    run_helper podman container inspect $TEST_CONTAINER_NAME  --format "{{ .NetworkSettings.Networks.$TEST_NETWORK_CONNECT }}"
+    sleep 2
+
+    run_helper podman container inspect $TEST_CONTAINER_NAME  --format "\"{{ .NetworkSettings.Networks.$TEST_NETWORK_CONNECT }}\""
     assert "$output" =~ "$TEST_NETWORK_CONNECT_ALIAS" "expected $TEST_NETWORK_CONNECT_ALIAS to be in the list of aliases"
 
 }

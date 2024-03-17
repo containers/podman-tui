@@ -133,7 +133,7 @@ load helpers_tui
     sleep 2
     podman_tui_send_inputs "Tab" "Enter"
 
-    run_helper egrep -w "\[\[$image_id.*/bin/sh -c" $PODMAN_TUI_LOG
+    run_helper egrep -w "\[\[$image_id.*BusyBox.*" $PODMAN_TUI_LOG
     assert "$output" =~ "$image_id" "expected $image_id in the history logs"
 }
 

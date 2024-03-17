@@ -6,7 +6,7 @@
 [![Go Report](https://goreportcard.com/badge/github.com/containers/podman-tui)](https://goreportcard.com/report/github.com/containers/podman-tui)
 [![codecov](https://codecov.io/gh/navidys/podman-tui/branch/main/graph/badge.svg)](https://codecov.io/gh/navidys/podman-tui)
 
-Terminal user interface for Podman v4.
+Terminal user interface for Podman v4 and v5.
 
 ![Screenshot](./docs/podman-tui.gif)
 
@@ -19,7 +19,7 @@ Terminal user interface for Podman v4.
 
 ## Overview
 
-podman-tui is a terminal user interface for podman v4 (>=4.0.2).
+podman-tui is a terminal user interface for podman v4 (>=4.0.2) and v5.
 It is using [podman go bindings](https://github.com/containers/podman/tree/main/pkg/bindings) to communicate with local or remote podman machine (through SSH).
 
 ## Installation

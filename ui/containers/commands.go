@@ -8,7 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
-	bcontainers "github.com/containers/podman/v4/pkg/bindings/containers"
+	bcontainers "github.com/containers/podman/v5/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
 

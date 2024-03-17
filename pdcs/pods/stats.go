@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v4/pkg/bindings/pods"
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/bindings/pods"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rs/zerolog/log"
 )
 
