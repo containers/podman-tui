@@ -9,7 +9,7 @@ require (
 	github.com/containers/podman/v5 v5.0.0
 	github.com/containers/storage v1.53.0
 	github.com/distribution/reference v0.5.0
-	github.com/docker/docker v25.0.5+incompatible
+	github.com/docker/docker v26.0.0+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.7.4
 	github.com/hashicorp/go-multierror v1.1.1
@@ -99,6 +99,7 @@ require (
 	github.com/miekg/pkcs11 v1.1.1 // indirect
 	github.com/mistifyio/go-zfs/v3 v3.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/sys/mountinfo v0.7.1 // indirect
 	github.com/moby/sys/user v0.1.0 // indirect
 	github.com/moby/term v0.5.0 // indirect
