@@ -1,7 +1,7 @@
 package cntdialogs
 
 import (
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

@@ -129,7 +129,6 @@ var _ = Describe("container create", Ordered, func() {
 		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
 	})
 
-
 	It("setNetworkSettingsPageNextFocus", func() {
 		createDialog.focusElement = createContainerHostnameFieldFocus
 		createDialogApp.SetFocus(createDialog)
@@ -185,7 +184,6 @@ var _ = Describe("container create", Ordered, func() {
 		createDialog.setSecurityOptionsPageNextFocus()
 		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
 	})
-
 
 	It("setUserGroupsPageNextFocus", func() {
 		createDialog.focusElement = createContainerUserFieldFocus
@@ -247,7 +245,6 @@ var _ = Describe("container create", Ordered, func() {
 		createDialog.setContainerInfoPageNextFocus()
 		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
 	})
-
 
 	It("setEnvironmentPageNextFocus", func() {
 		createDialog.focusElement = createContainerWorkDirFieldFocus

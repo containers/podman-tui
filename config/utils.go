@@ -13,7 +13,7 @@ import (
 
 	cntssh "github.com/containers/common/pkg/ssh"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v4/libpod/define"
+	"github.com/containers/podman/v5/libpod/define"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"

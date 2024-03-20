@@ -8,7 +8,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/sysinfo"
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/docker/docker/api/types/events"
 	"github.com/rs/zerolog/log"
 )
@@ -149,7 +149,7 @@ func (engine *Engine) EventStatus() bool {
 func (engine *Engine) addEvent(event events.Message) {
 	engine.sysEvents.mu.Lock()
 	engine.sysEvents.hasNewEvent = true
-	engine.sysEvents.eventBuffer = append(engine.sysEvents.eventBuffer, event.Type)
+	engine.sysEvents.eventBuffer = append(engine.sysEvents.eventBuffer, string(event.Type))
 	engine.sysEvents.mu.Unlock()
 }
 
@@ -160,7 +160,7 @@ func (engine *Engine) convertEventToHumanReadable(event events.Message) string {
 	id := event.Actor.ID
 	evtime := time.Unix(event.Time, event.TimeNano).String()
 
-	switch event.Type {
+	switch string(event.Type) {
 	case "container", "pod":
 		humanFormat = fmt.Sprintf("%s %s %s %s (image=%s, name=%s",
 			evtime,

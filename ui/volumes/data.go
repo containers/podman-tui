@@ -6,7 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/style"
-	"github.com/containers/podman/v4/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )
