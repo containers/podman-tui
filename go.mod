@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/containers/buildah v1.35.1
+	github.com/containers/buildah v1.35.2
 	github.com/containers/common v0.58.0
 	github.com/containers/podman/v5 v5.0.0
 	github.com/containers/storage v1.53.0
@@ -87,6 +87,7 @@ require (
 	github.com/klauspost/compress v1.17.7 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	github.com/letsencrypt/boulder v0.0.0-20230907030200-6d76a0f91e1e // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
