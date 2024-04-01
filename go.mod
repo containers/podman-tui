@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.3.2
-	github.com/containers/buildah v1.35.2
+	github.com/containers/buildah v1.35.3
 	github.com/containers/common v0.58.1
 	github.com/containers/podman/v5 v5.0.0
 	github.com/containers/storage v1.53.0
