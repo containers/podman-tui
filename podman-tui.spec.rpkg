@@ -60,7 +60,15 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Wed Mar 20 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.1.0-dev-1
+* Sat May 11 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.1.0-dev-1
+
+* Sat May 11 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.0.1-1
+- Bump github.com/containers/podman/v5 from 5.0.0 to 5.0.3
+- Bump github.com/containers/buildah from 1.35.1 to 1.35.2
+- Bump github.com/containers/common from 0.58.0 to 0.58.2
+- Bump golang.org/x/crypto from 0.21.0 to 0.23.0
+- Bump golang.org/x/net from 0.22.0 to 0.23.0
+- Bump github.com/distribution/reference from 0.5.0 to 0.6.0
 
 * Wed Mar 20 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.0.0-1
 - Podman v5 support (5.0.0)
