@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	"github.com/BurntSushi/toml"
+	"github.com/containers/storage/pkg/fileutils"
 	"github.com/sirupsen/logrus"
 )
 
@@ -101,7 +102,7 @@ func newLocked(options *Options) (*Config, error) {
 	// The _OVERRIDE variable _must_ always win.  That's a contract we need
 	// to honor (for the Podman CI).
 	if path := os.Getenv(containersConfOverrideEnv); path != "" {
-		if _, err := os.Stat(path); err != nil {
+		if err := fileutils.Exists(path); err != nil {
 			return nil, fmt.Errorf("%s file: %w", containersConfOverrideEnv, err)
 		}
 		options.additionalConfigs = append(options.additionalConfigs, path)
@@ -152,21 +153,27 @@ func NewConfig(userConfigPath string) (*Config, error) {
 // file settings.
 func systemConfigs() (configs []string, finalErr error) {
 	if path := os.Getenv(containersConfEnv); path != "" {
-		if _, err := os.Stat(path); err != nil {
+		if err := fileutils.Exists(path); err != nil {
 			return nil, fmt.Errorf("%s file: %w", containersConfEnv, err)
 		}
 		return append(configs, path), nil
 	}
+
 	configs = append(configs, DefaultContainersConfig)
-	configs = append(configs, OverrideContainersConfig)
 
 	var err error
-	configs, err = addConfigs(OverrideContainersConfig+".d", configs)
+	path, err := overrideContainersConfigPath()
+	if err != nil {
+		return nil, err
+	}
+	configs = append(configs, path)
+
+	configs, err = addConfigs(path+".d", configs)
 	if err != nil {
 		return nil, err
 	}
 
-	path, err := userConfigPath()
+	path, err = userConfigPath()
 	if err != nil {
 		return nil, err
 	}

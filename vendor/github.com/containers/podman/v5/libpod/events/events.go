@@ -105,7 +105,7 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 	return humanFormat
 }
 
-// NewEventFromString takes stringified json and converts
+// newEventFromJSONString takes stringified json and converts
 // it to an event
 func newEventFromJSONString(event string) (*Event, error) {
 	e := new(Event)
@@ -231,6 +231,8 @@ func StringToStatus(name string) (Status, error) {
 		return Unpause, nil
 	case Untag.String():
 		return Untag, nil
+	case Update.String():
+		return Update, nil
 	}
 	return "", fmt.Errorf("unknown event status %q", name)
 }
