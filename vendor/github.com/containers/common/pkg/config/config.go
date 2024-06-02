@@ -7,22 +7,20 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strings"
 
 	"github.com/containers/common/internal/attributedstring"
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/common/pkg/capabilities"
+	"github.com/containers/storage/pkg/fileutils"
 	"github.com/containers/storage/pkg/unshare"
 	units "github.com/docker/go-units"
 	selinux "github.com/opencontainers/selinux/go-selinux"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/exp/slices"
 )
 
 const (
-	// _configPath is the path to the containers/containers.conf
-	// inside a given config directory.
-	_configPath = "containers/containers.conf"
 	// UserOverrideContainersConfig holds the containers config path overridden by the rootless user
 	UserOverrideContainersConfig = ".config/" + _configPath
 	// Token prefix for looking for helper binary under $BINDIR
@@ -59,6 +57,8 @@ type Config struct {
 	ConfigMaps ConfigMapConfig `toml:"configmaps"`
 	// Farms defines configurations for the buildfarm farms
 	Farms FarmConfig `toml:"farms"`
+	// Podmansh defined configurations for the podman shell
+	Podmansh PodmanshConfig `toml:"podmansh"`
 
 	loadedModules []string // only used at runtime to store which modules were loaded
 }
@@ -252,8 +252,6 @@ type EngineConfig struct {
 	// and "systemd".
 	CgroupManager string `toml:"cgroup_manager,omitempty"`
 
-	// NOTE: when changing this struct, make sure to update (*Config).Merge().
-
 	// ConmonEnvVars are environment variables to pass to the Conmon binary
 	// when it is launched.
 	ConmonEnvVars attributedstring.Slice `toml:"conmon_env_vars,omitempty"`
@@ -319,6 +317,13 @@ type EngineConfig struct {
 	// graphRoot internal stores the location of the graphroot
 	graphRoot string
 
+	// HealthcheckEvents is set to indicate whenever podman should log healthcheck events.
+	// With many running healthcheck on short interval Podman will spam the event log a lot.
+	// Because this event is optional and only useful to external consumers that may want to
+	// know when a healthcheck is run or failed allow users to turn it off by setting it to false.
+	// Default is true.
+	HealthcheckEvents bool `toml:"healthcheck_events,omitempty"`
+
 	// HelperBinariesDir is a list of directories which are used to search for
 	// helper binaries.
 	HelperBinariesDir attributedstring.Slice `toml:"helper_binaries_dir,omitempty"`
@@ -327,6 +332,11 @@ type EngineConfig struct {
 	// multiple directories, the file in the directory listed last in
 	// this slice takes precedence.
 	HooksDir attributedstring.Slice `toml:"hooks_dir,omitempty"`
+
+	// Location of CDI configuration files. These define mounts devices and
+	// other configs according to the CDI spec. In particular this is used
+	// for GPU passthrough.
+	CdiSpecDirs attributedstring.Slice `toml:"cdi_spec_dirs,omitempty"`
 
 	// ImageBuildFormat (DEPRECATED) indicates the default image format to
 	// building container images. Should use ImageDefaultFormat
@@ -535,6 +545,7 @@ type EngineConfig struct {
 	// PodmanshTimeout is the number of seconds to wait for podmansh logins.
 	// In other words, the timeout for the `podmansh` container to be in running
 	// state.
+	// Deprecated: Use podmansh.Timeout instead. podmansh.Timeout has precedence.
 	PodmanshTimeout uint `toml:"podmansh_timeout,omitempty,omitzero"`
 }
 
@@ -687,6 +698,19 @@ type Destination struct {
 	IsMachine bool `json:",omitempty" toml:"is_machine,omitempty"`
 }
 
+// PodmanshConfig represents configuration for the podman shell
+type PodmanshConfig struct {
+	// Shell to start in container, default: "/bin/sh"
+	Shell string `toml:"shell,omitempty"`
+	// Name of the container the podmansh user should join
+	Container string `toml:"container,omitempty"`
+
+	// Timeout is the number of seconds to wait for podmansh logins.
+	// In other words, the timeout for the `podmansh` container to be in running
+	// state.
+	Timeout uint `toml:"timeout,omitempty,omitzero"`
+}
+
 // Consumes container image's os and arch and returns if any dedicated runtime was
 // configured otherwise returns default runtime.
 func (c *EngineConfig) ImagePlatformToRuntime(os string, arch string) string {
@@ -705,12 +729,22 @@ func (c *Config) CheckCgroupsAndAdjustConfig() {
 		return
 	}
 
-	session := os.Getenv("DBUS_SESSION_BUS_ADDRESS")
-	hasSession := session != ""
-	if hasSession {
+	hasSession := false
+
+	session, found := os.LookupEnv("DBUS_SESSION_BUS_ADDRESS")
+	if !found {
+		sessionAddr := filepath.Join(os.Getenv("XDG_RUNTIME_DIR"), "bus")
+		if err := fileutils.Exists(sessionAddr); err == nil {
+			sessionAddr, err = filepath.EvalSymlinks(sessionAddr)
+			if err == nil {
+				os.Setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path="+sessionAddr)
+				hasSession = true
+			}
+		}
+	} else {
 		for _, part := range strings.Split(session, ",") {
 			if strings.HasPrefix(part, "unix:path=") {
-				_, err := os.Stat(strings.TrimPrefix(part, "unix:path="))
+				err := fileutils.Exists(strings.TrimPrefix(part, "unix:path="))
 				hasSession = err == nil
 				break
 			}
@@ -772,10 +806,10 @@ func (m *MachineConfig) URI() string {
 }
 
 func (c *EngineConfig) findRuntime() string {
-	// Search for crun first followed by runc, kata, runsc
+	// Search for crun first followed by runc, runj, kata, runsc, ocijail
 	for _, name := range []string{"crun", "runc", "runj", "kata", "runsc", "ocijail"} {
 		for _, v := range c.OCIRuntimes[name] {
-			if _, err := os.Stat(v); err == nil {
+			if err := fileutils.Exists(v); err == nil {
 				return name
 			}
 		}
@@ -1087,10 +1121,10 @@ func (c *Config) FindHelperBinary(name string, searchPATH bool) (string, error) 
 		return exec.LookPath(name)
 	}
 	configHint := "To resolve this error, set the helper_binaries_dir key in the `[engine]` section of containers.conf to the directory containing your helper binaries."
-	if len(c.Engine.HelperBinariesDir.Get()) == 0 {
+	if len(dirList) == 0 {
 		return "", fmt.Errorf("could not find %q because there are no helper binary directories configured.  %s", name, configHint)
 	}
-	return "", fmt.Errorf("could not find %q in one of %v.  %s", name, c.Engine.HelperBinariesDir, configHint)
+	return "", fmt.Errorf("could not find %q in one of %v.  %s", name, dirList, configHint)
 }
 
 // ImageCopyTmpDir default directory to store temporary image files during copy
@@ -1184,8 +1218,18 @@ func (c *Config) FindInitBinary() (string, error) {
 		return c.Engine.InitPath, nil
 	}
 	// keep old default working to guarantee backwards compat
-	if _, err := os.Stat(DefaultInitPath); err == nil {
+	if err := fileutils.Exists(DefaultInitPath); err == nil {
 		return DefaultInitPath, nil
 	}
 	return c.FindHelperBinary(defaultInitName, true)
+}
+
+// PodmanshTimeout returns the timeout in seconds for podmansh to connect to the container.
+// Returns podmansh.Timeout if set, otherwise engine.PodmanshTimeout for backwards compatibility.
+func (c *Config) PodmanshTimeout() uint {
+	// podmansh.Timeout has precedence, if set
+	if c.Podmansh.Timeout > 0 {
+		return c.Podmansh.Timeout
+	}
+	return c.Engine.PodmanshTimeout
 }
