@@ -81,7 +81,7 @@ github.com/containerd/stargz-snapshotter/estargz/errorutil
 # github.com/containers/buildah v1.36.0
 ## explicit; go 1.21
 github.com/containers/buildah/define
-# github.com/containers/common v0.59.0
+# github.com/containers/common v0.59.1
 ## explicit; go 1.21
 github.com/containers/common/internal
 github.com/containers/common/internal/attributedstring
@@ -199,7 +199,7 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/containers/podman/v5 v5.1.0
+# github.com/containers/podman/v5 v5.1.1
 ## explicit; go 1.21
 github.com/containers/podman/v5/cmd/podman/parse
 github.com/containers/podman/v5/libpod/define
