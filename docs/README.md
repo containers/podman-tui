@@ -1,13 +1,4 @@
-# Podman TUI Documents
-
-- [**Key Bindings**](#key-bindings)
-- [**Available Podman Commands**](#available-podman-commands)
-  - [**system commands**](#system)
-  - [**pod commands**](#pod)
-  - [**container commands**](#container)
-  - [**volume commands**](#volume)
-  - [**image commands**](#image)
-  - [**network commands**](#network)
+# Documents
 
 ## Key Bindings
 
@@ -35,3 +26,4 @@ podman-tui uses following keyboard keys for different actions:
 | Display volumes screen           | F5         |
 | Display images screen            | F6         |
 | Display networks screen          | F7         |
+| Display secrets screen           | F8         |

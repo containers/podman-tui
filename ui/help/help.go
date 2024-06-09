@@ -54,7 +54,7 @@ func NewHelp(appName string, appVersion string) *Help {
 	rowIndex := 0
 	colIndex := 0
 	needInit := true
-	maxRowIndex := len(utils.UIKeysBindings) / 2 //nolint:gomnd
+	maxRowIndex := len(utils.UIKeysBindings)/2 + 1 //nolint:gomnd
 
 	for i := 0; i < len(utils.UIKeysBindings); i++ {
 		if i >= maxRowIndex {

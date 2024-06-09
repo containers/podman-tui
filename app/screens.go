@@ -28,6 +28,8 @@ func (app *App) frontScreenHasActiveDialog() bool {
 		return app.images.SubDialogHasFocus()
 	case app.volumes.GetTitle():
 		return app.volumes.SubDialogHasFocus()
+	case app.secrets.GetTitle():
+		return app.secrets.SubDialogHasFocus()
 	}
 
 	return false
@@ -38,9 +40,9 @@ func (app *App) switchToPreviousScreen() {
 
 	switch app.currentPage {
 	case app.help.GetTitle():
-		previousScreen = app.networks.GetTitle()
+		previousScreen = app.secrets.GetTitle()
 	case app.system.GetTitle():
-		previousScreen = app.networks.GetTitle()
+		previousScreen = app.secrets.GetTitle()
 	case app.pods.GetTitle():
 		previousScreen = app.system.GetTitle()
 	case app.containers.GetTitle():
@@ -51,6 +53,8 @@ func (app *App) switchToPreviousScreen() {
 		previousScreen = app.volumes.GetTitle()
 	case app.networks.GetTitle():
 		previousScreen = app.images.GetTitle()
+	case app.secrets.GetTitle():
+		previousScreen = app.networks.GetTitle()
 	}
 
 	app.switchToScreen(previousScreen)
@@ -73,6 +77,8 @@ func (app *App) switchToNextScreen() {
 	case app.images.GetTitle():
 		nextScreen = app.networks.GetTitle()
 	case app.networks.GetTitle():
+		nextScreen = app.secrets.GetTitle()
+	case app.secrets.GetTitle():
 		nextScreen = app.system.GetTitle()
 	}
 
@@ -95,6 +101,8 @@ func (app *App) setPageFocus(page string) {
 		app.Application.SetFocus(app.images)
 	case app.volumes.GetTitle():
 		app.Application.SetFocus(app.volumes)
+	case app.secrets.GetTitle():
+		app.Application.SetFocus(app.secrets)
 	}
 }
 
@@ -117,6 +125,8 @@ func (app *App) updatePageData(page string) {
 		app.images.UpdateData()
 	case app.volumes.GetTitle():
 		app.volumes.UpdateData()
+	case app.secrets.GetTitle():
+		app.secrets.UpdateData()
 	}
 }
 
@@ -132,6 +142,8 @@ func (app *App) updatePageDataFromEvent(eventType string) {
 		app.images.UpdateData()
 	case "volume":
 		app.volumes.UpdateData()
+	case "secrets":
+		app.secrets.UpdateData()
 	}
 }
 
@@ -150,6 +162,9 @@ func (app *App) clearViewsData() {
 
 	app.images.ClearData()
 	app.images.HideAllDialogs()
+
+	app.secrets.ClearData()
+	app.secrets.HideAllDialogs()
 }
 
 func (app *App) clearInfoUIData() {

@@ -44,19 +44,19 @@ func (nets *Networks) UpdateData() {
 		netDriver := netList[i][2]
 
 		// name column
-		nets.table.SetCell(rowIndex, viewNetowrkNameColIndex,
+		nets.table.SetCell(rowIndex, viewNetworkNameColIndex,
 			tview.NewTableCell(netID[:12]).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// version column
-		nets.table.SetCell(rowIndex, viewNetowrkVersionColIndex,
+		nets.table.SetCell(rowIndex, viewNetworkVersionColIndex,
 			tview.NewTableCell(netName).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// plugins at column
-		nets.table.SetCell(rowIndex, viewNetowrkPluginColIndex,
+		nets.table.SetCell(rowIndex, viewNetworkPluginColIndex,
 			tview.NewTableCell(netDriver).
 				SetExpansion(expand).
 				SetAlign(alignment))
