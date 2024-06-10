@@ -374,16 +374,16 @@ func (cnt *Containers) exec() {
 
 	cnt.terminalDialog.SetContainerInfo(cntID, cntName)
 
+	execSessionID, err := containers.NewExecSession(cnt.selectedID, execOpts)
+	if err != nil {
+		title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
+
+		cnt.displayError(title, err)
+
+		return
+	}
+
 	prepareAndExec := func() {
-		execSessionID, err := containers.NewExecSession(cnt.selectedID, execOpts)
-		if err != nil {
-			title := fmt.Sprintf("CONTAINER (%s) EXEC ERROR", cnt.selectedID)
-
-			cnt.displayError(title, err)
-
-			return
-		}
-
 		cnt.terminalDialog.SetSessionID(execSessionID)
 		containers.Exec(execSessionID, execOpts)
 	}
