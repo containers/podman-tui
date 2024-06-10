@@ -12,6 +12,7 @@ import (
 	"github.com/containers/podman-tui/ui/infobar"
 	"github.com/containers/podman-tui/ui/networks"
 	"github.com/containers/podman-tui/ui/pods"
+	"github.com/containers/podman-tui/ui/secrets"
 	"github.com/containers/podman-tui/ui/system"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman-tui/ui/volumes"
@@ -30,6 +31,7 @@ type App struct {
 	volumes         *volumes.Volumes
 	images          *images.Images
 	networks        *networks.Networks
+	secrets         *secrets.Secrets
 	system          *system.System
 	menu            *tview.TextView
 	health          *health.Engine
@@ -68,6 +70,7 @@ func NewApp(name string, version string) *App {
 	app.volumes = volumes.NewVolumes()
 	app.images = images.NewImages()
 	app.networks = networks.NewNetworks()
+	app.secrets = secrets.NewSecrets()
 	app.system = system.NewSystem()
 
 	app.system.SetConnectionListFunc(app.config.ServicesConnections)
@@ -102,6 +105,7 @@ func NewApp(name string, version string) *App {
 		{utils.VolumesScreenKey.Label(), app.volumes.GetTitle()},
 		{utils.ImagesScreenKey.Label(), app.images.GetTitle()},
 		{utils.NetworksScreenKey.Label(), app.networks.GetTitle()},
+		{utils.SecretsScreenKey.Label(), app.secrets.GetTitle()},
 	}
 
 	app.menu = newMenu(menuItems)
@@ -113,6 +117,7 @@ func NewApp(name string, version string) *App {
 	app.pages.AddPage(app.images.GetTitle(), app.images, true, false)
 	app.pages.AddPage(app.volumes.GetTitle(), app.volumes, true, false)
 	app.pages.AddPage(app.networks.GetTitle(), app.networks, true, false)
+	app.pages.AddPage(app.secrets.GetTitle(), app.secrets, true, false)
 
 	return &app
 }
@@ -200,6 +205,12 @@ func (app *App) Run() error { //nolint:cyclop
 			case utils.NetworksScreenKey.EventKey():
 				// networks page
 				app.switchToScreen(app.networks.GetTitle())
+
+				return nil
+
+			case utils.SecretsScreenKey.EventKey():
+				// secrets page
+				app.switchToScreen(app.secrets.GetTitle())
 
 				return nil
 			}

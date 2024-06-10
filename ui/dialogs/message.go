@@ -32,6 +32,7 @@ const (
 	MessageVolumeInfo
 	MessageImageInfo
 	MessageNetworkInfo
+	MessageSecretInfo
 )
 
 // NewMessageDialog returns new message dialog primitive.
@@ -126,6 +127,8 @@ func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, me
 		msgTypeLabel = "IMAGE ID:"
 	case MessageNetworkInfo:
 		msgTypeLabel = "NETWORK ID:"
+	case MessageSecretInfo:
+		msgTypeLabel = "SECRET ID:"
 	}
 
 	if msgTypeLabel != "" {

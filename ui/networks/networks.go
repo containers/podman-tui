@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	viewNetowrkNameColIndex = 0 + iota
-	viewNetowrkVersionColIndex
-	viewNetowrkPluginColIndex
+	viewNetworkNameColIndex = 0 + iota
+	viewNetworkVersionColIndex
+	viewNetworkPluginColIndex
 )
 
 var (

@@ -123,6 +123,11 @@ var (
 		KeyLabel: "F7",
 		KeyDesc:  "display networks screen",
 	}
+	SecretsScreenKey = uiKeyInfo{
+		Key:      tcell.KeyF8,
+		KeyLabel: "F8",
+		KeyDesc:  "display secrets screen",
+	}
 )
 
 // UIKeysBindings user interface key bindings.
@@ -149,6 +154,7 @@ var UIKeysBindings = []uiKeyInfo{
 	VolumesScreenKey,
 	ImagesScreenKey,
 	NetworksScreenKey,
+	SecretsScreenKey,
 }
 
 type uiKeyInfo struct {
