@@ -12,8 +12,14 @@ jobs:
       - openssl-devel
       - rpkg
     targets:
-      - fedora-all
-      - epel-9
+      - fedora-latest-stable
+      - fedora-development
+      - epel-9-x86_64
+      - epel-9-aarch64
+      - centos-stream-9-x86_64
+      - centos-stream-9-aarch64
+      - centos-stream-10-x86_64
+      - centos-stream-10-aarch64
     actions:
       post-upstream-clone:
         - "rpkg spec --outdir ./"
