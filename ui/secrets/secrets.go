@@ -52,7 +52,7 @@ func NewSecrets() *Secrets {
 	secrets.cmdDialog = dialogs.NewCommandDialog([][]string{
 		// {"create", "create a new secret"},
 		{"inspect", "inspect a secret"},
-		{"rm", "remove a secret"},
+		// {"rm", "remove a secret"},
 	})
 
 	secrets.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(secrets.title)))
