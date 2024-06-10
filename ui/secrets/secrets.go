@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/ui/dialogs"
+	"github.com/containers/podman-tui/ui/secrets/secdialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 )
@@ -19,8 +20,10 @@ const (
 )
 
 var (
-	errNoSecretRemove  = errors.New("there is no secret to remove")
-	errNoSecretInspect = errors.New("there is no secret to display inspect")
+	errNoSecretRemove        = errors.New("there is no secret to remove")
+	errNoSecretInspect       = errors.New("there is no secret to display inspect")
+	errSecretFileAndText     = errors.New("cannot select secret file and secret text together")
+	errEmptySecretFileOrText = errors.New("secret content not provided")
 )
 
 // Secrets implements the secrets page primitive.
@@ -34,6 +37,7 @@ type Secrets struct {
 	errorDialog    *dialogs.ErrorDialog
 	progressDialog *dialogs.ProgressDialog
 	confirmDialog  *dialogs.ConfirmDialog
+	createDialog   *secdialogs.SecretCreateDialog
 }
 
 // NewSecrets returns secrets page view.
@@ -47,12 +51,13 @@ func NewSecrets() *Secrets {
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
+		createDialog:   secdialogs.NewSecretCreateDialog(),
 	}
 
 	secrets.cmdDialog = dialogs.NewCommandDialog([][]string{
-		// {"create", "create a new secret"},
+		{"create", "create a new secret"},
 		{"inspect", "inspect a secret"},
-		// {"rm", "remove a secret"},
+		{"rm", "remove a secret"},
 	})
 
 	secrets.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(secrets.title)))
@@ -90,6 +95,16 @@ func NewSecrets() *Secrets {
 		secrets.confirmDialog.Hide()
 	})
 
+	// set create dialog function
+	secrets.createDialog.SetCancelFunc(func() {
+		secrets.createDialog.Hide()
+	})
+
+	secrets.createDialog.SetCreateFunc(func() {
+		secrets.createDialog.Hide()
+		secrets.create()
+	})
+
 	return secrets
 }
 
@@ -112,7 +127,7 @@ func (s *Secrets) HasFocus() bool {
 		return true
 	}
 
-	if s.confirmDialog.HasFocus() {
+	if s.confirmDialog.HasFocus() || s.createDialog.HasFocus() {
 		return true
 	}
 
@@ -129,7 +144,7 @@ func (s *Secrets) SubDialogHasFocus() bool {
 		return true
 	}
 
-	if s.confirmDialog.HasFocus() {
+	if s.confirmDialog.HasFocus() || s.createDialog.HasFocus() {
 		return true
 	}
 
@@ -166,6 +181,13 @@ func (s *Secrets) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
+	// create dialog
+	if s.createDialog.IsDisplay() {
+		delegate(s.createDialog)
+
+		return
+	}
+
 	delegate(s.table)
 }
 
@@ -190,21 +212,26 @@ func (s *Secrets) HideAllDialogs() {
 	if s.cmdDialog.IsDisplay() {
 		s.cmdDialog.Hide()
 	}
+
+	if s.createDialog.IsDisplay() {
+		s.createDialog.Hide()
+	}
 }
 
-func (s *Secrets) getSelectedItem() (string, string) {
+func (s *Secrets) getSelectedItem() (int, string, string) {
 	var (
-		secID   string
-		secName string
+		rowIndex int
+		secID    string
+		secName  string
 	)
 
 	if s.table.GetRowCount() <= 1 {
-		return secID, secName
+		return rowIndex, secID, secName
 	}
 
-	row, _ := s.table.GetSelection()
-	secID = s.table.GetCell(row, 0).Text
-	secName = s.table.GetCell(row, 1).Text
+	rowIndex, _ = s.table.GetSelection()
+	secID = s.table.GetCell(rowIndex, 0).Text
+	secName = s.table.GetCell(rowIndex, 1).Text
 
-	return secID, secName
+	return rowIndex, secID, secName
 }

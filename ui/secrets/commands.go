@@ -12,6 +12,8 @@ import (
 
 func (s *Secrets) runCommand(cmd string) {
 	switch cmd {
+	case "create":
+		s.createDialog.Display()
 	case "inspect":
 		s.inspect()
 	case "rm":
@@ -26,8 +28,32 @@ func (s *Secrets) displayError(title string, err error) {
 	s.errorDialog.Display()
 }
 
+func (s *Secrets) create() {
+	createOpts := s.createDialog.GetCreateOptions()
+
+	if createOpts.File != "" && createOpts.Text != "" {
+		s.displayError("SECRET CREATE ERROR", errSecretFileAndText)
+
+		return
+	}
+
+	if createOpts.File == "" && createOpts.Text == "" {
+		s.displayError("SECRET CREATE ERROR", errEmptySecretFileOrText)
+
+		return
+	}
+
+	if err := secrets.Create(createOpts); err != nil {
+		s.displayError("SECRET CREATE ERROR", err)
+
+		return
+	}
+
+	s.UpdateData()
+}
+
 func (s *Secrets) inspect() {
-	secID, secName := s.getSelectedItem()
+	_, secID, secName := s.getSelectedItem()
 	if secID == "" {
 		s.displayError("", errNoSecretInspect)
 
@@ -50,7 +76,7 @@ func (s *Secrets) inspect() {
 }
 
 func (s *Secrets) rm() {
-	secID, secName := s.getSelectedItem()
+	_, secID, secName := s.getSelectedItem()
 	if secID == "" {
 		s.displayError("", errNoSecretRemove)
 
@@ -70,7 +96,7 @@ func (s *Secrets) rm() {
 }
 
 func (s *Secrets) remove() {
-	secID, _ := s.getSelectedItem()
+	rowIndex, secID, _ := s.getSelectedItem()
 	if secID == "" {
 		s.displayError("", errNoSecretRemove)
 
@@ -90,6 +116,11 @@ func (s *Secrets) remove() {
 			s.displayError(title, err)
 
 			return
+		}
+
+		rowIndex--
+		if rowIndex > 0 {
+			s.table.Select(rowIndex, 0)
 		}
 
 		s.UpdateData()

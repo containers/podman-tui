@@ -44,6 +44,13 @@ func (s *Secrets) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 			}
 		}
 
+		// create dialog
+		if s.createDialog.HasFocus() {
+			if createHandler := s.createDialog.InputHandler(); createHandler != nil {
+				createHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if s.table.HasFocus() { //nolint:nestif
 			if event.Rune() == utils.CommandMenuKey.Rune() {

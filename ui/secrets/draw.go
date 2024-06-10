@@ -52,4 +52,10 @@ func (s *Secrets) Draw(screen tcell.Screen) {
 
 		return
 	}
+
+	// create dialog
+	if s.createDialog.IsDisplay() {
+		s.createDialog.SetRect(x, y, width, height)
+		s.createDialog.Draw(screen)
+	}
 }
