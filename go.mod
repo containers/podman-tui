@@ -8,7 +8,7 @@ require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/containers/buildah v1.36.0
 	github.com/containers/common v0.59.1
-	github.com/containers/podman/v5 v5.1.1
+	github.com/containers/podman/v5 v5.1.2
 	github.com/containers/storage v1.54.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v26.1.3+incompatible
@@ -42,7 +42,7 @@ require (
 	github.com/containerd/errdefs v0.1.0 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.15.1 // indirect
-	github.com/containers/image/v5 v5.31.0 // indirect
+	github.com/containers/image/v5 v5.31.1 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.1.10 // indirect
 	github.com/containers/psgo v1.9.0 // indirect
