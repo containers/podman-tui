@@ -50,8 +50,8 @@ github.com/containerd/stargz-snapshotter/estargz v0.15.1 h1:eXJjw9RbkLFgioVaTG+G
 github.com/containerd/stargz-snapshotter/estargz v0.15.1/go.mod h1:gr2RNwukQ/S9Nv33Lt6UC7xEx58C+LHRdoqbEKjz1Kk=
 github.com/containers/buildah v1.36.0 h1:e369nE9bx0yJtPVRDMsbr0OzkW59XCYAl+5poGhFjcs=
 github.com/containers/buildah v1.36.0/go.mod h1:qlEF4RuCnzEUTQhAnCyGr5WoYNZaU0k2mPcZscUR//c=
-github.com/containers/common v0.59.1 h1:7VkmJN3YvD0jLFwaUjLHSRJ98JLffydiyOJjYr0dUTo=
-github.com/containers/common v0.59.1/go.mod h1:53VicJCZ2AD0O+Br7VVoyrS7viXF4YmwlTIocWUT8XE=
+github.com/containers/common v0.59.2 h1:FcURZzlMYMVZXqjMEop6C0A3yWilrfmWUPUw09APHvI=
+github.com/containers/common v0.59.2/go.mod h1:/PHpbapKSHQU29Jmjn3Ld3jekoHvX0zx7qQxxyPqSTM=
 github.com/containers/image/v5 v5.31.1 h1:3x9soI6Biml/GiDLpkSmKrkRSwVGctxu/vONpoUdklA=
 github.com/containers/image/v5 v5.31.1/go.mod h1:5QfOqSackPkSbF7Qxc1DnVNnPJKQ+KWLkfEfDpK590Q=
 github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 h1:Qzk5C6cYglewc+UyGf6lc8Mj2UaPTHy/iF2De0/77CA=
