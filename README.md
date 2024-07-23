@@ -27,7 +27,7 @@ It is using [podman go bindings](https://github.com/containers/podman/tree/main/
 
 | Terminal User Interface  | Podman |
 | ----------- | ------ |
-| releaes-1.x | v5.x.y |
+| release-1.x | v5.x.y |
 | release-0.x | v4.x.y |
 
 ## Installation
