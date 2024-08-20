@@ -595,7 +595,7 @@ func (cnt *Containers) cprune() {
 }
 
 func (cnt *Containers) prune() {
-	cnt.progressDialog.SetTitle("container purne in progress")
+	cnt.progressDialog.SetTitle("container prune in progress")
 	cnt.progressDialog.Display()
 
 	prune := func() {

@@ -158,7 +158,7 @@ func (sys *System) cprune() {
 }
 
 func (sys *System) prune() {
-	sys.progressDialog.SetTitle("system purne in progress")
+	sys.progressDialog.SetTitle("system prune in progress")
 	sys.progressDialog.Display()
 
 	prune := func() {

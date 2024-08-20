@@ -77,7 +77,7 @@ func (vols *Volumes) prunePrep() {
 }
 
 func (vols *Volumes) prune() {
-	vols.progressDialog.SetTitle("VOLUME purne in progress")
+	vols.progressDialog.SetTitle("VOLUME prune in progress")
 	vols.progressDialog.Display()
 
 	prune := func() {
