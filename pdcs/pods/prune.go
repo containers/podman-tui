@@ -10,7 +10,7 @@ import (
 
 // Prune removes all stop pods.
 func Prune() ([]string, error) {
-	log.Debug().Msgf("pdcs: podman pod purne")
+	log.Debug().Msgf("pdcs: podman pod prune")
 
 	var report []string
 

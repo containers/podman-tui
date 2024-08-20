@@ -203,7 +203,7 @@ func (img *Images) cprune() {
 }
 
 func (img *Images) prune() {
-	img.progressDialog.SetTitle("image purne in progress")
+	img.progressDialog.SetTitle("image prune in progress")
 	img.progressDialog.Display()
 
 	prune := func() {

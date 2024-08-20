@@ -183,7 +183,7 @@ func (nets *Networks) cprune() {
 }
 
 func (nets *Networks) prune() {
-	nets.progressDialog.SetTitle("network purne in progress")
+	nets.progressDialog.SetTitle("network prune in progress")
 	nets.progressDialog.Display()
 
 	prune := func() {

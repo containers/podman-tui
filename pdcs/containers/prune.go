@@ -10,7 +10,7 @@ import (
 
 // Prune removes all non running containers.
 func Prune() ([]string, error) {
-	log.Debug().Msgf("pdcs: podman container purne")
+	log.Debug().Msgf("pdcs: podman container prune")
 
 	var report []string
 

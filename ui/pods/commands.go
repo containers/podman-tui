@@ -162,7 +162,7 @@ func (p *Pods) pause() {
 }
 
 func (p *Pods) prune() {
-	p.progressDialog.SetTitle("pod purne in progress")
+	p.progressDialog.SetTitle("pod prune in progress")
 	p.progressDialog.Display()
 
 	unpause := func() {
