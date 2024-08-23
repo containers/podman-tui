@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.2.0
+Version: 1.2.1
 Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,6 +60,12 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Aug 24 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.1-1
+- Correct spelling of 'prune'
+- Bump github.com/containers/podman/v5 from 5.2.1 to 5.2.2
+- Bump github.com/containers/podman/v5 from 5.2.0 to 5.2.1
+- Bump golang.org/x/crypto from 0.25.0 to 0.26.0
+
 * Sat Aug 03 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.0-1
 - New feature - secrets page
 - Secret create and remove command
