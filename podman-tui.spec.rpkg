@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.2.1
+Version: 1.2.2
 Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,6 +60,11 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Fri Sep 27 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.2-1
+- Bump github.com/containers/podman/v5 from 5.2.2 to 5.2.3
+- Bump github.com/containers/buildah from 1.37.2 to 1.37.3
+- Bump github.com/containers/common from 0.60.2 to 0.60.3
+
 * Sat Aug 24 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.1-1
 - Correct spelling of 'prune'
 - Bump github.com/containers/podman/v5 from 5.2.1 to 5.2.2
