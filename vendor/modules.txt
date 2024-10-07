@@ -76,10 +76,10 @@ github.com/containerd/log
 ## explicit; go 1.19
 github.com/containerd/stargz-snapshotter/estargz
 github.com/containerd/stargz-snapshotter/estargz/errorutil
-# github.com/containers/buildah v1.37.3
+# github.com/containers/buildah v1.37.4
 ## explicit; go 1.21.0
 github.com/containers/buildah/define
-# github.com/containers/common v0.60.3
+# github.com/containers/common v0.60.4
 ## explicit; go 1.21.0
 github.com/containers/common/internal
 github.com/containers/common/internal/attributedstring
