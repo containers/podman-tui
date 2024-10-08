@@ -4,9 +4,9 @@ go 1.22.6
 
 require (
 	github.com/BurntSushi/toml v1.4.0
-	github.com/containers/buildah v1.37.3
-	github.com/containers/common v0.60.3
-	github.com/containers/podman/v5 v5.2.3
+	github.com/containers/buildah v1.37.4
+	github.com/containers/common v0.60.4
+	github.com/containers/podman/v5 v5.2.4
 	github.com/containers/storage v1.55.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/docker v27.1.1+incompatible
