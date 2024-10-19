@@ -61,8 +61,9 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 
 %changelog
 * Sat Oct 12 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.3-1
-- Bump github.com/containers/podman/v5 from 5.2.3 to 5.2.4
-- Bump github.com/containers/buildah from 1.37.3 to 1.37.4
+- Bump github.com/containers/podman/v5 from 5.2.3 to 5.2.5
+- Bump github.com/containers/buildah from 1.37.3 to 1.37.5
+- Bump github.com/containers/storage from 1.55.0 to 1.55.1
 
 * Fri Sep 27 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.2.2-1
 - Bump github.com/containers/podman/v5 from 5.2.2 to 5.2.3
