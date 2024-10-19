@@ -647,8 +647,8 @@ github.com/opencontainers/go-digest
 ## explicit; go 1.18
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
-# github.com/opencontainers/runc v1.1.13 => github.com/opencontainers/runc v1.1.1-0.20220617142545-8b9452f75cbc
-## explicit; go 1.17
+# github.com/opencontainers/runc v1.1.13 => github.com/opencontainers/runc v1.1.1-0.20240131200429-02120488a4c0
+## explicit; go 1.20
 github.com/opencontainers/runc/libcontainer/apparmor
 github.com/opencontainers/runc/libcontainer/cgroups
 github.com/opencontainers/runc/libcontainer/cgroups/fs
@@ -990,4 +990,4 @@ sigs.k8s.io/yaml/goyaml.v2
 # tags.cncf.io/container-device-interface v0.8.0
 ## explicit; go 1.20
 tags.cncf.io/container-device-interface/pkg/parser
-# github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.1-0.20220617142545-8b9452f75cbc
+# github.com/opencontainers/runc => github.com/opencontainers/runc v1.1.1-0.20240131200429-02120488a4c0
