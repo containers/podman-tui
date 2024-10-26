@@ -154,15 +154,15 @@ func NewImagePushDialog() *ImagePushDialog {
 	// dropdowns and checkbox row layour
 	dcLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	dcLayout.AddItem(dialog.compress, labelWidth+1, 1, true)
-	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:gomnd
-	dcLayout.AddItem(dialog.format, len(formatLabel)+5, 0, true) //nolint:gomnd
-	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:gomnd
+	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:mnd
+	dcLayout.AddItem(dialog.format, len(formatLabel)+5, 0, true) //nolint:mnd
+	dcLayout.AddItem(utils.EmptyBoxSpace(bgColor), 2, 0, false)  //nolint:mnd
 	dcLayout.AddItem(dialog.skipTLSVerify, 0, 1, true)
 
 	// username and password row layout
 	userPassLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	userPassLayout.AddItem(dialog.username, 0, 1, true)
-	userPassLayout.AddItem(utils.EmptyBoxSpace(bgColor), 3, 0, false) //nolint:gomnd
+	userPassLayout.AddItem(utils.EmptyBoxSpace(bgColor), 3, 0, false) //nolint:mnd
 	userPassLayout.AddItem(dialog.password, 0, 1, true)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -390,13 +390,13 @@ func (d *ImagePushDialog) setFocusElement() {
 // SetRect set rects for this primitive.
 func (d *ImagePushDialog) SetRect(x, y, width, height int) {
 	if width > imagePushDialogMaxWidth {
-		emptySpace := (width - imagePushDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - imagePushDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = imagePushDialogMaxWidth
 	}
 
 	if height > imagePushDialogMaxHeight {
-		emptySpace := (height - imagePushDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - imagePushDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = imagePushDialogMaxHeight
 	}
@@ -429,7 +429,7 @@ func (d *ImagePushDialog) SetPushFunc(handler func()) *ImagePushDialog {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ImagePushDialog) SetCancelFunc(handler func()) *ImagePushDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d

@@ -169,6 +169,6 @@ func (app *App) clearViewsData() {
 
 func (app *App) clearInfoUIData() {
 	app.infoBar.UpdateBasicInfo("", "", "")
-	app.infoBar.UpdateSystemUsageInfo(0.00, 0.00) //nolint:gomnd
+	app.infoBar.UpdateSystemUsageInfo(0.00, 0.00) //nolint:mnd
 	app.infoBar.UpdatePodmanInfo("", "", "", "")
 }

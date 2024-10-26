@@ -25,23 +25,23 @@ var (
 	// main views.
 	FgColor              = tcell.ColorFloralWhite
 	BgColor              = tview.Styles.PrimitiveBackgroundColor
-	BorderColor          = tcell.NewRGBColor(135, 135, 175) //nolint:gomnd
-	HelpHeaderFgColor    = tcell.NewRGBColor(135, 135, 175) //nolint:gomnd
+	BorderColor          = tcell.NewRGBColor(135, 135, 175) //nolint:mnd
+	HelpHeaderFgColor    = tcell.NewRGBColor(135, 135, 175) //nolint:mnd
 	MenuBgColor          = tcell.ColorMediumPurple
 	PageHeaderBgColor    = tcell.ColorMediumPurple
 	PageHeaderFgColor    = tcell.ColorFloralWhite
-	RunningStatusFgColor = tcell.NewRGBColor(95, 215, 0)  //nolint:gomnd
-	PausedStatusFgColor  = tcell.NewRGBColor(255, 175, 0) //nolint:gomnd
+	RunningStatusFgColor = tcell.NewRGBColor(95, 215, 0)  //nolint:mnd
+	PausedStatusFgColor  = tcell.NewRGBColor(255, 175, 0) //nolint:mnd
 	// dialogs.
-	DialogBgColor            = tcell.NewRGBColor(38, 38, 38) //nolint:gomnd
+	DialogBgColor            = tcell.NewRGBColor(38, 38, 38) //nolint:mnd
 	DialogBorderColor        = tcell.ColorMediumPurple
 	DialogFgColor            = tcell.ColorFloralWhite
 	DialogSubBoxBorderColor  = tcell.ColorDimGray
-	ErrorDialogBgColor       = tcell.NewRGBColor(215, 0, 0) //nolint:gomnd
+	ErrorDialogBgColor       = tcell.NewRGBColor(215, 0, 0) //nolint:mnd
 	ErrorDialogButtonBgColor = tcell.ColorDarkRed
 	// terminal.
 	TerminalFgColor     = tcell.ColorFloralWhite
-	TerminalBgColor     = tcell.NewRGBColor(5, 5, 5) //nolint:gomnd
+	TerminalBgColor     = tcell.NewRGBColor(5, 5, 5) //nolint:mnd
 	TerminalBorderColor = tcell.ColorDimGray
 	// table header.
 	TableHeaderBgColor = tcell.ColorMediumPurple

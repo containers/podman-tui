@@ -38,20 +38,20 @@ func GetIDWithLimit(id string) string {
 // AlignStringListWidth returns max string len in the list.
 func AlignStringListWidth(list []string) ([]string, int) {
 	var (
-		max         = 0
-		alignedList = make([]string, 0)
+		maxAlignment = 0
+		alignedList  = make([]string, 0)
 	)
 
 	for _, item := range list {
-		if len(item) > max {
-			max = len(item)
+		if len(item) > maxAlignment {
+			maxAlignment = len(item)
 		}
 	}
 
 	for _, item := range list {
-		if len(item) < max {
-			need := max - len(item)
-			for i := 0; i < need; i++ {
+		if len(item) < maxAlignment {
+			need := maxAlignment - len(item)
+			for range need {
 				item += " "
 			}
 		}
@@ -59,7 +59,7 @@ func AlignStringListWidth(list []string) ([]string, int) {
 		alignedList = append(alignedList, item)
 	}
 
-	return alignedList, max
+	return alignedList, maxAlignment
 }
 
 // EmptyBoxSpace returns simple Box without border with bgColor as background.

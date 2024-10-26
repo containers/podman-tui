@@ -47,7 +47,7 @@ func Save(imageID string, opts ImageSaveOptions) error { //nolint:cyclop
 	defer outputFile.Close()
 
 	cancelChan := make(chan bool, 1)
-	writerChan := make(chan []byte, 1024) //nolint:gomnd
+	writerChan := make(chan []byte, 1024) //nolint:mnd
 	outputWriter := channel.NewWriter(writerChan)
 
 	writeOutputFunc := func() {

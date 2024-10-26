@@ -43,7 +43,7 @@ func NewInfoBar() *InfoBar {
 	}
 
 	// empty column
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		table.SetCell(i, 0, emptyCell())
 	}
 
@@ -84,7 +84,7 @@ func NewInfoBar() *InfoBar {
 	table.SetCell(swapCellRow, dataCol2Index, tview.NewTableCell(utils.ProgressUsageString(defaultPerc)))
 
 	// empty column
-	for i := 0; i < dataCol4Index; i++ {
+	for i := range dataCol4Index {
 		table.SetCell(i, totalRows, emptyCell())
 	}
 

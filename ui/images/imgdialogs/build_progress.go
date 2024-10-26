@@ -63,7 +63,7 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 	buildPrgDialog.layout.SetBorder(true)
 	buildPrgDialog.layout.SetBorderColor(style.DialogBorderColor)
 	buildPrgDialog.layout.SetTitle("PODMAN IMAGE BUILD")
-	buildPrgDialog.layout.AddItem(buildPrgDialog.progressBar, 3, 0, false) //nolint:gomnd
+	buildPrgDialog.layout.AddItem(buildPrgDialog.progressBar, 3, 0, false) //nolint:mnd
 
 	outputLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	outputLayout.AddItem(utils.EmptyBoxSpace(outputBgColor), 1, 0, false)
@@ -78,7 +78,7 @@ func NewImageBuildProgressDialog() *ImageBuildProgressDialog {
 func (d *ImageBuildProgressDialog) Display() {
 	d.display = true
 	d.cancelChan = make(chan bool)
-	d.writerChan = make(chan []byte, 100) //nolint:gomnd
+	d.writerChan = make(chan []byte, 100) //nolint:mnd
 
 	go d.outputReaderLoop()
 }
@@ -121,13 +121,13 @@ func (d *ImageBuildProgressDialog) InputHandler() func(event *tcell.EventKey, se
 // SetRect set rects for this primitive.
 func (d *ImageBuildProgressDialog) SetRect(x, y, width, height int) {
 	if width > buildPrgDialogMaxWidth {
-		emptySpace := (width - buildPrgDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - buildPrgDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = buildPrgDialogMaxWidth
 	}
 
 	if height > buildPrgDialogHeight {
-		emptySpace := (height - buildPrgDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - buildPrgDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = buildPrgDialogHeight
 	}

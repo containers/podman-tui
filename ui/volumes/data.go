@@ -47,7 +47,7 @@ func (vols *Volumes) ClearData() {
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
 
-	for i := 0; i < len(vols.headers); i++ {
+	for i := range vols.headers {
 		vols.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).

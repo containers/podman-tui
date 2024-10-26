@@ -189,7 +189,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	mLayout.AddItem(dialog.command, 1, 0, true)
 
 	// interactive, tty, privileged and detach
-	checkBoxWidth := execDialogLabelWidth + 4 //nolint:gomnd
+	checkBoxWidth := execDialogLabelWidth + 4 //nolint:mnd
 	labelPaddings := 5
 	checkBoxLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 
@@ -578,7 +578,7 @@ func (d *ContainerExecDialog) SetRect(x, y, width, height int) {
 	if width > execDialogMaxWidth {
 		wEmptySpace := width - execDialogMaxWidth
 		if wEmptySpace > 0 {
-			dX = x + (wEmptySpace / 2) //nolint:gomnd
+			dX = x + (wEmptySpace / 2) //nolint:mnd
 		}
 
 		dWidth = execDialogMaxWidth
@@ -591,7 +591,7 @@ func (d *ContainerExecDialog) SetRect(x, y, width, height int) {
 		hEmptySpace := height - execDialogMaxHeight
 
 		if hEmptySpace > 0 {
-			dY = y + (hEmptySpace / 2) //nolint:gomnd
+			dY = y + (hEmptySpace / 2) //nolint:mnd
 		}
 
 		dHeight = execDialogMaxHeight
@@ -618,7 +618,7 @@ func (d *ContainerExecDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerExecDialog) SetCancelFunc(handler func()) *ContainerExecDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

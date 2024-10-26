@@ -24,7 +24,7 @@ func (nets *Networks) UpdateData() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(nets.headers); i++ {
+	for i := range nets.headers {
 		nets.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -38,7 +38,7 @@ func (nets *Networks) UpdateData() {
 
 	nets.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(nets.title), len(netList)))
 
-	for i := 0; i < len(netList); i++ {
+	for i := range netList {
 		netID := netList[i][0]
 		netName := netList[i][1]
 		netDriver := netList[i][2]
@@ -73,7 +73,7 @@ func (nets *Networks) ClearData() {
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
 
-	for i := 0; i < len(nets.headers); i++ {
+	for i := range nets.headers {
 		nets.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).

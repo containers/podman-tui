@@ -45,7 +45,7 @@ func (img *Images) ClearData() {
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
 
-	for i := 0; i < len(img.headers); i++ {
+	for i := range img.headers {
 		img.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).

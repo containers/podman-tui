@@ -74,7 +74,7 @@ func NewNetworks() *Networks {
 	nets.table.SetTitleColor(style.FgColor)
 	nets.table.SetBorder(true)
 
-	for i := 0; i < len(nets.headers); i++ {
+	for i := range nets.headers {
 		nets.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(nets.headers[i]))). //nolint:perfsprint
 													SetExpansion(1).

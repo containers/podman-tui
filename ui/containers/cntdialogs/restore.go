@@ -39,10 +39,10 @@ const (
 	cntRestoreDialogMaxWidth              = cntRestoreDialogLabelWidth +
 		cntRestoreDialogChkGroupColTwoWidth +
 		cntRestoreDialogChkGroupColThreeWidth +
-		cntRestoreDialogChkGroupColFourWidth + (6 * cntRestoreDialogPadding) //nolint:gomnd
+		cntRestoreDialogChkGroupColFourWidth + (6 * cntRestoreDialogPadding) //nolint:mnd
 	cntRestoreDialogMaxHeight        = 17
 	cntRestoreDialogSingleFieldWidth = cntRestoreDialogMaxWidth -
-		cntRestoreDialogLabelWidth - (2 * cntRestoreDialogPadding) //nolint:gomnd
+		cntRestoreDialogLabelWidth - (2 * cntRestoreDialogPadding) //nolint:mnd
 )
 
 // ContainerRestoreDialog implements container restore dialog primitive.
@@ -414,13 +414,13 @@ func (d *ContainerRestoreDialog) InputHandler() func(event *tcell.EventKey, setF
 // SetRect set rects for this primitive.
 func (d *ContainerRestoreDialog) SetRect(x, y, width, height int) {
 	if width > cntRestoreDialogMaxWidth {
-		emptySpace := (width - cntRestoreDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - cntRestoreDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = cntRestoreDialogMaxWidth
 	}
 
 	if height > cntRestoreDialogMaxHeight {
-		emptySpace := (height - cntRestoreDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - cntRestoreDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = cntRestoreDialogMaxHeight
 	}
@@ -455,7 +455,7 @@ func (d *ContainerRestoreDialog) SetRestoreFunc(handler func()) *ContainerRestor
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerRestoreDialog) SetCancelFunc(handler func()) *ContainerRestoreDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 
@@ -497,7 +497,7 @@ func (d *ContainerRestoreDialog) SetContainers(cnts [][]string) {
 	emptyOptions := fmt.Sprintf("%*s", cntRestoreDialogSingleFieldWidth, " ")
 	cntOptions := []string{emptyOptions}
 
-	for i := 0; i < len(cnts); i++ {
+	for i := range cnts {
 		cntInfo := fmt.Sprintf("%s (%s)", utils.GetIDWithLimit(cnts[i][0]), cnts[i][1])
 		cntInfoOption := fmt.Sprintf("%-*s", cntRestoreDialogSingleFieldWidth, cntInfo)
 		cntOptions = append(cntOptions, cntInfoOption)
@@ -511,7 +511,7 @@ func (d *ContainerRestoreDialog) SetPods(pods [][]string) {
 	emptyOptions := fmt.Sprintf("%*s", cntRestoreDialogSingleFieldWidth, " ")
 	podOptions := []string{emptyOptions}
 
-	for i := 0; i < len(pods); i++ {
+	for i := range pods {
 		podInfo := fmt.Sprintf("%s (%s)", utils.GetIDWithLimit(pods[i][0]), pods[i][1])
 		podInfoOption := fmt.Sprintf("%-*s", cntRestoreDialogSingleFieldWidth, podInfo)
 		podOptions = append(podOptions, podInfoOption)

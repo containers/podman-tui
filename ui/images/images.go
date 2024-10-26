@@ -108,7 +108,7 @@ func NewImages() *Images {
 	imgTable.SetTitleColor(style.FgColor)
 	imgTable.SetBorder(true)
 
-	for i := 0; i < len(images.headers); i++ {
+	for i := range images.headers {
 		imgTable.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(images.headers[i]))). //nolint:perfsprint
 														SetExpansion(1).
@@ -371,7 +371,7 @@ func (img *Images) getSelectedItem() (string, string) {
 	imageRepo := img.table.GetCell(row, 0).Text
 	imageTag := img.table.GetCell(row, 1).Text
 	imageName := imageRepo + ":" + imageTag
-	imageID := img.table.GetCell(row, 2).Text //nolint:gomnd
+	imageID := img.table.GetCell(row, 2).Text //nolint:mnd
 
 	return imageID, imageName
 }

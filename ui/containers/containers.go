@@ -131,7 +131,7 @@ func NewContainers() *Containers {
 	containers.table.SetBackgroundColor(style.BgColor)
 	containers.table.SetBorder(true)
 
-	for i := 0; i < len(containers.headers); i++ {
+	for i := range containers.headers {
 		containers.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(containers.headers[i]))). //nolint:perfsprint
 															SetExpansion(1).

@@ -17,7 +17,7 @@ func (sys *System) refresh() {
 	alignment := tview.AlignLeft
 	defaultAlignment := tview.AlignCenter
 
-	for i := 0; i < len(sys.connTableHeaders); i++ {
+	for i := range sys.connTableHeaders {
 		headerAlignment := alignment
 		if sys.connTableHeaders[i] == "default" {
 			headerAlignment = defaultAlignment
@@ -35,7 +35,7 @@ func (sys *System) refresh() {
 
 	rowIndex := 1
 
-	for i := 0; i < len(connections); i++ {
+	for i := range connections {
 		isDefault := ""
 		conn := connections[i]
 		status := connectionItemStatus{conn.Status}.StatusString()
@@ -57,19 +57,19 @@ func (sys *System) refresh() {
 				SetAlign(defaultAlignment))
 
 		// status column
-		sys.connTable.SetCell(rowIndex, 2, //nolint:gomnd
+		sys.connTable.SetCell(rowIndex, 2, //nolint:mnd
 			tview.NewTableCell(status).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// uri column
-		sys.connTable.SetCell(rowIndex, 3, //nolint:gomnd
+		sys.connTable.SetCell(rowIndex, 3, //nolint:mnd
 			tview.NewTableCell(conn.URI).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// identity column
-		sys.connTable.SetCell(rowIndex, 4, //nolint:gomnd
+		sys.connTable.SetCell(rowIndex, 4, //nolint:mnd
 			tview.NewTableCell(conn.Identity).
 				SetExpansion(expand).
 				SetAlign(alignment))

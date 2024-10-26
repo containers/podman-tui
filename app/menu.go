@@ -16,9 +16,9 @@ func newMenu(menuItems [][]string) *tview.TextView {
 
 	menu.SetBackgroundColor(style.BgColor)
 
-	var menuList []string
+	menuList := []string{}
 
-	for i := 0; i < len(menuItems); i++ {
+	for i := range menuItems {
 		key, item := genMenuItem(menuItems[i])
 		if i == len(menuItems)-1 {
 			item += " "

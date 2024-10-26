@@ -52,7 +52,7 @@ func NewConnectDialog() *ConnectDialog {
 
 	cancelLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	cancelLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
-	cancelLayout.AddItem(conn.cancelButton, 10, 0, true) //nolint:gomnd
+	cancelLayout.AddItem(conn.cancelButton, 10, 0, true) //nolint:mnd
 	cancelLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	cancelLayout.SetBackgroundColor(style.DialogBgColor)
 
@@ -115,8 +115,8 @@ func (d *ConnectDialog) Focus(delegate func(p tview.Primitive)) {
 
 // SetRect sets a new position of the primitive.
 func (d *ConnectDialog) SetRect(x int, y int, width int, height int) {
-	emptyWidth := (width - maxWidth) / 2    //nolint:gomnd
-	emptyHeight := (height - maxHeight) / 2 //nolint:gomnd
+	emptyWidth := (width - maxWidth) / 2    //nolint:mnd
+	emptyHeight := (height - maxHeight) / 2 //nolint:mnd
 
 	if width > maxWidth {
 		width = maxWidth

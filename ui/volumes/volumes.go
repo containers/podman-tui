@@ -68,7 +68,7 @@ func (vols *Volumes) initUI() {
 	vols.table.SetTitleColor(style.FgColor)
 	vols.table.SetBorder(true)
 
-	for i := 0; i < len(vols.headers); i++ {
+	for i := range vols.headers {
 		vols.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
 														SetExpansion(1).

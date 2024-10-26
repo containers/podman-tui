@@ -249,13 +249,13 @@ func (d *VolumeCreateDialog) nextFocus() {
 // SetRect set rects for this primitive.
 func (d *VolumeCreateDialog) SetRect(x, y, width, height int) {
 	if width > volumeCreateDialogMaxWidth {
-		emptySpace := (width - volumeCreateDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - volumeCreateDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = volumeCreateDialogMaxWidth
 	}
 
 	if height > volumeCreateDialogHeight {
-		emptySpace := (height - volumeCreateDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - volumeCreateDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = volumeCreateDialogHeight
 	}
@@ -278,7 +278,7 @@ func (d *VolumeCreateDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *VolumeCreateDialog) SetCancelFunc(handler func()) *VolumeCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
@@ -310,7 +310,7 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions { //nol
 	for _, label := range strings.Split(d.volumeLabelField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 { //nolint:gomnd
+			if len(split) == 2 { //nolint:mnd
 				key := split[0]
 				value := split[1]
 
@@ -324,7 +324,7 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions { //nol
 	for _, option := range strings.Split(d.volumeDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
-			if len(split) == 2 { //nolint:gomnd
+			if len(split) == 2 { //nolint:mnd
 				key := split[0]
 				value := split[1]
 

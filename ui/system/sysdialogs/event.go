@@ -163,14 +163,14 @@ func (d *EventsDialog) HasFocus() bool {
 
 // SetRect set rects for this primitive.
 func (d *EventsDialog) SetRect(x, y, width, height int) {
-	dWidth := width - (2 * dialogs.DialogPadding) //nolint:gomnd
+	dWidth := width - (2 * dialogs.DialogPadding) //nolint:mnd
 	if dWidth < 0 {
 		dWidth = 0
 	}
 
 	dX := x + dialogs.DialogPadding
 
-	dHeight := height - (2 * dialogs.DialogPadding) //nolint:gomnd
+	dHeight := height - (2 * dialogs.DialogPadding) //nolint:mnd
 	if dHeight < 0 {
 		dHeight = 0
 	}

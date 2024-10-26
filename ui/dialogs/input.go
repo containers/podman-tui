@@ -102,7 +102,7 @@ func (d *SimpleInputDialog) setLayout(haveDesc bool) {
 
 	if !haveDesc {
 		descHeight = 1
-		d.height = siDialogHeight - 3 //nolint:gomnd
+		d.height = siDialogHeight - 3 //nolint:mnd
 	} else {
 		d.height = siDialogHeight
 	}
@@ -174,7 +174,7 @@ func (d *SimpleInputDialog) SetInputText(text string) {
 
 // SetLabel sets input fields label message.
 func (d *SimpleInputDialog) SetLabel(text string) {
-	width := len(text) + 2 //nolint:gomnd
+	width := len(text) + 2 //nolint:mnd
 	d.inputWidth = siDialogInputWidth - width
 
 	d.input.SetFieldWidth(d.inputWidth)
@@ -261,8 +261,8 @@ func (d *SimpleInputDialog) InputHandler() func(event *tcell.EventKey, setFocus 
 
 // SetRect set rects for this primitive.
 func (d *SimpleInputDialog) SetRect(x, y, width, height int) {
-	ws := (width - siDialogWidth) / 2 //nolint:gomnd
-	hs := ((height - d.height) / 2)   //nolint:gomnd
+	ws := (width - siDialogWidth) / 2 //nolint:mnd
+	hs := ((height - d.height) / 2)   //nolint:mnd
 	dy := y + hs
 	bWidth := siDialogWidth
 
@@ -311,7 +311,7 @@ func (d *SimpleInputDialog) SetSelectedFunc(handler func()) *SimpleInputDialog {
 // SetCancelFunc sets form cancel button selected function.
 func (d *SimpleInputDialog) SetCancelFunc(handler func()) *SimpleInputDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d

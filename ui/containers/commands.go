@@ -362,8 +362,8 @@ func (cnt *Containers) exec() {
 	cntID, cntName := cnt.getSelectedItem()
 	_, _, width, height := cnt.table.GetInnerRect()
 
-	width = width - (2 * dialogs.DialogPadding) - 6                                      //nolint:gomnd
-	height = height - (2 * (dialogs.DialogPadding - 1)) - 2*dialogs.DialogFormHeight - 4 //nolint:gomnd
+	width = width - (2 * dialogs.DialogPadding) - 6                                      //nolint:mnd
+	height = height - (2 * (dialogs.DialogPadding - 1)) - 2*dialogs.DialogFormHeight - 4 //nolint:mnd
 
 	execOpts := cnt.execDialog.ContainerExecOptions()
 	execOpts.TtyWidth = width

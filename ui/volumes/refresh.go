@@ -23,7 +23,7 @@ func (vols *Volumes) refresh() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(vols.headers); i++ {
+	for i := range vols.headers {
 		vols.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -38,7 +38,7 @@ func (vols *Volumes) refresh() {
 
 	vols.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(vols.title), len(volList)))
 
-	for i := 0; i < len(volList); i++ {
+	for i := range volList {
 		volDriver := volList[i].Driver
 		volName := volList[i].Name
 		volCreatedAt := units.HumanDuration(time.Since(volList[i].CreatedAt)) + " ago"

@@ -144,7 +144,7 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 
 	driverRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 	driverRow.SetBackgroundColor(bgColor)
-	driverRow.AddItem(createDialog.secretDriver, labelWidth+6, 0, true) //nolint:gomnd
+	driverRow.AddItem(createDialog.secretDriver, labelWidth+6, 0, true) //nolint:mnd
 	driverRow.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	driverRow.AddItem(createDialog.secretDriverOptions, 0, 1, true)
 
@@ -199,13 +199,13 @@ func (d *SecretCreateDialog) Hide() {
 // SetRect set rects for this primitive.
 func (d *SecretCreateDialog) SetRect(x, y, width, height int) {
 	if width > secretCreateDialogMaxWidth {
-		emptySpace := (width - secretCreateDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - secretCreateDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = secretCreateDialogMaxWidth
 	}
 
 	if height > secretCreateDialogMaxHeight {
-		emptySpace := (height - secretCreateDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - secretCreateDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = secretCreateDialogMaxHeight
 	}
@@ -381,7 +381,7 @@ func (d *SecretCreateDialog) SetCreateFunc(handler func()) *SecretCreateDialog {
 // SetCancelFunc sets form cancel button selected function.
 func (d *SecretCreateDialog) SetCancelFunc(handler func()) *SecretCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

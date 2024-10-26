@@ -190,13 +190,13 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	optionsLayoutRow01.AddItem(dialog.export, 1, 0, true)
 
 	optionsLayoutRow02 := tview.NewFlex().SetDirection(tview.FlexColumn)
-	optionsLayoutRow02.AddItem(dialog.fileLock, labelWidth+2, 0, true) //nolint:gomnd
+	optionsLayoutRow02.AddItem(dialog.fileLock, labelWidth+2, 0, true) //nolint:mnd
 	optionsLayoutRow02.AddItem(dialog.ignoreRootFS, 0, 1, true)
 	optionsLayoutRow02.AddItem(dialog.tcpEstablished, 0, 1, true)
 	optionsLayoutRow02.AddItem(dialog.preCheckpoint, 0, 1, true)
 
 	optionsLayoutRow03 := tview.NewFlex().SetDirection(tview.FlexColumn)
-	optionsLayoutRow03.AddItem(dialog.printStats, labelWidth+2, 1, true) //nolint:gomnd
+	optionsLayoutRow03.AddItem(dialog.printStats, labelWidth+2, 1, true) //nolint:mnd
 	optionsLayoutRow03.AddItem(dialog.keep, 0, 1, true)
 	optionsLayoutRow03.AddItem(dialog.leaveRunning, 0, 1, true)
 	optionsLayoutRow03.AddItem(dialog.withPrevious, 0, 1, true)
@@ -433,13 +433,13 @@ func (d *ContainerCheckpointDialog) InputHandler() func(event *tcell.EventKey, s
 // SetRect set rects for this primitive.
 func (d *ContainerCheckpointDialog) SetRect(x, y, width, height int) {
 	if width > cntCheckpointDialogMaxWidth {
-		emptySpace := (width - cntCheckpointDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - cntCheckpointDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = cntCheckpointDialogMaxWidth
 	}
 
 	if height > cntCheckpointDialogMaxHeight {
-		emptySpace := (height - cntCheckpointDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - cntCheckpointDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = cntCheckpointDialogMaxHeight
 	}
@@ -474,7 +474,7 @@ func (d *ContainerCheckpointDialog) SetCheckpointFunc(handler func()) *Container
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCheckpointDialog) SetCancelFunc(handler func()) *ContainerCheckpointDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

@@ -23,7 +23,7 @@ func (sys *System) udpateConnectionDataStatus() {
 	name := registry.ConnectionName()
 	status := registry.ConnectionStatus()
 
-	for i := 0; i < len(sys.connectionList.report); i++ {
+	for i := range sys.connectionList.report {
 		if sys.connectionList.report[i].Name == name {
 			sys.connectionList.report[i].Status = status
 

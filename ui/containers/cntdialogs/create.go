@@ -305,7 +305,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 	d.layout.AddItem(layout, 0, 1, true)
@@ -1273,13 +1273,13 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 // SetRect set rects for this primitive.
 func (d *ContainerCreateDialog) SetRect(x, y, width, height int) {
 	if width > containerCreateDialogMaxWidth {
-		emptySpace := (width - containerCreateDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - containerCreateDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = containerCreateDialogMaxWidth
 	}
 
 	if height > containerCreateDialogHeight {
-		emptySpace := (height - containerCreateDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - containerCreateDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = containerCreateDialogHeight
 	}
@@ -1304,7 +1304,7 @@ func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 
@@ -1331,11 +1331,11 @@ func (d *ContainerCreateDialog) setActiveCategory(index int) {
 
 	d.categories.Clear()
 
-	var ctgList []string
+	ctgList := []string{}
 
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 
-	for i := 0; i < len(alignedList); i++ {
+	for i := range alignedList {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
 
@@ -1383,7 +1383,7 @@ func (d *ContainerCreateDialog) initData() {
 	d.imageList = imgList
 	imgOptions := []string{""}
 
-	for i := 0; i < len(d.imageList); i++ {
+	for i := range d.imageList {
 		if d.imageList[i].ID == "<none>" {
 			imgOptions = append(imgOptions, d.imageList[i].ID)
 
@@ -1399,7 +1399,7 @@ func (d *ContainerCreateDialog) initData() {
 	podList, _ := pods.List()
 	d.podList = podList
 
-	for i := 0; i < len(podList); i++ {
+	for i := range podList {
 		podOptions = append(podOptions, podList[i].Name)
 	}
 
@@ -1407,7 +1407,7 @@ func (d *ContainerCreateDialog) initData() {
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
 
-	for i := 0; i < len(networkList); i++ {
+	for i := range networkList {
 		networkOptions = append(networkOptions, networkList[i][1])
 	}
 
@@ -1416,7 +1416,7 @@ func (d *ContainerCreateDialog) initData() {
 	volumeOptions := []string{""}
 	volList, _ := volumes.List()
 
-	for i := 0; i < len(volList); i++ {
+	for i := range volList {
 		volumeOptions = append(volumeOptions, volList[i].Name)
 	}
 

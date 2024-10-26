@@ -27,7 +27,7 @@ func (s *Secrets) UpdateData() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(s.headers); i++ {
+	for i := range s.headers {
 		s.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(s.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -41,7 +41,7 @@ func (s *Secrets) UpdateData() {
 
 	s.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(s.title), len(secResponse)))
 
-	for i := 0; i < len(secResponse); i++ {
+	for i := range secResponse {
 		secID := secResponse[i].ID
 		secName := secResponse[i].Spec.Name
 		secDriver := secResponse[i].Spec.Driver.Name
@@ -88,7 +88,7 @@ func (s *Secrets) ClearData() {
 
 	expand := 1
 
-	for i := 0; i < len(s.headers); i++ {
+	for i := range s.headers {
 		s.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(s.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).

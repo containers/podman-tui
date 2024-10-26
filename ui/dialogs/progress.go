@@ -60,13 +60,13 @@ func (d *ProgressDialog) SetRect(x, y, width, height int) {
 
 	if d.width > prgMinWidth {
 		d.width = prgMinWidth
-		spaceWidth := (width - d.width) / 2 //nolint:gomnd
+		spaceWidth := (width - d.width) / 2 //nolint:mnd
 		d.x = x + spaceWidth
 	}
 
-	if height > 3 { //nolint:gomnd
+	if height > 3 { //nolint:mnd
 		d.height = 3
-		spaceHeight := (height - d.height) / 2 //nolint:gomnd
+		spaceHeight := (height - d.height) / 2 //nolint:mnd
 		d.y = y + spaceHeight
 	}
 
@@ -104,11 +104,11 @@ func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus fun
 	})
 }
 
-func (d *ProgressDialog) tickStr(max int) string {
+func (d *ProgressDialog) tickStr(maxCount int) string {
 	barColor := style.GetColorHex(style.PrgBarColor)
 	counter := d.counterValue
 
-	if counter < max-4 {
+	if counter < maxCount-4 {
 		d.counterValue++
 	} else {
 		d.counterValue = 0
@@ -119,14 +119,14 @@ func (d *ProgressDialog) tickStr(max int) string {
 	prgEndStr := ""
 	prgStr := ""
 
-	for i := 0; i < d.counterValue; i++ {
+	for range d.counterValue {
 		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
 		hWidth++
 	}
 
 	prgStr = prgCell + prgCell + prgCell + prgCell
 
-	for i := 0; i < max+hWidth+4; i++ {
+	for range maxCount + hWidth + 4 {
 		prgEndStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
 	}
 

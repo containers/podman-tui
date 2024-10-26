@@ -257,7 +257,7 @@ func (addDialog *AddConnectionDialog) SetAddFunc(handler func()) *AddConnectionD
 // SetCancelFunc sets form cancel button selected function.
 func (addDialog *AddConnectionDialog) SetCancelFunc(handler func()) *AddConnectionDialog {
 	addDialog.cancelHandler = handler
-	cancelButton := addDialog.form.GetButton(addDialog.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := addDialog.form.GetButton(addDialog.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return addDialog
@@ -270,9 +270,9 @@ func (addDialog *AddConnectionDialog) SetRect(x, y, width, height int) {
 		dWidth = connCreateDialogMaxWidth
 	}
 
-	dBWidth := dWidth - (2 * dialogs.DialogPadding) //nolint:gomnd
+	dBWidth := dWidth - (2 * dialogs.DialogPadding) //nolint:mnd
 
-	widthEmptySpace := (width - dWidth) / 2 //nolint:gomnd
+	widthEmptySpace := (width - dWidth) / 2 //nolint:mnd
 
 	x = x + widthEmptySpace + dialogs.DialogPadding
 
@@ -281,7 +281,7 @@ func (addDialog *AddConnectionDialog) SetRect(x, y, width, height int) {
 		dHeight = connCreateDialogMaxHeight
 	}
 
-	heightEmptySpace := (height - dHeight) / 2 //nolint:gomnd
+	heightEmptySpace := (height - dHeight) / 2 //nolint:mnd
 	y += heightEmptySpace
 
 	addDialog.Box.SetRect(x, y, dBWidth, dHeight)

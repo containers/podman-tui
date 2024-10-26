@@ -74,7 +74,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	cntInfoLabel := "CONTAINER ID:" //nolint:goconst
 
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel) //nolint:goconst
+	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
 	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
@@ -154,7 +154,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	iaLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	iaLayout.SetBackgroundColor(style.DialogBgColor)
 	iaLayout.AddItem(dialog.image, 0, 1, true)
-	iaLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 2, 0, false) //nolint:gomnd
+	iaLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 2, 0, false) //nolint:mnd
 	iaLayout.AddItem(dialog.author, 0, 1, true)
 
 	// dropdown and checkbox layout row
@@ -388,13 +388,13 @@ func (d *ContainerCommitDialog) setFocusElement() {
 // SetRect set rects for this primitive.
 func (d *ContainerCommitDialog) SetRect(x, y, width, height int) {
 	if width > cntCommitDialogMaxWidth {
-		emptySpace := (width - cntCommitDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - cntCommitDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = cntCommitDialogMaxWidth
 	}
 
 	if height > cntCommitDialogMaxHeight {
-		emptySpace := (height - cntCommitDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - cntCommitDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = cntCommitDialogMaxHeight
 	}
@@ -429,7 +429,7 @@ func (d *ContainerCommitDialog) SetCommitFunc(handler func()) *ContainerCommitDi
 // SetCancelFunc sets form cancel button selected function.
 func (d *ContainerCommitDialog) SetCancelFunc(handler func()) *ContainerCommitDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

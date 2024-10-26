@@ -69,7 +69,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	col1Width := 0
 	col2Width := 0
 
-	for i := 0; i < len(options); i++ {
+	for i := range options {
 		cmdsTable.SetCell(i+1, 0,
 			tview.NewTableCell(options[i][0]).
 				SetAlign(tview.AlignLeft).
@@ -88,7 +88,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		}
 	}
 
-	cmdWidth = col1Width + col2Width + 2 //nolint:gomnd
+	cmdWidth = col1Width + col2Width + 2 //nolint:mnd
 
 	cmdsTable.SetFixed(1, 1)
 	cmdsTable.SetSelectable(true, false)
@@ -254,8 +254,8 @@ func (cmd *CommandDialog) SetCancelFunc(handler func()) *CommandDialog {
 
 // SetRect set rects for this primitive.
 func (cmd *CommandDialog) SetRect(x, y, width, height int) {
-	ws := (width - cmd.width) / 2     //nolint:gomnd
-	hs := ((height - cmd.height) / 2) //nolint:gomnd
+	ws := (width - cmd.width) / 2     //nolint:mnd
+	hs := ((height - cmd.height) / 2) //nolint:mnd
 	dy := y + hs
 	bWidth := cmd.width
 
