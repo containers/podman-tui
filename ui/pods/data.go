@@ -46,7 +46,7 @@ func (pods *Pods) ClearData() { //nolint:stylecheck
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
 
-	for i := 0; i < len(pods.headers); i++ {
+	for i := range pods.headers {
 		pods.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(pods.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).

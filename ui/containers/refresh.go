@@ -18,7 +18,7 @@ func (cnt *Containers) refresh() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(cnt.headers); i++ {
+	for i := range cnt.headers {
 		cnt.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -33,7 +33,7 @@ func (cnt *Containers) refresh() {
 
 	cnt.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(cnt.title), len(cntList)))
 
-	for i := 0; i < len(cntList); i++ {
+	for i := range cntList {
 		cntID := cntList[i].ID
 		if len(cntID) > utils.IDLength {
 			cntID = cntID[:utils.IDLength]

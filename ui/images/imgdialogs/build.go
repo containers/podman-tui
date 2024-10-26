@@ -508,7 +508,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	// layers setup page
 	secondRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	secondRowLayout.SetBackgroundColor(bgColor)
-	secondRowLayout.AddItem(d.formatField, 0, 2, true) //nolint:gomnd
+	secondRowLayout.AddItem(d.formatField, 0, 2, true) //nolint:mnd
 	secondRowLayout.AddItem(d.SquashField, 0, 1, true)
 	secondRowLayout.AddItem(d.layersField, 0, 1, true)
 	secondRowLayout.AddItem(d.noCacheField, 0, 1, true)
@@ -516,7 +516,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	cntRmRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	cntRmRowLayout.SetBackgroundColor(bgColor)
 	cntRmRowLayout.AddItem(d.forceRemoveCntField, 0, 1, true)
-	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true) //nolint:gomnd
+	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true) //nolint:mnd
 
 	// build setup page
 	d.buildInfoPage.SetDirection(tview.FlexRow)
@@ -594,7 +594,7 @@ func (d *ImageBuildDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
@@ -901,13 +901,13 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 // SetRect set rects for this primitive.
 func (d *ImageBuildDialog) SetRect(x, y, width, height int) {
 	if width > buildDialogMaxWidth {
-		emptySpace := (width - buildDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - buildDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = buildDialogMaxWidth
 	}
 
 	if height > buildDialogHeight {
-		emptySpace := (height - buildDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - buildDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = buildDialogHeight
 	}
@@ -930,7 +930,7 @@ func (d *ImageBuildDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ImageBuildDialog) SetCancelFunc(handler func()) *ImageBuildDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
@@ -1002,11 +1002,11 @@ func (d *ImageBuildDialog) setActiveCategory(index int) {
 	d.activePageIndex = index
 	d.categories.Clear()
 
-	var ctgList []string
+	ctgList := []string{}
 
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 
-	for i := 0; i < len(alignedList); i++ {
+	for i := range alignedList {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgFgColor, ctgBgColor, alignedList[i]))
 
@@ -1329,7 +1329,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU period value %q %w", cpuPeriodVal, err)
 		}
 
-		cpuPeriod = uint64(period)
+		cpuPeriod = uint64(period) //nolint:gosec
 	}
 
 	cpuQuotaVal := d.cpuQuataField.GetText()
@@ -1349,7 +1349,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuSharesVal, err)
 		}
 
-		cpuShares = uint64(shares)
+		cpuShares = uint64(shares) //nolint:gosec
 	}
 
 	cpuSetCpusVal := d.cpuSetCpusField.GetText()

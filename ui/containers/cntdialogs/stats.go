@@ -36,8 +36,8 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog := ContainerStatsDialog{
 		Box:           tview.NewBox(),
 		containerInfo: tview.NewInputField(),
-		maxHeight:     14, //nolint:gomnd
-		maxWidth:      92, //nolint:gomnd
+		maxHeight:     14, //nolint:mnd
+		maxWidth:      92, //nolint:mnd
 	}
 
 	// table
@@ -178,18 +178,18 @@ func (d *ContainerStatsDialog) Draw(screen tcell.Screen) {
 func (d *ContainerStatsDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:gomnd
-	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:gomnd
+	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:mnd
+	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:mnd
 
 	if dHeight > d.maxHeight {
 		emptySpace := dHeight - d.maxHeight
-		dY += (emptySpace / 2) //nolint:gomnd
+		dY += (emptySpace / 2) //nolint:mnd
 		dHeight = d.maxHeight
 	}
 
 	if dWidth > d.maxWidth {
 		emptySpace := dWidth - d.maxWidth
-		dX += (emptySpace / 2) //nolint:gomnd
+		dX += (emptySpace / 2) //nolint:mnd
 		dWidth = d.maxWidth
 	}
 
@@ -281,28 +281,28 @@ var (
 		col: 1,
 	}
 	containerBlockInputCell = tableCell{
-		row: 2, //nolint:gomnd
+		row: 2, //nolint:mnd
 		col: 1,
 	}
 	containerBlockOutputCell = tableCell{
-		row: 3, //nolint:gomnd
+		row: 3, //nolint:mnd
 		col: 1,
 	}
 	containerPidsCell = tableCell{
 		row: 0,
-		col: 3, //nolint:gomnd
+		col: 3, //nolint:mnd
 	}
 	containerCPUPercCell = tableCell{
 		row: 1,
-		col: 3, //nolint:gomnd
+		col: 3, //nolint:mnd
 	}
 	containerNetInputCell = tableCell{
-		row: 2, //nolint:gomnd
-		col: 3, //nolint:gomnd
+		row: 2, //nolint:mnd
+		col: 3, //nolint:mnd
 	}
 	containerNetOutputCell = tableCell{
-		row: 3, //nolint:gomnd
-		col: 3, //nolint:gomnd
+		row: 3, //nolint:mnd
+		col: 3, //nolint:mnd
 	}
 )
 
@@ -322,7 +322,7 @@ func (d *ContainerStatsDialog) initTableUI() {
 	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col-1,
 		tview.NewTableCell("memory %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerMemPercCell.row, containerMemPercCell.col, tview.NewTableCell(""))
-	d.setContainerMemPerc(0.00) //nolint:gomnd
+	d.setContainerMemPerc(0.00) //nolint:mnd
 
 	d.table.SetCell(containerBlockInputCell.row, containerBlockInputCell.col-1,
 		tview.NewTableCell("block input:").SetTextColor(headerFgColor))
@@ -340,7 +340,7 @@ func (d *ContainerStatsDialog) initTableUI() {
 	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col-1,
 		tview.NewTableCell("cpu %:").SetTextColor(headerFgColor))
 	d.table.SetCell(containerCPUPercCell.row, containerCPUPercCell.col, tview.NewTableCell(""))
-	d.setContainerCPUPerc(0.00) //nolint:gomnd
+	d.setContainerCPUPerc(0.00) //nolint:mnd
 
 	d.table.SetCell(containerNetInputCell.row, containerNetInputCell.col-1,
 		tview.NewTableCell("net input:").SetTextColor(headerFgColor))

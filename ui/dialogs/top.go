@@ -143,16 +143,16 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 // SetRect set rects for this primitive.
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
-	dWidth := width - (2 * DialogPadding)            //nolint:gomnd
-	dHeight := len(d.results) + DialogFormHeight + 6 //nolint:gomnd
+	dWidth := width - (2 * DialogPadding)            //nolint:mnd
+	dHeight := len(d.results) + DialogFormHeight + 6 //nolint:mnd
 
 	if dHeight > height {
 		dHeight = height
 	}
 
-	tableHeight := dHeight - DialogFormHeight - 2 //nolint:gomnd
+	tableHeight := dHeight - DialogFormHeight - 2 //nolint:mnd
 
-	hs := ((height - dHeight) / 2) //nolint:gomnd
+	hs := ((height - dHeight) / 2) //nolint:mnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
@@ -161,9 +161,9 @@ func (d *TopDialog) SetRect(x, y, width, height int) {
 
 	cWidth := d.getCommandWidth()
 
-	for i := 0; i < d.table.GetRowCount(); i++ {
+	for i := range d.table.GetRowCount() {
 		cell := d.table.GetCell(i, viewTopCommandColIndex)
-		cell.SetMaxWidth(cWidth / 2) //nolint:gomnd
+		cell.SetMaxWidth(cWidth / 2) //nolint:mnd
 		d.table.SetCell(i, viewTopCommandColIndex, cell)
 	}
 }
@@ -195,7 +195,7 @@ func (d *TopDialog) initTable() {
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 
-	for i := 0; i < len(d.tableHeaders); i++ {
+	for i := range d.tableHeaders {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(0).
@@ -226,7 +226,7 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 	rowIndex := 1
 	expand := 1
 
-	if len(data) < 2 { //nolint:gomnd
+	if len(data) < 2 { //nolint:mnd
 		return
 	}
 
@@ -322,7 +322,7 @@ func (d *TopDialog) getCommandWidth() int {
 		}
 	}
 
-	commandWidth = width - usedWidth*2 + 8 //nolint:gomnd
+	commandWidth = width - usedWidth*2 + 8 //nolint:mnd
 	if commandWidth <= 0 {
 		commandWidth = 0
 	}

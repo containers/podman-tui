@@ -51,7 +51,7 @@ func NewApp(name string, version string) *App {
 		Application:     tview.NewApplication(),
 		pages:           tview.NewPages(),
 		needInitUI:      false,
-		fastRefreshChan: make(chan bool, 10), //nolint:gomnd
+		fastRefreshChan: make(chan bool, 10), //nolint:mnd
 	}
 
 	var err error

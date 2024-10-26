@@ -251,13 +251,13 @@ func (d *ImageImportDialog) InputHandler() func(event *tcell.EventKey, setFocus 
 // SetRect set rects for this primitive.
 func (d *ImageImportDialog) SetRect(x, y, width, height int) {
 	if width > imageImportDialogMaxWidth {
-		emptySpace := (width - imageImportDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - imageImportDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = imageImportDialogMaxWidth
 	}
 
 	if height > imageImportDialogMaxHeight {
-		emptySpace := (height - imageImportDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - imageImportDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = imageImportDialogMaxHeight
 	}
@@ -302,7 +302,7 @@ func (d *ImageImportDialog) SetImportFunc(handler func()) *ImageImportDialog {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ImageImportDialog) SetCancelFunc(handler func()) *ImageImportDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d

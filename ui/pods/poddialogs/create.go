@@ -405,7 +405,7 @@ func (d *PodCreateDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
@@ -644,13 +644,13 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 // SetRect set rects for this primitive.
 func (d *PodCreateDialog) SetRect(x, y, width, height int) {
 	if width > podCreateDialogMaxWidth {
-		emptySpace := (width - podCreateDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - podCreateDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = podCreateDialogMaxWidth
 	}
 
 	if height > podCreateDialogHeight {
-		emptySpace := (height - podCreateDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - podCreateDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = podCreateDialogHeight
 	}
@@ -675,7 +675,7 @@ func (d *PodCreateDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *PodCreateDialog) SetCancelFunc(handler func()) *PodCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
@@ -701,11 +701,11 @@ func (d *PodCreateDialog) setActiveCategory(index int) {
 
 	d.categories.Clear()
 
-	var ctgList []string
+	ctgList := []string{}
 
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 
-	for i := 0; i < len(d.categoryLabels); i++ {
+	for i := range len(d.categoryLabels) {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
 
@@ -749,7 +749,7 @@ func (d *PodCreateDialog) initData() {
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
 
-	for i := 0; i < len(networkList); i++ {
+	for i := range networkList {
 		networkOptions = append(networkOptions, networkList[i][1])
 	}
 
@@ -915,7 +915,7 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 { //nolint:gomnd
+			if len(split) == 2 { //nolint:mnd
 				key := split[0]
 				value := split[1]
 

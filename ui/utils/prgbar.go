@@ -15,9 +15,9 @@ const (
 // ProgressUsageString return progressbar string (bars + usage percentage).
 func ProgressUsageString(percentage float64) string {
 	progressCell := ""
-	value := int(percentage) * (prgWidth) / 100 //nolint:gomnd
+	value := int(percentage) * (prgWidth) / 100 //nolint:mnd
 
-	for index := 0; index < prgWidth; index++ {
+	for index := range prgWidth {
 		if index < value {
 			progressCell += getBarColor(index)
 		} else {

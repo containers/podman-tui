@@ -204,13 +204,13 @@ func (d *NetworkDisconnectDialog) InputHandler() func(event *tcell.EventKey, set
 // SetRect set rects for this primitive.
 func (d *NetworkDisconnectDialog) SetRect(x, y, width, height int) {
 	if width > netDisconnectDialogMaxWidth {
-		emptySpace := (width - netDisconnectDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - netDisconnectDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = netDisconnectDialogMaxWidth
 	}
 
 	if height > netDisconnectDialogMaxHeight {
-		emptySpace := (height - netDisconnectDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - netDisconnectDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = netDisconnectDialogMaxHeight
 	}
@@ -245,7 +245,7 @@ func (d *NetworkDisconnectDialog) SetDisconnectFunc(handler func()) *NetworkDisc
 // SetCancelFunc sets form cancel button selected function.
 func (d *NetworkDisconnectDialog) SetCancelFunc(handler func()) *NetworkDisconnectDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

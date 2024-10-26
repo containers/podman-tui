@@ -66,7 +66,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 		podDropDown:          tview.NewDropDown(),
 		podSortByDropDown:    tview.NewDropDown(),
 		statQueryOpts:        &ppods.StatsOptions{},
-		queryRefreshInterval: 3000 * time.Millisecond, //nolint:gomnd
+		queryRefreshInterval: 3000 * time.Millisecond, //nolint:mnd
 	}
 
 	ddUnselectedStyle := style.DropDownUnselected
@@ -299,8 +299,8 @@ func (d *PodStatsDialog) Draw(screen tcell.Screen) {
 func (d *PodStatsDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:gomnd
-	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:gomnd
+	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:mnd
+	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:mnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
@@ -326,7 +326,7 @@ func (d *PodStatsDialog) SetPodsOptions(options []PodStatsDropDownOptions) {
 
 	podOptions := []string{"all"}
 
-	for i := 0; i < len(options); i++ {
+	for i := range options {
 		item := options[i].ID
 		if options[i].Name != "" {
 			item = fmt.Sprintf("%s (%s)", item, options[i].Name)
@@ -461,7 +461,7 @@ func (d *PodStatsDialog) updateData(statReport []ppods.StatReporter) {
 
 	d.initTableUI()
 
-	for i := 0; i < len(d.statsResult); i++ {
+	for i := range d.statsResult {
 		podID := d.statsResult[i].Pod
 		cntID := d.statsResult[i].CID
 		cntName := d.statsResult[i].Name

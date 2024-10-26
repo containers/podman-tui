@@ -87,7 +87,7 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.searchLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
 
 	dialog.searchLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	dialog.searchLayout.AddItem(dialog.input, searchFieldMaxSize+searchInpuLabelWidth, 10, true) //nolint:gomnd
+	dialog.searchLayout.AddItem(dialog.input, searchFieldMaxSize+searchInpuLabelWidth, 10, true) //nolint:mnd
 	dialog.searchLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	dialog.searchLayout.AddItem(dialog.searchButton, searchButtonWidth, 0, true)
 	dialog.searchLayout.SetBackgroundColor(bgColor)
@@ -309,11 +309,11 @@ func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
 	paddingY := 1
 	dX := x + paddingX
 	dY := y + paddingY
-	dWidth := width - (2 * paddingX)   //nolint:gomnd
-	dHeight := height - (2 * paddingY) //nolint:gomnd
+	dWidth := width - (2 * paddingX)   //nolint:mnd
+	dHeight := height - (2 * paddingY) //nolint:mnd
 
 	// set search input field size
-	iwidth := dWidth - searchInpuLabelWidth - searchButtonWidth - 5 //nolint:gomnd
+	iwidth := dWidth - searchInpuLabelWidth - searchButtonWidth - 5 //nolint:mnd
 	if iwidth > searchFieldMaxSize {
 		iwidth = searchFieldMaxSize
 	}
@@ -322,7 +322,7 @@ func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
 	d.searchLayout.ResizeItem(d.input, iwidth+searchInpuLabelWidth, 0)
 
 	// set table height size
-	d.layout.ResizeItem(d.searchResult, dHeight-dialogs.DialogFormHeight-5, 0) //nolint:gomnd
+	d.layout.ResizeItem(d.searchResult, dHeight-dialogs.DialogFormHeight-5, 0) //nolint:mnd
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
 
@@ -391,7 +391,7 @@ func (d *ImageSearchDialog) InputHandler() func(event *tcell.EventKey, setFocus 
 // SetCancelFunc sets form cancel button selected function.
 func (d *ImageSearchDialog) SetCancelFunc(handler func()) *ImageSearchDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
@@ -441,7 +441,7 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 	rowIndex := 1
 	expand := 1
 
-	for i := 0; i < len(data); i++ {
+	for i := range data {
 		index := data[i][searchResultIndexIndex]
 		name := data[i][searchResultNameIndex]
 		desc := data[i][searchResultDescIndex]

@@ -100,7 +100,7 @@ func NewPods() *Pods {
 	pods.table.SetTitleColor(style.FgColor)
 	pods.table.SetBorder(true)
 
-	for i := 0; i < len(pods.headers); i++ {
+	for i := range pods.headers {
 		pods.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(pods.headers[i]))). //nolint:perfsprint
 														SetExpansion(1).

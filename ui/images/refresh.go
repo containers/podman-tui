@@ -16,7 +16,7 @@ func (img *Images) refresh() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(img.headers); i++ {
+	for i := range img.headers {
 		img.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(img.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -31,7 +31,7 @@ func (img *Images) refresh() {
 
 	img.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(img.title), len(images)))
 
-	for i := 0; i < len(images); i++ {
+	for i := range images {
 		repo := images[i].Repository
 		tag := images[i].Tag
 		imgID := images[i].ID

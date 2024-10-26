@@ -140,7 +140,7 @@ func (dfsum *DfSummary) Size() string {
 
 // Reclaimable returns reclaimable value of df summary.
 func (dfsum *DfSummary) Reclaimable() string {
-	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100 //nolint:gomnd
+	percent := int(float64(dfsum.reclaimable)/float64(dfsum.size)) * 100 //nolint:mnd
 
 	return fmt.Sprintf("%s (%d%%)", units.HumanSize(float64(dfsum.reclaimable)), percent)
 }

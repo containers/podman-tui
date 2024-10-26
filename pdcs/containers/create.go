@@ -102,7 +102,7 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 			return warningResponse, fmt.Errorf("%w: %s", ErrInvalidCreateTimeout, opts.Timeout)
 		}
 
-		createOptions.Timeout = uint(timeout)
+		createOptions.Timeout = uint(timeout) //nolint:gosec
 	}
 
 	createOptions.Hostname = opts.Hostname

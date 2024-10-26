@@ -54,9 +54,9 @@ func NewHelp(appName string, appVersion string) *Help {
 	rowIndex := 0
 	colIndex := 0
 	needInit := true
-	maxRowIndex := len(utils.UIKeysBindings)/2 + 1 //nolint:gomnd
+	maxRowIndex := len(utils.UIKeysBindings)/2 + 1 //nolint:mnd
 
-	for i := 0; i < len(utils.UIKeysBindings); i++ {
+	for i := range utils.UIKeysBindings {
 		if i >= maxRowIndex {
 			if needInit {
 				colIndex = 2
@@ -82,7 +82,7 @@ func NewHelp(appName string, appVersion string) *Help {
 
 	// appinfo and appkeys layout
 	mlayout := tview.NewFlex().SetDirection(tview.FlexRow)
-	mlayout.AddItem(appinfo, 2, 0, false) //nolint:gomnd
+	mlayout.AddItem(appinfo, 2, 0, false) //nolint:mnd
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	mlayout.AddItem(keyinfo, 0, 1, false)
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
@@ -117,7 +117,7 @@ func (help *Help) Focus(delegate func(p tview.Primitive)) {
 // Draw draws this primitive onto the screen.
 func (help *Help) Draw(screen tcell.Screen) {
 	x, y, width, height := help.Box.GetInnerRect()
-	if height <= 3 { //nolint:gomnd
+	if height <= 3 { //nolint:mnd
 		return
 	}
 

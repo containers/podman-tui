@@ -240,7 +240,7 @@ func (d *NetworkCreateDialog) setupLayout() {
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:gomnd
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
 	layout.AddItem(d.categoryPages, 0, 1, true)
 	layout.SetBackgroundColor(bgColor)
 
@@ -414,13 +414,13 @@ func (d *NetworkCreateDialog) InputHandler() func(event *tcell.EventKey, setFocu
 // SetRect set rects for this primitive.
 func (d *NetworkCreateDialog) SetRect(x, y, width, height int) {
 	if width > networkCreateDialogMaxWidth {
-		emptySpace := (width - networkCreateDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - networkCreateDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = networkCreateDialogMaxWidth
 	}
 
 	if height > networkCreateDialogHeight {
-		emptySpace := (height - networkCreateDialogHeight) / 2 //nolint:gomnd
+		emptySpace := (height - networkCreateDialogHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = networkCreateDialogHeight
 	}
@@ -444,7 +444,7 @@ func (d *NetworkCreateDialog) Draw(screen tcell.Screen) {
 // SetCancelFunc sets form cancel button selected function.
 func (d *NetworkCreateDialog) SetCancelFunc(handler func()) *NetworkCreateDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 
@@ -471,11 +471,11 @@ func (d *NetworkCreateDialog) setActiveCategory(index int) {
 
 	d.categories.Clear()
 
-	var ctgList []string
+	ctgList := []string{}
 
 	alignedList, _ := utils.AlignStringListWidth(d.categoryLabels)
 
-	for i := 0; i < len(d.categoryLabels); i++ {
+	for i := range d.categoryLabels {
 		if i == index {
 			ctgList = append(ctgList, fmt.Sprintf("[%s:%s:b]-> %s ", ctgTextColor, ctgBgColor, alignedList[i]))
 
@@ -598,7 +598,7 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //
 	for _, label := range strings.Split(d.networkLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
-			if len(split) == 2 { //nolint:gomnd
+			if len(split) == 2 { //nolint:mnd
 				key := split[0]
 				value := split[1]
 
@@ -612,7 +612,7 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //
 	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
-			if len(split) == 2 { //nolint:gomnd
+			if len(split) == 2 { //nolint:mnd
 				key := split[0]
 				value := split[1]
 

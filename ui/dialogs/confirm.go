@@ -107,8 +107,8 @@ func (d *ConfirmDialog) HasFocus() bool {
 func (d *ConfirmDialog) SetRect(x, y, width, height int) {
 	d.x = x + DialogPadding
 	d.y = y + DialogPadding
-	d.width = width - (2 * DialogPadding)   //nolint:gomnd
-	d.height = height - (2 * DialogPadding) //nolint:gomnd
+	d.width = width - (2 * DialogPadding)   //nolint:mnd
+	d.height = height - (2 * DialogPadding) //nolint:mnd
 	d.setRect()
 }
 
@@ -118,30 +118,30 @@ func (d *ConfirmDialog) setRect() {
 	messageHeight := len(strings.Split(d.message, "\n"))
 	messageWidth := getMessageWidth(d.message)
 
-	layoutHeight := messageHeight + 2 //nolint:gomnd
+	layoutHeight := messageHeight + 2 //nolint:mnd
 
 	if maxHeight > layoutHeight+DialogFormHeight {
-		d.height = layoutHeight + DialogFormHeight + 2 //nolint:gomnd
+		d.height = layoutHeight + DialogFormHeight + 2 //nolint:mnd
 	} else {
 		d.height = maxHeight
-		layoutHeight = d.height - DialogFormHeight - 2 //nolint:gomnd
+		layoutHeight = d.height - DialogFormHeight - 2 //nolint:mnd
 	}
 
 	if maxHeight > d.height {
-		emptyHeight := (maxHeight - d.height) / 2 //nolint:gomnd
+		emptyHeight := (maxHeight - d.height) / 2 //nolint:mnd
 		d.y += emptyHeight
 	}
 
 	if d.width > DialogMinWidth {
 		if messageWidth < DialogMinWidth {
-			d.width = DialogMinWidth + 2 //nolint:gomnd
+			d.width = DialogMinWidth + 2 //nolint:mnd
 		} else if messageWidth < d.width {
-			d.width = messageWidth + 2 //nolint:gomnd
+			d.width = messageWidth + 2 //nolint:mnd
 		}
 	}
 
 	if maxWidth > d.width {
-		emptyWidth := (maxWidth - d.width) / 2 //nolint:gomnd
+		emptyWidth := (maxWidth - d.width) / 2 //nolint:mnd
 		d.x += emptyWidth
 	}
 
@@ -192,7 +192,7 @@ func (d *ConfirmDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 // SetCancelFunc sets form cancel button selected function.
 func (d *ConfirmDialog) SetCancelFunc(handler func()) *ConfirmDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 	cancelButton.SetSelectedFunc(handler)
 
 	return d

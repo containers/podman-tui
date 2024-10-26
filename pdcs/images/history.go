@@ -14,7 +14,7 @@ import (
 func History(id string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman image history %s", id)
 
-	var report [][]string
+	report := [][]string{}
 
 	conn, err := registry.GetConnection()
 	if err != nil {
@@ -26,7 +26,7 @@ func History(id string) ([][]string, error) {
 		return report, err
 	}
 
-	for i := 0; i < len(response); i++ {
+	for i := range response {
 		report = append(report, []string{
 			response[i].ID,
 			units.HumanDuration(time.Since(time.Unix(response[i].Created, 0))) + " ago",

@@ -1,7 +1,6 @@
 run:
+  timeout: 10m
   deadline: 5m
-  skip-files:
-    - ".*_test.go"
 linters:
   enable-all: true
   disable:
@@ -17,22 +16,19 @@ linters:
     - wastedassign
     - rowserrcheck
     # deprecated
-    - nosnakecase
-    - varcheck
-    - structcheck
-    - ifshort
-    - deadcode
-    - golint
-    - maligned
-    - interfacer
-    - scopelint
-    - exhaustivestruct
+    - gomnd
     - gomoddirectives
+    - exportloopref
 linters-settings:
 #  typecheck:
 #    enabled: false
   errcheck:
     check-blank: false
-    ignore: fmt:.*
+    exclude-functions:
+      - fmt:.*
   nolintlint:
     require-specific: true
+
+issues:
+  exclude-files:
+    - ".*_test.go"

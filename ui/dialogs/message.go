@@ -171,26 +171,26 @@ func (d *MessageDialog) HasFocus() bool {
 func (d *MessageDialog) SetRect(x, y, width, height int) {
 	messageHeight := 0
 	if d.message != "" {
-		messageHeight = len(strings.Split(d.message, "\n")) + 3 //nolint:gomnd
+		messageHeight = len(strings.Split(d.message, "\n")) + 3 //nolint:mnd
 	}
 
 	messageWidth := getMessageWidth(d.message)
 
-	headerWidth := len(d.infoType.GetText()) + len(d.infoType.GetLabel()) + 4 //nolint:gomnd
+	headerWidth := len(d.infoType.GetText()) + len(d.infoType.GetLabel()) + 4 //nolint:mnd
 	if messageWidth < headerWidth {
 		messageWidth = headerWidth
 	}
 
-	dWidth := width - (2 * DialogPadding) //nolint:gomnd
+	dWidth := width - (2 * DialogPadding) //nolint:mnd
 	if messageWidth+4 < dWidth {
-		dWidth = messageWidth + 4 //nolint:gomnd
+		dWidth = messageWidth + 4 //nolint:mnd
 	}
 
 	if DialogMinWidth < width && dWidth < DialogMinWidth {
 		dWidth = DialogMinWidth
 	}
 
-	emptySpace := (width - dWidth) / 2 //nolint:gomnd
+	emptySpace := (width - dWidth) / 2 //nolint:mnd
 	dX := x + emptySpace
 
 	dHeight := messageHeight + DialogFormHeight + DialogPadding + 1
@@ -198,8 +198,8 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 		dHeight = height - DialogPadding - 1
 	}
 
-	textviewHeight := dHeight - DialogFormHeight - 2 //nolint:gomnd
-	hs := ((height - dHeight) / 2)                   //nolint:gomnd
+	textviewHeight := dHeight - DialogFormHeight - 2 //nolint:mnd
+	hs := ((height - dHeight) / 2)                   //nolint:mnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)

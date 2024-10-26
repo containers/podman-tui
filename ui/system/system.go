@@ -78,7 +78,7 @@ func NewSystem() *System {
 	sys.connTable.SetFixed(1, 1)
 	sys.connTable.SetSelectable(true, false)
 
-	for i := 0; i < len(sys.connTableHeaders); i++ {
+	for i := range sys.connTableHeaders {
 		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i])) //nolint:perfsprint
 		sys.connTable.SetCell(0, i,
 			tview.NewTableCell(header).
@@ -310,9 +310,9 @@ func (sys *System) getSelectedItem() *sysSelectedItem {
 
 	row, _ := sys.connTable.GetSelection()
 	selectedItem.name = sys.connTable.GetCell(row, 0).Text
-	selectedItem.status = sys.connTable.GetCell(row, 2).Text   //nolint:gomnd
-	selectedItem.uri = sys.connTable.GetCell(row, 3).Text      //nolint:gomnd
-	selectedItem.identity = sys.connTable.GetCell(row, 4).Text //nolint:gomnd
+	selectedItem.status = sys.connTable.GetCell(row, 2).Text   //nolint:mnd
+	selectedItem.uri = sys.connTable.GetCell(row, 3).Text      //nolint:mnd
+	selectedItem.identity = sys.connTable.GetCell(row, 4).Text //nolint:mnd
 
 	return &selectedItem
 }

@@ -80,7 +80,7 @@ func NewDfDialog() *DfDialog {
 		AddItem(dialog.table, 0, 1, true), 0, 1, true)
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 
-	dialog.layout.AddItem(tableLayout, 9, 0, true) //nolint:gomnd
+	dialog.layout.AddItem(tableLayout, 9, 0, true) //nolint:mnd
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return dialog
@@ -141,17 +141,17 @@ func (d *DfDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 func (d *DfDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
 	dY := y
-	dWidth := width - (2 * dialogs.DialogPadding) //nolint:gomnd
+	dWidth := width - (2 * dialogs.DialogPadding) //nolint:mnd
 
 	if dWidth > dfDialogMaxWidth {
 		dWidth = dfDialogMaxWidth
-		emptySpace := (width - dWidth) / 2 //nolint:gomnd
+		emptySpace := (width - dWidth) / 2 //nolint:mnd
 		dX = x + emptySpace
 	}
 
-	dHeight := dialogs.DialogFormHeight + 11 //nolint:gomnd
+	dHeight := dialogs.DialogFormHeight + 11 //nolint:mnd
 	if height > dHeight {
-		dY = y + ((height - dHeight) / 2) //nolint:gomnd
+		dY = y + ((height - dHeight) / 2) //nolint:mnd
 		height = dHeight
 	}
 
@@ -186,7 +186,7 @@ func (d *DfDialog) initTable() {
 	d.table.SetSelectable(true, false)
 
 	// add headers
-	for i := 0; i < len(d.tableHeaders); i++ {
+	for i := range d.tableHeaders {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(1).
@@ -213,17 +213,17 @@ func (d *DfDialog) UpdateDiskSummary(sum []*sysinfo.DfSummary) {
 			tview.NewTableCell(dfReport.Total()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
-		d.table.SetCell(rowIndex, 2, //nolint:gomnd
+		d.table.SetCell(rowIndex, 2, //nolint:mnd
 			tview.NewTableCell(dfReport.Active()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
 
-		d.table.SetCell(rowIndex, 3, //nolint:gomnd
+		d.table.SetCell(rowIndex, 3, //nolint:mnd
 			tview.NewTableCell(dfReport.Size()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))
 
-		d.table.SetCell(rowIndex, 4, //nolint:gomnd
+		d.table.SetCell(rowIndex, 4, //nolint:mnd
 			tview.NewTableCell(dfReport.Reclaimable()).
 				SetExpansion(1).
 				SetAlign(tview.AlignLeft))

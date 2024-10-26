@@ -124,7 +124,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	compressRow := tview.NewFlex().SetDirection(tview.FlexColumn)
 	compressRow.SetBackgroundColor(bgColor)
 	compressRow.AddItem(dialog.compress, 0, 1, true)
-	compressRow.AddItem(dialog.ociAcceptUncompressed, 0, 3, true) //nolint:gomnd
+	compressRow.AddItem(dialog.ociAcceptUncompressed, 0, 3, true) //nolint:mnd
 
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	optionsLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
@@ -287,13 +287,13 @@ func (d *ImageSaveDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 // SetRect set rects for this primitive.
 func (d *ImageSaveDialog) SetRect(x, y, width, height int) {
 	if width > imageSaveDialogMaxWidth {
-		emptySpace := (width - imageSaveDialogMaxWidth) / 2 //nolint:gomnd
+		emptySpace := (width - imageSaveDialogMaxWidth) / 2 //nolint:mnd
 		x += emptySpace
 		width = imageSaveDialogMaxWidth
 	}
 
 	if height > imageSaveDialogMaxHeight {
-		emptySpace := (height - imageSaveDialogMaxHeight) / 2 //nolint:gomnd
+		emptySpace := (height - imageSaveDialogMaxHeight) / 2 //nolint:mnd
 		y += emptySpace
 		height = imageSaveDialogMaxHeight
 	}
@@ -339,7 +339,7 @@ func (d *ImageSaveDialog) SetSaveFunc(handler func()) *ImageSaveDialog {
 // SetCancelFunc sets form cancel button selected function.
 func (d *ImageSaveDialog) SetCancelFunc(handler func()) *ImageSaveDialog {
 	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:gomnd
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
 
 	cancelButton.SetSelectedFunc(handler)
 

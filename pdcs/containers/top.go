@@ -13,7 +13,7 @@ import (
 func Top(id string) ([][]string, error) {
 	log.Debug().Msgf("pdcs: podman container top %s", id)
 
-	var report [][]string
+	report := [][]string{}
 
 	conn, err := registry.GetConnection()
 	if err != nil {
@@ -25,7 +25,7 @@ func Top(id string) ([][]string, error) {
 		return report, err
 	}
 
-	for i := 0; i < len(response); i++ {
+	for i := range response {
 		space := regexp.MustCompile(`\s+`)
 		line := space.ReplaceAllString(response[i], " ")
 		split := strings.Split(line, " ")

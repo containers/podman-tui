@@ -9,19 +9,19 @@ import (
 
 var (
 	CommandMenuKey = uiKeyInfo{
-		Key:      tcell.Key(256), //nolint:gomnd
+		Key:      tcell.Key(256), //nolint:mnd
 		KeyRune:  rune('m'),
 		KeyLabel: "m",
 		KeyDesc:  "display command menu",
 	}
 	NextScreenKey = uiKeyInfo{
-		Key:      tcell.Key(256), //nolint:gomnd
+		Key:      tcell.Key(256), //nolint:mnd
 		KeyRune:  rune('l'),
 		KeyLabel: "l",
 		KeyDesc:  "switch to next screen",
 	}
 	PreviousScreenKey = uiKeyInfo{
-		Key:      tcell.Key(256), //nolint:gomnd
+		Key:      tcell.Key(256), //nolint:mnd
 		KeyRune:  rune('h'),
 		KeyLabel: "h",
 		KeyDesc:  "switch to previous screen",

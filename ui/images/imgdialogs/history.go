@@ -147,16 +147,16 @@ func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus
 // SetRect set rects for this primitive.
 func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
 	dX := x + dialogs.DialogPadding
-	dWidth := width - (2 * dialogs.DialogPadding)            //nolint:gomnd
-	dHeight := len(d.results) + dialogs.DialogFormHeight + 5 //nolint:gomnd
+	dWidth := width - (2 * dialogs.DialogPadding)            //nolint:mnd
+	dHeight := len(d.results) + dialogs.DialogFormHeight + 5 //nolint:mnd
 
 	if dHeight > height {
 		dHeight = height
 	}
 
-	tableHeight := dHeight - dialogs.DialogFormHeight - 2 //nolint:gomnd
+	tableHeight := dHeight - dialogs.DialogFormHeight - 2 //nolint:mnd
 
-	hs := ((height - dHeight) / 2) //nolint:gomnd
+	hs := ((height - dHeight) / 2) //nolint:mnd
 	dY := y + hs
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
@@ -165,10 +165,10 @@ func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
 	d.layout.ResizeItem(d.table, tableHeight, 0)
 	cWidth := d.getCreatedByWidth()
 
-	for i := 0; i < d.table.GetRowCount(); i++ {
-		cell := d.table.GetCell(i, 2) //nolint:gomnd
-		cell.SetMaxWidth(cWidth / 2)  //nolint:gomnd
-		d.table.SetCell(i, 2, cell)   //nolint:gomnd
+	for i := range d.table.GetRowCount() {
+		cell := d.table.GetCell(i, 2) //nolint:mnd
+		cell.SetMaxWidth(cWidth / 2)  //nolint:mnd
+		d.table.SetCell(i, 2, cell)   //nolint:mnd
 	}
 }
 
@@ -201,7 +201,7 @@ func (d *ImageHistoryDialog) initTable() {
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
 
-	for i := 0; i < len(d.tableHeaders); i++ {
+	for i := range d.tableHeaders {
 		d.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
 				SetExpansion(1).
@@ -221,7 +221,7 @@ func (d *ImageHistoryDialog) UpdateResults(data [][]string) {
 	rowIndex := 1
 	expand := 0
 
-	for i := 0; i < len(data); i++ {
+	for i := range data {
 		id := data[i][0]
 		if len(id) > utils.IDLength {
 			id = id[0:utils.IDLength]
@@ -311,7 +311,7 @@ func (d *ImageHistoryDialog) getCreatedByWidth() int {
 	}
 
 	usedWidth := idWidth + createdWidth + sizeWidth + commentWidth
-	createdByWidth = width - usedWidth*2 + 8 //nolint:gomnd
+	createdByWidth = width - usedWidth*2 + 8 //nolint:mnd
 
 	if createdByWidth <= 0 {
 		createdByWidth = 0

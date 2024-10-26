@@ -18,7 +18,7 @@ func (pods *Pods) refresh() {
 	expand := 1
 	alignment := tview.AlignLeft
 
-	for i := 0; i < len(pods.headers); i++ {
+	for i := range pods.headers {
 		pods.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(pods.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
@@ -33,7 +33,7 @@ func (pods *Pods) refresh() {
 
 	pods.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(pods.title), len(podList)))
 
-	for i := 0; i < len(podList); i++ {
+	for i := range podList {
 		podID := podList[i].Id
 		podID = podID[0:utils.IDLength]
 		podName := podList[i].Name

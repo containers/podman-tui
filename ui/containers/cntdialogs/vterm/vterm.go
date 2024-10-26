@@ -139,7 +139,7 @@ func (d *VtermDialog) initLayoutUI() {
 }
 
 func (d *VtermDialog) initChannelsCommon() {
-	d.sessionOutputDoneChan = make(chan bool, 2) //nolint:gomnd
+	d.sessionOutputDoneChan = make(chan bool, 2) //nolint:mnd
 	d.vtTerminal = vt10x.New()
 	sessionStdinPipeIn, sessionStdinPipeOut := io.Pipe()
 	d.sessionStdin = bufio.NewReader(sessionStdinPipeIn)
@@ -157,7 +157,7 @@ func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 
 	d.initChannelsCommon()
 
-	c := make(chan []byte, 1000) //nolint:gomnd
+	c := make(chan []byte, 1000) //nolint:mnd
 	d.sessionStdout = NewWriter(c)
 
 	d.init = true
@@ -173,7 +173,7 @@ func (d *VtermDialog) InitExecChannels() (*bufio.Reader, channel.WriteCloser) { 
 
 	d.initChannelsCommon()
 
-	c := make(chan []byte, 1000) //nolint:gomnd
+	c := make(chan []byte, 1000) //nolint:mnd
 
 	d.execSessionStdout = channel.NewWriter(c)
 
@@ -314,8 +314,8 @@ func (d *VtermDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p
 func (d *VtermDialog) SetRect(x, y, width, height int) {
 	dX := x + 1
 	dY := y + 1
-	dWidth := width - 2   //nolint:gomnd
-	dHeight := height - 2 //nolint:gomnd
+	dWidth := width - 2   //nolint:mnd
+	dHeight := height - 2 //nolint:mnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
@@ -341,8 +341,8 @@ func (d *VtermDialog) Draw(screen tcell.Screen) {
 	}
 
 	// set terminal background
-	for trow := 0; trow < height; trow++ {
-		for tcol := 0; tcol < width; tcol++ {
+	for trow := range height {
+		for tcol := range width {
 			tview.PrintJoinedSemigraphics(screen, x+tcol, y+trow, rune(0), terminalStyle)
 		}
 	}
@@ -350,7 +350,7 @@ func (d *VtermDialog) Draw(screen tcell.Screen) {
 	content, cursor := d.vtContent()
 
 	contentLines := strings.Split(content, "\n")
-	for row := 0; row < len(contentLines); row++ {
+	for row := range contentLines {
 		tview.PrintSimple(screen, contentLines[row], x, y+row)
 	}
 
@@ -422,23 +422,23 @@ func (d *VtermDialog) SetFastRefreshHandler(handler func()) {
 func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
 	switch event.Key() { //nolint:exhaustive
 	case tcell.KeyUp:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(65)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(65)) //nolint:errcheck,mnd
 	case tcell.KeyDown:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(66)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(66)) //nolint:errcheck,mnd
 	case tcell.KeyRight:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(67)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(67)) //nolint:errcheck,mnd
 	case tcell.KeyLeft:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,gomnd
-		d.sessionStdinWriter.WriteRune(rune(68)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
+		d.sessionStdinWriter.WriteRune(rune(68)) //nolint:errcheck,mnd
 	case tcell.KeyEsc:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,gomnd
+		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
 	default:
 		d.sessionStdinWriter.WriteRune(event.Rune()) //nolint:errcheck
 	}
@@ -451,7 +451,7 @@ func (d *VtermDialog) sendDetachToSession() {
 
 	keys := d.detachKeys.keys()
 
-	for i := 0; i < len(keys); i++ {
+	for i := range keys {
 		d.sessionStdinWriter.WriteRune(rune(keys[i])) //nolint:errcheck
 	}
 

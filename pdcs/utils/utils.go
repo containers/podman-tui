@@ -12,7 +12,7 @@ import (
 
 // SizeToStr converts size to human readable format.
 func SizeToStr(size int64) string {
-	return units.HumanSizeWithPrecision(float64(size), 3) //nolint:gomnd
+	return units.HumanSizeWithPrecision(float64(size), 3) //nolint:mnd
 }
 
 // CreatedToStr converts duration to human readable format.

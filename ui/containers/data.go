@@ -49,7 +49,7 @@ func (cnt *Containers) ClearData() {
 	fgColor := style.PageHeaderFgColor
 	bgColor := style.PageHeaderBgColor
 
-	for i := 0; i < len(cnt.headers); i++ {
+	for i := range cnt.headers {
 		cnt.table.SetCell(0, i,
 			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(cnt.headers[i]))). //nolint:perfsprint
 													SetExpansion(expand).
