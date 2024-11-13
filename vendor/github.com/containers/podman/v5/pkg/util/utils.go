@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/containers/common/pkg/config"
 	"github.com/containers/image/v5/types"
 	"github.com/containers/podman/v5/libpod/define"
 	"github.com/containers/podman/v5/pkg/errorhandling"
@@ -41,17 +40,6 @@ type idMapFlags struct {
 	Extends  bool // The "+" flag
 	UserMap  bool // The "u" flag
 	GroupMap bool // The "g" flag
-}
-
-var containerConfig *config.Config
-
-func init() {
-	var err error
-	containerConfig, err = config.Default()
-	if err != nil {
-		logrus.Error(err)
-		os.Exit(1)
-	}
 }
 
 // Helper function to determine the username/password passed
@@ -84,7 +72,7 @@ func ParseDockerignore(containerfiles []string, root string) ([]string, string, 
 		// does not attempts to re-resolve it
 		ignoreFile = path
 		ignore, dockerIgnoreErr = os.ReadFile(path)
-		if os.IsNotExist(dockerIgnoreErr) {
+		if errors.Is(dockerIgnoreErr, fs.ErrNotExist) {
 			// In this case either ignorefile was not found
 			// or it is a symlink to unexpected file in such
 			// case manually set ignorefile to `/dev/null` so
@@ -1223,10 +1211,6 @@ func ValidateSysctls(strSlice []string) (map[string]string, error) {
 		}
 	}
 	return sysctl, nil
-}
-
-func DefaultContainerConfig() *config.Config {
-	return containerConfig
 }
 
 func CreateIDFile(path string, id string) error {

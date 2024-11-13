@@ -159,6 +159,12 @@ type ContainerBasicConfig struct {
 	// and exits.
 	// Optional.
 	Remove *bool `json:"remove,omitempty"`
+	// RemoveImage indicates that the container should remove the image it
+	// was created from after it exits.
+	// Only allowed if Remove is set to true and Image, not Rootfs, is in
+	// use.
+	// Optional.
+	RemoveImage *bool `json:"removeImage,omitempty"`
 	// ContainerCreateCommand is the command that was used to create this
 	// container.
 	// This will be shown in the output of Inspect() on the container, and
@@ -207,11 +213,11 @@ type ContainerBasicConfig struct {
 	// container.
 	// Optional.
 	EnvMerge []string `json:"envmerge,omitempty"`
-	// UnsetEnv unsets the specified default environment variables from the image or from buildin or containers.conf
+	// UnsetEnv unsets the specified default environment variables from the image or from built-in or containers.conf
 	// Optional.
 	UnsetEnv []string `json:"unsetenv,omitempty"`
-	// UnsetEnvAll unsetall default environment variables from the image or from buildin or containers.conf
-	// UnsetEnvAll unsets all default environment variables from the image or from buildin
+	// UnsetEnvAll unsetall default environment variables from the image or from built-in or containers.conf
+	// UnsetEnvAll unsets all default environment variables from the image or from built-in
 	// Optional.
 	UnsetEnvAll *bool `json:"unsetenvall,omitempty"`
 	// Passwd is a container run option that determines if we are validating users/groups before running the container
@@ -593,6 +599,14 @@ type ContainerHealthCheckConfig struct {
 	// Requires that HealthConfig be set.
 	// Optional.
 	StartupHealthConfig *define.StartupHealthCheck `json:"startupHealthConfig,omitempty"`
+	// HealthLogDestination defines the destination where the log is stored
+	HealthLogDestination string `json:"healthLogDestination,omitempty"`
+	// HealthMaxLogCount is maximum number of attempts in the HealthCheck log file.
+	// ('0' value means an infinite number of attempts in the log file)
+	HealthMaxLogCount uint `json:"healthMaxLogCount,omitempty"`
+	// HealthMaxLogSize is the maximum length in characters of stored HealthCheck log
+	// ("0" value means an infinite log length)
+	HealthMaxLogSize uint `json:"healthMaxLogSize,omitempty"`
 }
 
 // SpecGenerator creates an OCI spec and Libpod configuration options to create
@@ -665,13 +679,25 @@ func NewSpecGenerator(arg string, rootfs bool) *SpecGenerator {
 	}
 	return &SpecGenerator{
 		ContainerStorageConfig: csc,
+		ContainerHealthCheckConfig: ContainerHealthCheckConfig{
+			HealthLogDestination: define.DefaultHealthCheckLocalDestination,
+			HealthMaxLogCount:    define.DefaultHealthMaxLogCount,
+			HealthMaxLogSize:     define.DefaultHealthMaxLogSize,
+		},
 	}
 }
 
 // NewSpecGenerator returns a SpecGenerator struct given one of two mandatory inputs
 func NewSpecGeneratorWithRootfs(rootfs string) *SpecGenerator {
 	csc := ContainerStorageConfig{Rootfs: rootfs}
-	return &SpecGenerator{ContainerStorageConfig: csc}
+	return &SpecGenerator{
+		ContainerStorageConfig: csc,
+		ContainerHealthCheckConfig: ContainerHealthCheckConfig{
+			HealthLogDestination: define.DefaultHealthCheckLocalDestination,
+			HealthMaxLogCount:    define.DefaultHealthMaxLogCount,
+			HealthMaxLogSize:     define.DefaultHealthMaxLogSize,
+		},
+	}
 }
 
 func StringSlicesEqual(a, b []string) bool {
