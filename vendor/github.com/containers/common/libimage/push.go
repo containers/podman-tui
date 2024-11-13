@@ -109,12 +109,12 @@ func (r *Runtime) Push(ctx context.Context, source, destination string, options 
 		}
 	}
 
-	c, err := r.newCopier(&options.CopyOptions)
+	c, err := r.newCopier(&options.CopyOptions, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	defer c.close()
+	defer c.Close()
 
-	return c.copy(ctx, srcRef, destRef)
+	return c.Copy(ctx, srcRef, destRef)
 }
