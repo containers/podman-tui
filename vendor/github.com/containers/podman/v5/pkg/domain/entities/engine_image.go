@@ -3,8 +3,8 @@ package entities
 import (
 	"context"
 
+	"github.com/containers/common/libimage/define"
 	"github.com/containers/common/pkg/config"
-	"github.com/containers/common/pkg/ssh"
 	"github.com/containers/podman/v5/pkg/domain/entities/reports"
 )
 
@@ -23,7 +23,7 @@ type ImageEngine interface { //nolint:interfacebloat
 	Push(ctx context.Context, source string, destination string, opts ImagePushOptions) (*ImagePushReport, error)
 	Remove(ctx context.Context, images []string, opts ImageRemoveOptions) (*ImageRemoveReport, []error)
 	Save(ctx context.Context, nameOrID string, tags []string, options ImageSaveOptions) error
-	Scp(ctx context.Context, src, dst string, parentFlags []string, quiet bool, sshMode ssh.EngineMode) error
+	Scp(ctx context.Context, src, dst string, opts ImageScpOptions) (*ImageScpReport, error)
 	Search(ctx context.Context, term string, opts ImageSearchOptions) ([]ImageSearchReport, error)
 	SetTrust(ctx context.Context, args []string, options SetTrustOptions) error
 	ShowTrust(ctx context.Context, args []string, options ShowTrustOptions) (*ShowTrustReport, error)
@@ -34,7 +34,7 @@ type ImageEngine interface { //nolint:interfacebloat
 	Untag(ctx context.Context, nameOrID string, tags []string, options ImageUntagOptions) error
 	ManifestCreate(ctx context.Context, name string, images []string, opts ManifestCreateOptions) (string, error)
 	ManifestExists(ctx context.Context, name string) (*BoolReport, error)
-	ManifestInspect(ctx context.Context, name string, opts ManifestInspectOptions) ([]byte, error)
+	ManifestInspect(ctx context.Context, name string, opts ManifestInspectOptions) (*define.ManifestListData, error)
 	ManifestAdd(ctx context.Context, listName string, imageNames []string, opts ManifestAddOptions) (string, error)
 	ManifestAddArtifact(ctx context.Context, name string, files []string, opts ManifestAddArtifactOptions) (string, error)
 	ManifestAnnotate(ctx context.Context, names, image string, opts ManifestAnnotateOptions) (string, error)

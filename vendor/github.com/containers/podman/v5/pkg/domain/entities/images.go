@@ -249,9 +249,10 @@ type ImageListOptions struct {
 }
 
 type ImagePruneOptions struct {
-	All      bool     `json:"all" schema:"all"`
-	External bool     `json:"external" schema:"external"`
-	Filter   []string `json:"filter" schema:"filter"`
+	All        bool     `json:"all" schema:"all"`
+	External   bool     `json:"external" schema:"external"`
+	BuildCache bool     `json:"buildcache" schema:"buildcache"`
+	Filter     []string `json:"filter" schema:"filter"`
 }
 
 type ImageTagOptions struct{}
@@ -304,21 +305,13 @@ type ImageSaveOptions struct {
 	SignaturePolicy string
 }
 
-// ImageScpOptions provide options for securely copying images to and from a remote host
+// ImageScpOptions provides options for ImageEngine.Scp()
 type ImageScpOptions struct {
-	// Remote determines if this entity is operating on a remote machine
-	Remote bool `json:"remote,omitempty"`
-	// File is the input/output file for the save and load Operation
-	File string `json:"file,omitempty"`
-	// Quiet Determines if the save and load operation will be done quietly
-	Quiet bool `json:"quiet,omitempty"`
-	// Image is the image the user is providing to save and load
-	Image string `json:"image,omitempty"`
-	// User is used in conjunction with Transfer to determine if a valid user was given to save from/load into
-	User string `json:"user,omitempty"`
-	// Tag is the name to be used for the image on the destination
-	Tag string `json:"tag,omitempty"`
+	ScpExecuteTransferOptions
 }
+
+// ImageScpReport provides results from ImageEngine.Scp()
+type ImageScpReport struct{}
 
 // ImageScpConnections provides the ssh related information used in remote image transfer
 type ImageScpConnections struct {

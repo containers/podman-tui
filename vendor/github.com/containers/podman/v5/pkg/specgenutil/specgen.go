@@ -370,6 +370,12 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 	}
 	s.HealthCheckOnFailureAction = onFailureAction
 
+	s.HealthLogDestination = c.HealthLogDestination
+
+	s.HealthMaxLogCount = c.HealthMaxLogCount
+
+	s.HealthMaxLogSize = c.HealthMaxLogSize
+
 	if c.StartupHCCmd != "" {
 		if c.NoHealthCheck {
 			return errors.New("cannot specify both --no-healthcheck and --health-startup-cmd")
@@ -515,6 +521,10 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 	}
 	if len(s.Annotations) == 0 {
 		s.Annotations = annotations
+	}
+	// Add the user namespace configuration to the annotations
+	if c.UserNS != "" {
+		s.Annotations[define.UserNsAnnotation] = c.UserNS
 	}
 
 	if len(c.StorageOpts) > 0 {
