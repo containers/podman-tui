@@ -261,7 +261,7 @@ func parseAndValidatePort(port string) (uint16, error) {
 	return uint16(num), nil
 }
 
-func CreateExitCommandArgs(storageConfig storageTypes.StoreOptions, config *config.Config, syslog, rm, exec bool) ([]string, error) {
+func CreateExitCommandArgs(storageConfig storageTypes.StoreOptions, config *config.Config, syslog, rm, rmi, exec bool) ([]string, error) {
 	// We need a cleanup process for containers in the current model.
 	// But we can't assume that the caller is Podman - it could be another
 	// user of the API.
@@ -311,10 +311,16 @@ func CreateExitCommandArgs(storageConfig storageTypes.StoreOptions, config *conf
 		command = append(command, "--module", module)
 	}
 
-	command = append(command, []string{"container", "cleanup"}...)
+	// --stopped-only is used to ensure we only cleanup stopped containers and do not race
+	// against other processes that did a cleanup() + init() again before we had the chance to run
+	command = append(command, []string{"container", "cleanup", "--stopped-only"}...)
 
 	if rm {
 		command = append(command, "--rm")
+	}
+
+	if rmi {
+		command = append(command, "--rmi")
 	}
 
 	// This has to be absolutely last, to ensure that the exec session ID

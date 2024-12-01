@@ -16,8 +16,6 @@ const (
 	Journald EventerType = iota
 	// Null is a no-op events logger. It does not read or write events.
 	Null EventerType = iota
-	// Memory indicates the event logger will hold events in memory
-	Memory EventerType = iota
 )
 
 // Event describes the attributes of a libpod event
@@ -41,6 +39,10 @@ type Event struct {
 	Type Type
 	// Health status of the current container
 	HealthStatus string `json:"health_status,omitempty"`
+	// Healthcheck log of the current container
+	HealthLog string `json:"health_log,omitempty"`
+	// HealthFailingStreak log of the current container
+	HealthFailingStreak int `json:"health_failing_streak,omitempty"`
 	// Error code for certain events involving errors.
 	Error string `json:"error,omitempty"`
 
@@ -83,10 +85,15 @@ type Eventer interface {
 	String() string
 }
 
+type ReadResult struct {
+	Event *Event
+	Error error
+}
+
 // ReadOptions describe the attributes needed to read event logs
 type ReadOptions struct {
 	// EventChannel is the comm path back to user
-	EventChannel chan *Event
+	EventChannel chan ReadResult
 	// Filters are key/value pairs that describe to limit output
 	Filters []string
 	// FromStart means you start reading from the start of the logs

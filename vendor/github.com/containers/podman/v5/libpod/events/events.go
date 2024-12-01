@@ -20,8 +20,6 @@ func (et EventerType) String() string {
 		return "file"
 	case Journald:
 		return "journald"
-	case Memory:
-		return "memory"
 	case Null:
 		return "none"
 	default:
@@ -35,8 +33,6 @@ func IsValidEventer(eventer string) bool {
 	case LogFile.String():
 		return true
 	case Journald.String():
-		return true
-	case Memory.String():
 		return true
 	case Null.String():
 		return true
@@ -76,8 +72,10 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 		if e.PodID != "" {
 			humanFormat += fmt.Sprintf(", pod_id=%s", e.PodID)
 		}
-		if e.HealthStatus != "" {
+		if e.Status == HealthStatus {
 			humanFormat += fmt.Sprintf(", health_status=%s", e.HealthStatus)
+			humanFormat += fmt.Sprintf(", health_failing_streak=%d", e.HealthFailingStreak)
+			humanFormat += fmt.Sprintf(", health_log=%s", e.HealthLog)
 		}
 		// check if the container has labels and add it to the output
 		if len(e.Attributes) > 0 {

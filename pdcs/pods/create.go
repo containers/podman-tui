@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/containers/common/libnetwork/types"
+	"github.com/containers/common/pkg/config"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v5/pkg/bindings/pods"
@@ -12,7 +13,6 @@ import (
 	"github.com/containers/podman/v5/pkg/errorhandling"
 	"github.com/containers/podman/v5/pkg/specgen"
 	"github.com/containers/podman/v5/pkg/specgenutil"
-	"github.com/containers/podman/v5/pkg/util"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -66,11 +66,16 @@ func Create(opts CreateOptions) error { //nolint:cyclop
 
 	createOptions.Infra = opts.Infra
 
-	if createOptions.Infra {
+	if createOptions.Infra { //nolint:nestif
 		if opts.InfraImage != "" {
 			createOptions.InfraImage = opts.InfraImage
 		} else {
-			createOptions.InfraImage = defaultPodInfraImage()
+			infraImage, err := defaultPodInfraImage()
+			if err != nil {
+				return err
+			}
+
+			createOptions.InfraImage = infraImage
 		}
 
 		infraOptions.Net = podNetworkOptions
@@ -140,10 +145,13 @@ func Create(opts CreateOptions) error { //nolint:cyclop
 	return nil
 }
 
-func defaultPodInfraImage() string {
-	containerConfig := util.DefaultContainerConfig()
+func defaultPodInfraImage() (string, error) {
+	containerConfig, err := config.Default()
+	if err != nil {
+		return "", err
+	}
 
-	return containerConfig.Engine.InfraImage
+	return containerConfig.Engine.InfraImage, nil
 }
 
 func podNetworkOptions(opts CreateOptions) (*entities.NetOptions, error) { //nolint:cyclop

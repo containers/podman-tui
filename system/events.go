@@ -8,8 +8,7 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/sysinfo"
-	"github.com/containers/podman/v5/pkg/domain/entities"
-	"github.com/docker/docker/api/types/events"
+	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -18,7 +17,7 @@ var eventChannelSize = 20
 type podmanEvents struct {
 	mu                sync.Mutex
 	status            bool
-	eventChan         chan entities.Event
+	eventChan         chan types.Event
 	eventCancelChan   chan bool
 	cancelChan        chan bool
 	eventBuffer       []string
@@ -36,7 +35,7 @@ func (engine *Engine) startEventStreamer() {
 	engine.sysEvents.messageBuffer = []string{}
 	engine.sysEvents.cancelChan = make(chan bool)
 	engine.sysEvents.eventCancelChan = make(chan bool)
-	engine.sysEvents.eventChan = make(chan entities.Event, eventChannelSize)
+	engine.sysEvents.eventChan = make(chan types.Event, eventChannelSize)
 	engine.sysEvents.mu.Unlock()
 
 	go engine.eventReader()
@@ -46,16 +45,20 @@ func (engine *Engine) startEventStreamer() {
 func (engine *Engine) streamEvents() {
 	log.Debug().Msg("health check: pdcs event steamer started")
 
-	if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
-		log.Error().Msgf("health check: pdcs event streamer %v", err)
-		engine.sysEvents.cancelChan <- true
-		engine.sysEvents.mu.Lock()
-		engine.sysEvents.status = false
-		engine.sysEvents.mu.Unlock()
-		log.Debug().Msgf("health check: pdcs event steamer cancel sent")
+	for {
+		if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
+			log.Error().Msgf("health check: pdcs event streamer %v", err)
+			engine.sysEvents.cancelChan <- true
+			engine.sysEvents.mu.Lock()
+			engine.sysEvents.status = false
+			engine.sysEvents.mu.Unlock()
+			log.Debug().Msgf("health check: pdcs event steamer cancel sent")
+
+			break
+		}
 	}
 
-	log.Debug().Msg("health check: pdcs event steamer stopped")
+	log.Debug().Msg("health check: pdcs event streamer stopped")
 
 	close(engine.sysEvents.eventCancelChan)
 }
@@ -75,14 +78,13 @@ func (engine *Engine) eventReader() {
 
 		case event := <-engine.sysEvents.eventChan:
 			{
-				msg := engine.convertEventToHumanReadable(event.Message)
-
-				engine.addEvent(event.Message)
-				engine.addEventMessage(msg)
-
+				msg := engine.convertEventToHumanReadable(event)
 				if strings.TrimSpace(msg) != "" {
 					log.Debug().Msgf("health check: event reader received %s", msg)
 				}
+
+				engine.addEvent(event)
+				engine.addEventMessage(msg)
 			}
 		}
 	}
@@ -146,7 +148,7 @@ func (engine *Engine) EventStatus() bool {
 	return engine.sysEvents.status
 }
 
-func (engine *Engine) addEvent(event events.Message) {
+func (engine *Engine) addEvent(event types.Event) {
 	engine.sysEvents.mu.Lock()
 	engine.sysEvents.hasNewEvent = true
 	engine.sysEvents.eventBuffer = append(engine.sysEvents.eventBuffer, string(event.Type))
@@ -154,7 +156,7 @@ func (engine *Engine) addEvent(event events.Message) {
 }
 
 // convertEventToHumanReadable returns human readable event as a formatted string.
-func (engine *Engine) convertEventToHumanReadable(event events.Message) string {
+func (engine *Engine) convertEventToHumanReadable(event types.Event) string {
 	var humanFormat string
 
 	id := event.Actor.ID
