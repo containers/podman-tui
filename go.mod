@@ -10,7 +10,7 @@ require (
 	github.com/containers/storage v1.56.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
-	github.com/gdamore/tcell/v2 v2.7.4
+	github.com/gdamore/tcell/v2 v2.8.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
 	github.com/navidys/tvxwidgets v0.4.1
@@ -55,7 +55,7 @@ require (
 	github.com/docker/go-connections v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/gdamore/encoding v1.0.0 // indirect
+	github.com/gdamore/encoding v1.0.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
