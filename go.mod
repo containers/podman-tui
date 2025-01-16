@@ -7,7 +7,7 @@ require (
 	github.com/containers/buildah v1.38.0
 	github.com/containers/common v0.61.0
 	github.com/containers/podman/v5 v5.3.1
-	github.com/containers/storage v1.56.0
+	github.com/containers/storage v1.56.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.8.1
