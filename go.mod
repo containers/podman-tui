@@ -5,9 +5,9 @@ go 1.22.6
 require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/containers/buildah v1.38.0
-	github.com/containers/common v0.61.0
+	github.com/containers/common v0.61.1
 	github.com/containers/podman/v5 v5.3.1
-	github.com/containers/storage v1.56.0
+	github.com/containers/storage v1.56.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.7.4
@@ -41,7 +41,7 @@ require (
 	github.com/containerd/platforms v0.2.1 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.15.1 // indirect
 	github.com/containerd/typeurl/v2 v2.2.0 // indirect
-	github.com/containers/image/v5 v5.33.0 // indirect
+	github.com/containers/image/v5 v5.33.1 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.2.0 // indirect
 	github.com/containers/psgo v1.9.0 // indirect
