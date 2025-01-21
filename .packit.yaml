@@ -12,15 +12,19 @@ jobs:
       - openssl-devel
       - rpkg
     targets:
-      - fedora-latest-stable
-      - fedora-development
-      # Disabled until there is go 1.22.6 in centos stream
-      #- epel-9-x86_64
-      #- epel-9-aarch64
-      #- centos-stream-9-x86_64
-      #- centos-stream-9-aarch64
-      #- centos-stream-10-x86_64
-      #- centos-stream-10-aarch64
+      - fedora-latest-stable-x86_64
+      - fedora-latest-stable-aarch64
+      - fedora-development-x86_64
+      - fedora-development-aarch64
+      - centos-stream-9-x86_64
+      - centos-stream-9-aarch64
+      - centos-stream-10-x86_64
+      - centos-stream-10-aarch64
+      - epel-9-x86_64
+      - epel-9-aarch64
+      - epel-10-x86_64
+      - epel-10-aarch64
+
     actions:
       post-upstream-clone:
         - "rpkg spec --outdir ./"
