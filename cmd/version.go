@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	appVersion = "1.3.0"
+	appVersion = "1.3.1"
 )
 
 // versionCmd represents the version command.
