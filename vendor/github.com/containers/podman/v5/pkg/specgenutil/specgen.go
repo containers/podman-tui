@@ -354,7 +354,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		if c.NoHealthCheck {
 			return errors.New("cannot specify both --no-healthcheck and --health-cmd")
 		}
-		s.HealthConfig, err = makeHealthCheckFromCli(c.HealthCmd, c.HealthInterval, c.HealthRetries, c.HealthTimeout, c.HealthStartPeriod, false)
+		s.HealthConfig, err = MakeHealthCheckFromCli(c.HealthCmd, c.HealthInterval, c.HealthRetries, c.HealthTimeout, c.HealthStartPeriod, false)
 		if err != nil {
 			return err
 		}
@@ -383,7 +383,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		// The hardcoded "1s" will be discarded, as the startup
 		// healthcheck does not have a period. So just hardcode
 		// something that parses correctly.
-		tmpHcConfig, err := makeHealthCheckFromCli(c.StartupHCCmd, c.StartupHCInterval, c.StartupHCRetries, c.StartupHCTimeout, "1s", true)
+		tmpHcConfig, err := MakeHealthCheckFromCli(c.StartupHCCmd, c.StartupHCInterval, c.StartupHCRetries, c.StartupHCTimeout, "1s", true)
 		if err != nil {
 			return err
 		}
@@ -550,12 +550,6 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		s.Entrypoint = entrypoint
 	}
 
-	// Include the command used to create the container.
-
-	if len(s.ContainerCreateCommand) == 0 {
-		s.ContainerCreateCommand = os.Args
-	}
-
 	if len(inputCommand) > 0 {
 		s.Command = inputCommand
 	}
@@ -587,11 +581,13 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 
 	if c.Net != nil {
 		s.HostAdd = c.Net.AddHosts
+		s.BaseHostsFile = c.Net.HostsFile
 		s.UseImageResolvConf = &c.Net.UseImageResolvConf
 		s.DNSServers = c.Net.DNSServers
 		s.DNSSearch = c.Net.DNSSearch
 		s.DNSOptions = c.Net.DNSOptions
 		s.NetworkOptions = c.Net.NetworkOptions
+		s.UseImageHostname = &c.Net.NoHostname
 		s.UseImageHosts = &c.Net.NoHosts
 	}
 	if len(s.HostUsers) == 0 || len(c.HostUsers) != 0 {
@@ -948,7 +944,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 	return nil
 }
 
-func makeHealthCheckFromCli(inCmd, interval string, retries uint, timeout, startPeriod string, isStartup bool) (*manifest.Schema2HealthConfig, error) {
+func MakeHealthCheckFromCli(inCmd, interval string, retries uint, timeout, startPeriod string, isStartup bool) (*manifest.Schema2HealthConfig, error) {
 	cmdArr := []string{}
 	isArr := true
 	err := json.Unmarshal([]byte(inCmd), &cmdArr) // array unmarshalling
@@ -1017,7 +1013,6 @@ func makeHealthCheckFromCli(inCmd, interval string, retries uint, timeout, start
 		return nil, errors.New("healthcheck-start-period must be 0 seconds or greater")
 	}
 	hc.StartPeriod = startPeriodDuration
-
 	return &hc, nil
 }
 
@@ -1296,4 +1291,28 @@ func GetResources(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions) 
 		s.ResourceLimits = nil
 	}
 	return s.ResourceLimits, nil
+}
+
+func UpdateMajorAndMinorNumbers(resources *specs.LinuxResources, devicesLimits *define.UpdateContainerDevicesLimits) (*specs.LinuxResources, error) {
+	spec := specgen.SpecGenerator{}
+	spec.ResourceLimits = &specs.LinuxResources{}
+	if resources != nil {
+		spec.ResourceLimits = resources
+	}
+
+	spec.WeightDevice = devicesLimits.GetMapOfLinuxWeightDevice()
+	spec.ThrottleReadBpsDevice = devicesLimits.GetMapOfDeviceReadBPs()
+	spec.ThrottleWriteBpsDevice = devicesLimits.GetMapOfDeviceWriteBPs()
+	spec.ThrottleReadIOPSDevice = devicesLimits.GetMapOfDeviceReadIOPs()
+	spec.ThrottleWriteIOPSDevice = devicesLimits.GetMapOfDeviceWriteIOPs()
+
+	err := specgen.WeightDevices(&spec)
+	if err != nil {
+		return nil, err
+	}
+	err = specgen.FinishThrottleDevices(&spec)
+	if err != nil {
+		return nil, err
+	}
+	return spec.ResourceLimits, nil
 }
