@@ -364,15 +364,12 @@ get_cmd_line_args (int *argc_out)
 static bool
 can_use_shortcut (char **argv)
 {
-  cleanup_free char *argv0 = NULL;
   bool ret = true;
   int argc;
 
 #ifdef DISABLE_JOIN_SHORTCUT
   return false;
 #endif
-
-  argv0 = argv[0];
 
   if (strstr (argv[0], "podman") == NULL)
     return false;
@@ -439,6 +436,7 @@ static void __attribute__((constructor)) init()
   const char *listen_fds;
   const char *listen_fdnames;
   cleanup_free char **argv = NULL;
+  cleanup_free char *argv0 = NULL;
   cleanup_dir DIR *d = NULL;
   int argc;
 
@@ -496,6 +494,8 @@ static void __attribute__((constructor)) init()
       fprintf(stderr, "cannot retrieve cmd line");
       _exit (EXIT_FAILURE);
     }
+  // Even if unused, this is needed to ensure we properly free the memory
+  argv0 = argv[0];
 
   if (geteuid () != 0 || getenv ("_CONTAINERS_USERNS_CONFIGURED") == NULL)
     do_preexec_hooks(argv, argc);
@@ -658,7 +658,7 @@ create_pause_process (const char *pause_pid_file_path, char **argv)
   if (pipe (p) < 0)
     return -1;
 
-  pid = fork ();
+  pid = syscall_clone (SIGCHLD, NULL);
   if (pid < 0)
     {
       close (p[0]);
@@ -689,7 +689,7 @@ create_pause_process (const char *pause_pid_file_path, char **argv)
       close (p[0]);
 
       setsid ();
-      pid = fork ();
+      pid = syscall_clone (SIGCHLD, NULL);
       if (pid < 0)
         _exit (EXIT_FAILURE);
 
