@@ -118,12 +118,18 @@ type InspectPodInfraConfig struct {
 	// DNSOption is a set of DNS options that will be used by the infra
 	// container's resolv.conf and shared with the remainder of the pod.
 	DNSOption []string
+	// NoManageHostname indicates that the pod will not manage /etc/hostname
+	// and instead each container will handle their own.
+	NoManageHostname bool
 	// NoManageHosts indicates that the pod will not manage /etc/hosts and
 	// instead each container will handle their own.
 	NoManageHosts bool
 	// HostAdd adds a number of hosts to the infra container's resolv.conf
 	// which will be shared with the rest of the pod.
 	HostAdd []string
+	// HostsFile is the base file to create the `/etc/hosts` file inside the infra container
+	// which will be shared with the rest of the pod.
+	HostsFile string
 	// Networks is a list of networks the pod will join.
 	Networks []string
 	// NetworkOptions are additional options for each network

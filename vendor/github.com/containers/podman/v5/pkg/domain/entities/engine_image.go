@@ -9,6 +9,12 @@ import (
 )
 
 type ImageEngine interface { //nolint:interfacebloat
+	ArtifactAdd(ctx context.Context, name string, paths []string, opts *ArtifactAddOptions) (*ArtifactAddReport, error)
+	ArtifactInspect(ctx context.Context, name string, opts ArtifactInspectOptions) (*ArtifactInspectReport, error)
+	ArtifactList(ctx context.Context, opts ArtifactListOptions) ([]*ArtifactListReport, error)
+	ArtifactPull(ctx context.Context, name string, opts ArtifactPullOptions) (*ArtifactPullReport, error)
+	ArtifactPush(ctx context.Context, name string, opts ArtifactPushOptions) (*ArtifactPushReport, error)
+	ArtifactRm(ctx context.Context, name string, opts ArtifactRemoveOptions) (*ArtifactRemoveReport, error)
 	Build(ctx context.Context, containerFiles []string, opts BuildOptions) (*BuildReport, error)
 	Config(ctx context.Context) (*config.Config, error)
 	Exists(ctx context.Context, nameOrID string) (*BoolReport, error)
@@ -39,7 +45,7 @@ type ImageEngine interface { //nolint:interfacebloat
 	ManifestAddArtifact(ctx context.Context, name string, files []string, opts ManifestAddArtifactOptions) (string, error)
 	ManifestAnnotate(ctx context.Context, names, image string, opts ManifestAnnotateOptions) (string, error)
 	ManifestRemoveDigest(ctx context.Context, names, image string) (string, error)
-	ManifestRm(ctx context.Context, names []string) (*ImageRemoveReport, []error)
+	ManifestRm(ctx context.Context, names []string, imageRmOpts ImageRemoveOptions) (*ImageRemoveReport, []error)
 	ManifestPush(ctx context.Context, name, destination string, imagePushOpts ImagePushOptions) (string, error)
 	ManifestListClear(ctx context.Context, name string) (string, error)
 	Sign(ctx context.Context, names []string, options SignOptions) (*SignReport, error)

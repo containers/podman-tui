@@ -40,6 +40,7 @@ type NetFlags struct {
 	MacAddr      string   `json:"mac-address,omitempty"`
 	Publish      []string `json:"publish,omitempty"`
 	IP           string   `json:"ip,omitempty"`
+	NoHostname   bool     `json:"no-hostname,omitempty"`
 	NoHosts      bool     `json:"no-hosts,omitempty"`
 	Network      string   `json:"network,omitempty"`
 	NetworkAlias []string `json:"network-alias,omitempty"`
@@ -55,7 +56,9 @@ type NetOptions struct {
 	DNSOptions         []string                           `json:"dns_option,omitempty"`
 	DNSSearch          []string                           `json:"dns_search,omitempty"`
 	DNSServers         []net.IP                           `json:"dns_server,omitempty"`
+	HostsFile          string                             `json:"hosts_file,omitempty"`
 	Network            specgen.Namespace                  `json:"netns,omitempty"`
+	NoHostname         bool                               `json:"no_manage_hostname,omitempty"`
 	NoHosts            bool                               `json:"no_manage_hosts,omitempty"`
 	PublishPorts       []types.PortMapping                `json:"portmappings,omitempty"`
 	// NetworkOptions are additional options for each network
