@@ -68,6 +68,9 @@ func (engine *Engine) Disconnect() {
 	}
 
 	log.Debug().Msgf("health: disconnect")
+
+	engine.sysEvents.cancelChan <- true
+
 	registry.SetConnectionStatus(registry.ConnectionStatusDisconnected)
 	engine.conn.setStatus(registry.ConnectionStatusDisconnected, "")
 	registry.UnsetConnection()
