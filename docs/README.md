@@ -8,7 +8,7 @@
 
 Terminal user interface for Podman environment.
 
-![Screenshot](./docs/podman-tui.gif)
+![Screenshot](./podman-tui.gif)
 
 - [**Overview**](#overview)
 - [**Compatibility Matrix**](#compatibility-matrix)
