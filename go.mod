@@ -4,7 +4,7 @@ go 1.22.8
 
 require (
 	github.com/BurntSushi/toml v1.4.0
-	github.com/containers/buildah v1.39.0
+	github.com/containers/buildah v1.39.1
 	github.com/containers/common v0.62.0
 	github.com/containers/podman/v5 v5.4.0
 	github.com/containers/storage v1.57.1
@@ -140,6 +140,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.56.0 // indirect
 	go.opentelemetry.io/otel v1.31.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.31.0 // indirect
 	go.opentelemetry.io/otel/metric v1.31.0 // indirect
 	go.opentelemetry.io/otel/trace v1.31.0 // indirect
 	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329 // indirect
