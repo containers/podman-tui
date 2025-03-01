@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 1.4.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,7 +60,16 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Dec 01 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.4.0-dev-1
+* Sat Mar 01 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.4.0
+- Bump github.com/containers/podman/v5 to v5.4.0
+- Bump github.com/containers/buildah to v1.39.1
+- Bump github.com/containers/common to v0.62.0
+- Bump github.com/containers/storage to v1.57.1
+- Bump golang.org/x/crypto to v0.33.0
+- Bump github.com/go-jose/go-jose/v4 to 4.0.5
+- Bump github.com/spf13/cobra to 1.9.1
+- Bugfix panic in system events
+- Docs update - merge README(s)
 
 * Sun Dec 01 2024 Navid Yaghoobi <navidys@fedoraproject.org> 1.3.0-1
 - Bump github.com/containers/podman/v5 to v5.3.1
