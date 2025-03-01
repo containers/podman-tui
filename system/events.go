@@ -39,28 +39,13 @@ func (engine *Engine) startEventStreamer() {
 	engine.sysEvents.mu.Unlock()
 
 	go engine.eventReader()
-	go engine.streamEvents()
-}
-
-func (engine *Engine) streamEvents() {
-	log.Debug().Msg("health check: pdcs event steamer started")
-
-	for {
+	go func() {
 		if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
-			log.Error().Msgf("health check: pdcs event streamer %v", err)
+			log.Error().Msgf("health check: event streamer %v", err)
+
 			engine.sysEvents.cancelChan <- true
-			engine.sysEvents.mu.Lock()
-			engine.sysEvents.status = false
-			engine.sysEvents.mu.Unlock()
-			log.Debug().Msgf("health check: pdcs event steamer cancel sent")
-
-			break
 		}
-	}
-
-	log.Debug().Msg("health check: pdcs event streamer stopped")
-
-	close(engine.sysEvents.eventCancelChan)
+	}()
 }
 
 func (engine *Engine) eventReader() {
@@ -70,6 +55,11 @@ func (engine *Engine) eventReader() {
 		select {
 		case <-engine.sysEvents.cancelChan:
 			log.Debug().Msg("health check: event reader stopped")
+			engine.sysEvents.eventCancelChan <- true
+
+			engine.sysEvents.mu.Lock()
+			engine.sysEvents.status = false
+			engine.sysEvents.mu.Unlock()
 
 			close(engine.sysEvents.cancelChan)
 			registry.CancelContext()
