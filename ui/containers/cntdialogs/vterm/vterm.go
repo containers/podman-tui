@@ -118,7 +118,7 @@ func (d *VtermDialog) initLayoutUI() {
 	layout.SetBackgroundColor(bgColor)
 	layout.SetBorder(false)
 	layout.AddItem(d.containerInfo, 1, 0, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	// layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	layout.AddItem(d.termScreen, 0, 1, true)
 
 	termLayout.SetBackgroundColor(bgColor)
@@ -132,7 +132,7 @@ func (d *VtermDialog) initLayoutUI() {
 	d.layout.SetBorder(true)
 	d.layout.SetBorderColor(borderColor)
 	d.layout.SetBackgroundColor(bgColor)
-	d.layout.SetTitle("CONTAINER TERMINAL")
+	// d.layout.SetTitle("CONTAINER TERMINAL")
 
 	d.layout.AddItem(termLayout, 0, 1, true)
 	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
@@ -404,7 +404,7 @@ func (d *VtermDialog) SetSessionID(id string) {
 		id = id[0:utils.IDLength]
 	}
 
-	sessionIDLabel := fmt.Sprintf("SESSION (%s)", id)
+	sessionIDLabel := fmt.Sprintf("TERMINAL SESSION (%s)", id)
 	d.termScreen.SetTitle(sessionIDLabel)
 }
 

@@ -10,13 +10,13 @@ func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 	cnt.Box.DrawForSubclass(screen, cnt)
 	cnt.Box.SetBorder(false)
 
-	x, y, width, height := cnt.GetInnerRect()
+	cntViewX, cntViewY, cntViewW, cntViewH := cnt.GetInnerRect()
 
-	cnt.table.SetRect(x, y, width, height)
+	cnt.table.SetRect(cntViewX, cntViewY, cntViewW, cntViewH)
 	cnt.table.SetBorder(true)
 	cnt.table.Draw(screen)
 
-	x, y, width, height = cnt.table.GetInnerRect()
+	x, y, width, height := cnt.table.GetInnerRect()
 
 	// error dialog
 	if cnt.errorDialog.IsDisplay() {
@@ -121,7 +121,7 @@ func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	// terminal dialog
 	if cnt.terminalDialog.IsDisplay() {
-		cnt.terminalDialog.SetRect(x, y, width, height)
+		cnt.terminalDialog.SetRect(cntViewX, cntViewY, cntViewW, cntViewH)
 		cnt.terminalDialog.Draw(screen)
 
 		return
