@@ -30,7 +30,7 @@ load helpers_tui
     podman_tui_select_item $image_index
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Space" "Tab" "$TEST_CONTAINER_TIMEOUT"
-    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab"
     sleep 2
     podman_tui_send_inputs "Enter"
     sleep 3
@@ -65,7 +65,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
     podman_tui_send_inputs "Down"
     podman_tui_select_item $image_index
-    podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep 2
 
     # switch to environmen page
@@ -130,7 +130,7 @@ load helpers_tui
     podman_tui_send_inputs "Down"
     podman_tui_select_item $pod_index
     podman_tui_send_inputs "Enter" "Tab"
-    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab" "Tab"
+    podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep 1
     podman_tui_send_inputs "Tab"
     sleep 1

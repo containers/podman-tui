@@ -28,6 +28,7 @@ type CreateOptions struct {
 	Remove                bool
 	Privileged            bool
 	Timeout               string
+	Secret                []string
 	WorkDir               string
 	EnvVars               []string
 	EnvFile               []string
@@ -209,6 +210,11 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 
 	if opts.GroupEntry != "" {
 		createOptions.GroupEntry = opts.GroupEntry
+	}
+
+	// add secrets
+	if len(opts.Secret) > 0 {
+		createOptions.Secrets = opts.Secret
 	}
 
 	// add healthcheck options
