@@ -330,7 +330,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 
 	podDialog.setActiveCategory(0)
 
-	podDialog.initCustomInputHanlers()
+	podDialog.initCustomInputHandlers()
 
 	return &podDialog
 }
@@ -536,7 +536,7 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyc
 	}
 }
 
-func (d *PodCreateDialog) initCustomInputHanlers() {
+func (d *PodCreateDialog) initCustomInputHandlers() {
 	// newtwork dropdown
 	d.podNetworkField.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		event = utils.ParseKeyEventKey(event)
