@@ -34,6 +34,7 @@ const (
 	createContainerRemoveFieldFocus
 	createContainerPrivilegedFieldFocus
 	createContainerTimeoutFieldFocus
+	createContainerSecretFieldFocus
 	createContainerEnvHostFieldFocus
 	createContainerEnvVarsFieldFocus
 	createContainerEnvFileFieldFocus
@@ -119,6 +120,7 @@ type ContainerCreateDialog struct {
 	containerRemoveField                *tview.Checkbox
 	containerPrivilegedField            *tview.Checkbox
 	containerTimeoutField               *tview.InputField
+	containerSecretField                *tview.InputField
 	containerWorkDirField               *tview.InputField
 	containerEnvHostField               *tview.Checkbox
 	containerEnvVarsField               *tview.InputField
@@ -202,6 +204,7 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		containerRemoveField:                tview.NewCheckbox(),
 		containerPrivilegedField:            tview.NewCheckbox(),
 		containerTimeoutField:               tview.NewInputField(),
+		containerSecretField:                tview.NewInputField(),
 		containerWorkDirField:               tview.NewInputField(),
 		containerEnvHostField:               tview.NewCheckbox(),
 		containerEnvVarsField:               tview.NewInputField(),
@@ -375,6 +378,13 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerTimeoutField.SetLabelColor(style.DialogFgColor)
 	d.containerTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
 
+	// secrets
+	d.containerSecretField.SetLabel("secret:")
+	d.containerSecretField.SetLabelWidth(cntInfoPageLabelWidth)
+	d.containerSecretField.SetBackgroundColor(bgColor)
+	d.containerSecretField.SetLabelColor(style.DialogFgColor)
+	d.containerSecretField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// layout
 	labelPaddings := 4
 	checkBoxLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -395,6 +405,8 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerInfoPage.AddItem(d.containerLabelsField, 1, 0, true)
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.containerInfoPage.AddItem(checkBoxLayout, 1, 0, true)
+	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.containerInfoPage.AddItem(d.containerSecretField, 1, 0, true)
 	d.containerInfoPage.SetBackgroundColor(bgColor)
 }
 
@@ -997,6 +1009,8 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerPrivilegedField)
 	case createContainerTimeoutFieldFocus:
 		delegate(d.containerTimeoutField)
+	case createContainerSecretFieldFocus:
+		delegate(d.containerSecretField)
 	// environment options page
 	case createContainerWorkDirFieldFocus:
 		delegate(d.containerWorkDirField)
@@ -1431,6 +1445,7 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerRemoveField.SetChecked(false)
 	d.containerPrivilegedField.SetChecked(false)
 	d.containerTimeoutField.SetText("")
+	d.containerSecretField.SetText("")
 
 	// environment category
 	d.containerWorkDirField.SetText("")
@@ -1542,6 +1557,12 @@ func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() {
 
 	if d.containerRemoveField.HasFocus() {
 		d.focusElement = createContainerTimeoutFieldFocus
+
+		return
+	}
+
+	if d.containerTimeoutField.HasFocus() {
+		d.focusElement = createContainerSecretFieldFocus
 
 		return
 	}
@@ -1770,7 +1791,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 }
 
 // ContainerCreateOptions returns new network options.
-func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit
+func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit,gocyclo
 	var (
 		labels           []string
 		imageID          string
@@ -1787,6 +1808,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		envMerge         []string
 		unsetEnv         []string
 		hostUsers        []string
+		secret           []string
 	)
 
 	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
@@ -1884,6 +1906,13 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		}
 	}
 
+	// secret
+	for _, sec := range strings.Split(d.containerSecretField.GetText(), " ") {
+		if sec != "" {
+			secret = append(secret, sec)
+		}
+	}
+
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
 		Name:                  d.containerNameField.GetText(),
@@ -1893,6 +1922,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		Remove:                d.containerRemoveField.IsChecked(),
 		Privileged:            d.containerPrivilegedField.IsChecked(),
 		Timeout:               d.containerTimeoutField.GetText(),
+		Secret:                secret,
 		WorkDir:               d.containerWorkDirField.GetText(),
 		EnvVars:               envVars,
 		EnvFile:               envFile,

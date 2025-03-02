@@ -243,6 +243,11 @@ var _ = Describe("container create", Ordered, func() {
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
 		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerSecretFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
 		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
 	})
 
