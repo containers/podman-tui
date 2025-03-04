@@ -49,6 +49,15 @@ func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 
 		return
 	}
+
+	// run dialog
+	if cnt.runDialog.IsDisplay() {
+		cnt.runDialog.SetRect(x, y, width, height)
+		cnt.runDialog.Draw(screen)
+
+		return
+	}
+
 	// message dialog
 	if cnt.messageDialog.IsDisplay() {
 		cnt.messageDialog.SetRect(x, y, width, height+1)

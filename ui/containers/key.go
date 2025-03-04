@@ -44,6 +44,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
+		// run dialog handler
+		if cnt.runDialog.HasFocus() {
+			if runDialogHandler := cnt.runDialog.InputHandler(); runDialogHandler != nil {
+				runDialogHandler(event, setFocus)
+			}
+		}
+
 		// exec dialog handler
 		if cnt.execDialog.HasFocus() {
 			if execDialogHandler := cnt.execDialog.InputHandler(); execDialogHandler != nil {

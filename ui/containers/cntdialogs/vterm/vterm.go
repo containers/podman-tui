@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
@@ -55,6 +56,8 @@ type VtermDialog struct { //nolint:revive
 	init                  bool
 	ttyWidth              int
 	ttyHeight             int
+	alreadyDetached       bool
+	alreadyDetachedLock   sync.Mutex
 	cancelHandler         func()
 	fastRefreshHandler    func()
 }
@@ -74,7 +77,8 @@ func NewVtermDialog() *VtermDialog {
 				tcell.KeyCtrlP, tcell.KeyCtrlQ, tcell.KeyCtrlP,
 			},
 		},
-		display: false,
+		display:         false,
+		alreadyDetached: false,
 	}
 
 	dialog.initLayoutUI()
@@ -200,7 +204,27 @@ func (d *VtermDialog) Display() {
 		go d.startVTBuffer()
 	}
 
+	d.SetAlreadyDetach(false)
 	d.display = true
+}
+
+func (d *VtermDialog) SetAlreadyDetach(detached bool) {
+	d.alreadyDetachedLock.Lock()
+	defer d.alreadyDetachedLock.Unlock()
+
+	d.alreadyDetached = detached
+}
+
+func (d *VtermDialog) IsAlreadyDetach() bool {
+	var alreadyDetached bool
+
+	d.alreadyDetachedLock.Lock()
+
+	alreadyDetached = d.alreadyDetached
+
+	d.alreadyDetachedLock.Unlock()
+
+	return alreadyDetached
 }
 
 // IsDisplay returns true if primitive is shown onto the screen.
@@ -220,7 +244,9 @@ func (d *VtermDialog) Hide() {
 
 	d.sessionMode = sessionModeNone
 
-	d.sendDetachToSession()
+	if !d.IsAlreadyDetach() {
+		d.sendDetachToSession()
+	}
 
 	if d.sessionMode == sessionModeExec {
 		d.execSessionStdout.Close()
@@ -294,7 +320,9 @@ func (d *VtermDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p
 			if handler := d.termScreen.InputHandler(); handler != nil {
 				handler(event, setFocus)
 
-				d.writeToSession(event)
+				if !d.IsAlreadyDetach() {
+					d.writeToSession(event)
+				}
 
 				return
 			}

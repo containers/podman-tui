@@ -19,8 +19,14 @@ import (
 )
 
 const (
-	containerCreateDialogMaxWidth = 100
-	containerCreateDialogHeight   = 18
+	containerCreateDialogMaxWidth     = 100
+	containerCreateOnlyDialogHeight   = 20
+	containerCreateAndRunDialogHeight = 22
+)
+
+const (
+	ContainerCreateOnlyDialogMode = 0 + iota
+	ContainerCreateAndRunDialogMode
 )
 
 const (
@@ -28,12 +34,16 @@ const (
 	createCategoriesFocus
 	createCategoryPagesFocus
 	createContainerNameFieldFocus
+	createContainerCommandFieldFocus
 	createContainerImageFieldFocus
-	createcontainerPodFieldFocis
+	createcontainerPodFieldFocus
 	createContainerLabelsFieldFocus
 	createContainerRemoveFieldFocus
 	createContainerPrivilegedFieldFocus
 	createContainerTimeoutFieldFocus
+	createContainerInteractiveFieldFocus
+	createContainerDetachFieldFocus
+	createContainerTtyFieldFocus
 	createContainerSecretFieldFocus
 	createContainerEnvHostFieldFocus
 	createContainerEnvVarsFieldFocus
@@ -66,17 +76,17 @@ const (
 	createContainerImageVolumeFieldFocus
 	createContainerVolumeFieldFocus
 	createContainerMountFieldFocus
-	containerHealthCmdFieldFocus
-	containerHealthStartupCmdFieldFocus
-	containerHealthOnFailureFieldFocus
-	containerHealthIntervalFieldFocus
-	containerHealthStartupIntervalFieldFocus
-	containerHealthTimeoutFieldFocus
-	containerHealthStartupTimeoutFieldFocus
-	containerHealthRetriesFieldFocus
-	containerHealthStartupRetriesFieldFocus
-	containerHealthStartPeriodFieldFocus
-	containerHealthStartupSuccessFieldFocus
+	createContainerHealthCmdFieldFocus
+	createContainerHealthStartupCmdFieldFocus
+	createContainerHealthOnFailureFieldFocus
+	createContainerHealthIntervalFieldFocus
+	createContainerHealthStartupIntervalFieldFocus
+	createContainerHealthTimeoutFieldFocus
+	createContainerHealthStartupTimeoutFieldFocus
+	createContainerHealthRetriesFieldFocus
+	createContainerHealthStartupRetriesFieldFocus
+	createContainerHealthStartPeriodFieldFocus
+	createContainerHealthStartupSuccessFieldFocus
 )
 
 const (
@@ -91,9 +101,12 @@ const (
 	volumePageIndex
 )
 
+type ContainerCreateDialogMode int
+
 // ContainerCreateDialog implements container create dialog.
 type ContainerCreateDialog struct {
 	*tview.Box
+	mode                                ContainerCreateDialogMode
 	layout                              *tview.Flex
 	categoryLabels                      []string
 	categories                          *tview.TextView
@@ -114,12 +127,16 @@ type ContainerCreateDialog struct {
 	imageList                           []images.ImageListReporter
 	podList                             []*entities.ListPodsReport
 	containerNameField                  *tview.InputField
+	containerCommandField               *tview.InputField
 	containerImageField                 *tview.DropDown
 	containerPodField                   *tview.DropDown
 	containerLabelsField                *tview.InputField
 	containerRemoveField                *tview.Checkbox
 	containerPrivilegedField            *tview.Checkbox
 	containerTimeoutField               *tview.InputField
+	containerInteractiveField           *tview.Checkbox
+	containerTtyField                   *tview.Checkbox
+	containerDetachField                *tview.Checkbox
 	containerSecretField                *tview.InputField
 	containerWorkDirField               *tview.InputField
 	containerEnvHostField               *tview.Checkbox
@@ -164,13 +181,14 @@ type ContainerCreateDialog struct {
 	containerImageVolumeField           *tview.DropDown
 	containerMountField                 *tview.InputField
 	cancelHandler                       func()
-	createHandler                       func()
+	enterHandler                        func()
 }
 
 // NewContainerCreateDialog returns new container create dialog primitive ContainerCreateDialog.
-func NewContainerCreateDialog() *ContainerCreateDialog {
+func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDialog {
 	containerDialog := ContainerCreateDialog{
 		Box:               tview.NewBox(),
+		mode:              mode,
 		layout:            tview.NewFlex().SetDirection(tview.FlexRow),
 		categories:        tview.NewTextView(),
 		categoryPages:     tview.NewPages(),
@@ -198,12 +216,16 @@ func NewContainerCreateDialog() *ContainerCreateDialog {
 		activePageIndex:                     0,
 		display:                             false,
 		containerNameField:                  tview.NewInputField(),
+		containerCommandField:               tview.NewInputField(),
 		containerImageField:                 tview.NewDropDown(),
 		containerPodField:                   tview.NewDropDown(),
 		containerLabelsField:                tview.NewInputField(),
 		containerRemoveField:                tview.NewCheckbox(),
 		containerPrivilegedField:            tview.NewCheckbox(),
 		containerTimeoutField:               tview.NewInputField(),
+		containerInteractiveField:           tview.NewCheckbox(),
+		containerTtyField:                   tview.NewCheckbox(),
+		containerDetachField:                tview.NewCheckbox(),
 		containerSecretField:                tview.NewInputField(),
 		containerWorkDirField:               tview.NewInputField(),
 		containerEnvHostField:               tview.NewCheckbox(),
@@ -284,7 +306,13 @@ func (d *ContainerCreateDialog) setupLayout() {
 	// form
 	d.form.SetBackgroundColor(bgColor)
 	d.form.AddButton("Cancel", nil)
-	d.form.AddButton("Create", nil)
+
+	if d.mode == ContainerCreateOnlyDialogMode {
+		d.form.AddButton("Create", nil)
+	} else {
+		d.form.AddButton("Run", nil)
+	}
+
 	d.form.SetButtonsAlign(tview.AlignRight)
 	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
@@ -303,7 +331,12 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.layout.SetBackgroundColor(bgColor)
 	d.layout.SetBorder(true)
 	d.layout.SetBorderColor(style.DialogBorderColor)
-	d.layout.SetTitle("PODMAN CONTAINER CREATE")
+
+	if d.mode == ContainerCreateOnlyDialogMode {
+		d.layout.SetTitle("PODMAN CONTAINER CREATE")
+	} else {
+		d.layout.SetTitle("PODMAN CONTAINER RUN")
+	}
 
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
 	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -329,6 +362,13 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerNameField.SetBackgroundColor(bgColor)
 	d.containerNameField.SetLabelColor(style.DialogFgColor)
 	d.containerNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// command field
+	d.containerCommandField.SetLabel("command:")
+	d.containerCommandField.SetLabelWidth(cntInfoPageLabelWidth)
+	d.containerCommandField.SetBackgroundColor(bgColor)
+	d.containerCommandField.SetLabelColor(style.DialogFgColor)
+	d.containerCommandField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// image field
 	d.containerImageField.SetLabel("image:")
@@ -360,15 +400,6 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerPrivilegedField.SetLabelColor(style.DialogFgColor)
 	d.containerPrivilegedField.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// remove field
-	removeLabel := "remove:"
-
-	d.containerRemoveField.SetLabel(removeLabel)
-	d.containerRemoveField.SetLabelWidth(len(removeLabel) + 1)
-	d.containerRemoveField.SetBackgroundColor(bgColor)
-	d.containerRemoveField.SetLabelColor(style.DialogFgColor)
-	d.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
-
 	// timeout field
 	timeoutLabel := "timeout:"
 
@@ -377,6 +408,37 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerTimeoutField.SetBackgroundColor(bgColor)
 	d.containerTimeoutField.SetLabelColor(style.DialogFgColor)
 	d.containerTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// interactive
+	interactiveLabel := "interactive:"
+	d.containerInteractiveField.SetLabel(interactiveLabel)
+	d.containerInteractiveField.SetLabelWidth(len(interactiveLabel) + 1)
+	d.containerInteractiveField.SetBackgroundColor(bgColor)
+	d.containerInteractiveField.SetLabelColor(style.DialogFgColor)
+	d.containerInteractiveField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// detach
+	d.containerDetachField.SetLabel("detach:")
+	d.containerDetachField.SetLabelWidth(cntInfoPageLabelWidth)
+	d.containerDetachField.SetBackgroundColor(bgColor)
+	d.containerDetachField.SetLabelColor(style.DialogFgColor)
+	d.containerDetachField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// tty
+	ttyLabel := fmt.Sprintf("%7s:", "tty")
+	d.containerTtyField.SetLabel(ttyLabel)
+	d.containerTtyField.SetLabelWidth(len(timeoutLabel) + 1)
+	d.containerTtyField.SetBackgroundColor(bgColor)
+	d.containerTtyField.SetLabelColor(style.DialogFgColor)
+	d.containerTtyField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// remove field
+	removeLabel := fmt.Sprintf("%11s:", "remove")
+	d.containerRemoveField.SetLabel(removeLabel)
+	d.containerRemoveField.SetLabelWidth(len(interactiveLabel) + 1)
+	d.containerRemoveField.SetBackgroundColor(bgColor)
+	d.containerRemoveField.SetLabelColor(style.DialogFgColor)
+	d.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// secrets
 	d.containerSecretField.SetLabel("secret:")
@@ -387,16 +449,26 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 
 	// layout
 	labelPaddings := 4
-	checkBoxLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	checkBoxLayout1 := tview.NewFlex().SetDirection(tview.FlexColumn)
 
-	checkBoxLayout.SetBackgroundColor(bgColor)
-	checkBoxLayout.AddItem(d.containerPrivilegedField, cntInfoPageLabelWidth+labelPaddings, 0, false)
-	checkBoxLayout.AddItem(d.containerRemoveField, len(removeLabel)+labelPaddings, 0, false)
-	checkBoxLayout.AddItem(d.containerTimeoutField, 0, 1, false)
-	checkBoxLayout.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	checkBoxLayout1.SetBackgroundColor(bgColor)
+	checkBoxLayout1.AddItem(d.containerPrivilegedField, cntInfoPageLabelWidth+labelPaddings, 0, false)
+	checkBoxLayout1.AddItem(d.containerRemoveField, 0, 1, false)
+	checkBoxLayout1.AddItem(d.containerTimeoutField, 0, 1, false)
+	checkBoxLayout1.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+
+	checkBoxLayout2 := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	checkBoxLayout2.SetBackgroundColor(bgColor)
+	checkBoxLayout2.AddItem(d.containerDetachField, cntInfoPageLabelWidth+labelPaddings, 0, false)
+	checkBoxLayout2.AddItem(d.containerInteractiveField, 0, 1, false)
+	checkBoxLayout2.AddItem(d.containerTtyField, 0, 1, false)
+	checkBoxLayout2.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
 
 	d.containerInfoPage.SetDirection(tview.FlexRow)
 	d.containerInfoPage.AddItem(d.containerNameField, 1, 0, true)
+	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.containerInfoPage.AddItem(d.containerCommandField, 1, 0, true)
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.containerInfoPage.AddItem(d.containerImageField, 1, 0, true)
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -404,8 +476,14 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.containerInfoPage.AddItem(d.containerLabelsField, 1, 0, true)
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.containerInfoPage.AddItem(checkBoxLayout, 1, 0, true)
+	d.containerInfoPage.AddItem(checkBoxLayout1, 1, 0, true)
 	d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+
+	if d.mode == ContainerCreateAndRunDialogMode {
+		d.containerInfoPage.AddItem(checkBoxLayout2, 1, 0, true)
+		d.containerInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	}
+
 	d.containerInfoPage.AddItem(d.containerSecretField, 1, 0, true)
 	d.containerInfoPage.SetBackgroundColor(bgColor)
 }
@@ -997,9 +1075,11 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 	// container info page
 	case createContainerNameFieldFocus:
 		delegate(d.containerNameField)
+	case createContainerCommandFieldFocus:
+		delegate(d.containerCommandField)
 	case createContainerImageFieldFocus:
 		delegate(d.containerImageField)
-	case createcontainerPodFieldFocis:
+	case createcontainerPodFieldFocus:
 		delegate(d.containerPodField)
 	case createContainerLabelsFieldFocus:
 		delegate(d.containerLabelsField)
@@ -1009,6 +1089,12 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerPrivilegedField)
 	case createContainerTimeoutFieldFocus:
 		delegate(d.containerTimeoutField)
+	case createContainerInteractiveFieldFocus:
+		delegate(d.containerInteractiveField)
+	case createContainerTtyFieldFocus:
+		delegate(d.containerTtyField)
+	case createContainerDetachFieldFocus:
+		delegate(d.containerDetachField)
 	case createContainerSecretFieldFocus:
 		delegate(d.containerSecretField)
 	// environment options page
@@ -1082,27 +1168,27 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 	case createContainerMountFieldFocus:
 		delegate(d.containerMountField)
 	// health page
-	case containerHealthCmdFieldFocus:
+	case createContainerHealthCmdFieldFocus:
 		delegate(d.containerHealthCmdField)
-	case containerHealthStartupCmdFieldFocus:
+	case createContainerHealthStartupCmdFieldFocus:
 		delegate(d.containerHealthStartupCmdField)
-	case containerHealthOnFailureFieldFocus:
+	case createContainerHealthOnFailureFieldFocus:
 		delegate(d.containerHealthOnFailureField)
-	case containerHealthIntervalFieldFocus:
+	case createContainerHealthIntervalFieldFocus:
 		delegate(d.containerHealthIntervalField)
-	case containerHealthStartupIntervalFieldFocus:
+	case createContainerHealthStartupIntervalFieldFocus:
 		delegate(d.containerHealthStartupIntervalField)
-	case containerHealthTimeoutFieldFocus:
+	case createContainerHealthTimeoutFieldFocus:
 		delegate(d.containerHealthTimeoutField)
-	case containerHealthStartupTimeoutFieldFocus:
+	case createContainerHealthStartupTimeoutFieldFocus:
 		delegate(d.containerHealthStartupTimeoutField)
-	case containerHealthRetriesFieldFocus:
+	case createContainerHealthRetriesFieldFocus:
 		delegate(d.containerHealthRetriesField)
-	case containerHealthStartupRetriesFieldFocus:
+	case createContainerHealthStartupRetriesFieldFocus:
 		delegate(d.containerHealthStartupRetriesField)
-	case containerHealthStartPeriodFieldFocus:
+	case createContainerHealthStartPeriodFieldFocus:
 		delegate(d.containerHealthStartPeriodField)
-	case containerHealthStartupSuccessFieldFocus:
+	case createContainerHealthStartupSuccessFieldFocus:
 		delegate(d.containerHealthStartupSuccessField)
 	// category page
 	case createCategoryPagesFocus:
@@ -1272,7 +1358,7 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 				if event.Key() == tcell.KeyEnter {
 					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 					if enterButton.HasFocus() {
-						d.createHandler()
+						d.enterHandler()
 					}
 				}
 
@@ -1292,10 +1378,15 @@ func (d *ContainerCreateDialog) SetRect(x, y, width, height int) {
 		width = containerCreateDialogMaxWidth
 	}
 
-	if height > containerCreateDialogHeight {
-		emptySpace := (height - containerCreateDialogHeight) / 2 //nolint:mnd
+	maxAllowedHeight := containerCreateOnlyDialogHeight
+	if d.mode == ContainerCreateAndRunDialogMode {
+		maxAllowedHeight = containerCreateAndRunDialogHeight
+	}
+
+	if height > maxAllowedHeight {
+		emptySpace := (height - maxAllowedHeight) / 2 //nolint:mnd
 		y += emptySpace
-		height = containerCreateDialogHeight
+		height = maxAllowedHeight
 	}
 
 	d.Box.SetRect(x, y, width, height)
@@ -1325,9 +1416,9 @@ func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDi
 	return d
 }
 
-// SetCreateFunc sets form create button selected function.
-func (d *ContainerCreateDialog) SetCreateFunc(handler func()) *ContainerCreateDialog {
-	d.createHandler = handler
+// SetHandlerFunc sets form create or run button selected function.
+func (d *ContainerCreateDialog) SetHandlerFunc(handler func()) *ContainerCreateDialog {
+	d.enterHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 
 	enterButton.SetSelectedFunc(handler)
@@ -1437,6 +1528,7 @@ func (d *ContainerCreateDialog) initData() {
 	d.setActiveCategory(0)
 	// container category
 	d.containerNameField.SetText("")
+	d.containerCommandField.SetText("")
 	d.containerImageField.SetOptions(imgOptions, nil)
 	d.containerImageField.SetCurrentOption(0)
 	d.containerPodField.SetOptions(podOptions, nil)
@@ -1446,6 +1538,9 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerPrivilegedField.SetChecked(false)
 	d.containerTimeoutField.SetText("")
 	d.containerSecretField.SetText("")
+	d.containerInteractiveField.SetChecked(false)
+	d.containerTtyField.SetChecked(false)
+	d.containerDetachField.SetChecked(false)
 
 	// environment category
 	d.containerWorkDirField.SetText("")
@@ -1524,15 +1619,21 @@ func (d *ContainerCreateDialog) setPortPageNextFocus() {
 	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() {
+func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() { //nolint:cyclop
 	if d.containerNameField.HasFocus() {
+		d.focusElement = createContainerCommandFieldFocus
+
+		return
+	}
+
+	if d.containerCommandField.HasFocus() {
 		d.focusElement = createContainerImageFieldFocus
 
 		return
 	}
 
 	if d.containerImageField.HasFocus() {
-		d.focusElement = createcontainerPodFieldFocis
+		d.focusElement = createcontainerPodFieldFocus
 
 		return
 	}
@@ -1562,6 +1663,30 @@ func (d *ContainerCreateDialog) setContainerInfoPageNextFocus() {
 	}
 
 	if d.containerTimeoutField.HasFocus() {
+		if d.mode == ContainerCreateOnlyDialogMode {
+			d.focusElement = createContainerSecretFieldFocus
+
+			return
+		}
+
+		d.focusElement = createContainerDetachFieldFocus
+
+		return
+	}
+
+	if d.containerDetachField.HasFocus() {
+		d.focusElement = createContainerInteractiveFieldFocus
+
+		return
+	}
+
+	if d.containerInteractiveField.HasFocus() {
+		d.focusElement = createContainerTtyFieldFocus
+
+		return
+	}
+
+	if d.containerTtyField.HasFocus() {
 		d.focusElement = createContainerSecretFieldFocus
 
 		return
@@ -1712,61 +1837,61 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 
 func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop
 	if d.containerHealthCmdField.HasFocus() {
-		d.focusElement = containerHealthStartupCmdFieldFocus
+		d.focusElement = createContainerHealthStartupCmdFieldFocus
 
 		return
 	}
 
 	if d.containerHealthStartupCmdField.HasFocus() {
-		d.focusElement = containerHealthOnFailureFieldFocus
+		d.focusElement = createContainerHealthOnFailureFieldFocus
 
 		return
 	}
 
 	if d.containerHealthOnFailureField.HasFocus() {
-		d.focusElement = containerHealthStartupSuccessFieldFocus
+		d.focusElement = createContainerHealthStartupSuccessFieldFocus
 
 		return
 	}
 
 	if d.containerHealthStartupSuccessField.HasFocus() {
-		d.focusElement = containerHealthStartPeriodFieldFocus
+		d.focusElement = createContainerHealthStartPeriodFieldFocus
 
 		return
 	}
 
 	if d.containerHealthStartPeriodField.HasFocus() {
-		d.focusElement = containerHealthIntervalFieldFocus
+		d.focusElement = createContainerHealthIntervalFieldFocus
 
 		return
 	}
 
 	if d.containerHealthIntervalField.HasFocus() {
-		d.focusElement = containerHealthStartupIntervalFieldFocus
+		d.focusElement = createContainerHealthStartupIntervalFieldFocus
 
 		return
 	}
 
 	if d.containerHealthStartupIntervalField.HasFocus() {
-		d.focusElement = containerHealthRetriesFieldFocus
+		d.focusElement = createContainerHealthRetriesFieldFocus
 
 		return
 	}
 
 	if d.containerHealthRetriesField.HasFocus() {
-		d.focusElement = containerHealthStartupRetriesFieldFocus
+		d.focusElement = createContainerHealthStartupRetriesFieldFocus
 
 		return
 	}
 
 	if d.containerHealthStartupRetriesField.HasFocus() {
-		d.focusElement = containerHealthTimeoutFieldFocus
+		d.focusElement = createContainerHealthTimeoutFieldFocus
 
 		return
 	}
 
 	if d.containerHealthTimeoutField.HasFocus() {
-		d.focusElement = containerHealthStartupTimeoutFieldFocus
+		d.focusElement = createContainerHealthStartupTimeoutFieldFocus
 
 		return
 	}
@@ -1916,12 +2041,16 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	_, network := d.containerNetworkField.GetCurrentOption()
 	opts := containers.CreateOptions{
 		Name:                  d.containerNameField.GetText(),
+		Command:               d.containerCommandField.GetText(),
 		Image:                 imageID,
 		Pod:                   podID,
 		Labels:                labels,
 		Remove:                d.containerRemoveField.IsChecked(),
 		Privileged:            d.containerPrivilegedField.IsChecked(),
 		Timeout:               d.containerTimeoutField.GetText(),
+		TTY:                   d.containerTtyField.IsChecked(),
+		Detach:                d.containerDetachField.IsChecked(),
+		Interactive:           d.containerInteractiveField.IsChecked(),
 		Secret:                secret,
 		WorkDir:               d.containerWorkDirField.GetText(),
 		EnvVars:               envVars,

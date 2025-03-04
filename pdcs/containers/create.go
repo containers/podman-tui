@@ -23,11 +23,15 @@ var ErrInvalidCreateTimeout = errors.New("invalid container create timeout value
 // CreateOptions container create options.
 type CreateOptions struct {
 	Name                  string
+	Command               string
 	Labels                []string
 	Image                 string
 	Remove                bool
 	Privileged            bool
 	Timeout               string
+	Interactive           bool
+	TTY                   bool
+	Detach                bool
 	Secret                []string
 	WorkDir               string
 	EnvVars               []string
@@ -75,9 +79,10 @@ type CreateOptions struct {
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,gocyclo
+func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:cyclop,gocognit,gocyclo
 	var (
 		warningResponse []string
+		containerID     string
 		createOptions   entities.ContainerCreateOptions
 	)
 
@@ -86,7 +91,7 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 
 	conn, err := registry.GetConnection()
 	if err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
 	if len(opts.Labels) > 0 {
@@ -100,7 +105,7 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 	if opts.Timeout != "" {
 		timeout, err := strconv.Atoi(opts.Timeout)
 		if err != nil {
-			return warningResponse, fmt.Errorf("%w: %s", ErrInvalidCreateTimeout, opts.Timeout)
+			return warningResponse, containerID, fmt.Errorf("%w: %s", ErrInvalidCreateTimeout, opts.Timeout)
 		}
 
 		createOptions.Timeout = uint(timeout) //nolint:gosec
@@ -116,7 +121,7 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 
 	createOptions.Net, err = containerNetworkOptions(opts)
 	if err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
 	if opts.Pod != "" {
@@ -217,31 +222,44 @@ func Create(opts CreateOptions) ([]string, error) { //nolint:cyclop,gocognit,goc
 		createOptions.Secrets = opts.Secret
 	}
 
+	if run {
+		createOptions.Interactive = opts.Interactive
+		createOptions.TTY = opts.TTY
+	}
+
 	// add healthcheck options
 	if err := containerHealthOptions(&createOptions, opts); err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
 	s := specgen.NewSpecGenerator(opts.Name, false)
 	if err := specgenutil.FillOutSpecGen(s, &createOptions, nil); err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
+	// container image
 	s.Image = opts.Image
+
+	// command
+	cmd := strings.TrimSpace(opts.Command)
+	if cmd != "" {
+		s.Command = strings.Split(cmd, " ")
+	}
 
 	// validate spec
 	if err := s.Validate(); err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
 	response, err := containers.CreateWithSpec(conn, s, &containers.CreateOptions{})
 	if err != nil {
-		return warningResponse, err
+		return warningResponse, containerID, err
 	}
 
 	warningResponse = response.Warnings
+	containerID = response.ID
 
-	return warningResponse, nil
+	return warningResponse, containerID, nil
 }
 
 func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts CreateOptions) error { //nolint:cyclop
