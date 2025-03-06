@@ -46,6 +46,8 @@ func (cnt *Containers) runCommand(cmd string) { //nolint:cyclop
 		cnt.port()
 	case "rm":
 		cnt.rm()
+	case "run":
+		cnt.runDialog.Display()
 	case "start":
 		cnt.start()
 	case "stats":
@@ -386,6 +388,7 @@ func (cnt *Containers) exec() {
 	prepareAndExec := func() {
 		cnt.terminalDialog.SetSessionID(execSessionID)
 		containers.Exec(execSessionID, execOpts)
+		cnt.terminalDialog.SetAlreadyDetach(true)
 	}
 
 	go prepareAndExec()
@@ -393,9 +396,139 @@ func (cnt *Containers) exec() {
 	cnt.terminalDialog.Display()
 }
 
+func (cnt *Containers) run() {
+	runOpts := cnt.runDialog.ContainerCreateOptions()
+	if runOpts.Image == "" {
+		cnt.displayError("CONTAINER RUN ERROR", errEmptyContainerImageName)
+
+		return
+	}
+
+	cnt.progressDialog.SetTitle("container run in progress")
+	cnt.progressDialog.Display()
+
+	if runOpts.Detach {
+		cnt.runDetach(runOpts)
+
+		return
+	}
+
+	cnt.runAttach(runOpts)
+}
+
+func (cnt *Containers) runDetach(runOpts containers.CreateOptions) {
+	go func() {
+		warnings, cntID, err := containers.Create(runOpts, true)
+		if err != nil {
+			cnt.progressDialog.Hide()
+			cnt.displayError("CONTAINER RUN ERROR", err)
+
+			return
+		}
+
+		if len(warnings) > 0 {
+			cnt.progressDialog.Hide()
+
+			headerLabel := fmt.Sprintf("%s (%s)", "", runOpts.Name)
+
+			cnt.messageDialog.SetTitle("CONTAINER RUN WARNINGS")
+			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
+			cnt.messageDialog.Display()
+
+			return
+		}
+
+		if err := containers.Start(cntID); err != nil {
+			cnt.progressDialog.Hide()
+			cnt.displayError("CONTAINER RUN ERROR", err)
+
+			return
+		}
+
+		cnt.progressDialog.Hide()
+	}()
+}
+
+func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
+	runStatusChan := make(chan bool)
+	attachReady := make(chan bool)
+	runIDChan := make(chan string)
+	stdin, stdout := cnt.terminalDialog.InitAttachChannels()
+	detachKeys := cnt.terminalDialog.DetachKeys()
+
+	run := func() {
+		warnings, cntID, err := containers.Create(runOpts, true)
+		if err != nil {
+			runStatusChan <- false
+
+			cnt.displayError("CONTAINER RUN ERROR", err)
+
+			return
+		}
+
+		if len(warnings) > 0 {
+			runStatusChan <- false
+
+			headerLabel := fmt.Sprintf("%s (%s)", "", runOpts.Name)
+
+			cnt.messageDialog.SetTitle("CONTAINER RUN WARNINGS")
+			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
+			cnt.messageDialog.Display()
+
+			return
+		}
+
+		runIDChan <- cntID
+
+		err = containers.RunInitAttach(cntID, stdin, stdout, attachReady, detachKeys)
+		if err != nil {
+			attachReady <- false
+
+			cnt.displayError("CONTAINER RUN ERROR", err)
+
+			return
+		}
+
+		runStatusChan <- true
+	}
+
+	waitForAttach := func() {
+		cntID := ""
+
+		for {
+			select {
+			case <-runStatusChan:
+				cnt.terminalDialog.SetAlreadyDetach(true)
+				cnt.progressDialog.Hide()
+
+				return
+
+			case id := <-runIDChan:
+				cntID = id
+			case isReady := <-attachReady:
+				cnt.progressDialog.Hide()
+
+				if isReady {
+					if err := containers.Start(cntID); err != nil {
+						cnt.displayError("CONTAINER RUN ERROR", err)
+
+						return
+					}
+
+					cnt.terminalDialog.SetContainerInfo(cntID, "")
+					cnt.terminalDialog.Display()
+				}
+			}
+		}
+	}
+
+	go waitForAttach()
+	go run()
+}
+
 func (cnt *Containers) create() {
 	createOpts := cnt.createDialog.ContainerCreateOptions()
-	if createOpts.Name == "" || createOpts.Image == "" {
+	if createOpts.Image == "" {
 		cnt.displayError("CONTAINER CREATE ERROR", errEmptyContainerImageName)
 
 		return
@@ -405,7 +538,7 @@ func (cnt *Containers) create() {
 	cnt.progressDialog.Display()
 
 	create := func() {
-		warnings, err := containers.Create(createOpts)
+		warnings, _, err := containers.Create(createOpts, false)
 
 		cnt.progressDialog.Hide()
 

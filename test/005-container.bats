@@ -25,7 +25,7 @@ load helpers_tui
     # select image from dropdown widget
     # select privileged
     # set timeout to 10
-    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
     podman_tui_select_item $image_index
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab"
@@ -62,7 +62,7 @@ load helpers_tui
 
     # fillout name field
     # select image from dropdown widget
-    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
     podman_tui_select_item $image_index
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
@@ -123,7 +123,7 @@ load helpers_tui
     # select image from dropdown widget
     # select pod from dropdown widget
     # fillout label field
-    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
     podman_tui_select_item $image_index
     podman_tui_send_inputs "Enter" "Tab"

@@ -89,7 +89,7 @@ func ResizeExecTty(id string, height int, width int) {
 	}
 }
 
-// Exec returns the diff of the specified container ID.
+// Exec executes command in a given sessionOD.
 func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 	log.Debug().Msgf("pdcs: podman container session (%s) exec %v", sessionID, opts)
 

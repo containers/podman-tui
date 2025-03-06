@@ -43,7 +43,7 @@ var (
 	errNoContainerStart        = errors.New("there is no container to start")
 	errNoContainerStop         = errors.New("there is no container to stop")
 	errNoContainerTop          = errors.New("there is no container to display top")
-	errEmptyContainerImageName = errors.New("empty container name or image name")
+	errEmptyContainerImageName = errors.New("empty container image name")
 )
 
 // Containers implements the containers page primitive.
@@ -60,6 +60,7 @@ type Containers struct {
 	progressDialog   *dialogs.ProgressDialog
 	topDialog        *dialogs.TopDialog
 	createDialog     *cntdialogs.ContainerCreateDialog
+	runDialog        *cntdialogs.ContainerCreateDialog
 	execDialog       *cntdialogs.ContainerExecDialog
 	terminalDialog   *vterm.VtermDialog
 	statsDialog      *cntdialogs.ContainerStatsDialog
@@ -90,7 +91,8 @@ func NewContainers() *Containers {
 		progressDialog:   dialogs.NewProgressDialog(),
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		topDialog:        dialogs.NewTopDialog(),
-		createDialog:     cntdialogs.NewContainerCreateDialog(),
+		createDialog:     cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateOnlyDialogMode),
+		runDialog:        cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateAndRunDialogMode),
 		execDialog:       cntdialogs.NewContainerExecDialog(),
 		terminalDialog:   vterm.NewVtermDialog(),
 		statsDialog:      cntdialogs.NewContainerStatsDialog(),
@@ -117,6 +119,7 @@ func NewContainers() *Containers {
 		{"rename", "rename the selected container"},
 		{"restore", "restores a container from a checkpoint"},
 		{"rm", "remove the selected container"},
+		{"run", "runs a command in a new container from the given image"},
 		{"start", "start the selected containers"},
 		{"stats", "display container resource usage statistics"},
 		{"stop", "stop the selected containers"},
@@ -180,9 +183,19 @@ func NewContainers() *Containers {
 		containers.createDialog.Hide()
 	})
 
-	containers.createDialog.SetCreateFunc(func() {
+	containers.createDialog.SetHandlerFunc(func() {
 		containers.createDialog.Hide()
 		containers.create()
+	})
+
+	// set run dialog functions
+	containers.runDialog.SetCancelFunc(func() {
+		containers.runDialog.Hide()
+	})
+
+	containers.runDialog.SetHandlerFunc(func() {
+		containers.runDialog.Hide()
+		containers.run()
 	})
 
 	// set exec dialog functions
@@ -248,11 +261,11 @@ func (cnt *Containers) HasFocus() bool { //nolint:cyclop
 		return true
 	}
 
-	if cnt.Box.HasFocus() || cnt.terminalDialog.HasFocus() {
+	if cnt.runDialog.HasFocus() || cnt.terminalDialog.HasFocus() {
 		return true
 	}
 
-	return false
+	return cnt.Box.HasFocus()
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
@@ -285,7 +298,7 @@ func (cnt *Containers) SubDialogHasFocus() bool { //nolint:cyclop
 		return true
 	}
 
-	return false
+	return cnt.runDialog.HasFocus()
 }
 
 // Focus is called when this primitive receives focus.
@@ -335,6 +348,13 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	// create dialog
 	if cnt.createDialog.IsDisplay() {
 		delegate(cnt.createDialog)
+
+		return
+	}
+
+	// run dialog
+	if cnt.runDialog.IsDisplay() {
+		delegate(cnt.runDialog)
 
 		return
 	}
@@ -438,6 +458,10 @@ func (cnt *Containers) HideAllDialogs() { //nolint:cyclop
 
 	if cnt.createDialog.IsDisplay() {
 		cnt.createDialog.Hide()
+	}
+
+	if cnt.runDialog.IsDisplay() {
+		cnt.runDialog.Hide()
 	}
 
 	if cnt.execDialog.IsDisplay() {

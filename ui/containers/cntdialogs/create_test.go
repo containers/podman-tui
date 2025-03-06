@@ -16,7 +16,7 @@ var _ = Describe("container create", Ordered, func() {
 
 	BeforeAll(func() {
 		createDialogApp = tview.NewApplication()
-		createDialog = NewContainerCreateDialog()
+		createDialog = NewContainerCreateDialog(ContainerCreateOnlyDialogMode)
 		createDialogScreen = tcell.NewSimulationScreen("UTF-8")
 		err := createDialogScreen.Init()
 		if err != nil {
@@ -52,7 +52,7 @@ var _ = Describe("container create", Ordered, func() {
 		createDialogApp.Draw()
 		Expect(createDialog.dropdownHasFocus()).To(Equal(true))
 
-		createDialog.focusElement = createcontainerPodFieldFocis
+		createDialog.focusElement = createcontainerPodFieldFocus
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
 		Expect(createDialog.dropdownHasFocus()).To(Equal(true))
@@ -89,7 +89,7 @@ var _ = Describe("container create", Ordered, func() {
 		createFunc := func() {
 			createAction = createWants
 		}
-		createDialog.SetCreateFunc(createFunc)
+		createDialog.SetHandlerFunc(createFunc)
 		createDialog.focusElement = createContainerFormFocus
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
@@ -213,12 +213,17 @@ var _ = Describe("container create", Ordered, func() {
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
 		createDialog.setContainerInfoPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCommandFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setContainerInfoPageNextFocus()
 		Expect(createDialog.focusElement).To(Equal(createContainerImageFieldFocus))
 
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
 		createDialog.setContainerInfoPageNextFocus()
-		Expect(createDialog.focusElement).To(Equal(createcontainerPodFieldFocis))
+		Expect(createDialog.focusElement).To(Equal(createcontainerPodFieldFocus))
 
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
