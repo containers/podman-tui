@@ -10,14 +10,14 @@ func (pods *Pods) Draw(screen tcell.Screen) {
 	pods.Box.DrawForSubclass(screen, pods)
 	pods.Box.SetBorder(false)
 
-	x, y, width, height := pods.GetInnerRect()
+	podViewX, podViewY, podViewW, podViewH := pods.GetInnerRect()
 
-	pods.table.SetRect(x, y, width, height)
+	pods.table.SetRect(podViewX, podViewY, podViewW, podViewH)
 	pods.table.SetBorder(true)
 
 	pods.table.Draw(screen)
 
-	x, y, width, height = pods.table.GetInnerRect()
+	x, y, width, height := pods.table.GetInnerRect()
 
 	// error dialog
 	if pods.errorDialog.IsDisplay() {
@@ -53,7 +53,12 @@ func (pods *Pods) Draw(screen tcell.Screen) {
 
 	// message dialog
 	if pods.messageDialog.IsDisplay() {
-		pods.messageDialog.SetRect(x, y, width, height+1)
+		if pods.messageDialog.IsDisplayFullSize() {
+			pods.messageDialog.SetRect(podViewX, podViewY, podViewW, podViewH)
+		} else {
+			pods.messageDialog.SetRect(x, y, width, height+1)
+		}
+
 		pods.messageDialog.Draw(screen)
 
 		return
@@ -75,7 +80,7 @@ func (pods *Pods) Draw(screen tcell.Screen) {
 
 	// stats dialogs
 	if pods.statsDialog.IsDisplay() {
-		pods.statsDialog.SetRect(x, y, width, height)
+		pods.statsDialog.SetRect(podViewX, podViewY, podViewW, podViewH)
 		pods.statsDialog.Draw(screen)
 
 		return

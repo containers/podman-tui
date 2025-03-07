@@ -170,7 +170,7 @@ func (nets *Networks) inspect() {
 
 	nets.messageDialog.SetTitle("podman network inspect")
 	nets.messageDialog.SetText(dialogs.MessageNetworkInfo, headerLabel, data)
-	nets.messageDialog.Display()
+	nets.messageDialog.DisplayFullSize()
 }
 
 func (nets *Networks) cprune() {

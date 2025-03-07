@@ -297,10 +297,10 @@ func (d *PodStatsDialog) Draw(screen tcell.Screen) {
 
 // SetRect set rects for this primitive.
 func (d *PodStatsDialog) SetRect(x, y, width, height int) {
-	dX := x + dialogs.DialogPadding
-	dY := y + dialogs.DialogPadding - 1
-	dWidth := width - (2 * dialogs.DialogPadding)         //nolint:mnd
-	dHeight := height - (2 * (dialogs.DialogPadding - 1)) //nolint:mnd
+	dX := x + 1
+	dY := y + 1
+	dWidth := width - 2   //nolint:mnd
+	dHeight := height - 2 //nolint:mnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }

@@ -117,7 +117,7 @@ func (img *Images) diff() {
 
 		img.messageDialog.SetTitle("podman image diff")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
-		img.messageDialog.Display()
+		img.messageDialog.DisplayFullSize()
 	}
 
 	go diff()
@@ -192,7 +192,7 @@ func (img *Images) inspect() {
 
 	img.messageDialog.SetTitle("podman image inspect")
 	img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, data)
-	img.messageDialog.Display()
+	img.messageDialog.DisplayFullSize()
 }
 
 func (img *Images) cprune() {

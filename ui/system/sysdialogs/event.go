@@ -69,10 +69,8 @@ func NewEventDialog() *EventsDialog {
 	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 
 	tlayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 			AddItem(eventsDialog.serviceName, 1, 0, false).
-			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 			AddItem(eventsDialog.textview, 0, 1, true),
 			0, 1, true), 0, 1, true)
 
@@ -163,19 +161,10 @@ func (d *EventsDialog) HasFocus() bool {
 
 // SetRect set rects for this primitive.
 func (d *EventsDialog) SetRect(x, y, width, height int) {
-	dWidth := width - (2 * dialogs.DialogPadding) //nolint:mnd
-	if dWidth < 0 {
-		dWidth = 0
-	}
-
-	dX := x + dialogs.DialogPadding
-
-	dHeight := height - (2 * dialogs.DialogPadding) //nolint:mnd
-	if dHeight < 0 {
-		dHeight = 0
-	}
-
-	dY := y + dialogs.DialogPadding
+	dX := x + 1
+	dY := y + 1
+	dWidth := width - 2   //nolint:mnd
+	dHeight := height - 2 //nolint:mnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 }
