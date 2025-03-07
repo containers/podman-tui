@@ -16,9 +16,9 @@ load helpers_tui
     podman_tui_set_view "volumes"
     podman_tui_select_volume_cmd "create"
     podman_tui_send_inputs "$TEST_VOLUME_NAME" "Tab" "$TEST_LABEL" "Tab" "Tab" "Tab" "Tab" "Enter"
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman volume ls --format "{{ .Name }}" --filter "name=${TEST_VOLUME_NAME}"
     assert "$output" == "$TEST_VOLUME_NAME" "expected $TEST_VOLUME_NAME to be in the list"
@@ -34,9 +34,9 @@ load helpers_tui
     podman_tui_set_view "volumes"
     podman_tui_select_item $vol_index
     podman_tui_select_volume_cmd "inspect"
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper sed -n '/  "Labels": {/, /  },/p' ${PODMAN_TUI_LOG}
     assert "$output" =~ "\"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\"" "expected \"$TEST_LABEL_NAME\": \"$TEST_LABEL_VALUE\" in volume inspect"
@@ -52,7 +52,7 @@ load helpers_tui
     podman_tui_select_item $vol_index
     podman_tui_select_volume_cmd "remove"
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman volume ls --format "{{ .Name }}" --filter "name=${TEST_VOLUME_NAME}"
     assert "$output" == "" "expected $TEST_VOLUME_NAME removed"
@@ -68,7 +68,7 @@ load helpers_tui
     podman_tui_set_view "volumes"
     podman_tui_select_volume_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman volume ls --format "{{ .Name }}" --filter "name=${TEST_NETWORK_NAME}"
     assert "$output" =~ "" "expected at least $TEST_VOLUME_NAME image removal"
