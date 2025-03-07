@@ -60,7 +60,12 @@ func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	// message dialog
 	if cnt.messageDialog.IsDisplay() {
-		cnt.messageDialog.SetRect(x, y, width, height+1)
+		if cnt.messageDialog.IsDisplayFullSize() {
+			cnt.messageDialog.SetRect(cntViewX, cntViewY, cntViewW, cntViewH)
+		} else {
+			cnt.messageDialog.SetRect(x, y, width, height+1)
+		}
+
 		cnt.messageDialog.Draw(screen)
 
 		return

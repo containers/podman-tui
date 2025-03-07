@@ -5,16 +5,16 @@ import (
 )
 
 // Draw draws this primitive onto the screen.
-func (sys *System) Draw(screen tcell.Screen) {
+func (sys *System) Draw(screen tcell.Screen) { //nolint:cyclop
 	sys.refresh()
 	sys.Box.DrawForSubclass(screen, sys)
 
-	x, y, width, height := sys.GetInnerRect()
+	sysViewX, sysViewY, sysViewW, sysViewH := sys.GetInnerRect()
 
-	sys.connTable.SetRect(x, y, width, height)
+	sys.connTable.SetRect(sysViewX, sysViewY, sysViewW, sysViewH)
 	sys.connTable.Draw(screen)
 
-	x, y, width, height = sys.connTable.GetInnerRect()
+	x, y, width, height := sys.connTable.GetInnerRect()
 
 	// error dialog
 	if sys.errorDialog.IsDisplay() {
@@ -50,7 +50,12 @@ func (sys *System) Draw(screen tcell.Screen) {
 
 	// message dialog
 	if sys.messageDialog.IsDisplay() {
-		sys.messageDialog.SetRect(x, y, width, height)
+		if sys.messageDialog.IsDisplayFullSize() {
+			sys.messageDialog.SetRect(sysViewX, sysViewY, sysViewW, sysViewH)
+		} else {
+			sys.messageDialog.SetRect(x, y, width, height)
+		}
+
 		sys.messageDialog.Draw(screen)
 
 		return
@@ -82,7 +87,7 @@ func (sys *System) Draw(screen tcell.Screen) {
 
 	// event dialog
 	if sys.eventDialog.IsDisplay() {
-		sys.eventDialog.SetRect(x, y, width, height)
+		sys.eventDialog.SetRect(sysViewX, sysViewY, sysViewW, sysViewH)
 		sys.eventDialog.Draw(screen)
 	}
 }

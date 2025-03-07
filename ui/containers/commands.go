@@ -579,7 +579,7 @@ func (cnt *Containers) diff() {
 
 	cnt.messageDialog.SetTitle("podman container diff")
 	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(data, "\n"))
-	cnt.messageDialog.Display()
+	cnt.messageDialog.DisplayFullSize()
 }
 
 func (cnt *Containers) inspect() {
@@ -601,7 +601,7 @@ func (cnt *Containers) inspect() {
 
 	cnt.messageDialog.SetTitle("podman container inspect")
 	cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, data)
-	cnt.messageDialog.Display()
+	cnt.messageDialog.DisplayFullSize()
 }
 
 func (cnt *Containers) kill() {
@@ -663,7 +663,7 @@ func (cnt *Containers) logs() {
 		cnt.messageDialog.SetTitle("podman container logs")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
 		cnt.messageDialog.TextScrollToEnd()
-		cnt.messageDialog.Display()
+		cnt.messageDialog.DisplayFullSize()
 	}
 
 	go getLogs()

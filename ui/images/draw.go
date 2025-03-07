@@ -10,13 +10,13 @@ func (img *Images) Draw(screen tcell.Screen) { //nolint:cyclop
 	img.Box.DrawForSubclass(screen, img)
 	img.Box.SetBorder(false)
 
-	x, y, width, height := img.GetInnerRect()
+	imagewViewX, imagewViewY, imagewViewW, imagewViewH := img.GetInnerRect()
 
-	img.table.SetRect(x, y, width, height)
+	img.table.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
 	img.table.SetBorder(true)
 
 	img.table.Draw(screen)
-	x, y, width, height = img.table.GetInnerRect()
+	x, y, width, height := img.table.GetInnerRect()
 
 	// error dialog
 	if img.errorDialog.IsDisplay() {
@@ -44,7 +44,12 @@ func (img *Images) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	// message dialog
 	if img.messageDialog.IsDisplay() {
-		img.messageDialog.SetRect(x, y, width, height+1)
+		if img.messageDialog.IsDisplayFullSize() {
+			img.messageDialog.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
+		} else {
+			img.messageDialog.SetRect(x, y, width, height+1)
+		}
+
 		img.messageDialog.Draw(screen)
 
 		return
@@ -60,7 +65,7 @@ func (img *Images) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	// search dialog
 	if img.searchDialog.IsDisplay() {
-		img.searchDialog.SetRect(x, y, width, height)
+		img.searchDialog.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
 		img.searchDialog.Draw(screen)
 	}
 
@@ -72,7 +77,7 @@ func (img *Images) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	// history dialog
 	if img.historyDialog.IsDisplay() {
-		img.historyDialog.SetRect(x, y, width, height)
+		img.historyDialog.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
 		img.historyDialog.Draw(screen)
 
 		return

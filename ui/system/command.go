@@ -138,7 +138,7 @@ func (sys *System) info() {
 
 	sys.messageDialog.SetTitle("SYSTEM INFORMATION")
 	sys.messageDialog.SetText(dialogs.MessageSystemInfo, connName, data)
-	sys.messageDialog.Display()
+	sys.messageDialog.DisplayFullSize()
 }
 
 func (sys *System) cprune() {

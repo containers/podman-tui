@@ -146,23 +146,15 @@ func (d *ImageHistoryDialog) InputHandler() func(event *tcell.EventKey, setFocus
 
 // SetRect set rects for this primitive.
 func (d *ImageHistoryDialog) SetRect(x, y, width, height int) {
-	dX := x + dialogs.DialogPadding
-	dWidth := width - (2 * dialogs.DialogPadding)            //nolint:mnd
-	dHeight := len(d.results) + dialogs.DialogFormHeight + 5 //nolint:mnd
-
-	if dHeight > height {
-		dHeight = height
-	}
-
-	tableHeight := dHeight - dialogs.DialogFormHeight - 2 //nolint:mnd
-
-	hs := ((height - dHeight) / 2) //nolint:mnd
-	dY := y + hs
+	dX := x + 1
+	dY := y + 1
+	dWidth := width - 2   //nolint:mnd
+	dHeight := height - 2 //nolint:mnd
 
 	d.Box.SetRect(dX, dY, dWidth, dHeight)
 
 	// set table height size
-	d.layout.ResizeItem(d.table, tableHeight, 0)
+	d.layout.ResizeItem(d.table, dHeight, 0)
 	cWidth := d.getCreatedByWidth()
 
 	for i := range d.table.GetRowCount() {

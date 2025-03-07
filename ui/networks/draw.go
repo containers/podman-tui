@@ -9,14 +9,14 @@ func (nets *Networks) Draw(screen tcell.Screen) {
 	nets.Box.DrawForSubclass(screen, nets)
 	nets.Box.SetBorder(false)
 
-	x, y, width, height := nets.GetInnerRect()
+	netViewX, netViewY, netViewW, netViewH := nets.GetInnerRect()
 
-	nets.table.SetRect(x, y, width, height)
+	nets.table.SetRect(netViewX, netViewY, netViewW, netViewH)
 	nets.table.SetBorder(true)
 
 	nets.table.Draw(screen)
 
-	x, y, width, height = nets.table.GetInnerRect()
+	x, y, width, height := nets.table.GetInnerRect()
 
 	// error dialog
 	if nets.errorDialog.IsDisplay() {
@@ -60,7 +60,12 @@ func (nets *Networks) Draw(screen tcell.Screen) {
 
 	// message dialog
 	if nets.messageDialog.IsDisplay() {
-		nets.messageDialog.SetRect(x, y, width, height+1)
+		if nets.messageDialog.IsDisplayFullSize() {
+			nets.messageDialog.SetRect(netViewX, netViewY, netViewW, netViewH)
+		} else {
+			nets.messageDialog.SetRect(x, y, width, height+1)
+		}
+
 		nets.messageDialog.Draw(screen)
 
 		return

@@ -13,13 +13,14 @@ import (
 // MessageDialog is a simaple message dialog primitive.
 type MessageDialog struct {
 	*tview.Box
-	layout        *tview.Flex
-	infoType      *tview.InputField
-	textview      *tview.TextView
-	form          *tview.Form
-	display       bool
-	message       string
-	cancelHandler func()
+	layout          *tview.Flex
+	infoType        *tview.InputField
+	textview        *tview.TextView
+	form            *tview.Form
+	display         bool
+	displayFullSize bool
+	message         string
+	cancelHandler   func()
 }
 
 type messageInfo int
@@ -38,10 +39,11 @@ const (
 // NewMessageDialog returns new message dialog primitive.
 func NewMessageDialog(text string) *MessageDialog {
 	dialog := &MessageDialog{
-		Box:      tview.NewBox(),
-		infoType: tview.NewInputField(),
-		display:  false,
-		message:  text,
+		Box:             tview.NewBox(),
+		infoType:        tview.NewInputField(),
+		display:         false,
+		displayFullSize: false,
+		message:         text,
 	}
 
 	dialog.infoType.SetBackgroundColor(style.DialogBgColor)
@@ -65,7 +67,6 @@ func NewMessageDialog(text string) *MessageDialog {
 	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	tlayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(dialog.infoType, 1, 0, false).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 		AddItem(dialog.textview, 0, 1, true),
 		0, 1, true)
 	tlayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
@@ -78,7 +79,6 @@ func NewMessageDialog(text string) *MessageDialog {
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
-	dialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	dialog.layout.AddItem(tlayout, 0, 1, true)
 	dialog.layout.AddItem(dialog.form, DialogFormHeight, 0, true)
 	dialog.layout.SetBorder(true)
@@ -91,11 +91,23 @@ func NewMessageDialog(text string) *MessageDialog {
 // Display displays this primitive.
 func (d *MessageDialog) Display() {
 	d.display = true
+	d.displayFullSize = false
+}
+
+// DisplayFullSize displays this primitive in full size.
+func (d *MessageDialog) DisplayFullSize() {
+	d.display = true
+	d.displayFullSize = true
 }
 
 // IsDisplay returns true if primitive is shown.
 func (d *MessageDialog) IsDisplay() bool {
 	return d.display
+}
+
+// IsDisplayFullSize returns true if primitive is shown in full size.
+func (d *MessageDialog) IsDisplayFullSize() bool {
+	return d.displayFullSize
 }
 
 // Hide stops displaying this primitive.
@@ -169,6 +181,17 @@ func (d *MessageDialog) HasFocus() bool {
 
 // SetRect set rects for this primitive.
 func (d *MessageDialog) SetRect(x, y, width, height int) {
+	if d.displayFullSize {
+		dX := x + 1
+		dY := y + 1
+		dWidth := width - 2   //nolint:mnd
+		dHeight := height - 2 //nolint:mnd
+
+		d.Box.SetRect(dX, dY, dWidth, dHeight)
+
+		return
+	}
+
 	messageHeight := 0
 	if d.message != "" {
 		messageHeight = len(strings.Split(d.message, "\n")) + 3 //nolint:mnd

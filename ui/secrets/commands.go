@@ -72,7 +72,7 @@ func (s *Secrets) inspect() {
 
 	s.messageDialog.SetTitle("podman secret inspect")
 	s.messageDialog.SetText(dialogs.MessageSecretInfo, headerLabel, data)
-	s.messageDialog.Display()
+	s.messageDialog.DisplayFullSize()
 }
 
 func (s *Secrets) rm() {

@@ -104,7 +104,7 @@ func (p *Pods) inspect() {
 
 	p.messageDialog.SetTitle("podman pod inspect")
 	p.messageDialog.SetText(dialogs.MessagePodInfo, headerLabel, data)
-	p.messageDialog.Display()
+	p.messageDialog.DisplayFullSize()
 }
 
 func (p *Pods) kill() {

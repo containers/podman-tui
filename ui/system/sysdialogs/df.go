@@ -74,9 +74,7 @@ func NewDfDialog() *DfDialog {
 
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 		AddItem(dialog.serviceName, 1, 0, false).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 		AddItem(dialog.table, 0, 1, true), 0, 1, true)
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 
