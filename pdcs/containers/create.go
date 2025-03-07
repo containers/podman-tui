@@ -76,10 +76,24 @@ type CreateOptions struct {
 	HealthStartupRetries  string
 	HealthStartupSuccess  string
 	HealthStartupTimeout  string
+	Memory                string
+	MemoryReservation     string
+	MemorySwap            string
+	MemorySwappiness      string
+	CPUs                  string
+	CPUShares             string
+	CPUPeriod             string
+	CPUQuota              string
+	CPURtPeriod           string
+	CPURtRuntime          string
+	CPUSetCPUs            string
+	CPUSetMems            string
+	SHMSize               string
+	SHMSizeSystemd        string
 }
 
 // Create creates a new container.
-func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:cyclop,gocognit,gocyclo
+func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:cyclop,gocognit,gocyclo,maintidx
 	var (
 		warningResponse []string
 		containerID     string
@@ -232,6 +246,99 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 		return warningResponse, containerID, err
 	}
 
+	// add resources
+	if opts.Memory != "" {
+		createOptions.Memory = opts.Memory
+	}
+
+	if opts.MemoryReservation != "" {
+		createOptions.MemoryReservation = opts.MemoryReservation
+	}
+
+	if opts.MemorySwap != "" {
+		createOptions.MemorySwap = opts.MemorySwap
+	}
+
+	if opts.MemorySwappiness != "" {
+		val, err := strconv.Atoi(opts.MemorySwappiness)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.MemorySwappiness = int64(val)
+	}
+
+	if opts.CPUs != "" {
+		val, err := strconv.ParseFloat(opts.CPUs, 64)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPUS = val
+	}
+
+	if opts.CPUShares != "" {
+		val, err := strconv.ParseUint(opts.CPUShares, 10, 64)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPUShares = val
+	}
+
+	if opts.CPUPeriod != "" {
+		val, err := strconv.ParseUint(opts.CPUPeriod, 10, 64)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPUPeriod = val
+	}
+
+	if opts.CPURtPeriod != "" {
+		val, err := strconv.ParseUint(opts.CPURtPeriod, 10, 64)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPURTPeriod = val
+	}
+
+	if opts.CPUQuota != "" {
+		val, err := strconv.Atoi(opts.CPUQuota)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPUQuota = int64(val)
+	}
+
+	if opts.CPURtRuntime != "" {
+		val, err := strconv.Atoi(opts.CPURtRuntime)
+		if err != nil {
+			return warningResponse, containerID, err
+		}
+
+		createOptions.CPURTRuntime = int64(val)
+	}
+
+	if opts.CPUSetCPUs != "" {
+		createOptions.CPUSetCPUs = opts.CPUSetCPUs
+	}
+
+	if opts.CPUSetMems != "" {
+		createOptions.CPUSetMems = opts.CPUSetMems
+	}
+
+	if opts.SHMSize != "" {
+		createOptions.ShmSize = opts.SHMSize
+	}
+
+	if opts.SHMSizeSystemd != "" {
+		createOptions.ShmSizeSystemd = opts.SHMSizeSystemd
+	}
+
+	// generate spec
 	s := specgen.NewSpecGenerator(opts.Name, false)
 	if err := specgenutil.FillOutSpecGen(s, &createOptions, nil); err != nil {
 		return warningResponse, containerID, err

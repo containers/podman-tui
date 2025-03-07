@@ -37,6 +37,18 @@ TEST_IMAGE_BUILD_CONTEXT_DIR="$(realpath .)/test/testdata/"
 TEST_IMAGE_BUILD_TAG="${TEST_NAME}_image:latest"
 TEST_IMAGE_BUILD_REPOSITORY="localhost"
 TEST_IMAGE_SAVE_PATH="/tmp/${TEST_NAME}_image_save.tar"
+TEST_CONTAINER_MEMORY=100
+TEST_CONTAINER_MEMORY_RESERV=80
+TEST_CONTAINER_MEMORY_SWAP=150
+TEST_CONTAINER_MEMORY_SWAPPINESS=50
+TEST_CONTAINER_CPU_SHARES=10
+TEST_CONTAINER_CPU_PERIOD=20
+TEST_CONTAINER_CPU_QUOTA=10
+TEST_CONTAINER_SHM_SIZE=120
+TEST_CONTAINER_SHM_SIZE_SYSTYEMD=150
+TEST_TIMEOUT_HIGH=15
+TEST_TIMEOUT_MEDIUM=10
+TEST_TIMEOUT_LOW=5
 
 ################
 #  podman_tui_set_view  # switches to different podman-tui views
@@ -237,16 +249,18 @@ function podman_tui_select_container_cmd() {
     menu_index=14;;
   "remove")
     menu_index=15;;
-  "start")
+  "run")
     menu_index=16;;
-  "stat")
+  "start")
     menu_index=17;;
-  "stop")
+  "stat")
     menu_index=18;;
-  "top")
+  "stop")
     menu_index=19;;
-  "unpause")
+  "top")
     menu_index=20;;
+  "unpause")
+    menu_index=21;;
   esac
 
   podman_tui_select_menu $menu_index

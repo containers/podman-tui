@@ -299,6 +299,74 @@ var _ = Describe("container create", Ordered, func() {
 		Expect(createDialog.focusElement).To(Equal(createContainerFormFocus))
 	})
 
+	It("setResourceSettingsPageNextFocus", func() {
+		createDialog.focusElement = createContainerMemoryFieldFocus
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerMemoryReservatoinFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerMemorySwapFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createcontainerMemorySwappinessFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUsFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUSharesFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUPeriodFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPURtPeriodFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUQuotaFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPURtRuntimeFeildFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUSetCPUsFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerCPUSetMemsFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerShmSizeFieldFocus))
+
+		createDialogApp.SetFocus(createDialog)
+		createDialogApp.Draw()
+		createDialog.setResourceSettingsPageNextFocus()
+		Expect(createDialog.focusElement).To(Equal(createContainerShmSizeSystemdFieldFocus))
+	})
+
 	It("hide", func() {
 		createDialog.Hide()
 		Expect(createDialog.IsDisplay()).To(Equal(false))

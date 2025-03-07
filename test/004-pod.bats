@@ -35,7 +35,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab" "Space"
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "Enter"
-    sleep 4
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Created" "expected $TEST_POD_NAME to be created"
@@ -54,7 +54,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "start"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
@@ -69,7 +69,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "pause"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Paused" "expected $TEST_POD_NAME running"
@@ -84,7 +84,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "unpause"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Running" "expected $TEST_POD_NAME running"
@@ -99,7 +99,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "stop"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
@@ -114,7 +114,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "restart"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Running" "expected $TEST_POD_NAME exited"
@@ -129,7 +129,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "kill"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --filter="name=${TEST_POD_NAME}$" --format "{{ .Status}}"
     assert $output =~ "Exited" "expected $TEST_POD_NAME exited"
@@ -145,7 +145,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_item $pod_index
     podman_tui_select_pod_cmd "inspect"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
 
     run_helper sed -n '/  "Labels": {/, /  },/p' $PODMAN_TUI_LOG
@@ -164,7 +164,7 @@ load helpers_tui
     podman_tui_select_pod_cmd "remove"
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --format "{{ .Name }}" --filter "name=${TEST_POD_NAME}$"
     assert "$output" == "" "expected $TEST_POD_NAME pod removal"
@@ -174,7 +174,7 @@ load helpers_tui
     podman pod create --name $TEST_POD_NAME --label $TEST_LABEL || echo done
     podman pod start $TEST_POD_NAME || echo done
     podman pod stop $TEST_POD_NAME || echo done
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     # switch to pods view
     # select prune command from pod commands dialog
@@ -182,7 +182,7 @@ load helpers_tui
     podman_tui_set_view "pods"
     podman_tui_select_pod_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 3
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman pod ls --format "{{ .Name }}" --filter "name=${TEST_POD_NAME}$"
     assert "$output" == "" "expected at least $TEST_POD_NAME pod removal"

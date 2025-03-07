@@ -87,18 +87,33 @@ const (
 	createContainerHealthStartupRetriesFieldFocus
 	createContainerHealthStartPeriodFieldFocus
 	createContainerHealthStartupSuccessFieldFocus
+	createContainerMemoryFieldFocus
+	createContainerMemoryReservatoinFieldFocus
+	createContainerMemorySwapFieldFocus
+	createcontainerMemorySwappinessFieldFocus
+	createContainerCPUsFieldFocus
+	createContainerCPUSharesFieldFocus
+	createContainerCPUPeriodFieldFocus
+	createContainerCPURtPeriodFieldFocus
+	createContainerCPUQuotaFieldFocus
+	createContainerCPURtRuntimeFeildFocus
+	createContainerCPUSetCPUsFieldFocus
+	createContainerCPUSetMemsFieldFocus
+	createContainerShmSizeFieldFocus
+	createContainerShmSizeSystemdFieldFocus
 )
 
 const (
-	containerInfoPageIndex = 0 + iota
-	environmentPageIndex
-	userGroupsPageIndex
-	dnsPageIndex
-	healthPageIndex
-	networkingPageIndex
-	portPageIndex
-	securityOptsPageIndex
-	volumePageIndex
+	createContainerInfoPageIndex = 0 + iota
+	createContainerEnvironmentPageIndex
+	createContainerUserGroupsPageIndex
+	createContainerDNSPageIndex
+	createContainerHealthPageIndex
+	createContainerNetworkingPageIndex
+	createContainerPortPageIndex
+	createContainerSecurityOptsPageIndex
+	createContainerVolumePageIndex
+	createContainerResourcePageIndex
 )
 
 type ContainerCreateDialogMode int
@@ -120,6 +135,7 @@ type ContainerCreateDialog struct {
 	dnsPage                             *tview.Flex
 	volumePage                          *tview.Flex
 	healthPage                          *tview.Flex
+	resourcePage                        *tview.Flex
 	form                                *tview.Form
 	display                             bool
 	activePageIndex                     int
@@ -180,6 +196,20 @@ type ContainerCreateDialog struct {
 	containerVolumeField                *tview.InputField
 	containerImageVolumeField           *tview.DropDown
 	containerMountField                 *tview.InputField
+	containerMemoryField                *tview.InputField
+	containerMemoryReservationField     *tview.InputField
+	containerMemorySwapField            *tview.InputField
+	containerMemorySwappinessField      *tview.InputField
+	containerCPUsField                  *tview.InputField
+	containerCPUPeriodField             *tview.InputField
+	containerCPUQuotaField              *tview.InputField
+	containerCPURtPeriodField           *tview.InputField
+	containerCPURtRuntimeField          *tview.InputField
+	containerCPUSharesField             *tview.InputField
+	containerCPUSetCPUsField            *tview.InputField
+	containerCPUSetMemsField            *tview.InputField
+	containerShmSizeField               *tview.InputField
+	containerShmSizeSystemdField        *tview.InputField
 	cancelHandler                       func()
 	enterHandler                        func()
 }
@@ -201,6 +231,7 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 		portPage:          tview.NewFlex(),
 		volumePage:        tview.NewFlex(),
 		healthPage:        tview.NewFlex(),
+		resourcePage:      tview.NewFlex(),
 		form:              tview.NewForm(),
 		categoryLabels: []string{
 			"Container",
@@ -212,6 +243,7 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 			"Ports Settings",
 			"Security Options",
 			"Volumes Settings",
+			"Resource Settings",
 		},
 		activePageIndex:                     0,
 		display:                             false,
@@ -269,6 +301,20 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 		containerHealthStartupRetriesField:  tview.NewInputField(),
 		containerHealthStartupSuccessField:  tview.NewInputField(),
 		containerHealthStartupTimeoutField:  tview.NewInputField(),
+		containerMemoryField:                tview.NewInputField(),
+		containerMemoryReservationField:     tview.NewInputField(),
+		containerMemorySwapField:            tview.NewInputField(),
+		containerMemorySwappinessField:      tview.NewInputField(),
+		containerCPUsField:                  tview.NewInputField(),
+		containerCPUPeriodField:             tview.NewInputField(),
+		containerCPUQuotaField:              tview.NewInputField(),
+		containerCPURtPeriodField:           tview.NewInputField(),
+		containerCPURtRuntimeField:          tview.NewInputField(),
+		containerCPUSharesField:             tview.NewInputField(),
+		containerCPUSetCPUsField:            tview.NewInputField(),
+		containerCPUSetMemsField:            tview.NewInputField(),
+		containerShmSizeField:               tview.NewInputField(),
+		containerShmSizeSystemdField:        tview.NewInputField(),
 	}
 
 	containerDialog.setupLayout()
@@ -298,6 +344,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.setupUserGroupsPageUI()
 	d.setupDNSPageUI()
 	d.setupHealthPageUI()
+	d.setupResourcePageUI()
 	d.setupNetworkPageUI()
 	d.setupPortsPageUI()
 	d.setupSecurityPageUI()
@@ -317,15 +364,16 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
 	// adding category pages
-	d.categoryPages.AddPage(d.categoryLabels[containerInfoPageIndex], d.containerInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[environmentPageIndex], d.environmentPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[userGroupsPageIndex], d.userGroupsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[dnsPageIndex], d.dnsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[healthPageIndex], d.healthPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[networkingPageIndex], d.networkingPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[portPageIndex], d.portPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[securityOptsPageIndex], d.securityOptsPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[volumePageIndex], d.volumePage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerInfoPageIndex], d.containerInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerEnvironmentPageIndex], d.environmentPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerUserGroupsPageIndex], d.userGroupsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerDNSPageIndex], d.dnsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerHealthPageIndex], d.healthPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerNetworkingPageIndex], d.networkingPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerPortPageIndex], d.portPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerSecurityOptsPageIndex], d.securityOptsPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerVolumePageIndex], d.volumePage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerResourcePageIndex], d.resourcePage, true, true)
 
 	// add it to layout.
 	d.layout.SetBackgroundColor(bgColor)
@@ -984,6 +1032,189 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 	d.volumePage.SetBackgroundColor(bgColor)
 }
 
+func (d *ContainerCreateDialog) setupResourcePageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	resourcePageLabelWidth := 13
+	inputFieldWidth := 18
+
+	getSecondColLabel := func(label string) string {
+		return fmt.Sprintf("%18s:", label)
+	}
+
+	// memory
+	d.containerMemoryField.SetLabel("memory:")
+	d.containerMemoryField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerMemoryField.SetBackgroundColor(bgColor)
+	d.containerMemoryField.SetLabelColor(style.DialogFgColor)
+	d.containerMemoryField.SetFieldWidth(inputFieldWidth)
+	d.containerMemoryField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// memory reservation
+	memResLabel := "memory reservation:"
+	d.containerMemoryReservationField.SetLabel(memResLabel)
+	d.containerMemoryReservationField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerMemoryReservationField.SetBackgroundColor(bgColor)
+	d.containerMemoryReservationField.SetLabelColor(style.DialogFgColor)
+	d.containerMemoryReservationField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// memory swap
+	d.containerMemorySwapField.SetLabel("memory swap:")
+	d.containerMemorySwapField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerMemorySwapField.SetBackgroundColor(bgColor)
+	d.containerMemorySwapField.SetLabelColor(style.DialogFgColor)
+	d.containerMemorySwapField.SetFieldWidth(inputFieldWidth)
+	d.containerMemorySwapField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// memory swappiness
+	d.containerMemorySwappinessField.SetLabel(" memory swappiness:")
+	d.containerMemorySwappinessField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerMemorySwappinessField.SetBackgroundColor(bgColor)
+	d.containerMemorySwappinessField.SetLabelColor(style.DialogFgColor)
+	d.containerMemorySwappinessField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// memRow1
+	memRow1Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	memRow1Layout.AddItem(d.containerMemoryField, 0, 1, true)
+	memRow1Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	memRow1Layout.AddItem(d.containerMemoryReservationField, 0, 1, true)
+	memRow1Layout.SetBackgroundColor(bgColor)
+
+	// memRow2
+	memRow2Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	memRow2Layout.AddItem(d.containerMemorySwapField, 0, 1, true)
+	memRow2Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	memRow2Layout.AddItem(d.containerMemorySwappinessField, 0, 1, true)
+	memRow2Layout.SetBackgroundColor(bgColor)
+
+	// cpus
+	d.containerCPUsField.SetLabel("cpus:")
+	d.containerCPUsField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerCPUsField.SetBackgroundColor(bgColor)
+	d.containerCPUsField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUsField.SetFieldWidth(inputFieldWidth)
+
+	// cpu shares
+	d.containerCPUSharesField.SetLabel(getSecondColLabel("cpu shares"))
+	d.containerCPUSharesField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerCPUSharesField.SetBackgroundColor(bgColor)
+	d.containerCPUSharesField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUSharesField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// cpuRow1
+	cpuRow1Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cpuRow1Layout.AddItem(d.containerCPUsField, 0, 1, true)
+	cpuRow1Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	cpuRow1Layout.AddItem(d.containerCPUSharesField, 0, 1, true)
+	cpuRow1Layout.SetBackgroundColor(bgColor)
+
+	// cpus period
+	d.containerCPUPeriodField.SetLabel("cpu period:")
+	d.containerCPUPeriodField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerCPUPeriodField.SetBackgroundColor(bgColor)
+	d.containerCPUPeriodField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUPeriodField.SetFieldWidth(inputFieldWidth)
+
+	// cpu rt period
+	d.containerCPURtPeriodField.SetLabel(getSecondColLabel("cpu rt period"))
+	d.containerCPURtPeriodField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerCPURtPeriodField.SetBackgroundColor(bgColor)
+	d.containerCPURtPeriodField.SetLabelColor(style.DialogFgColor)
+	d.containerCPURtPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// cpuRow2
+	cpuRow2Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cpuRow2Layout.AddItem(d.containerCPUPeriodField, 0, 1, true)
+	cpuRow2Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	cpuRow2Layout.AddItem(d.containerCPURtPeriodField, 0, 1, true)
+	cpuRow2Layout.SetBackgroundColor(bgColor)
+
+	// cpus quota
+	d.containerCPUQuotaField.SetLabel("cpu quota:")
+	d.containerCPUQuotaField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerCPUQuotaField.SetBackgroundColor(bgColor)
+	d.containerCPUQuotaField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUQuotaField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUQuotaField.SetFieldWidth(inputFieldWidth)
+
+	// cpu rt runtime
+	d.containerCPURtRuntimeField.SetLabel(getSecondColLabel("cpu rt runtime"))
+	d.containerCPURtRuntimeField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerCPURtRuntimeField.SetBackgroundColor(bgColor)
+	d.containerCPURtRuntimeField.SetLabelColor(style.DialogFgColor)
+	d.containerCPURtRuntimeField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// cpuRow3
+	cpuRow3Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cpuRow3Layout.AddItem(d.containerCPUQuotaField, 0, 1, true)
+	cpuRow3Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	cpuRow3Layout.AddItem(d.containerCPURtRuntimeField, 0, 1, true)
+	cpuRow3Layout.SetBackgroundColor(bgColor)
+
+	// cpuset cpus
+	d.containerCPUSetCPUsField.SetLabel("cpuset cpus:")
+	d.containerCPUSetCPUsField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerCPUSetCPUsField.SetBackgroundColor(bgColor)
+	d.containerCPUSetCPUsField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUSetCPUsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUSetCPUsField.SetFieldWidth(inputFieldWidth)
+
+	// cpuset mems
+	d.containerCPUSetMemsField.SetLabel(getSecondColLabel("cpuset mems"))
+	d.containerCPUSetMemsField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerCPUSetMemsField.SetBackgroundColor(bgColor)
+	d.containerCPUSetMemsField.SetLabelColor(style.DialogFgColor)
+	d.containerCPUSetMemsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// cpuRow4
+	cpuRow4Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cpuRow4Layout.AddItem(d.containerCPUSetCPUsField, 0, 1, true)
+	cpuRow4Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	cpuRow4Layout.AddItem(d.containerCPUSetMemsField, 0, 1, true)
+	cpuRow4Layout.SetBackgroundColor(bgColor)
+
+	// shm size
+	d.containerShmSizeField.SetLabel("shm size:")
+	d.containerShmSizeField.SetLabelWidth(resourcePageLabelWidth)
+	d.containerShmSizeField.SetBackgroundColor(bgColor)
+	d.containerShmSizeField.SetLabelColor(style.DialogFgColor)
+	d.containerShmSizeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerShmSizeField.SetFieldWidth(inputFieldWidth)
+
+	// shm size systemd
+	d.containerShmSizeSystemdField.SetLabel(getSecondColLabel("shm size systemd"))
+	d.containerShmSizeSystemdField.SetLabelWidth(len(memResLabel) + 1)
+	d.containerShmSizeSystemdField.SetBackgroundColor(bgColor)
+	d.containerShmSizeSystemdField.SetLabelColor(style.DialogFgColor)
+	d.containerShmSizeSystemdField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// shmRow1
+	shmRow1Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	shmRow1Layout.AddItem(d.containerShmSizeField, 0, 1, true)
+	shmRow1Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	shmRow1Layout.AddItem(d.containerShmSizeSystemdField, 0, 1, true)
+	shmRow1Layout.SetBackgroundColor(bgColor)
+
+	// resource settings page
+	d.resourcePage.SetDirection(tview.FlexRow)
+	d.resourcePage.AddItem(memRow1Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(memRow2Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(cpuRow1Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(cpuRow2Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(cpuRow3Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(cpuRow4Layout, 1, 0, true)
+	d.resourcePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.resourcePage.AddItem(shmRow1Layout, 1, 0, true)
+	d.resourcePage.SetBackgroundColor(bgColor)
+}
+
 // Display displays this primitive.
 func (d *ContainerCreateDialog) Display() {
 	d.display = true
@@ -1190,6 +1421,35 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerHealthStartPeriodField)
 	case createContainerHealthStartupSuccessFieldFocus:
 		delegate(d.containerHealthStartupSuccessField)
+	// resource page
+	case createContainerMemoryFieldFocus:
+		delegate(d.containerMemoryField)
+	case createContainerMemoryReservatoinFieldFocus:
+		delegate(d.containerMemoryReservationField)
+	case createContainerMemorySwapFieldFocus:
+		delegate(d.containerMemorySwapField)
+	case createcontainerMemorySwappinessFieldFocus:
+		delegate(d.containerMemorySwappinessField)
+	case createContainerCPUsFieldFocus:
+		delegate(d.containerCPUsField)
+	case createContainerCPUSharesFieldFocus:
+		delegate(d.containerCPUSharesField)
+	case createContainerCPUPeriodFieldFocus:
+		delegate(d.containerCPUPeriodField)
+	case createContainerCPURtPeriodFieldFocus:
+		delegate(d.containerCPURtPeriodField)
+	case createContainerCPUQuotaFieldFocus:
+		delegate(d.containerCPUQuotaField)
+	case createContainerCPURtRuntimeFeildFocus:
+		delegate(d.containerCPURtRuntimeField)
+	case createContainerCPUSetCPUsFieldFocus:
+		delegate(d.containerCPUSetCPUsField)
+	case createContainerCPUSetMemsFieldFocus:
+		delegate(d.containerCPUSetMemsField)
+	case createContainerShmSizeFieldFocus:
+		delegate(d.containerShmSizeField)
+	case createContainerShmSizeSystemdFieldFocus:
+		delegate(d.containerShmSizeSystemdField)
 	// category page
 	case createCategoryPagesFocus:
 		delegate(d.categoryPages)
@@ -1337,6 +1597,18 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 			if handler := d.healthPage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setHealthSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.resourcePage.HasFocus() {
+			if handler := d.resourcePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setResourceSettingsPageNextFocus()
 				}
 
 				handler(event, setFocus)
@@ -1601,6 +1873,22 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerMountField.SetText("")
 	d.containerImageVolumeField.SetOptions(imageVolumeOptions, nil)
 	d.containerImageVolumeField.SetCurrentOption(0)
+
+	// resource settings category
+	d.containerMemoryField.SetText("")
+	d.containerMemoryReservationField.SetText("")
+	d.containerMemorySwapField.SetText("")
+	d.containerMemorySwappinessField.SetText("")
+	d.containerCPUsField.SetText("")
+	d.containerCPUSharesField.SetText("")
+	d.containerCPUPeriodField.SetText("")
+	d.containerCPURtPeriodField.SetText("")
+	d.containerCPUQuotaField.SetText("")
+	d.containerCPURtRuntimeField.SetText("")
+	d.containerCPUSetCPUsField.SetText("")
+	d.containerCPUSetMemsField.SetText("")
+	d.containerShmSizeField.SetText("")
+	d.containerShmSizeSystemdField.SetText("")
 }
 
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
@@ -1835,6 +2123,88 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	d.focusElement = createContainerFormFocus
 }
 
+func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cyclop
+	if d.containerMemoryField.HasFocus() {
+		d.focusElement = createContainerMemoryReservatoinFieldFocus
+
+		return
+	}
+
+	if d.containerMemoryReservationField.HasFocus() {
+		d.focusElement = createContainerMemorySwapFieldFocus
+
+		return
+	}
+
+	if d.containerMemorySwapField.HasFocus() {
+		d.focusElement = createcontainerMemorySwappinessFieldFocus
+
+		return
+	}
+
+	if d.containerMemorySwappinessField.HasFocus() {
+		d.focusElement = createContainerCPUsFieldFocus
+
+		return
+	}
+
+	if d.containerCPUsField.HasFocus() {
+		d.focusElement = createContainerCPUSharesFieldFocus
+
+		return
+	}
+
+	if d.containerCPUSharesField.HasFocus() {
+		d.focusElement = createContainerCPUPeriodFieldFocus
+
+		return
+	}
+
+	if d.containerCPUPeriodField.HasFocus() {
+		d.focusElement = createContainerCPURtPeriodFieldFocus
+
+		return
+	}
+
+	if d.containerCPURtPeriodField.HasFocus() {
+		d.focusElement = createContainerCPUQuotaFieldFocus
+
+		return
+	}
+
+	if d.containerCPUQuotaField.HasFocus() {
+		d.focusElement = createContainerCPURtRuntimeFeildFocus
+
+		return
+	}
+
+	if d.containerCPURtRuntimeField.HasFocus() {
+		d.focusElement = createContainerCPUSetCPUsFieldFocus
+
+		return
+	}
+
+	if d.containerCPUSetCPUsField.HasFocus() {
+		d.focusElement = createContainerCPUSetMemsFieldFocus
+
+		return
+	}
+
+	if d.containerCPUSetMemsField.HasFocus() {
+		d.focusElement = createContainerShmSizeFieldFocus
+
+		return
+	}
+
+	if d.containerShmSizeField.HasFocus() {
+		d.focusElement = createContainerShmSizeSystemdFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
+}
+
 func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop
 	if d.containerHealthCmdField.HasFocus() {
 		d.focusElement = createContainerHealthStartupCmdFieldFocus
@@ -1916,7 +2286,7 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 }
 
 // ContainerCreateOptions returns new network options.
-func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit,gocyclo
+func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit,gocyclo,maintidx,lll
 	var (
 		labels           []string
 		imageID          string
@@ -2094,6 +2464,20 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		HealthStartupRetries:  strings.TrimSpace(d.containerHealthStartupRetriesField.GetText()),
 		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
 		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
+		Memory:                strings.TrimSpace(d.containerMemoryField.GetText()),
+		MemoryReservation:     strings.TrimSpace(d.containerMemoryReservationField.GetText()),
+		MemorySwap:            strings.TrimSpace(d.containerMemorySwapField.GetText()),
+		MemorySwappiness:      strings.TrimSpace(d.containerMemorySwappinessField.GetText()),
+		CPUs:                  strings.TrimSpace(d.containerCPUsField.GetText()),
+		CPUShares:             strings.TrimSpace(d.containerCPUSharesField.GetText()),
+		CPUPeriod:             strings.TrimSpace(d.containerCPUPeriodField.GetText()),
+		CPURtPeriod:           strings.TrimSpace(d.containerCPURtPeriodField.GetText()),
+		CPUQuota:              strings.TrimSpace(d.containerCPUQuotaField.GetText()),
+		CPURtRuntime:          strings.TrimSpace(d.containerCPURtRuntimeField.GetText()),
+		CPUSetCPUs:            strings.TrimSpace(d.containerCPUSetCPUsField.GetText()),
+		CPUSetMems:            strings.TrimSpace(d.containerCPUSetMemsField.GetText()),
+		SHMSize:               strings.TrimSpace(d.containerShmSizeField.GetText()),
+		SHMSizeSystemd:        strings.TrimSpace(d.containerShmSizeSystemdField.GetText()),
 	}
 
 	return opts

@@ -19,9 +19,9 @@ load helpers_tui
     podman_tui_set_view "images"
     podman_tui_select_image_cmd "pull"
     podman_tui_send_inputs "busybox" "Enter"
-    sleep 8
+    sleep $TEST_TIMEOUT_HIGH
     podman_tui_send_inputs "Down" "Enter"
-    sleep 12
+    sleep $TEST_TIMEOUT_HIGH
 
     run_helper podman image ls busybox --format "{{ .Repository }}"
     assert "$output" =~ "docker.io/library/busybox" "expected image"
@@ -46,7 +46,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH "Tab"
     podman_tui_send_inputs "Space" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Enter"
-    sleep 6
+    sleep $TEST_TIMEOUT_MEDIUM
 
     run_helper ls ${TEST_IMAGE_SAVE_PATH} 2> /dev/null
     assert "$output" == "$TEST_IMAGE_SAVE_PATH" "expected $TEST_IMAGE_SAVE_PATH exists"
@@ -70,7 +70,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab"
     podman_tui_send_inputs "localhost/${TEST_NAME}_image_imported:latest"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
-    sleep 6
+    sleep $TEST_TIMEOUT_MEDIUM
 
     run_helper podman image ls ${TEST_NAME}_image_imported --format "{{ .Repository }}:{{ .Tag }}"
     assert "$output" =~ "localhost/${TEST_NAME}_image_imported" "expected image"
@@ -96,7 +96,7 @@ load helpers_tui
     podman_tui_send_inputs ${TEST_IMAGE_BUILD_REPOSITORY}
     podman_tui_send_inputs "Tab" "Tab"
     podman_tui_send_inputs "Enter"
-    sleep 8
+    sleep $TEST_TIMEOUT_MEDIUM
     podman_tui_send_inputs "Tab" "Enter"
 
     run_helper podman image ls ${TEST_IMAGE_BUILD_TAG} --format "{{ .Repository }}:{{ .Tag }}"
@@ -113,7 +113,7 @@ load helpers_tui
     podman_tui_set_view "images"
     podman_tui_select_item $image_index
     podman_tui_select_image_cmd "diff"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
 
     run_helper grep -w 'A /var' $PODMAN_TUI_LOG
@@ -130,7 +130,7 @@ load helpers_tui
     podman_tui_set_view "images"
     podman_tui_select_item $image_index
     podman_tui_select_image_cmd "history"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
 
     run_helper egrep -w "\[\[$image_id.*BusyBox.*" $PODMAN_TUI_LOG
@@ -148,7 +148,7 @@ load helpers_tui
     podman_tui_set_view "images"
     podman_tui_select_item $image_index
     podman_tui_select_image_cmd "inspect"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
 
     run_helper sed -n '/  "RepoTags": \[/, /  \],/p' $PODMAN_TUI_LOG
@@ -165,7 +165,7 @@ load helpers_tui
     podman_tui_select_item $busyboxIndex
     podman_tui_select_image_cmd "tag"
     podman_tui_send_inputs "$TEST_IMAGE_TAG_NAME" "Tab" "Tab" "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper podman image ls $TEST_IMAGE_TAG_NAME --format "{{ .Repository }}"
     assert "$output" =~ "$TEST_IMAGE_TAG_NAME" "expected tagged image $TEST_IMAGE_TAG_NAME"
@@ -180,10 +180,10 @@ load helpers_tui
     # press "Tab" 2 times and "Enter" to untag busybox image
     podman_tui_set_view "images"
     podman_tui_select_item $busybox_tagindex
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_select_image_cmd "untag"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     untagged_umage=$(podman image ls --format '{{ .Repository }}')
     assert "$untagged_umage" !~ "$TEST_IMAGE_TAG_NAME" "expected $TEST_IMAGE_TAG_NAME not to be in the list"
@@ -205,7 +205,7 @@ load helpers_tui
     podman_tui_select_item $untagged_image
     podman_tui_select_image_cmd "remove"
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
 
     # check if busybox image has been removed
@@ -222,7 +222,7 @@ load helpers_tui
     podman_tui_set_view "images"
     podman_tui_select_image_cmd "prune"
     podman_tui_send_inputs "Enter"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     # check if busybox image has been removed
     run_helper podman image ls --format "{{ .Repository }}" --filter "reference=busybox"

@@ -18,7 +18,7 @@ load helpers_tui
     podman_tui_send_inputs "Tab"
     podman_tui_send_inputs $TEST_SYSTEM_CONN_URI
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper tail -2 $PODMAN_TUI_CONFIG_FILE
     assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
@@ -32,7 +32,7 @@ load helpers_tui
     podman_tui_set_view "system"
     podman_tui_select_item 1
     podman_tui_select_system_cmd "default"
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
     assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
@@ -49,7 +49,7 @@ load helpers_tui
     podman_tui_select_item 1
     podman_tui_select_system_cmd "remove"
     podman_tui_send_inputs "Enter"
-    sleep 1
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
     assert "$output" !~ "services.${TEST_SYSTEM_CONN_NAME}" "expected [services.${TEST_SYSTEM_CONN_NAME}] not in ${PODMAN_TUI_CONFIG_FILE}"
@@ -60,7 +60,7 @@ load helpers_tui
     # select "disconnect" command
     podman_tui_set_view "system"
     podman_tui_select_system_cmd "disconnect"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
 
     run_helper tmux capture-pane -pS 0 -E 0
     assert "$output" =~ "DISCONNECTED" "expected DISCONNECTED connection status"
@@ -74,13 +74,13 @@ load helpers_tui
     # select "disconnect" command
     podman_tui_set_view "system"
     podman_tui_select_system_cmd "disconnect"
-    sleep 2
+    sleep $TEST_TIMEOUT_LOW
     run_helper tmux capture-pane -pS 0 -E 0
     assert "$output" =~ "DISCONNECTED" "expected DISCONNECTED connection status"
 
     # select "connect" command
     podman_tui_select_system_cmd "connect"
-    sleep 3
+    sleep $TEST_TIMEOUT_LOW
     run_helper tmux capture-pane -pS 0 -E 0
     assert "$output" =~ "STATUS_OK" "expected STATUS_OK connection status"
 
