@@ -62,9 +62,9 @@ var _ = Describe("message dialog", Ordered, func() {
 		height := 20
 		// wants
 		wWants := 40
-		hWants := 11
-		xWants := 5 // 0 + (50-40)/2
-		yWants := 4 // 0 + (20-8)/2 - 2
+		hWants := 10
+		xWants := 5
+		yWants := 5
 
 		messageDialog.SetRect(x, y, width, height)
 		x1, y1, w1, h1 := messageDialog.Box.GetRect()

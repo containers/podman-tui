@@ -205,8 +205,8 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 	}
 
 	dWidth := width - (2 * DialogPadding) //nolint:mnd
-	if messageWidth+4 < dWidth {
-		dWidth = messageWidth + 4 //nolint:mnd
+	if messageWidth+6 < dWidth {
+		dWidth = messageWidth + 6 //nolint:mnd
 	}
 
 	if DialogMinWidth < width && dWidth < DialogMinWidth {
@@ -216,7 +216,7 @@ func (d *MessageDialog) SetRect(x, y, width, height int) {
 	emptySpace := (width - dWidth) / 2 //nolint:mnd
 	dX := x + emptySpace
 
-	dHeight := messageHeight + DialogFormHeight + DialogPadding + 1
+	dHeight := messageHeight + DialogFormHeight + DialogPadding
 	if dHeight > height {
 		dHeight = height - DialogPadding - 1
 	}

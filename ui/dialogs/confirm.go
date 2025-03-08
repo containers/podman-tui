@@ -134,9 +134,9 @@ func (d *ConfirmDialog) setRect() {
 
 	if d.width > DialogMinWidth {
 		if messageWidth < DialogMinWidth {
-			d.width = DialogMinWidth + 2 //nolint:mnd
+			d.width = DialogMinWidth + 4 //nolint:mnd
 		} else if messageWidth < d.width {
-			d.width = messageWidth + 2 //nolint:mnd
+			d.width = messageWidth + 6 //nolint:mnd
 		}
 	}
 
