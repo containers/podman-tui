@@ -114,6 +114,7 @@ func (s *Secrets) remove() {
 		if err != nil {
 			title := fmt.Sprintf("SECRET (%s) REMOVE ERROR", secID)
 			s.displayError(title, err)
+			s.appFocusHandler()
 
 			return
 		}

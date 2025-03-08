@@ -40,20 +40,21 @@ var (
 // Pods implemnents the pods page primitive.
 type Pods struct {
 	*tview.Box
-	title          string
-	headers        []string
-	table          *tview.Table
-	errorDialog    *dialogs.ErrorDialog
-	progressDialog *dialogs.ProgressDialog
-	confirmDialog  *dialogs.ConfirmDialog
-	cmdDialog      *dialogs.CommandDialog
-	messageDialog  *dialogs.MessageDialog
-	topDialog      *dialogs.TopDialog
-	createDialog   *poddialogs.PodCreateDialog
-	statsDialog    *poddialogs.PodStatsDialog
-	podsList       podsListReport
-	selectedID     string
-	confirmData    string
+	title           string
+	headers         []string
+	table           *tview.Table
+	errorDialog     *dialogs.ErrorDialog
+	progressDialog  *dialogs.ProgressDialog
+	confirmDialog   *dialogs.ConfirmDialog
+	cmdDialog       *dialogs.CommandDialog
+	messageDialog   *dialogs.MessageDialog
+	topDialog       *dialogs.TopDialog
+	createDialog    *poddialogs.PodCreateDialog
+	statsDialog     *poddialogs.PodStatsDialog
+	podsList        podsListReport
+	selectedID      string
+	confirmData     string
+	appFocusHandler func()
 }
 
 type podsListReport struct {
@@ -162,6 +163,11 @@ func NewPods() *Pods {
 	pods.statsDialog.SetDoneFunc(pods.statsDialog.Hide)
 
 	return pods
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (pods *Pods) SetAppFocusHandler(handler func()) {
+	pods.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

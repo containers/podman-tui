@@ -88,6 +88,7 @@ func (vols *Volumes) prune() {
 		errorTitle := "volume prune error"
 		if err != nil {
 			vols.displayError(errorTitle, err)
+			vols.appFocusHandler()
 
 			return
 		}
@@ -95,6 +96,7 @@ func (vols *Volumes) prune() {
 		if len(errData) > 0 {
 			pruneError := errors.New(strings.Join(errData, "\n")) //nolint:goerr113
 			vols.displayError(errorTitle, pruneError)
+			vols.appFocusHandler()
 		}
 	}
 
@@ -141,6 +143,7 @@ func (vols *Volumes) remove() {
 		if err != nil {
 			title := fmt.Sprintf("volume (%s) remove error", volID)
 			vols.displayError(title, err)
+			vols.appFocusHandler()
 
 			return
 		}

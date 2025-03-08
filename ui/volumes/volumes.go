@@ -16,17 +16,18 @@ import (
 // Volumes implemnents the volumes page primitive.
 type Volumes struct {
 	*tview.Box
-	title          string
-	headers        []string
-	table          *tview.Table
-	errorDialog    *dialogs.ErrorDialog
-	progressDialog *dialogs.ProgressDialog
-	confirmDialog  *dialogs.ConfirmDialog
-	cmdDialog      *dialogs.CommandDialog
-	messageDialog  *dialogs.MessageDialog
-	createDialog   *voldialogs.VolumeCreateDialog
-	volumeList     volListReport
-	confirmData    string
+	title           string
+	headers         []string
+	table           *tview.Table
+	errorDialog     *dialogs.ErrorDialog
+	progressDialog  *dialogs.ProgressDialog
+	confirmDialog   *dialogs.ConfirmDialog
+	cmdDialog       *dialogs.CommandDialog
+	messageDialog   *dialogs.MessageDialog
+	createDialog    *voldialogs.VolumeCreateDialog
+	volumeList      volListReport
+	confirmData     string
+	appFocusHandler func()
 }
 
 type volListReport struct {
@@ -121,6 +122,11 @@ func (vols *Volumes) initUI() {
 		vols.createDialog.Hide()
 		vols.create()
 	})
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (vols *Volumes) SetAppFocusHandler(handler func()) {
+	vols.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

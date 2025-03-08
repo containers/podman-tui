@@ -40,6 +40,7 @@ type Networks struct {
 	disconnectDialog *netdialogs.NetworkDisconnectDialog
 	selectedID       string
 	confirmData      string
+	appFocusHandler  func()
 }
 
 // NewNetworks returns nets page view.
@@ -136,6 +137,11 @@ func NewNetworks() *Networks {
 	nets.disconnectDialog.SetDisconnectFunc(nets.disconnect)
 
 	return nets
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (nets *Networks) SetAppFocusHandler(handler func()) {
+	nets.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.
