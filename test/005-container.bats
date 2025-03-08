@@ -6,6 +6,39 @@
 load helpers
 load helpers_tui
 
+@test "container run" {
+    podman container rm -f $TEST_CONTAINER_NAME || echo done
+
+    buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
+    if [ "${buysbox_image}" == "" ] ; then
+        podman image pull docker.io/library/busybox
+    fi
+
+    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
+
+    podman_tui_set_view "containers"
+    podman_tui_select_container_cmd "run"
+    podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "$TEST_CONTAINER_RUN_CMD" "Tab"
+    podman_tui_send_inputs "Down"
+    podman_tui_select_item $image_index
+    podman_tui_send_inputs "Enter"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Space"
+    podman_tui_send_inputs "Tab" "Tab" "Space"
+    podman_tui_send_inputs "Tab" "Space"
+    podman_tui_send_inputs "Tab" "Space"
+    sleep $TEST_TIMEOUT_LOW
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
+    sleep $TEST_TIMEOUT_HIGH
+
+    cnt_status=$(podman container inspect $TEST_CONTAINER_NAME --format "{{ json .State.Status }}")
+    assert "$cnt_status" =~ "running" "expected container status to match: running"
+
+    podman container stop $TEST_CONTAINER_NAME
+
+    run_helper podman container ls --all --filter "name=${TEST_CONTAINER_NAME}$" --noheading
+    assert "$output" == "" "expected $TEST_CONTAINER_NAME to be removed"
+}
+
 @test "container create (privileged, timeout, remove)" {
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
