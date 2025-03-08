@@ -75,6 +75,7 @@ func (p *Pods) create() {
 
 		if err != nil {
 			p.displayError("POD CREATE ERROR", err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -126,6 +127,7 @@ func (p *Pods) kill() {
 			title := fmt.Sprintf("POD (%s) KILL ERROR", p.selectedID)
 
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -153,6 +155,7 @@ func (p *Pods) pause() {
 			title := fmt.Sprintf("POD (%s) PAUSE ERROR", p.selectedID)
 
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -172,6 +175,7 @@ func (p *Pods) prune() {
 
 		if err != nil {
 			p.displayError("PODS PRUNE ERROR", err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -180,6 +184,7 @@ func (p *Pods) prune() {
 			errMessages := fmt.Errorf("%w %v", errPodPrune, errData)
 
 			p.displayError("PODS PRUNE ERROR", errMessages)
+			p.appFocusHandler()
 		}
 	}
 
@@ -203,7 +208,9 @@ func (p *Pods) restart() {
 
 		if err != nil {
 			title := fmt.Sprintf("POD (%s) RESTART ERROR", p.selectedID)
+
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -244,14 +251,18 @@ func (p *Pods) remove() {
 
 		if err != nil {
 			title := fmt.Sprintf("POD (%s) REMOVE ERROR", p.selectedID)
+
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
 
 		if len(errData) > 0 {
 			title := fmt.Sprintf("POD (%s) REMOVE ERROR", p.selectedID)
+
 			p.displayError(title, fmt.Errorf("%w %v", errPodRemove, errData))
+			p.appFocusHandler()
 		}
 	}
 
@@ -275,7 +286,9 @@ func (p *Pods) start() {
 
 		if err != nil {
 			title := fmt.Sprintf("POD (%s) START ERROR", p.selectedID)
+
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -301,7 +314,9 @@ func (p *Pods) stop() {
 
 		if err != nil {
 			title := fmt.Sprintf("POD (%s) STOP ERROR", p.selectedID)
+
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}
@@ -347,7 +362,9 @@ func (p *Pods) unpause() {
 
 		if err != nil {
 			title := fmt.Sprintf("POD (%s) UNPAUSE ERROR", p.selectedID)
+
 			p.displayError(title, err)
+			p.appFocusHandler()
 
 			return
 		}

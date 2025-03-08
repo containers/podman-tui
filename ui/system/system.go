@@ -38,6 +38,7 @@ type System struct {
 	connectionSetDefaultFunc func(string) error
 	connectionConnectFunc    func(registry.Connection)
 	connectionDisconnectFunc func()
+	appFocusHandler          func()
 }
 
 type connectionListReport struct {
@@ -157,6 +158,11 @@ func NewSystem() *System {
 	})
 
 	return sys
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (sys *System) SetAppFocusHandler(handler func()) {
+	sys.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

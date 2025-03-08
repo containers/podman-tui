@@ -58,6 +58,7 @@ type Images struct {
 	selectedName    string
 	confirmData     string
 	fastRefreshChan chan bool
+	appFocusHandler func()
 }
 
 type imageListReport struct {
@@ -205,6 +206,11 @@ func NewImages() *Images {
 	images.pushDialog.SetCancelFunc(images.pushDialog.Hide)
 
 	return images
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (img *Images) SetAppFocusHandler(handler func()) {
+	img.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

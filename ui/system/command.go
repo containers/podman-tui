@@ -54,6 +54,7 @@ func (sys *System) addConnection() {
 
 		if err != nil {
 			sys.displayError("ADD NEW CONNECTION ERROR", err)
+			sys.appFocusHandler()
 
 			return
 		}
@@ -99,6 +100,7 @@ func (sys *System) df() {
 
 		if err != nil {
 			sys.displayError("SYSTEM DISK USAGE ERROR", err)
+			sys.appFocusHandler()
 
 			return
 		}
@@ -107,6 +109,7 @@ func (sys *System) df() {
 		sys.dfDialog.SetServiceName(connName)
 		sys.dfDialog.UpdateDiskSummary(response)
 		sys.dfDialog.Display()
+		sys.appFocusHandler()
 	}
 
 	go diskUsage()
@@ -168,6 +171,7 @@ func (sys *System) prune() {
 
 		if err != nil {
 			sys.displayError("SYSTEM PRUNE ERROR", err)
+			sys.appFocusHandler()
 
 			return
 		}
@@ -175,6 +179,7 @@ func (sys *System) prune() {
 		sys.messageDialog.SetTitle("PODMAN SYSTEM PRUNE")
 		sys.messageDialog.SetText(dialogs.MessageSystemInfo, registry.ConnectionName(), report)
 		sys.messageDialog.Display()
+		sys.appFocusHandler()
 	}
 
 	go prune()
@@ -219,6 +224,7 @@ func (sys *System) remove() {
 
 		if err != nil {
 			sys.displayError("SYSTEM CONNECTION REMOVE ERROR", err)
+			sys.appFocusHandler()
 
 			return
 		}
@@ -234,6 +240,7 @@ func (sys *System) setDefault() {
 
 		if err := sys.connectionSetDefaultFunc(selectedItem.name); err != nil {
 			sys.displayError("SYSTEM CONNECTION SET DEFAULT ERROR", err)
+			sys.appFocusHandler()
 
 			return
 		}

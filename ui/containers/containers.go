@@ -72,6 +72,7 @@ type Containers struct {
 	selectedName     string
 	confirmData      string
 	fastRefreshChan  chan bool
+	appFocusHandler  func()
 }
 
 type containerListReport struct {
@@ -224,6 +225,11 @@ func NewContainers() *Containers {
 	containers.restoreDialog.SetCancelFunc(containers.restoreDialog.Hide)
 
 	return containers
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (cnt *Containers) SetAppFocusHandler(handler func()) {
+	cnt.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

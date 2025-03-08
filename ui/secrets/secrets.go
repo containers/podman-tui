@@ -29,15 +29,16 @@ var (
 // Secrets implements the secrets page primitive.
 type Secrets struct {
 	*tview.Box
-	title          string
-	headers        []string
-	table          *tview.Table
-	cmdDialog      *dialogs.CommandDialog
-	messageDialog  *dialogs.MessageDialog
-	errorDialog    *dialogs.ErrorDialog
-	progressDialog *dialogs.ProgressDialog
-	confirmDialog  *dialogs.ConfirmDialog
-	createDialog   *secdialogs.SecretCreateDialog
+	title           string
+	headers         []string
+	table           *tview.Table
+	cmdDialog       *dialogs.CommandDialog
+	messageDialog   *dialogs.MessageDialog
+	errorDialog     *dialogs.ErrorDialog
+	progressDialog  *dialogs.ProgressDialog
+	confirmDialog   *dialogs.ConfirmDialog
+	createDialog    *secdialogs.SecretCreateDialog
+	appFocusHandler func()
 }
 
 // NewSecrets returns secrets page view.
@@ -106,6 +107,11 @@ func NewSecrets() *Secrets {
 	})
 
 	return secrets
+}
+
+// SetAppFocusHandler sets application focus handler.
+func (s *Secrets) SetAppFocusHandler(handler func()) {
+	s.appFocusHandler = handler
 }
 
 // GetTitle returns primitive title.

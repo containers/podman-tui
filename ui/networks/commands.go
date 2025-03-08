@@ -50,6 +50,7 @@ func (nets *Networks) cconnect() {
 		if err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK CONNECT ERROR", err)
+			nets.appFocusHandler()
 
 			return
 		}
@@ -60,6 +61,7 @@ func (nets *Networks) cconnect() {
 		nets.connectDialog.SetContainers(cntListReport)
 		nets.progressDialog.Hide()
 		nets.connectDialog.Display()
+		nets.appFocusHandler()
 	}
 
 	go initData()
@@ -76,6 +78,7 @@ func (nets *Networks) connect() {
 		if err := networks.Connect(connectOptions); err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK CONNECT ERROR", err)
+			nets.appFocusHandler()
 
 			return
 		}
@@ -101,6 +104,7 @@ func (nets *Networks) cdisconnect() {
 		if err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK DISCONNECT ERROR", err)
+			nets.appFocusHandler()
 
 			return
 		}
@@ -111,6 +115,7 @@ func (nets *Networks) cdisconnect() {
 		nets.disconnectDialog.SetContainers(cntListReport)
 		nets.progressDialog.Hide()
 		nets.disconnectDialog.Display()
+		nets.appFocusHandler()
 	}
 
 	go initData()
@@ -127,6 +132,7 @@ func (nets *Networks) disconnect() {
 		if err := networks.Disconnect(networkName, containerID); err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK DISCONNECT ERROR", err)
+			nets.appFocusHandler()
 
 			return
 		}
@@ -190,6 +196,7 @@ func (nets *Networks) prune() {
 		if err := networks.Prune(); err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK PRUNE ERROR", err)
+			nets.appFocusHandler()
 
 			return
 		}
@@ -233,7 +240,9 @@ func (nets *Networks) remove() {
 
 		if err != nil {
 			title := fmt.Sprintf("NETWORK (%s) REMOVE ERROR", nets.selectedID)
+
 			nets.displayError(title, err)
+			nets.appFocusHandler()
 
 			return
 		}

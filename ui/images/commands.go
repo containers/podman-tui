@@ -77,6 +77,7 @@ func (img *Images) build() {
 
 		if err != nil {
 			img.displayError("IMAGE BUILD ERROR", err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -84,6 +85,7 @@ func (img *Images) build() {
 		img.messageDialog.SetTitle("podman image build")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, report, "")
 		img.messageDialog.Display()
+		img.appFocusHandler()
 	}
 
 	go buildFunc()
@@ -108,7 +110,9 @@ func (img *Images) diff() {
 
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) DIFF ERROR", imageID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -118,6 +122,7 @@ func (img *Images) diff() {
 		img.messageDialog.SetTitle("podman image diff")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 		img.messageDialog.DisplayFullSize()
+		img.appFocusHandler()
 	}
 
 	go diff()
@@ -160,6 +165,7 @@ func (img *Images) imageImport() {
 
 		if err != nil {
 			img.displayError("IMAGE IMPORT ERROR", err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -167,6 +173,7 @@ func (img *Images) imageImport() {
 		img.messageDialog.SetTitle("podman image import")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, newImageID, "")
 		img.messageDialog.Display()
+		img.appFocusHandler()
 	}
 
 	go importFunc()
@@ -213,6 +220,7 @@ func (img *Images) prune() {
 
 		if err != nil {
 			img.displayError("IMAGE PRUNE ERROR", err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -243,7 +251,9 @@ func (img *Images) push() {
 		if err := images.Push(img.selectedID, pushOptions); err != nil {
 			img.progressDialog.Hide()
 			title := fmt.Sprintf("IMAGE (%s) PUSH ERROR", img.selectedID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -285,13 +295,16 @@ func (img *Images) remove() {
 
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) REMOVE ERROR", imageID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 		} else {
 			headerLabel := fmt.Sprintf("%12s (%s)", imageID, imageName)
 
 			img.messageDialog.SetTitle("podman image remove")
 			img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, strings.Join(data, "\n"))
 			img.messageDialog.Display()
+			img.appFocusHandler()
 		}
 	}
 
@@ -330,7 +343,9 @@ func (img *Images) save() {
 
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -348,7 +363,9 @@ func (img *Images) search(term string) {
 		result, err := images.Search(term)
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) SEARCH ERROR", img.selectedID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 		}
 
 		img.searchDialog.UpdateResults(result)
@@ -423,7 +440,9 @@ func (img *Images) tree() {
 		tree, err := images.Tree(imageID)
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) TREE ERROR", imageID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 
 			return
 		}
@@ -434,6 +453,7 @@ func (img *Images) tree() {
 		img.messageDialog.SetTitle("podman image tree")
 		img.messageDialog.SetText(dialogs.MessageImageInfo, headerLabel, tree)
 		img.messageDialog.Display()
+		img.appFocusHandler()
 	}
 
 	img.progressDialog.SetTitle("image tree in progress")
@@ -459,7 +479,9 @@ func (img *Images) pull(image string) {
 		err := images.Pull(name)
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) PULL ERROR", img.selectedID)
+
 			img.displayError(title, err)
+			img.appFocusHandler()
 		}
 
 		img.progressDialog.Hide()

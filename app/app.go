@@ -85,6 +85,10 @@ func NewApp(name string, version string) *App {
 	app.system.SetConnectionDisconnectFunc(app.health.Disconnect)
 	app.system.SetConnectionAddFunc(app.config.Add)
 	app.system.SetConnectionRemoveFunc(app.config.Remove)
+	app.system.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.system)
+		app.fastRefreshChan <- true
+	})
 
 	app.help = help.NewHelp(name, version)
 
@@ -95,6 +99,37 @@ func NewApp(name string, version string) *App {
 	// set refresh channel for image page
 	// its required for image build dialog.
 	app.images.SetFastRefreshChannel(app.fastRefreshChan)
+
+	// set app set focus
+	app.containers.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.containers)
+		app.fastRefreshChan <- true
+	})
+
+	app.pods.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.pods)
+		app.fastRefreshChan <- true
+	})
+
+	app.images.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.images)
+		app.fastRefreshChan <- true
+	})
+
+	app.volumes.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.volumes)
+		app.fastRefreshChan <- true
+	})
+
+	app.networks.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.networks)
+		app.fastRefreshChan <- true
+	})
+
+	app.secrets.SetAppFocusHandler(func() {
+		app.Application.SetFocus(app.secrets)
+		app.fastRefreshChan <- true
+	})
 
 	// menu items
 	menuItems := [][]string{

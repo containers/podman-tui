@@ -92,6 +92,7 @@ func (cnt *Containers) attach() {
 
 			cnt.progressDialog.Hide()
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -103,6 +104,7 @@ func (cnt *Containers) attach() {
 			cnt.progressDialog.Hide()
 			cnt.terminalDialog.SetContainerInfo(cntID, cntName)
 			cnt.terminalDialog.Display()
+			cnt.appFocusHandler()
 		}
 	}
 
@@ -130,6 +132,7 @@ func (cnt *Containers) preHealthcheck() {
 			title := fmt.Sprintf("CONTAINER (%s) HEALTHCHECK ERROR", cntID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -139,6 +142,7 @@ func (cnt *Containers) preHealthcheck() {
 		cnt.messageDialog.SetTitle("podman container healthcheck")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
 		cnt.messageDialog.Display()
+		cnt.appFocusHandler()
 	}
 
 	go cntHealthCheck()
@@ -207,6 +211,7 @@ func (cnt *Containers) restore() {
 
 			cnt.progressDialog.Hide()
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -217,6 +222,7 @@ func (cnt *Containers) restore() {
 		cnt.messageDialog.SetTitle("podman container restore")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
 		cnt.messageDialog.Display()
+		cnt.appFocusHandler()
 	}
 
 	go restore()
@@ -248,6 +254,7 @@ func (cnt *Containers) checkpoint() {
 
 			cnt.progressDialog.Hide()
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -258,6 +265,7 @@ func (cnt *Containers) checkpoint() {
 		cnt.messageDialog.SetTitle("podman container checkpoint")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, report)
 		cnt.messageDialog.Display()
+		cnt.appFocusHandler()
 	}
 
 	go checkpoint()
@@ -291,6 +299,7 @@ func (cnt *Containers) commit() {
 			title := fmt.Sprintf("CONTAINER (%s) COMMIT ERROR", cnt.selectedID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -301,6 +310,7 @@ func (cnt *Containers) commit() {
 		cnt.messageDialog.SetTitle("podman container commit")
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, response)
 		cnt.messageDialog.Display()
+		cnt.appFocusHandler()
 	}
 
 	go cntCommit()
@@ -422,6 +432,7 @@ func (cnt *Containers) runDetach(runOpts containers.CreateOptions) {
 		if err != nil {
 			cnt.progressDialog.Hide()
 			cnt.displayError("CONTAINER RUN ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -434,6 +445,7 @@ func (cnt *Containers) runDetach(runOpts containers.CreateOptions) {
 			cnt.messageDialog.SetTitle("CONTAINER RUN WARNINGS")
 			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
 			cnt.messageDialog.Display()
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -441,6 +453,7 @@ func (cnt *Containers) runDetach(runOpts containers.CreateOptions) {
 		if err := containers.Start(cntID); err != nil {
 			cnt.progressDialog.Hide()
 			cnt.displayError("CONTAINER RUN ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -462,6 +475,7 @@ func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
 			runStatusChan <- false
 
 			cnt.displayError("CONTAINER RUN ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -474,6 +488,7 @@ func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
 			cnt.messageDialog.SetTitle("CONTAINER RUN WARNINGS")
 			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
 			cnt.messageDialog.Display()
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -485,6 +500,7 @@ func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
 			attachReady <- false
 
 			cnt.displayError("CONTAINER RUN ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -511,12 +527,14 @@ func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
 				if isReady {
 					if err := containers.Start(cntID); err != nil {
 						cnt.displayError("CONTAINER RUN ERROR", err)
+						cnt.appFocusHandler()
 
 						return
 					}
 
 					cnt.terminalDialog.SetContainerInfo(cntID, "")
 					cnt.terminalDialog.Display()
+					cnt.appFocusHandler()
 				}
 			}
 		}
@@ -544,6 +562,7 @@ func (cnt *Containers) create() {
 
 		if err != nil {
 			cnt.displayError("CONTAINER CREATE ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -554,6 +573,7 @@ func (cnt *Containers) create() {
 			cnt.messageDialog.SetTitle("CONTAINER CREATE WARNINGS")
 			cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, strings.Join(warnings, "\n"))
 			cnt.messageDialog.Display()
+			cnt.appFocusHandler()
 		}
 	}
 
@@ -622,6 +642,7 @@ func (cnt *Containers) kill() {
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) KILL ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -650,6 +671,7 @@ func (cnt *Containers) logs() {
 			title := fmt.Sprintf("CONTAINER (%s) DISPLAY LOG ERROR", cntID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -664,6 +686,7 @@ func (cnt *Containers) logs() {
 		cnt.messageDialog.SetText(dialogs.MessageContainerInfo, headerLabel, cntLogs)
 		cnt.messageDialog.TextScrollToEnd()
 		cnt.messageDialog.DisplayFullSize()
+		cnt.appFocusHandler()
 	}
 
 	go getLogs()
@@ -687,6 +710,7 @@ func (cnt *Containers) pause() {
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) PAUSE ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -738,6 +762,7 @@ func (cnt *Containers) prune() {
 
 		if err != nil {
 			cnt.displayError("CONTAINER PRUNE ERROR", err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -790,6 +815,7 @@ func (cnt *Containers) renameContainer(id string, newName string) {
 		if err != nil {
 			title := fmt.Sprintf("CONTAINER (%s) RENAME ERROR", cnt.selectedID)
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -833,6 +859,7 @@ func (cnt *Containers) remove() {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -841,6 +868,7 @@ func (cnt *Containers) remove() {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
 
 			cnt.displayError(title, fmt.Errorf("%v", errData)) //nolint:goerr113
+			cnt.appFocusHandler()
 		}
 	}
 
@@ -866,6 +894,7 @@ func (cnt *Containers) start() {
 			title := fmt.Sprintf("CONTAINER (%s) START ERROR", cnt.selectedID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -892,6 +921,7 @@ func (cnt *Containers) stop() {
 			title := fmt.Sprintf("CONTAINER (%s) STOP ERROR", cnt.selectedID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
@@ -941,6 +971,7 @@ func (cnt *Containers) unpause() {
 			title := fmt.Sprintf("CONTAINER (%s) UNPAUSE ERROR", cnt.selectedID)
 
 			cnt.displayError(title, err)
+			cnt.appFocusHandler()
 
 			return
 		}
