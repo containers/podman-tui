@@ -419,8 +419,12 @@ func (d *VtermDialog) SetCancelFunc(handler func()) *VtermDialog {
 // SetContainerInfo sets container's ID and NAME to the terminal header.
 func (d *VtermDialog) SetContainerInfo(id string, name string) {
 	d.containerID = id
+	containerInfo := id[0:12]
 
-	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
+	if name != "" {
+		containerInfo = fmt.Sprintf("%s (%s)", containerInfo, name)
+	}
+
 	d.containerInfo.SetText(containerInfo)
 }
 
