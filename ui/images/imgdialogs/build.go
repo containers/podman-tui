@@ -1246,7 +1246,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 
 	// basic info page
 	// Containerfiles
-	for _, cntFile := range strings.Split(d.containerFilePath.GetText(), " ") {
+	for _, cntFile := range strings.Split(strings.TrimSpace(d.containerFilePath.GetText()), " ") {
 		if cntFile != "" {
 			cFile, err := utils.ResolveHomeDir(cntFile)
 			if err != nil {
@@ -1262,14 +1262,14 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 		BuildOptions:   entities.BuildOptions{},
 	}
 
-	dir, err := utils.ResolveHomeDir(d.contextDirectoryPath.GetText())
+	dir, err := utils.ResolveHomeDir(strings.TrimSpace(d.contextDirectoryPath.GetText()))
 	if err != nil {
 		return images.ImageBuildOptions{}, fmt.Errorf("cannot resolve home directory %w", err)
 	}
 
 	opts.BuildOptions.ContextDirectory = dir
-	opts.BuildOptions.AdditionalTags = append(opts.BuildOptions.AdditionalTags, d.tagField.GetText())
-	opts.BuildOptions.Registry = d.registryField.GetText()
+	opts.BuildOptions.AdditionalTags = append(opts.BuildOptions.AdditionalTags, strings.TrimSpace(d.tagField.GetText()))
+	opts.BuildOptions.Registry = strings.TrimSpace(d.registryField.GetText())
 
 	_, pullOption := d.pullPolicyField.GetCurrentOption()
 	switch pullOption {

@@ -393,10 +393,10 @@ func (d *NetworkConnectDialog) GetConnectOptions() networks.NetworkConnect {
 	container := strings.Split(selectedCnt, " ")[0]
 	connectOptions.Container = container
 	connectOptions.Network = d.networkName
-	connectOptions.IPv4 = d.ipv4.GetText()
-	connectOptions.IPv6 = d.ipv6.GetText()
-	connectOptions.MacAddress = d.macAddr.GetText()
-	connectOptions.Aliases = strings.Split(d.aliases.GetText(), " ")
+	connectOptions.IPv4 = strings.TrimSpace(d.ipv4.GetText())
+	connectOptions.IPv6 = strings.TrimSpace(d.ipv6.GetText())
+	connectOptions.MacAddress = strings.TrimSpace(d.macAddr.GetText())
+	connectOptions.Aliases = strings.Split(strings.TrimSpace(d.aliases.GetText()), " ")
 
 	return connectOptions
 }

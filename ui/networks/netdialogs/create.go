@@ -636,10 +636,10 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //
 	}
 
 	opts := networks.CreateOptions{
-		Name:           d.networkNameField.GetText(),
+		Name:           strings.TrimSpace(d.networkNameField.GetText()),
 		Labels:         labels,
 		Internal:       d.networkInternalCheckBox.IsChecked(),
-		Drivers:        d.networkDriverField.GetText(),
+		Drivers:        strings.TrimSpace(d.networkDriverField.GetText()),
 		DriversOptions: options,
 		IPv6:           d.networkIpv6CheckBox.IsChecked(),
 		Gateways:       gateways,
