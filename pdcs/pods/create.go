@@ -3,6 +3,7 @@ package pods
 import (
 	"encoding/json"
 	"net"
+	"strconv"
 
 	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/common/pkg/config"
@@ -35,10 +36,18 @@ type CreateOptions struct {
 	Network         string
 	Publish         []string
 	SecurityOpts    []string
+	Memory          string
+	MemorySwap      string
+	CPUs            string
+	CPUShares       string
+	CPUSetCPUs      string
+	CPUSetMems      string
+	ShmSize         string
+	ShmSizeSystemd  string
 }
 
 // Create creates a new pod.
-func Create(opts CreateOptions) error { //nolint:cyclop
+func Create(opts CreateOptions) error { //nolint:cyclop,gocognit
 	log.Debug().Msgf("pdcs: podman pod create %v", opts)
 
 	var createOptions entities.PodCreateOptions
@@ -57,6 +66,49 @@ func Create(opts CreateOptions) error { //nolint:cyclop
 
 	createOptions.Name = opts.Name
 	createOptions.Labels = opts.Labels
+
+	// resources
+	if opts.Memory != "" {
+		infraOptions.Memory = opts.Memory
+	}
+
+	if opts.MemorySwap != "" {
+		infraOptions.MemorySwap = opts.MemorySwap
+	}
+
+	if opts.CPUs != "" {
+		val, err := strconv.ParseFloat(opts.CPUs, 64)
+		if err != nil {
+			return err
+		}
+
+		infraOptions.CPUS = val
+	}
+
+	if opts.CPUShares != "" {
+		val, err := strconv.ParseUint(opts.CPUShares, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		infraOptions.CPUShares = val
+	}
+
+	if opts.CPUSetCPUs != "" {
+		infraOptions.CPUSetCPUs = opts.CPUSetCPUs
+	}
+
+	if opts.CPUSetMems != "" {
+		infraOptions.CPUSetMems = opts.CPUSetMems
+	}
+
+	if opts.ShmSize != "" {
+		infraOptions.ShmSize = opts.ShmSize
+	}
+
+	if opts.ShmSizeSystemd != "" {
+		infraOptions.ShmSizeSystemd = opts.ShmSizeSystemd
+	}
 
 	// network options
 	podNetworkOptions, err := podNetworkOptions(opts)
