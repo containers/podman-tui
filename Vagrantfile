@@ -1,7 +1,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    config.vm.hostname = "fedora40"
+    config.vm.hostname = "fedora41"
     config.vm.box = "fedora/41-cloud-base"
     config.vm.box_version = "41-20241024.0"
 
