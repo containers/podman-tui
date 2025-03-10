@@ -413,7 +413,7 @@ func (d *ImageSearchDialog) SetPullFunc(handler func()) *ImageSearchDialog {
 
 // GetSearchText returns search input field text.
 func (d *ImageSearchDialog) GetSearchText() string {
-	return d.input.GetText()
+	return strings.TrimSpace(d.input.GetText())
 }
 
 // GetSelectedItem returns selected image name from search result table.

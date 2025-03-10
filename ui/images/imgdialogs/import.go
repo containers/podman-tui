@@ -319,7 +319,7 @@ func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, err
 
 	commit = strings.TrimSpace(d.commitMessage.GetText())
 	reference = strings.TrimSpace(d.reference.GetText())
-	change = strings.Split(d.change.GetText(), " ")
+	change = strings.Split(strings.TrimSpace(d.change.GetText()), " ")
 
 	opts := images.ImageImportOptions{
 		Change:    change,
