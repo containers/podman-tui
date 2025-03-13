@@ -9,7 +9,6 @@ linters:
     - varnamelen
     - gochecknoinits
     - wrapcheck
-    - execinquery
     - funlen
     - depguard
     - nolintlint
@@ -17,9 +16,8 @@ linters:
     - wastedassign
     - rowserrcheck
     # deprecated
-    - gomnd
     - gomoddirectives
-    - exportloopref
+    - tenv
 linters-settings:
 #  typecheck:
 #    enabled: false
