@@ -4,9 +4,9 @@ go 1.22.8
 
 require (
 	github.com/BurntSushi/toml v1.4.0
-	github.com/containers/buildah v1.39.1
-	github.com/containers/common v0.62.0
-	github.com/containers/podman/v5 v5.4.0
+	github.com/containers/buildah v1.39.2
+	github.com/containers/common v0.62.1
+	github.com/containers/podman/v5 v5.4.1
 	github.com/containers/storage v1.57.1
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
@@ -41,7 +41,7 @@ require (
 	github.com/containerd/platforms v1.0.0-rc.1 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.16.3 // indirect
 	github.com/containerd/typeurl/v2 v2.2.3 // indirect
-	github.com/containers/image/v5 v5.34.0 // indirect
+	github.com/containers/image/v5 v5.34.1 // indirect
 	github.com/containers/libtrust v0.0.0-20230121012942-c1716e8a8d01 // indirect
 	github.com/containers/ocicrypt v1.2.1 // indirect
 	github.com/containers/psgo v1.9.0 // indirect
