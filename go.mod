@@ -1,6 +1,6 @@
 module github.com/containers/podman-tui
 
-go 1.22.8
+go 1.23.0
 
 require (
 	github.com/BurntSushi/toml v1.4.0

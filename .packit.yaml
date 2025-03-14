@@ -20,10 +20,6 @@ jobs:
       - centos-stream-9-aarch64
       - centos-stream-10-x86_64
       - centos-stream-10-aarch64
-      - epel-9-x86_64
-      - epel-9-aarch64
-      - epel-10-x86_64
-      - epel-10-aarch64
 
     actions:
       post-upstream-clone:
