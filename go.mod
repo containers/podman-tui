@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/BurntSushi/toml v1.4.0
-	github.com/containers/buildah v1.39.2
+	github.com/containers/buildah v1.39.3
 	github.com/containers/common v0.62.2
 	github.com/containers/podman/v5 v5.4.1
 	github.com/containers/storage v1.57.2

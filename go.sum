@@ -52,8 +52,8 @@ github.com/containerd/stargz-snapshotter/estargz v0.16.3 h1:7evrXtoh1mSbGj/pfRcc
 github.com/containerd/stargz-snapshotter/estargz v0.16.3/go.mod h1:uyr4BfYfOj3G9WBVE8cOlQmXAbPN9VEQpBBeJIuOipU=
 github.com/containerd/typeurl/v2 v2.2.3 h1:yNA/94zxWdvYACdYO8zofhrTVuQY73fFU1y++dYSw40=
 github.com/containerd/typeurl/v2 v2.2.3/go.mod h1:95ljDnPfD3bAbDJRugOiShd/DlAAsxGtUBhJxIn7SCk=
-github.com/containers/buildah v1.39.2 h1:YaFMNnuTr7wKYKQDHkm7yyP9HhWVrNB4DA+DjYUS9k4=
-github.com/containers/buildah v1.39.2/go.mod h1:Vb4sDbEq06qQqk29mcGw/1qit8dyukpfL4hwNQ5t+z8=
+github.com/containers/buildah v1.39.3 h1:JAIbtTblL6XIdhfH+/5ndSR++0yonF2409jlQ+rD8SE=
+github.com/containers/buildah v1.39.3/go.mod h1:WtjZt6kqSVzibr7AVkW9QlLok6pB0jlLe2LedgmL4+s=
 github.com/containers/common v0.62.2 h1:xO45OOoeq17EZMIDZoSyRqg7GXGcRHa9sXlrr75zH+U=
 github.com/containers/common v0.62.2/go.mod h1:veFiR9iq2j3CHXtB4YnPHuOkSRdhIQ3bAY8AFMP/5bE=
 github.com/containers/image/v5 v5.34.2 h1:3r1etun4uJYq5197tcymUcI1h6+zyzKS9PtRtBlEKMI=
