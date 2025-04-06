@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 1.5.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,9 +60,32 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sat Mar 01 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.5.0-dev
+* Sun Apr 06 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.5.0-1
+- Go update to v1.23.0 + Golangci-lint update to v1.64.4
+- UI input check trim spaces
+- New feature - pod create resource settings category
+- Fix Vagrantbox hostname
+- Fix view's dialogs focus issue
+- Exec and run vterm container ID and name display issue fix
+- Added bats tests for container run cmd
+- Vagrantfile box version update to fedora/41-cloud-base
+- UI dialog size adjustments
+- New feature - container create resource settings category
+- View sub dialog size adjustments
+- New feature - container run
+- Container exec terminal size change
+- Container create dialog secret option
+- Fix wrong function name
+- Bump github.com/containers/podman/v5 to 5.4.2
+- Bump github.com/rs/zerolog to 1.34.0
+- Bump github.com/containers/buildah to 1.39.4
+- Bump github.com/BurntSushi/toml to 1.5.0
+- Bump github.com/containers/common to 0.62.3
+- Bump github.com/containers/storage to 1.57.2
+- Bump golang.org/x/net to 0.36.0
+- Bump golang.org/x/crypto to 0.36.0
 
-* Sat Mar 01 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.4.0
+* Sat Mar 01 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.4.0-1
 - Bump github.com/containers/podman/v5 to v5.4.0
 - Bump github.com/containers/buildah to v1.39.1
 - Bump github.com/containers/common to v0.62.0
