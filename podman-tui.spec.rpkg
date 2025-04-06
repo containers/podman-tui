@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.6.0
-Release: dev.1%{?dist}
+Version: 1.5.0
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,8 +60,6 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Apr 06 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.0-dev-1
-
 * Sun Apr 06 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.5.0-1
 - Go update to v1.23.0 + Golangci-lint update to v1.64.4
 - UI input check trim spaces
