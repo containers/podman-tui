@@ -206,7 +206,7 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/containers/podman/v5 v5.4.1
+# github.com/containers/podman/v5 v5.4.2
 ## explicit; go 1.22.8
 github.com/containers/podman/v5/cmd/podman/parse
 github.com/containers/podman/v5/libpod/define
