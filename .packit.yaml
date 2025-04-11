@@ -16,6 +16,10 @@ jobs:
       - fedora-latest-stable-aarch64
       - fedora-development-x86_64
       - fedora-development-aarch64
+      - epel-9-x86_64
+      - epel-9-aarch64
+      - epel-10-x86_64
+      - epel-10-aarch64
       - centos-stream-9-x86_64
       - centos-stream-9-aarch64
       - centos-stream-10-x86_64
