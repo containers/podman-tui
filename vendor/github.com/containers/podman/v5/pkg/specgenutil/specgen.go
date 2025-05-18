@@ -527,6 +527,10 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		s.Annotations[define.UserNsAnnotation] = c.UserNS
 	}
 
+	if c.PIDsLimit != nil {
+		s.Annotations[define.PIDsLimitAnnotation] = strconv.FormatInt(*c.PIDsLimit, 10)
+	}
+
 	if len(c.StorageOpts) > 0 {
 		opts := make(map[string]string, len(c.StorageOpts))
 		for _, opt := range c.StorageOpts {
@@ -762,15 +766,15 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 
 	// Only add read-only tmpfs mounts in case that we are read-only and the
 	// read-only tmpfs flag has been set.
-	mounts, volumes, overlayVolumes, imageVolumes, err := parseVolumes(rtc, c.Volume, c.Mount, c.TmpFS)
+	containerMounts, err := parseVolumes(rtc, c.Volume, c.Mount, c.TmpFS)
 	if err != nil {
 		return err
 	}
 	if len(s.Mounts) == 0 || len(c.Mount) != 0 {
-		s.Mounts = mounts
+		s.Mounts = containerMounts.mounts
 	}
 	if len(s.Volumes) == 0 || len(c.Volume) != 0 {
-		s.Volumes = volumes
+		s.Volumes = containerMounts.volumes
 	}
 
 	if s.LabelNested != nil && *s.LabelNested {
@@ -785,10 +789,13 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 	}
 	// TODO make sure these work in clone
 	if len(s.OverlayVolumes) == 0 {
-		s.OverlayVolumes = overlayVolumes
+		s.OverlayVolumes = containerMounts.overlayVolumes
 	}
 	if len(s.ImageVolumes) == 0 {
-		s.ImageVolumes = imageVolumes
+		s.ImageVolumes = containerMounts.imageVolumes
+	}
+	if len(s.ArtifactVolumes) == 0 {
+		s.ArtifactVolumes = containerMounts.artifactVolumes
 	}
 
 	devices := c.Devices

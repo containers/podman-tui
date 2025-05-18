@@ -92,18 +92,10 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 		}
 	case Volume, Machine:
 		humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, e.Name)
+	case Secret:
+		humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, id)
 	}
 	return humanFormat
-}
-
-// newEventFromJSONString takes stringified json and converts
-// it to an event
-func newEventFromJSONString(event string) (*Event, error) {
-	e := new(Event)
-	if err := json.Unmarshal([]byte(event), e); err != nil {
-		return nil, err
-	}
-	return e, nil
 }
 
 // String converts a Type to a string
@@ -133,6 +125,8 @@ func StringToType(name string) (Type, error) {
 		return System, nil
 	case Volume.String():
 		return Volume, nil
+	case Secret.String():
+		return Secret, nil
 	case "":
 		return "", ErrEventTypeBlank
 	}

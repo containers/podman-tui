@@ -12,6 +12,17 @@ import (
 type ArtifactAddOptions struct {
 	Annotations  map[string]string
 	ArtifactType string
+	Append       bool
+	FileType     string
+}
+
+type ArtifactExtractOptions struct {
+	// Title annotation value to extract only a single blob matching that name.
+	// Conflicts with Digest. Optional.
+	Title string
+	// Digest of the blob to extract.
+	// Conflicts with Title. Optional.
+	Digest string
 }
 
 type ArtifactInspectOptions struct {
@@ -49,6 +60,8 @@ type ArtifactPushOptions struct {
 }
 
 type ArtifactRemoveOptions struct {
+	// Remove all artifacts
+	All bool
 }
 
 type ArtifactPullReport struct{}
@@ -69,5 +82,5 @@ type ArtifactAddReport struct {
 }
 
 type ArtifactRemoveReport struct {
-	ArtfactDigest *digest.Digest
+	ArtifactDigests []*digest.Digest
 }

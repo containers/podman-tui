@@ -14,7 +14,7 @@ type ContainerStatReport struct {
 
 type CheckpointReport struct {
 	Err             error                                   `json:"-"`
-	Id              string                                  `json:"Id"` //nolint:revive,stylecheck
+	Id              string                                  `json:"Id"`
 	RawInput        string                                  `json:"-"`
 	RuntimeDuration int64                                   `json:"runtime_checkpoint_duration"`
 	CRIUStatistics  *define.CRIUCheckpointRestoreStatistics `json:"criu_statistics"`
@@ -22,7 +22,7 @@ type CheckpointReport struct {
 
 type RestoreReport struct {
 	Err             error                                   `json:"-"`
-	Id              string                                  `json:"Id"` //nolint:revive,stylecheck
+	Id              string                                  `json:"Id"`
 	RawInput        string                                  `json:"-"`
 	RuntimeDuration int64                                   `json:"runtime_restore_duration"`
 	CRIUStatistics  *define.CRIUCheckpointRestoreStatistics `json:"criu_statistics"`
@@ -51,12 +51,16 @@ type ContainerUpdateOptions struct {
 	// - DevicesLimits to Limit device
 	// - RestartPolicy to change restart policy
 	// - RestartRetries to change restart retries
+	// - Env to change the environment variables.
+	// - UntsetEnv to unset the environment variables.
 	Specgen                         *specgen.SpecGenerator
 	Resources                       *specs.LinuxResources
 	DevicesLimits                   *define.UpdateContainerDevicesLimits
 	ChangedHealthCheckConfiguration *define.UpdateHealthCheckConfig
 	RestartPolicy                   *string
 	RestartRetries                  *uint
+	Env                             []string
+	UnsetEnv                        []string
 }
 
 func (u *ContainerUpdateOptions) ProcessSpecgen() {

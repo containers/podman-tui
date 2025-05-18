@@ -58,6 +58,28 @@ type ImageVolume struct {
 	SubPath string `json:"subPath,omitempty"`
 }
 
+// ArtifactVolume is a volume based on a artifact. The artifact blobs will
+// be bind mounted directly as files and must always be read only.
+type ArtifactVolume struct {
+	// Source is the name or digest of the artifact that should be mounted
+	Source string `json:"source"`
+	// Destination is the absolute path of the mount in the container.
+	// If path is a file in the container, then the artifact must consist of a single blob.
+	// Otherwise if it is a directory or does not exists all artifact blobs will be mounted
+	// into this path as files. As name the "org.opencontainers.image.title" will be used if
+	// available otherwise the digest is used as name.
+	Destination string `json:"destination"`
+	// Title can be used for multi blob artifacts to only mount the one specific blob that
+	// matches the "org.opencontainers.image.title" annotation.
+	// Optional. Conflicts with Digest.
+	Title string `json:"title,omitempty"`
+	// Digest can be used to filter a single blob from a multi blob artifact by the given digest.
+	// When this option is set the file name in the container defaults to the digest even when
+	// the title annotation exist.
+	// Optional. Conflicts with Title.
+	Digest string `json:"digest,omitempty"`
+}
+
 // GenVolumeMounts parses user input into mounts, volumes and overlay volumes
 func GenVolumeMounts(volumeFlag []string) (map[string]spec.Mount, map[string]*NamedVolume, map[string]*OverlayVolume, error) {
 	mounts := make(map[string]spec.Mount)
@@ -115,7 +137,7 @@ func GenVolumeMounts(volumeFlag []string) (map[string]spec.Mount, map[string]*Na
 			}
 		}
 
-		if strings.HasPrefix(src, "/") || strings.HasPrefix(src, ".") || isHostWinPath(src) {
+		if strings.HasPrefix(src, "/") || strings.HasPrefix(src, ".") || IsHostWinPath(src) {
 			// This is not a named volume
 			overlayFlag := false
 			chownFlag := false
@@ -138,7 +160,7 @@ func GenVolumeMounts(volumeFlag []string) (map[string]spec.Mount, map[string]*Na
 					if (workDirFlag && !upperDirFlag) || (!workDirFlag && upperDirFlag) {
 						return nil, nil, nil, errors.New("must set both `upperdir` and `workdir`")
 					}
-					if len(options) > 2 && !(len(options) == 3 && upperDirFlag && workDirFlag) || (len(options) == 2 && !chownFlag) {
+					if len(options) > 2 && (len(options) != 3 || !upperDirFlag || !workDirFlag) || (len(options) == 2 && !chownFlag) {
 						return nil, nil, nil, errors.New("can't use 'O' with other options")
 					}
 				}
@@ -203,8 +225,9 @@ func GenVolumeMounts(volumeFlag []string) (map[string]spec.Mount, map[string]*Na
 	return mounts, volumes, overlayVolumes, nil
 }
 
-// Splits a volume string, accounting for Win drive paths
+// SplitVolumeString Splits a volume string, accounting for Win drive paths
 // when running as a WSL linux guest or Windows client
+// Format: [[SOURCE-VOLUME|HOST-DIR:]CONTAINER-DIR[:OPTIONS]]
 func SplitVolumeString(vol string) []string {
 	parts := strings.Split(vol, ":")
 	if !shouldResolveWinPaths() {
@@ -217,6 +240,20 @@ func SplitVolumeString(vol string) []string {
 		n = 4
 	}
 
+	// Determine if the last part is an absolute path (if true, it means we don't have any options such as ro, rw etc.)
+	lastPartIsPath := strings.HasPrefix(parts[len(parts)-1], "/")
+
+	// Case: Volume or relative host path (e.g., "vol-name:/container" or "./hello:/container")
+	if lastPartIsPath && len(parts) == 2 {
+		return parts
+	}
+
+	// Case: Volume or relative host path with options (e.g., "vol-name:/container:ro" or "./hello:/container:ro")
+	if !lastPartIsPath && len(parts) == 3 {
+		return parts
+	}
+
+	// Case: Windows absolute path (e.g., "C:/Users:/mnt:ro")
 	if hasWinDriveScheme(vol, n) {
 		first := parts[0] + ":" + parts[1]
 		parts = parts[1:]
