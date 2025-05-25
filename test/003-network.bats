@@ -19,7 +19,7 @@ load helpers_tui
     podman_tui_set_view "networks"
     podman_tui_select_network_cmd "connect"
     sleep $TEST_TIMEOUT_LOW
-    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "Tab"
     podman_tui_send_inputs $TEST_NETWORK_CONNECT_ALIAS
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Enter"
