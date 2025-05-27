@@ -762,9 +762,9 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 
 	// on-failure
 	onfailureLabel := fmt.Sprintf("%17s: ", "On failure")
+
 	d.containerHealthOnFailureField.SetOptions([]string{"none", "kill", "restart", "stop"}, nil)
 	d.containerHealthOnFailureField.SetLabel(onfailureLabel)
-	//d.containerHealthOnFailureField.SetLabelWidth(healthPageSecColLabelWidth)
 	d.containerHealthOnFailureField.SetBackgroundColor(bgColor)
 	d.containerHealthOnFailureField.SetLabelColor(style.DialogFgColor)
 	d.containerHealthOnFailureField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
@@ -2165,7 +2165,7 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cyclop
+func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cyclop,dupl
 	if d.containerMemoryField.HasFocus() {
 		d.focusElement = createContainerMemoryReservatoinFieldFocus
 
@@ -2247,7 +2247,7 @@ func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cy
 	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop
+func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop,dupl
 	if d.containerHealthCmdField.HasFocus() {
 		d.focusElement = createContainerHealthStartupCmdFieldFocus
 
