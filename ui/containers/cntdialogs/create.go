@@ -87,6 +87,9 @@ const (
 	createContainerHealthStartupRetriesFieldFocus
 	createContainerHealthStartPeriodFieldFocus
 	createContainerHealthStartupSuccessFieldFocus
+	createContainerHealthLogDestFocus
+	createContainerHealthMaxLogCountFocus
+	createContainerHealthMaxLogSizeFocus
 	createContainerMemoryFieldFocus
 	createContainerMemoryReservatoinFieldFocus
 	createContainerMemorySwapFieldFocus
@@ -193,6 +196,9 @@ type ContainerCreateDialog struct {
 	containerHealthStartupRetriesField  *tview.InputField
 	containerHealthStartupSuccessField  *tview.InputField
 	containerHealthStartupTimeoutField  *tview.InputField
+	containerHealthLogDestField         *tview.InputField
+	containerHealthMaxLogCountField     *tview.InputField
+	containerHealthMaxLogSizeField      *tview.InputField
 	containerVolumeField                *tview.InputField
 	containerImageVolumeField           *tview.DropDown
 	containerMountField                 *tview.InputField
@@ -301,6 +307,9 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 		containerHealthStartupRetriesField:  tview.NewInputField(),
 		containerHealthStartupSuccessField:  tview.NewInputField(),
 		containerHealthStartupTimeoutField:  tview.NewInputField(),
+		containerHealthLogDestField:         tview.NewInputField(),
+		containerHealthMaxLogCountField:     tview.NewInputField(),
+		containerHealthMaxLogSizeField:      tview.NewInputField(),
 		containerMemoryField:                tview.NewInputField(),
 		containerMemoryReservationField:     tview.NewInputField(),
 		containerMemorySwapField:            tview.NewInputField(),
@@ -728,47 +737,46 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.containerHealthStartupCmdField.SetLabelColor(style.DialogFgColor)
 	d.containerHealthStartupCmdField.SetFieldBackgroundColor(inputFieldBgColor)
 
+	d.containerHealthLogDestField.SetLabel("Log dest:")
+	d.containerHealthLogDestField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthLogDestField.SetBackgroundColor(bgColor)
+	d.containerHealthLogDestField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthLogDestField.SetFieldBackgroundColor(inputFieldBgColor)
+
 	// multi primitive row01
-	// startup success
-	d.containerHealthStartupSuccessField.SetLabel("Startup success:")
-	d.containerHealthStartupSuccessField.SetLabelWidth(healthPageSecColLabelWidth)
-	d.containerHealthStartupSuccessField.SetBackgroundColor(bgColor)
-	d.containerHealthStartupSuccessField.SetLabelColor(style.DialogFgColor)
-	d.containerHealthStartupSuccessField.SetFieldBackgroundColor(inputFieldBgColor)
-	d.containerHealthStartupSuccessField.SetFieldWidth(healthPageMultiRowFieldWidth)
+	// max log size
+	d.containerHealthMaxLogSizeField.SetLabel("Max log size:")
+	d.containerHealthMaxLogSizeField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthMaxLogSizeField.SetBackgroundColor(bgColor)
+	d.containerHealthMaxLogSizeField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthMaxLogSizeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthMaxLogSizeField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// max log count
+	d.containerHealthMaxLogCountField.SetLabel("Max log count:")
+	d.containerHealthMaxLogCountField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthMaxLogCountField.SetBackgroundColor(bgColor)
+	d.containerHealthMaxLogCountField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthMaxLogCountField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthMaxLogCountField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
 	// on-failure
+	onfailureLabel := fmt.Sprintf("%17s: ", "On failure")
+
 	d.containerHealthOnFailureField.SetOptions([]string{"none", "kill", "restart", "stop"}, nil)
-	d.containerHealthOnFailureField.SetLabel("On failure:")
-	d.containerHealthOnFailureField.SetLabelWidth(healthPageLabelWidth)
+	d.containerHealthOnFailureField.SetLabel(onfailureLabel)
 	d.containerHealthOnFailureField.SetBackgroundColor(bgColor)
 	d.containerHealthOnFailureField.SetLabelColor(style.DialogFgColor)
 	d.containerHealthOnFailureField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerHealthOnFailureField.SetFieldBackgroundColor(inputFieldBgColor)
 
-	// start period
-	startPeroidLabel := fmt.Sprintf("%15s: ", "Start period")
-	d.containerHealthStartPeriodField.SetLabel(startPeroidLabel)
-	d.containerHealthStartPeriodField.SetBackgroundColor(bgColor)
-	d.containerHealthStartPeriodField.SetLabelColor(style.DialogFgColor)
-	d.containerHealthStartPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
-	d.containerHealthStartPeriodField.SetFieldWidth(healthPageMultiRowFieldWidth)
-
 	multiItemRow01 := tview.NewFlex().SetDirection(tview.FlexColumn)
+	multiItemRow01.AddItem(d.containerHealthMaxLogSizeField, 0, 1, true)
+	multiItemRow01.AddItem(d.containerHealthMaxLogCountField, 0, 1, true)
 	multiItemRow01.AddItem(d.containerHealthOnFailureField, 0, 1, true)
-	multiItemRow01.AddItem(d.containerHealthStartupSuccessField, 0, 1, true)
-	multiItemRow01.AddItem(d.containerHealthStartPeriodField, 0, 1, true)
 	multiItemRow01.SetBackgroundColor(bgColor)
 
 	// multi primitive row02
-	// startup interval
-	d.containerHealthStartupIntervalField.SetLabel("Startup interval:")
-	d.containerHealthStartupIntervalField.SetLabelWidth(healthPageSecColLabelWidth)
-	d.containerHealthStartupIntervalField.SetBackgroundColor(bgColor)
-	d.containerHealthStartupIntervalField.SetLabelColor(style.DialogFgColor)
-	d.containerHealthStartupIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
-	d.containerHealthStartupIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
-
 	// interval
 	d.containerHealthIntervalField.SetLabel("Interval:")
 	d.containerHealthIntervalField.SetLabelWidth(healthPageLabelWidth)
@@ -777,21 +785,29 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.containerHealthIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
 	d.containerHealthIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
+	// startup interval
+	d.containerHealthStartupIntervalField.SetLabel("Startup interval:")
+	d.containerHealthStartupIntervalField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupIntervalField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupIntervalField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// start period
+	startPeroidLabel := fmt.Sprintf("%17s: ", "Start period")
+	d.containerHealthStartPeriodField.SetLabel(startPeroidLabel)
+	d.containerHealthStartPeriodField.SetBackgroundColor(bgColor)
+	d.containerHealthStartPeriodField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartPeriodField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
 	multiItemRow02 := tview.NewFlex().SetDirection(tview.FlexColumn)
 	multiItemRow02.AddItem(d.containerHealthIntervalField, 0, 1, true)
 	multiItemRow02.AddItem(d.containerHealthStartupIntervalField, 0, 1, true)
-	multiItemRow02.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	multiItemRow02.AddItem(d.containerHealthStartPeriodField, 0, 1, true)
 	multiItemRow02.SetBackgroundColor(bgColor)
 
 	// multi primitive row03
-	// startup retries
-	d.containerHealthStartupRetriesField.SetLabel("Startup retries:")
-	d.containerHealthStartupRetriesField.SetLabelWidth(healthPageSecColLabelWidth)
-	d.containerHealthStartupRetriesField.SetBackgroundColor(bgColor)
-	d.containerHealthStartupRetriesField.SetLabelColor(style.DialogFgColor)
-	d.containerHealthStartupRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
-	d.containerHealthStartupRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
-
 	// retires
 	d.containerHealthRetriesField.SetLabel("Retries:")
 	d.containerHealthRetriesField.SetLabelWidth(healthPageLabelWidth)
@@ -800,21 +816,29 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.containerHealthRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
 	d.containerHealthRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
+	// startup retries
+	d.containerHealthStartupRetriesField.SetLabel("Startup retries:")
+	d.containerHealthStartupRetriesField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupRetriesField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupRetriesField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
+	// startup success
+	startupSuccessLabel := fmt.Sprintf("%17s: ", "Startup success")
+	d.containerHealthStartupSuccessField.SetLabel(startupSuccessLabel)
+	d.containerHealthStartupSuccessField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupSuccessField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupSuccessField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupSuccessField.SetFieldWidth(healthPageMultiRowFieldWidth)
+
 	multiItemRow03 := tview.NewFlex().SetDirection(tview.FlexColumn)
 	multiItemRow03.AddItem(d.containerHealthRetriesField, 0, 1, true)
 	multiItemRow03.AddItem(d.containerHealthStartupRetriesField, 0, 1, true)
-	multiItemRow03.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	multiItemRow03.AddItem(d.containerHealthStartupSuccessField, 0, 1, true)
 	multiItemRow03.SetBackgroundColor(bgColor)
 
 	// multi primitive row04
-	// startup timeout
-	d.containerHealthStartupTimeoutField.SetLabel("Startup timeout:")
-	d.containerHealthStartupTimeoutField.SetLabelWidth(healthPageSecColLabelWidth)
-	d.containerHealthStartupTimeoutField.SetBackgroundColor(bgColor)
-	d.containerHealthStartupTimeoutField.SetLabelColor(style.DialogFgColor)
-	d.containerHealthStartupTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
-	d.containerHealthStartupTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
-
 	// timeout
 	d.containerHealthTimeoutField.SetLabel("Timeout:")
 	d.containerHealthTimeoutField.SetLabelWidth(healthPageLabelWidth)
@@ -822,6 +846,13 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.containerHealthTimeoutField.SetLabelColor(style.DialogFgColor)
 	d.containerHealthTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
 	d.containerHealthTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
+	// startup timeout
+	d.containerHealthStartupTimeoutField.SetLabel("Startup timeout:")
+	d.containerHealthStartupTimeoutField.SetLabelWidth(healthPageSecColLabelWidth)
+	d.containerHealthStartupTimeoutField.SetBackgroundColor(bgColor)
+	d.containerHealthStartupTimeoutField.SetLabelColor(style.DialogFgColor)
+	d.containerHealthStartupTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
 	multiItemRow04 := tview.NewFlex().SetDirection(tview.FlexColumn)
 	multiItemRow04.AddItem(d.containerHealthTimeoutField, 0, 1, true)
@@ -834,6 +865,8 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.healthPage.AddItem(d.containerHealthCmdField, 1, 0, true)
 	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.healthPage.AddItem(d.containerHealthStartupCmdField, 1, 0, true)
+	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.healthPage.AddItem(d.containerHealthLogDestField, 1, 0, true)
 	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.healthPage.AddItem(multiItemRow01, 1, 0, true)
 	d.healthPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
@@ -1421,6 +1454,12 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerHealthStartPeriodField)
 	case createContainerHealthStartupSuccessFieldFocus:
 		delegate(d.containerHealthStartupSuccessField)
+	case createContainerHealthLogDestFocus:
+		delegate(d.containerHealthLogDestField)
+	case createContainerHealthMaxLogCountFocus:
+		delegate(d.containerHealthMaxLogCountField)
+	case createContainerHealthMaxLogSizeFocus:
+		delegate(d.containerHealthMaxLogSizeField)
 	// resource page
 	case createContainerMemoryFieldFocus:
 		delegate(d.containerMemoryField)
@@ -1839,14 +1878,17 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerHealthCmdField.SetText("")
 	d.containerHealthStartupCmdField.SetText("")
 	d.containerHealthOnFailureField.SetCurrentOption(0)
-	d.containerHealthIntervalField.SetText("")
-	d.containerHealthStartupIntervalField.SetText("")
-	d.containerHealthTimeoutField.SetText("")
-	d.containerHealthStartupTimeoutField.SetText("")
-	d.containerHealthRetriesField.SetText("")
+	d.containerHealthIntervalField.SetText("30s")
+	d.containerHealthStartupIntervalField.SetText("30s")
+	d.containerHealthTimeoutField.SetText("30s")
+	d.containerHealthStartupTimeoutField.SetText("30s")
+	d.containerHealthRetriesField.SetText("3")
 	d.containerHealthStartupRetriesField.SetText("")
-	d.containerHealthStartPeriodField.SetText("")
+	d.containerHealthStartPeriodField.SetText("0s")
 	d.containerHealthStartupSuccessField.SetText("")
+	d.containerHealthLogDestField.SetText("local")
+	d.containerHealthMaxLogCountField.SetText("5")
+	d.containerHealthMaxLogSizeField.SetText("500")
 
 	// network settings category
 	d.containerHostnameField.SetText("")
@@ -2123,7 +2165,7 @@ func (d *ContainerCreateDialog) setDNSSettingsPageNextFocus() {
 	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cyclop
+func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cyclop,dupl
 	if d.containerMemoryField.HasFocus() {
 		d.focusElement = createContainerMemoryReservatoinFieldFocus
 
@@ -2205,7 +2247,7 @@ func (d *ContainerCreateDialog) setResourceSettingsPageNextFocus() { //nolint:cy
 	d.focusElement = createContainerFormFocus
 }
 
-func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop
+func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cyclop,dupl
 	if d.containerHealthCmdField.HasFocus() {
 		d.focusElement = createContainerHealthStartupCmdFieldFocus
 
@@ -2213,24 +2255,30 @@ func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cycl
 	}
 
 	if d.containerHealthStartupCmdField.HasFocus() {
+		d.focusElement = createContainerHealthLogDestFocus
+
+		return
+	}
+
+	if d.containerHealthLogDestField.HasFocus() {
+		d.focusElement = createContainerHealthMaxLogSizeFocus
+
+		return
+	}
+
+	if d.containerHealthMaxLogSizeField.HasFocus() {
+		d.focusElement = createContainerHealthMaxLogCountFocus
+
+		return
+	}
+
+	if d.containerHealthMaxLogCountField.HasFocus() {
 		d.focusElement = createContainerHealthOnFailureFieldFocus
 
 		return
 	}
 
 	if d.containerHealthOnFailureField.HasFocus() {
-		d.focusElement = createContainerHealthStartupSuccessFieldFocus
-
-		return
-	}
-
-	if d.containerHealthStartupSuccessField.HasFocus() {
-		d.focusElement = createContainerHealthStartPeriodFieldFocus
-
-		return
-	}
-
-	if d.containerHealthStartPeriodField.HasFocus() {
 		d.focusElement = createContainerHealthIntervalFieldFocus
 
 		return
@@ -2243,6 +2291,12 @@ func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cycl
 	}
 
 	if d.containerHealthStartupIntervalField.HasFocus() {
+		d.focusElement = createContainerHealthStartPeriodFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartPeriodField.HasFocus() {
 		d.focusElement = createContainerHealthRetriesFieldFocus
 
 		return
@@ -2255,6 +2309,12 @@ func (d *ContainerCreateDialog) setHealthSettingsPageNextFocus() { //nolint:cycl
 	}
 
 	if d.containerHealthStartupRetriesField.HasFocus() {
+		d.focusElement = createContainerHealthStartupSuccessFieldFocus
+
+		return
+	}
+
+	if d.containerHealthStartupSuccessField.HasFocus() {
 		d.focusElement = createContainerHealthTimeoutFieldFocus
 
 		return
@@ -2464,6 +2524,9 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		HealthStartupRetries:  strings.TrimSpace(d.containerHealthStartupRetriesField.GetText()),
 		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
 		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
+		HealthLogDestination:  strings.TrimSpace(d.containerHealthLogDestField.GetText()),
+		HealthMaxLogSize:      strings.TrimSpace(d.containerHealthMaxLogSizeField.GetText()),
+		HealthMaxLogCount:     strings.TrimSpace(d.containerHealthMaxLogCountField.GetText()),
 		Memory:                strings.TrimSpace(d.containerMemoryField.GetText()),
 		MemoryReservation:     strings.TrimSpace(d.containerMemoryReservationField.GetText()),
 		MemorySwap:            strings.TrimSpace(d.containerMemorySwapField.GetText()),

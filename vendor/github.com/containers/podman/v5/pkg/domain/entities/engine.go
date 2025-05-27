@@ -29,12 +29,13 @@ type PodmanConfig struct {
 	ContainersConf           *config.Config
 	ContainersConfDefaultsRO *config.Config // The read-only! defaults from containers.conf.
 	DBBackend                string         // Hidden: change the database backend
-	DockerConfig             string         // Location of authentication config file
+	DockerConfig             string         // Path to directory containing authentication config file
 	CgroupUsage              string         // rootless code determines Usage message
 	ConmonPath               string         // --conmon flag will set Engine.ConmonPath
 	CPUProfile               string         // Hidden: Should CPU profile be taken
 	EngineMode               EngineMode     // ABI or Tunneling mode
 	HooksDir                 []string
+	CdiSpecDirs              []string
 	Identity                 string   // ssh identity for connecting to server
 	IsRenumber               bool     // Is this a system renumber command? If so, a number of checks will be relaxed
 	IsReset                  bool     // Is this a system reset command? If so, a number of checks will be skipped/omitted

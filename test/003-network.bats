@@ -19,7 +19,7 @@ load helpers_tui
     podman_tui_set_view "networks"
     podman_tui_select_network_cmd "connect"
     sleep $TEST_TIMEOUT_LOW
-    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "Tab"
     podman_tui_send_inputs $TEST_NETWORK_CONNECT_ALIAS
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Tab" "Enter"
@@ -40,7 +40,7 @@ load helpers_tui
     podman_tui_set_view "networks"
     podman_tui_select_network_cmd "disconnect"
     sleep $TEST_TIMEOUT_LOW
-    podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
 
     run_helper podman container inspect $TEST_CONTAINER_NAME  --format "{{ .NetworkSettings.Networks.$TEST_NETWORK_CONNECT }}"
     assert "$output" == "<no value>" "expected $TEST_NETWORK_CONNECT_ALIAS to be removed from container"

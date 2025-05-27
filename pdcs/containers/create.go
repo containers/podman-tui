@@ -76,6 +76,9 @@ type CreateOptions struct {
 	HealthStartupRetries  string
 	HealthStartupSuccess  string
 	HealthStartupTimeout  string
+	HealthLogDestination  string
+	HealthMaxLogSize      string
+	HealthMaxLogCount     string
 	Memory                string
 	MemoryReservation     string
 	MemorySwap            string
@@ -377,6 +380,7 @@ func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts
 	createOptions.HealthTimeout = define.DefaultHealthCheckTimeout
 	createOptions.StartupHCTimeout = define.DefaultHealthCheckTimeout
 	createOptions.HealthOnFailure = opts.HealthOnFailure
+	createOptions.HealthLogDestination = opts.HealthLogDestination
 
 	if opts.HealthCmd == "" {
 		createOptions.HealthCmd = "none"
@@ -385,6 +389,26 @@ func containerHealthOptions(createOptions *entities.ContainerCreateOptions, opts
 	}
 
 	createOptions.HealthCmd = opts.HealthCmd
+
+	if opts.HealthMaxLogCount != "" {
+		logCount, err := strconv.ParseUint(opts.HealthMaxLogCount, 10, 32)
+		if err != nil {
+			return err
+		}
+
+		logCountWd := uint(logCount)
+		createOptions.HealthMaxLogCount = logCountWd
+	}
+
+	if opts.HealthMaxLogSize != "" {
+		logSize, err := strconv.ParseUint(opts.HealthMaxLogSize, 10, 32)
+		if err != nil {
+			return err
+		}
+
+		logSizeWd := uint(logSize)
+		createOptions.HealthMaxLogSize = logSizeWd
+	}
 
 	if opts.HealthInterval != "" {
 		createOptions.HealthInterval = opts.HealthInterval

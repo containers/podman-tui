@@ -227,15 +227,11 @@ load helpers_tui
 
     # switch to "health check"  create view
     podman_tui_send_inputs "Down" "Down" "Down" "Down" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_CMD "Tab" "Tab"
+    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_CMD "Tab" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Enter" "Down" "Down" "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_INTERVAL
-    podman_tui_send_inputs "Tab" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_RETRIES
-    podman_tui_send_inputs "Tab" "Tab"
-    podman_tui_send_inputs $TEST_CONTAINER_HEALTH_TIMEOUT
     podman_tui_send_inputs "Tab" "Tab" "Tab"
+    podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab"
     sleep $TEST_TIMEOUT_LOW
