@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.6.0
+Version: 1.7.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,7 +60,21 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sun Apr 06 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.0-dev-1
+* Wed May 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.7.0-dev-1
+
+* Wed May 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.0-1
+- Added container create health log dest, max count and size options
+- Set default values for container create/run health log options
+- Fix bats test for network connect
+- Running golang-lint
+- Bump github.com/containers/podman/v5 from 5.4.2 to 5.5.0
+- Bump github.com/containers/buildah from 1.39.4 to 1.40.0
+- Bump github.com/containers/common from 0.62.3 to 0.63.0
+- Bump github.com/containers/storage from 1.57.2 to 1.58.0
+- Bump github.com/onsi/ginkgo/v2 from 2.22.2 to 2.23.4
+- Bump github.com/onsi/gomega from 1.36.2 to 1.37.0
+- Bump golang.org/x/net from 0.36.0 to 0.38.0
+- Bump golang.org/x/crypto from 0.36.0 to 0.38.0
 
 * Sun Apr 06 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.5.0-1
 - Go update to v1.23.0 + Golangci-lint update to v1.64.4
