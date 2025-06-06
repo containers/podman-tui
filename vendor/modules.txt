@@ -84,10 +84,10 @@ github.com/containerd/stargz-snapshotter/estargz/errorutil
 # github.com/containerd/typeurl/v2 v2.2.3
 ## explicit; go 1.21
 github.com/containerd/typeurl/v2
-# github.com/containers/buildah v1.40.0
+# github.com/containers/buildah v1.40.1
 ## explicit; go 1.23.3
 github.com/containers/buildah/define
-# github.com/containers/common v0.63.0
+# github.com/containers/common v0.63.1
 ## explicit; go 1.23.3
 github.com/containers/common/internal
 github.com/containers/common/internal/attributedstring
@@ -205,7 +205,7 @@ github.com/containers/ocicrypt/keywrap/pkcs7
 github.com/containers/ocicrypt/spec
 github.com/containers/ocicrypt/utils
 github.com/containers/ocicrypt/utils/keyprovider
-# github.com/containers/podman/v5 v5.5.0
+# github.com/containers/podman/v5 v5.5.1
 ## explicit; go 1.23.3
 github.com/containers/podman/v5/cmd/podman/parse
 github.com/containers/podman/v5/libpod/define
