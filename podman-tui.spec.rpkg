@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.6.0
+Version: 1.6.1
 Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,6 +60,11 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Sat Jun 07 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.1-1
+- Bump github.com/containers/podman/v5 from 5.5.0 to 5.5.1
+- Bump github.com/containers/common from 0.63.0 to 0.63.1
+- Bump github.com/containers/buildah from 1.40.0 to 1.40.1
+
 * Wed May 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.0-1
 - Added container create health log dest, max count and size options
 - Set default values for container create/run health log options
