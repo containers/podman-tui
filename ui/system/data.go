@@ -10,9 +10,12 @@ import (
 // UpdateConnectionsData retrieves connections list data.
 func (sys *System) UpdateConnectionsData() {
 	destinations := sys.connectionListFunc()
+
 	sys.connectionList.mu.Lock()
+	defer sys.connectionList.mu.Unlock()
+
 	sys.connectionList.report = destinations
-	sys.connectionList.mu.Unlock()
+
 	sys.udpateConnectionDataStatus()
 }
 
@@ -34,8 +37,9 @@ func (sys *System) udpateConnectionDataStatus() {
 
 func (sys *System) getConnectionsData() []registry.Connection {
 	sys.connectionList.mu.Lock()
+	defer sys.connectionList.mu.Unlock()
+
 	destReport := sys.connectionList.report
-	sys.connectionList.mu.Unlock()
 
 	return destReport
 }

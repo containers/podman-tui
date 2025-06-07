@@ -10,6 +10,7 @@ func (s *Secrets) Draw(screen tcell.Screen) {
 	secretViewX, secretViewY, secretViewW, secretViewH := s.GetInnerRect()
 
 	s.table.SetRect(secretViewX, secretViewY, secretViewW, secretViewH)
+	s.refresh(secretViewW)
 	s.table.SetBorder(true)
 	s.table.Draw(screen)
 

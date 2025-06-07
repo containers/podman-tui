@@ -23,14 +23,16 @@ func (pods *Pods) UpdateData() {
 	}
 
 	pods.podsList.mu.Lock()
+	defer pods.podsList.mu.Unlock()
+
 	pods.podsList.report = podList
-	pods.podsList.mu.Unlock()
 }
 
 func (pods *Pods) getData() []*entities.ListPodsReport {
 	pods.podsList.mu.Lock()
+	defer pods.podsList.mu.Unlock()
+
 	data := pods.podsList.report
-	pods.podsList.mu.Unlock()
 
 	return data
 }
@@ -38,8 +40,10 @@ func (pods *Pods) getData() []*entities.ListPodsReport {
 // ClearData clears table data.
 func (pods *Pods) ClearData() { //nolint:stylecheck
 	pods.podsList.mu.Lock()
+	defer pods.podsList.mu.Unlock()
+
 	pods.podsList.report = nil
-	pods.podsList.mu.Unlock()
+
 	pods.table.Clear()
 
 	expand := 1

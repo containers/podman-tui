@@ -23,14 +23,16 @@ func (vols *Volumes) UpdateData() {
 	}
 
 	vols.volumeList.mu.Lock()
+	defer vols.volumeList.mu.Unlock()
+
 	vols.volumeList.report = volList
-	vols.volumeList.mu.Unlock()
 }
 
 func (vols *Volumes) getData() []*entities.VolumeListReport {
 	vols.volumeList.mu.Lock()
+	defer vols.volumeList.mu.Unlock()
+
 	data := vols.volumeList.report
-	vols.volumeList.mu.Unlock()
 
 	return data
 }
@@ -38,8 +40,9 @@ func (vols *Volumes) getData() []*entities.VolumeListReport {
 // ClearData clears table data.
 func (vols *Volumes) ClearData() {
 	vols.volumeList.mu.Lock()
+	defer vols.volumeList.mu.Unlock()
+
 	vols.volumeList.report = nil
-	vols.volumeList.mu.Unlock()
 
 	vols.table.Clear()
 

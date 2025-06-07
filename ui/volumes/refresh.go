@@ -17,7 +17,7 @@ const (
 	volsTableMountPointColIndex
 )
 
-func (vols *Volumes) refresh() {
+func (vols *Volumes) refresh(_ int) {
 	vols.table.Clear()
 
 	expand := 1

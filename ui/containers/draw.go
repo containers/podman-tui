@@ -6,12 +6,12 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
-	cnt.refresh()
 	cnt.Box.DrawForSubclass(screen, cnt)
 	cnt.Box.SetBorder(false)
 
 	cntViewX, cntViewY, cntViewW, cntViewH := cnt.GetInnerRect()
 
+	cnt.refresh(cntViewW)
 	cnt.table.SetRect(cntViewX, cntViewY, cntViewW, cntViewH)
 	cnt.table.SetBorder(true)
 	cnt.table.Draw(screen)

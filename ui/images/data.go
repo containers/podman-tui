@@ -22,14 +22,16 @@ func (img *Images) UpdateData() {
 	}
 
 	img.imagesList.mu.Lock()
+	defer img.imagesList.mu.Unlock()
+
 	img.imagesList.report = images
-	img.imagesList.mu.Unlock()
 }
 
 func (img *Images) getData() []images.ImageListReporter {
 	img.imagesList.mu.Lock()
+	defer img.imagesList.mu.Unlock()
+
 	data := img.imagesList.report
-	img.imagesList.mu.Unlock()
 
 	return data
 }
@@ -37,8 +39,10 @@ func (img *Images) getData() []images.ImageListReporter {
 // ClearData clears table data.
 func (img *Images) ClearData() {
 	img.imagesList.mu.Lock()
+	defer img.imagesList.mu.Unlock()
+
 	img.imagesList.report = nil
-	img.imagesList.mu.Unlock()
+
 	img.table.Clear()
 
 	expand := 1

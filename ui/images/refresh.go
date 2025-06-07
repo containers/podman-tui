@@ -10,7 +10,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-func (img *Images) refresh() {
+func (img *Images) refresh(_ int) {
 	img.table.Clear()
 
 	expand := 1
