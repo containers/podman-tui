@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/networks/netdialogs"
@@ -38,9 +39,15 @@ type Networks struct {
 	createDialog     *netdialogs.NetworkCreateDialog
 	connectDialog    *netdialogs.NetworkConnectDialog
 	disconnectDialog *netdialogs.NetworkDisconnectDialog
+	networkList      networkListReport
 	selectedID       string
 	confirmData      string
 	appFocusHandler  func()
+}
+
+type networkListReport struct {
+	mu     sync.Mutex
+	report [][]string
 }
 
 // NewNetworks returns nets page view.

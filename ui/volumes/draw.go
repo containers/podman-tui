@@ -6,12 +6,12 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (vols *Volumes) Draw(screen tcell.Screen) {
-	vols.refresh()
 	vols.Box.DrawForSubclass(screen, vols)
 	vols.Box.SetBorder(false)
 
 	x, y, width, height := vols.GetInnerRect()
 
+	vols.refresh(width)
 	vols.table.SetRect(x, y, width, height)
 	vols.table.SetBorder(true)
 

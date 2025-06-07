@@ -8,7 +8,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-func (sys *System) refresh() {
+func (sys *System) refresh(_ int) {
 	connections := sys.getConnectionsData()
 	sys.connTable.Clear()
 	sys.updateConnTableTitle(len(connections))

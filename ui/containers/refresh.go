@@ -12,7 +12,9 @@ import (
 	"github.com/rivo/tview"
 )
 
-func (cnt *Containers) refresh() {
+func (cnt *Containers) refresh(maxWidth int) {
+	imageColMaxWidth := maxWidth / 5 //nolint:mnd
+
 	cnt.table.Clear()
 
 	expand := 1
@@ -72,6 +74,7 @@ func (cnt *Containers) refresh() {
 		// image name column
 		cnt.table.SetCell(rowIndex, viewContainersImageColIndex,
 			tview.NewTableCell(cntImage).
+				SetMaxWidth(imageColMaxWidth).
 				SetTextColor(cellTextColor).
 				SetExpansion(expand).
 				SetAlign(alignment))

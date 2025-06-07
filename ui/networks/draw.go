@@ -12,6 +12,7 @@ func (nets *Networks) Draw(screen tcell.Screen) {
 	netViewX, netViewY, netViewW, netViewH := nets.GetInnerRect()
 
 	nets.table.SetRect(netViewX, netViewY, netViewW, netViewH)
+	nets.refresh(netViewW)
 	nets.table.SetBorder(true)
 
 	nets.table.Draw(screen)

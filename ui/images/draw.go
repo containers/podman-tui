@@ -6,12 +6,12 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (img *Images) Draw(screen tcell.Screen) { //nolint:cyclop
-	img.refresh()
 	img.Box.DrawForSubclass(screen, img)
 	img.Box.SetBorder(false)
 
 	imagewViewX, imagewViewY, imagewViewW, imagewViewH := img.GetInnerRect()
 
+	img.refresh(imagewViewW)
 	img.table.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
 	img.table.SetBorder(true)
 

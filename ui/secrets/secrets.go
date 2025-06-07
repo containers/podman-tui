@@ -4,10 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/secrets/secdialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rivo/tview"
 )
 
@@ -38,7 +40,13 @@ type Secrets struct {
 	progressDialog  *dialogs.ProgressDialog
 	confirmDialog   *dialogs.ConfirmDialog
 	createDialog    *secdialogs.SecretCreateDialog
+	secretList      secretListReport
 	appFocusHandler func()
+}
+
+type secretListReport struct {
+	mu     sync.Mutex
+	report []*types.SecretInfoReport
 }
 
 // NewSecrets returns secrets page view.

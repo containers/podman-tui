@@ -5,23 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/podman-tui/pdcs/secrets"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/docker/go-units"
 	"github.com/rivo/tview"
-	"github.com/rs/zerolog/log"
 )
 
-// UpdateData retrieves secrets list data.
-func (s *Secrets) UpdateData() {
-	secResponse, err := secrets.List()
-	if err != nil {
-		log.Error().Msgf("view: secrets update %v", err)
-
-		s.errorDialog.SetText(fmt.Sprintf("%v", err))
-		s.errorDialog.Display()
-	}
-
+func (s *Secrets) refresh(_ int) {
 	s.table.Clear()
 
 	expand := 1
@@ -38,6 +27,7 @@ func (s *Secrets) UpdateData() {
 	}
 
 	rowIndex := 1
+	secResponse := s.getData()
 
 	s.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(s.title), len(secResponse)))
 
@@ -80,23 +70,4 @@ func (s *Secrets) UpdateData() {
 
 		rowIndex++
 	}
-}
-
-// ClearData clears table data.
-func (s *Secrets) ClearData() {
-	s.table.Clear()
-
-	expand := 1
-
-	for i := range s.headers {
-		s.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[::b]%s", strings.ToUpper(s.headers[i]))). //nolint:perfsprint
-													SetExpansion(expand).
-													SetBackgroundColor(style.PageHeaderBgColor).
-													SetTextColor(style.PageHeaderFgColor).
-													SetAlign(tview.AlignLeft).
-													SetSelectable(false))
-	}
-
-	s.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(s.title)))
 }

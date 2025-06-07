@@ -12,7 +12,7 @@ import (
 	"github.com/rivo/tview"
 )
 
-func (pods *Pods) refresh() {
+func (pods *Pods) refresh(_ int) {
 	pods.table.Clear()
 
 	expand := 1

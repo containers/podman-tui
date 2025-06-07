@@ -26,14 +26,16 @@ func (cnt *Containers) UpdateData() {
 	}
 
 	cnt.containersList.mu.Lock()
+	defer cnt.containersList.mu.Unlock()
+
 	cnt.containersList.report = cntList
-	cnt.containersList.mu.Unlock()
 }
 
 func (cnt *Containers) getData() []entities.ListContainer {
 	cnt.containersList.mu.Lock()
+	defer cnt.containersList.mu.Unlock()
+
 	data := cnt.containersList.report
-	cnt.containersList.mu.Unlock()
 
 	return data
 }
@@ -41,8 +43,9 @@ func (cnt *Containers) getData() []entities.ListContainer {
 // ClearData clears table data.
 func (cnt *Containers) ClearData() {
 	cnt.containersList.mu.Lock()
+	defer cnt.containersList.mu.Unlock()
+
 	cnt.containersList.report = nil
-	cnt.containersList.mu.Unlock()
 	cnt.table.Clear()
 
 	expand := 1
