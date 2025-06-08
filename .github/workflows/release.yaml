@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     permissions:
       contents: write  # Required for creating releases
 
@@ -28,7 +28,7 @@ jobs:
       # Zip the output folder
       - name: Zip output
         run: |
-          zip -r release.zip ${{ env.OUTPUT_DIR }}
+          zip -r podman-tui-release-linux_arm64.zip ./bin/podman-tui/
         working-directory: .
 
       # Create GitHub Release and upload zip
@@ -50,6 +50,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release.zip
-          asset_name: release-${{ github.ref_name }}.zip
+          asset_path: ./podman-tui-release-linux_arm64.zip
+          asset_name: podman-tui-release-linux_arm64.zip
           asset_content_type: application/zip
