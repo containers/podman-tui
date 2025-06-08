@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:  # Adds manual trigger
 
 jobs:
   build-and-release:
