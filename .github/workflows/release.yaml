@@ -12,22 +12,18 @@ jobs:
       contents: write  # Required for creating releases
 
     steps:
-      # Checkout the repository
-      - name: Checkout code
+      - name: Check out the repo
         uses: actions/checkout@v4
 
-      # Set up Go
-      - name: Set up Go
+      - name: Setup Go
         uses: actions/setup-go@v5
-        with:
-          go-version: '1.22'  # Specify your Go version
-          cache: true
 
-      # Run make command
-      - name: Build with Make
-        run: make
-        env:
-          OUTPUT_DIR: ./dist  # Specify your output directory
+        with:
+          go-version: ">=1.22"
+
+      - name: Build binary
+        run: |
+          make binary
 
       # Zip the output folder
       - name: Zip output
