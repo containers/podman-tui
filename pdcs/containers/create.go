@@ -93,6 +93,15 @@ type CreateOptions struct {
 	CPUSetMems            string
 	SHMSize               string
 	SHMSizeSystemd        string
+	NamespaceCgroup       string
+	NamespacePid          string
+	NamespaceIpc          string
+	NamespaceUser         string
+	NamespaceUts          string
+	NamespaceUidmap       string
+	NamespaceSubuidName   string
+	NamespaceGidmap       string
+	NamespaceSubgidName   string
 }
 
 // Create creates a new container.
@@ -339,6 +348,43 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 
 	if opts.SHMSizeSystemd != "" {
 		createOptions.ShmSizeSystemd = opts.SHMSizeSystemd
+	}
+
+	// namespace options
+	if opts.NamespaceCgroup != "" {
+		createOptions.CgroupNS = opts.NamespaceCgroup
+	}
+
+	if opts.NamespaceIpc != "" {
+		createOptions.IPC = opts.NamespaceIpc
+	}
+
+	if opts.NamespacePid != "" {
+		createOptions.PID = opts.NamespacePid
+	}
+
+	if opts.NamespaceUser != "" {
+		createOptions.UserNS = opts.NamespaceUser
+	}
+
+	if opts.NamespaceUts != "" {
+		createOptions.UTS = opts.NamespaceUts
+	}
+
+	if opts.NamespaceUidmap != "" {
+		createOptions.UIDMap = []string{opts.NamespaceUidmap}
+	}
+
+	if opts.NamespaceSubuidName != "" {
+		createOptions.SubUIDName = opts.NamespaceSubuidName
+	}
+
+	if opts.NamespaceGidmap != "" {
+		createOptions.GIDMap = []string{opts.NamespaceGidmap}
+	}
+
+	if opts.NamespaceSubgidName != "" {
+		createOptions.SubGIDName = opts.NamespaceSubgidName
 	}
 
 	// generate spec
