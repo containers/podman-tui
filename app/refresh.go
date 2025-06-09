@@ -71,7 +71,7 @@ func (app *App) refreshNotConnOK() {
 		app.switchToScreen(app.system.GetTitle())
 	}
 
-	app.system.UpdateConnectionsData()
+	app.system.UpdateData()
 
 	app.needInitUI = true
 }

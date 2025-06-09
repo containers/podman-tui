@@ -7,14 +7,15 @@ import (
 	"github.com/containers/podman-tui/ui/style"
 )
 
-// UpdateConnectionsData retrieves connections list data.
-func (sys *System) UpdateConnectionsData() {
+// UpdateData retrieves connections list data.
+func (sys *System) UpdateData() {
 	destinations := sys.connectionListFunc()
 
 	sys.connectionList.mu.Lock()
-	defer sys.connectionList.mu.Unlock()
 
 	sys.connectionList.report = destinations
+
+	sys.connectionList.mu.Unlock()
 
 	sys.udpateConnectionDataStatus()
 }

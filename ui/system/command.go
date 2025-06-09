@@ -50,7 +50,7 @@ func (sys *System) addConnection() {
 	go func() {
 		err := sys.connectionAddFunc(name, uri, identity)
 		sys.progressDialog.Hide()
-		sys.UpdateConnectionsData()
+		sys.UpdateData()
 
 		if err != nil {
 			sys.displayError("ADD NEW CONNECTION ERROR", err)
@@ -76,13 +76,13 @@ func (sys *System) connect() {
 
 	sys.eventDialog.SetText("")
 	sys.connectionConnectFunc(dest)
-	sys.UpdateConnectionsData()
+	sys.UpdateData()
 }
 
 func (sys *System) disconnect() {
 	sys.connectionDisconnectFunc()
 	sys.eventDialog.SetText("")
-	sys.UpdateConnectionsData()
+	sys.UpdateData()
 }
 
 func (sys *System) df() {
@@ -229,7 +229,7 @@ func (sys *System) remove() {
 			return
 		}
 
-		sys.UpdateConnectionsData()
+		sys.UpdateData()
 	}()
 }
 

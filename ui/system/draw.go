@@ -10,8 +10,8 @@ func (sys *System) Draw(screen tcell.Screen) { //nolint:cyclop
 
 	sysViewX, sysViewY, sysViewW, sysViewH := sys.GetInnerRect()
 
-	sys.refresh(sysViewW)
 	sys.connTable.SetRect(sysViewX, sysViewY, sysViewW, sysViewH)
+	sys.refresh(sysViewW)
 	sys.connTable.Draw(screen)
 
 	x, y, width, height := sys.connTable.GetInnerRect()
