@@ -76,7 +76,7 @@ func NewApp(name string, version string) *App {
 	app.system.SetConnectionListFunc(app.config.ServicesConnections)
 	app.system.SetConnectionSetDefaultFunc(func(name string) error {
 		err := app.config.SetDefaultService(name)
-		app.system.UpdateConnectionsData()
+		app.system.UpdateData()
 
 		return err
 	})

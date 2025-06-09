@@ -13,7 +13,7 @@ func (app *App) initUI() {
 		app.initInfoBar()
 	}
 
-	app.system.UpdateConnectionsData()
+	app.system.UpdateData()
 }
 
 func (app *App) initInfoBar() {

@@ -148,7 +148,7 @@ func NewSystem() *System {
 		sys.connPrgDialog.Hide()
 		registry.UnsetConnection()
 		sys.eventDialog.SetText("")
-		sys.UpdateConnectionsData()
+		sys.UpdateData()
 	})
 
 	// set connection create dialog functions

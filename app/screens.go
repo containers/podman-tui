@@ -114,7 +114,7 @@ func (app *App) updatePageData(page string) {
 
 	switch page {
 	case app.system.GetTitle():
-		app.system.UpdateConnectionsData()
+		app.system.UpdateData()
 	case app.pods.GetTitle():
 		app.pods.UpdateData()
 	case app.containers.GetTitle():
