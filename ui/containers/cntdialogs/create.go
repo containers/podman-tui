@@ -104,6 +104,15 @@ const (
 	createContainerCPUSetMemsFieldFocus
 	createContainerShmSizeFieldFocus
 	createContainerShmSizeSystemdFieldFocus
+	createContainerNamespaceCgroupFieldFocus
+	createContainerNamespaceIpcFieldFocus
+	createContainerNamespacePidFieldFocus
+	createContainerNamespaceUserFieldFocus
+	createContainerNamespaceUtsFieldFocus
+	createContainerNamespaceUidmapFieldFocus
+	createContainerNamespaceGidmapFieldFocus
+	createContainerNamespaceSubuidNameFieldFocus
+	createContainerNamespaceSubgidNameFieldFocus
 )
 
 const (
@@ -117,6 +126,7 @@ const (
 	createContainerSecurityOptsPageIndex
 	createContainerVolumePageIndex
 	createContainerResourcePageIndex
+	createContainerNamespacePageIndex
 )
 
 type ContainerCreateDialogMode int
@@ -139,6 +149,7 @@ type ContainerCreateDialog struct {
 	volumePage                          *tview.Flex
 	healthPage                          *tview.Flex
 	resourcePage                        *tview.Flex
+	namespacePage                       *tview.Flex
 	form                                *tview.Form
 	display                             bool
 	activePageIndex                     int
@@ -216,6 +227,15 @@ type ContainerCreateDialog struct {
 	containerCPUSetMemsField            *tview.InputField
 	containerShmSizeField               *tview.InputField
 	containerShmSizeSystemdField        *tview.InputField
+	containerNamespaceCgroupField       *tview.InputField
+	containerNamespaceIpcField          *tview.InputField
+	containerNamespacePidField          *tview.InputField
+	containerNamespaceUserField         *tview.InputField
+	containerNamespaceUtsField          *tview.InputField
+	containerNamespaceUidmapField       *tview.InputField
+	containerNamespaceGidmapField       *tview.InputField
+	containerNamespaceSubuidNameField   *tview.InputField
+	containerNamespaceSubgidNameField   *tview.InputField
 	cancelHandler                       func()
 	enterHandler                        func()
 }
@@ -238,6 +258,7 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 		volumePage:        tview.NewFlex(),
 		healthPage:        tview.NewFlex(),
 		resourcePage:      tview.NewFlex(),
+		namespacePage:     tview.NewFlex(),
 		form:              tview.NewForm(),
 		categoryLabels: []string{
 			"Container",
@@ -250,6 +271,7 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 			"Security Options",
 			"Volumes Settings",
 			"Resource Settings",
+			"Namespace Options",
 		},
 		activePageIndex:                     0,
 		display:                             false,
@@ -324,6 +346,15 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 		containerCPUSetMemsField:            tview.NewInputField(),
 		containerShmSizeField:               tview.NewInputField(),
 		containerShmSizeSystemdField:        tview.NewInputField(),
+		containerNamespaceCgroupField:       tview.NewInputField(),
+		containerNamespacePidField:          tview.NewInputField(),
+		containerNamespaceIpcField:          tview.NewInputField(),
+		containerNamespaceUserField:         tview.NewInputField(),
+		containerNamespaceUtsField:          tview.NewInputField(),
+		containerNamespaceUidmapField:       tview.NewInputField(),
+		containerNamespaceGidmapField:       tview.NewInputField(),
+		containerNamespaceSubuidNameField:   tview.NewInputField(),
+		containerNamespaceSubgidNameField:   tview.NewInputField(),
 	}
 
 	containerDialog.setupLayout()
@@ -358,6 +389,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.setupPortsPageUI()
 	d.setupSecurityPageUI()
 	d.setupVolumePageUI()
+	d.setupNamespacePageUI()
 
 	// form
 	d.form.SetBackgroundColor(bgColor)
@@ -383,6 +415,7 @@ func (d *ContainerCreateDialog) setupLayout() {
 	d.categoryPages.AddPage(d.categoryLabels[createContainerSecurityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[createContainerVolumePageIndex], d.volumePage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[createContainerResourcePageIndex], d.resourcePage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createContainerNamespacePageIndex], d.namespacePage, true, true)
 
 	// add it to layout.
 	d.layout.SetBackgroundColor(bgColor)
@@ -1248,6 +1281,105 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	d.resourcePage.SetBackgroundColor(bgColor)
 }
 
+func (d *ContainerCreateDialog) setupNamespacePageUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	namespacePageLabelWidth := 10
+
+	// cgroupns
+	d.containerNamespaceCgroupField.SetLabel("cgroupns:")
+	d.containerNamespaceCgroupField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceCgroupField.SetBackgroundColor(bgColor)
+	d.containerNamespaceCgroupField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceCgroupField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// ipc
+	d.containerNamespaceIpcField.SetLabel("ipc:")
+	d.containerNamespaceIpcField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceIpcField.SetBackgroundColor(bgColor)
+	d.containerNamespaceIpcField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceIpcField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// pid
+	d.containerNamespacePidField.SetLabel("pid:")
+	d.containerNamespacePidField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespacePidField.SetBackgroundColor(bgColor)
+	d.containerNamespacePidField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespacePidField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// userns
+	d.containerNamespaceUserField.SetLabel("userns:")
+	d.containerNamespaceUserField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceUserField.SetBackgroundColor(bgColor)
+	d.containerNamespaceUserField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceUserField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// uts
+	d.containerNamespaceUtsField.SetLabel("uts:")
+	d.containerNamespaceUtsField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceUtsField.SetBackgroundColor(bgColor)
+	d.containerNamespaceUtsField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceUtsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// uidmap
+	d.containerNamespaceUidmapField.SetLabel("uidmap:")
+	d.containerNamespaceUidmapField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceUidmapField.SetBackgroundColor(bgColor)
+	d.containerNamespaceUidmapField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceUidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// subuidname
+	d.containerNamespaceSubuidNameField.SetLabel("subuidname: ")
+	d.containerNamespaceSubuidNameField.SetBackgroundColor(bgColor)
+	d.containerNamespaceSubuidNameField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceSubuidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// gidmap
+	d.containerNamespaceGidmapField.SetLabel("gidmap:")
+	d.containerNamespaceGidmapField.SetLabelWidth(namespacePageLabelWidth)
+	d.containerNamespaceGidmapField.SetBackgroundColor(bgColor)
+	d.containerNamespaceGidmapField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceGidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// subgidname
+	d.containerNamespaceSubgidNameField.SetLabel("subgidname: ")
+	d.containerNamespaceSubgidNameField.SetBackgroundColor(bgColor)
+	d.containerNamespaceSubgidNameField.SetLabelColor(style.DialogFgColor)
+	d.containerNamespaceSubgidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mapRow01Layout
+	mapRow01Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	mapRow01Layout.AddItem(d.containerNamespaceUidmapField, 0, 1, true)
+	mapRow01Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	mapRow01Layout.AddItem(d.containerNamespaceSubuidNameField, 0, 1, true)
+	mapRow01Layout.SetBackgroundColor(bgColor)
+
+	// mapRow02Layout
+	mapRow02Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	mapRow02Layout.AddItem(d.containerNamespaceGidmapField, 0, 1, true)
+	mapRow02Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	mapRow02Layout.AddItem(d.containerNamespaceSubgidNameField, 0, 1, true)
+	mapRow02Layout.SetBackgroundColor(bgColor)
+
+	// namespace options page
+	d.namespacePage.SetDirection(tview.FlexRow)
+	d.namespacePage.AddItem(d.containerNamespaceCgroupField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.containerNamespaceIpcField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.containerNamespacePidField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.containerNamespaceUserField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.containerNamespaceUtsField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(mapRow01Layout, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(mapRow02Layout, 1, 0, true)
+
+	d.resourcePage.SetBackgroundColor(bgColor)
+}
+
 // Display displays this primitive.
 func (d *ContainerCreateDialog) Display() {
 	d.display = true
@@ -1489,6 +1621,25 @@ func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //noli
 		delegate(d.containerShmSizeField)
 	case createContainerShmSizeSystemdFieldFocus:
 		delegate(d.containerShmSizeSystemdField)
+	// namespace page
+	case createContainerNamespaceCgroupFieldFocus:
+		delegate(d.containerNamespaceCgroupField)
+	case createContainerNamespaceIpcFieldFocus:
+		delegate(d.containerNamespaceIpcField)
+	case createContainerNamespacePidFieldFocus:
+		delegate(d.containerNamespacePidField)
+	case createContainerNamespaceUserFieldFocus:
+		delegate(d.containerNamespaceUserField)
+	case createContainerNamespaceUtsFieldFocus:
+		delegate(d.containerNamespaceUtsField)
+	case createContainerNamespaceUidmapFieldFocus:
+		delegate(d.containerNamespaceUidmapField)
+	case createContainerNamespaceSubuidNameFieldFocus:
+		delegate(d.containerNamespaceSubuidNameField)
+	case createContainerNamespaceGidmapFieldFocus:
+		delegate(d.containerNamespaceGidmapField)
+	case createContainerNamespaceSubgidNameFieldFocus:
+		delegate(d.containerNamespaceSubgidNameField)
 	// category page
 	case createCategoryPagesFocus:
 		delegate(d.categoryPages)
@@ -1648,6 +1799,18 @@ func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFo
 			if handler := d.resourcePage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setResourceSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.namespacePage.HasFocus() {
+			if handler := d.namespacePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNamespaceOptionsPageNextFocus()
 				}
 
 				handler(event, setFocus)
@@ -1931,6 +2094,17 @@ func (d *ContainerCreateDialog) initData() {
 	d.containerCPUSetMemsField.SetText("")
 	d.containerShmSizeField.SetText("")
 	d.containerShmSizeSystemdField.SetText("")
+
+	// namespace options category
+	d.containerNamespaceCgroupField.SetText("")
+	d.containerNamespaceIpcField.SetText("")
+	d.containerNamespacePidField.SetText("")
+	d.containerNamespaceUserField.SetText("")
+	d.containerNamespaceUtsField.SetText("")
+	d.containerNamespaceUidmapField.SetText("")
+	d.containerNamespaceGidmapField.SetText("")
+	d.containerNamespaceSubuidNameField.SetText("")
+	d.containerNamespaceSubgidNameField.SetText("")
 }
 
 func (d *ContainerCreateDialog) setPortPageNextFocus() {
@@ -1942,6 +2116,58 @@ func (d *ContainerCreateDialog) setPortPageNextFocus() {
 
 	if d.ContainerPortPublishAllField.HasFocus() {
 		d.focusElement = createContainerPortExposeFieldFocus
+
+		return
+	}
+
+	d.focusElement = createContainerFormFocus
+}
+
+func (d *ContainerCreateDialog) setNamespaceOptionsPageNextFocus() {
+	if d.containerNamespaceCgroupField.HasFocus() {
+		d.focusElement = createContainerNamespaceIpcFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceIpcField.HasFocus() {
+		d.focusElement = createContainerNamespacePidFieldFocus
+
+		return
+	}
+
+	if d.containerNamespacePidField.HasFocus() {
+		d.focusElement = createContainerNamespaceUserFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceUserField.HasFocus() {
+		d.focusElement = createContainerNamespaceUtsFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceUtsField.HasFocus() {
+		d.focusElement = createContainerNamespaceUidmapFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceUidmapField.HasFocus() {
+		d.focusElement = createContainerNamespaceSubuidNameFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceSubuidNameField.HasFocus() {
+		d.focusElement = createContainerNamespaceGidmapFieldFocus
+
+		return
+	}
+
+	if d.containerNamespaceGidmapField.HasFocus() {
+		d.focusElement = createContainerNamespaceSubgidNameFieldFocus
 
 		return
 	}
@@ -2541,6 +2767,15 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		CPUSetMems:            strings.TrimSpace(d.containerCPUSetMemsField.GetText()),
 		SHMSize:               strings.TrimSpace(d.containerShmSizeField.GetText()),
 		SHMSizeSystemd:        strings.TrimSpace(d.containerShmSizeSystemdField.GetText()),
+		NamespaceCgroup:       strings.TrimSpace(d.containerNamespaceCgroupField.GetText()),
+		NamespaceIpc:          strings.TrimSpace(d.containerNamespaceIpcField.GetText()),
+		NamespacePid:          strings.TrimSpace(d.containerNamespacePidField.GetText()),
+		NamespaceUser:         strings.TrimSpace(d.containerNamespaceUserField.GetText()),
+		NamespaceUts:          strings.TrimSpace(d.containerNamespaceUtsField.GetText()),
+		NamespaceUidmap:       strings.TrimSpace(d.containerNamespaceUidmapField.GetText()),
+		NamespaceSubuidName:   strings.TrimSpace(d.containerNamespaceSubuidNameField.GetText()),
+		NamespaceGidmap:       strings.TrimSpace(d.containerNamespaceGidmapField.GetText()),
+		NamespaceSubgidName:   strings.TrimSpace(d.containerNamespaceSubgidNameField.GetText()),
 	}
 
 	return opts
