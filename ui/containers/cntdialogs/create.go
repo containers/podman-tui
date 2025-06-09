@@ -1377,7 +1377,7 @@ func (d *ContainerCreateDialog) setupNamespacePageUI() {
 	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
 	d.namespacePage.AddItem(mapRow02Layout, 1, 0, true)
 
-	d.resourcePage.SetBackgroundColor(bgColor)
+	d.namespacePage.SetBackgroundColor(bgColor)
 }
 
 // Display displays this primitive.

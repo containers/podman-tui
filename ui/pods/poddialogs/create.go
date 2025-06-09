@@ -52,6 +52,14 @@ const (
 	createPodCPUSetMemsFieldFocus
 	createPodShmSizeFieldFocus
 	createPodShmSizeSystemdFieldFocus
+	createPodNamespaceShareFieldFocus
+	createPodNamespacePidFieldFocus
+	createPodNamespaceUserFieldFocus
+	createPodNamespaceUtsFieldFocus
+	createPodNamespaceUidmapFieldFocus
+	createPodNamespaceSubuidNameFieldFocus
+	createPodNamespaceGidmapFieldFocus
+	createPodNamespaceSubgidNameFieldFocus
 )
 
 const (
@@ -61,56 +69,66 @@ const (
 	createPodNetworkingPageIndex
 	createPodSecurityOptsPageIndex
 	createPodResourceSettingsPageIndex
+	createPodNamespaceOptionsPageIndex
 )
 
 // PodCreateDialog implements pod create dialog.
 type PodCreateDialog struct {
 	*tview.Box
-	layout                   *tview.Flex
-	categoryLabels           []string
-	categories               *tview.TextView
-	categoryPages            *tview.Pages
-	basicInfoPage            *tview.Flex
-	securityOptsPage         *tview.Flex
-	dnsSetupPage             *tview.Flex
-	infraSetupPage           *tview.Flex
-	networkingPage           *tview.Flex
-	resourcePage             *tview.Flex
-	form                     *tview.Form
-	display                  bool
-	activePageIndex          int
-	focusElement             int
-	podNameField             *tview.InputField
-	podNoHostsCheckBox       *tview.Checkbox
-	podLabelsField           *tview.InputField
-	podSelinuxLabelField     *tview.InputField
-	podApparmorField         *tview.InputField
-	podSeccompField          *tview.InputField
-	podMaskField             *tview.InputField
-	podUnmaskField           *tview.InputField
-	podNoNewPrivField        *tview.Checkbox
-	podDNSServerField        *tview.InputField
-	podDNSOptionsField       *tview.InputField
-	podDNSSearchDomaindField *tview.InputField
-	podInfraCheckBox         *tview.Checkbox
-	podInfraCommandField     *tview.InputField
-	podInfraImageField       *tview.InputField
-	podHostnameField         *tview.InputField
-	podIPAddressField        *tview.InputField
-	podMacAddressField       *tview.InputField
-	podAddHostField          *tview.InputField
-	podNetworkField          *tview.DropDown
-	podPublishField          *tview.InputField
-	podMemoryField           *tview.InputField
-	podMemorySwapField       *tview.InputField
-	podCPUsField             *tview.InputField
-	podCPUSharesField        *tview.InputField
-	podCPUSetCPUsField       *tview.InputField
-	podCPUSetMemsField       *tview.InputField
-	podShmSizeField          *tview.InputField
-	podShmSizeSystemdField   *tview.InputField
-	cancelHandler            func()
-	createHandler            func()
+	layout                      *tview.Flex
+	categoryLabels              []string
+	categories                  *tview.TextView
+	categoryPages               *tview.Pages
+	basicInfoPage               *tview.Flex
+	securityOptsPage            *tview.Flex
+	dnsSetupPage                *tview.Flex
+	infraSetupPage              *tview.Flex
+	networkingPage              *tview.Flex
+	resourcePage                *tview.Flex
+	namespacePage               *tview.Flex
+	form                        *tview.Form
+	display                     bool
+	activePageIndex             int
+	focusElement                int
+	podNameField                *tview.InputField
+	podNoHostsCheckBox          *tview.Checkbox
+	podLabelsField              *tview.InputField
+	podSelinuxLabelField        *tview.InputField
+	podApparmorField            *tview.InputField
+	podSeccompField             *tview.InputField
+	podMaskField                *tview.InputField
+	podUnmaskField              *tview.InputField
+	podNoNewPrivField           *tview.Checkbox
+	podDNSServerField           *tview.InputField
+	podDNSOptionsField          *tview.InputField
+	podDNSSearchDomaindField    *tview.InputField
+	podInfraCheckBox            *tview.Checkbox
+	podInfraCommandField        *tview.InputField
+	podInfraImageField          *tview.InputField
+	podHostnameField            *tview.InputField
+	podIPAddressField           *tview.InputField
+	podMacAddressField          *tview.InputField
+	podAddHostField             *tview.InputField
+	podNetworkField             *tview.DropDown
+	podPublishField             *tview.InputField
+	podMemoryField              *tview.InputField
+	podMemorySwapField          *tview.InputField
+	podCPUsField                *tview.InputField
+	podCPUSharesField           *tview.InputField
+	podCPUSetCPUsField          *tview.InputField
+	podCPUSetMemsField          *tview.InputField
+	podShmSizeField             *tview.InputField
+	podShmSizeSystemdField      *tview.InputField
+	podNamespaceShareField      *tview.InputField
+	podNamespacePidField        *tview.InputField
+	podNamespaceUserField       *tview.InputField
+	podNamespaceUtsField        *tview.InputField
+	podNamespaceUidmapField     *tview.InputField
+	podNamespaceSubuidNameField *tview.InputField
+	podNamespaceGidmapField     *tview.InputField
+	podNamespaceSubgidNameField *tview.InputField
+	cancelHandler               func()
+	createHandler               func()
 }
 
 // NewPodCreateDialog returns new pod create dialog primitive PodCreateDialog.
@@ -126,6 +144,7 @@ func NewPodCreateDialog() *PodCreateDialog {
 		infraSetupPage:   tview.NewFlex(),
 		networkingPage:   tview.NewFlex(),
 		resourcePage:     tview.NewFlex(),
+		namespacePage:    tview.NewFlex(),
 		form:             tview.NewForm(),
 		categoryLabels: []string{
 			"Basic Information",
@@ -134,38 +153,47 @@ func NewPodCreateDialog() *PodCreateDialog {
 			"Networking",
 			"Security Options",
 			"Resource Settings",
+			"Namespace Options",
 		},
-		activePageIndex:          0,
-		display:                  false,
-		podNameField:             tview.NewInputField(),
-		podNoHostsCheckBox:       tview.NewCheckbox(),
-		podLabelsField:           tview.NewInputField(),
-		podSelinuxLabelField:     tview.NewInputField(),
-		podApparmorField:         tview.NewInputField(),
-		podSeccompField:          tview.NewInputField(),
-		podMaskField:             tview.NewInputField(),
-		podUnmaskField:           tview.NewInputField(),
-		podNoNewPrivField:        tview.NewCheckbox(),
-		podDNSServerField:        tview.NewInputField(),
-		podDNSOptionsField:       tview.NewInputField(),
-		podDNSSearchDomaindField: tview.NewInputField(),
-		podInfraCheckBox:         tview.NewCheckbox(),
-		podInfraCommandField:     tview.NewInputField(),
-		podInfraImageField:       tview.NewInputField(),
-		podHostnameField:         tview.NewInputField(),
-		podIPAddressField:        tview.NewInputField(),
-		podMacAddressField:       tview.NewInputField(),
-		podAddHostField:          tview.NewInputField(),
-		podNetworkField:          tview.NewDropDown(),
-		podPublishField:          tview.NewInputField(),
-		podMemoryField:           tview.NewInputField(),
-		podMemorySwapField:       tview.NewInputField(),
-		podCPUsField:             tview.NewInputField(),
-		podCPUSharesField:        tview.NewInputField(),
-		podCPUSetCPUsField:       tview.NewInputField(),
-		podCPUSetMemsField:       tview.NewInputField(),
-		podShmSizeField:          tview.NewInputField(),
-		podShmSizeSystemdField:   tview.NewInputField(),
+		activePageIndex:             0,
+		display:                     false,
+		podNameField:                tview.NewInputField(),
+		podNoHostsCheckBox:          tview.NewCheckbox(),
+		podLabelsField:              tview.NewInputField(),
+		podSelinuxLabelField:        tview.NewInputField(),
+		podApparmorField:            tview.NewInputField(),
+		podSeccompField:             tview.NewInputField(),
+		podMaskField:                tview.NewInputField(),
+		podUnmaskField:              tview.NewInputField(),
+		podNoNewPrivField:           tview.NewCheckbox(),
+		podDNSServerField:           tview.NewInputField(),
+		podDNSOptionsField:          tview.NewInputField(),
+		podDNSSearchDomaindField:    tview.NewInputField(),
+		podInfraCheckBox:            tview.NewCheckbox(),
+		podInfraCommandField:        tview.NewInputField(),
+		podInfraImageField:          tview.NewInputField(),
+		podHostnameField:            tview.NewInputField(),
+		podIPAddressField:           tview.NewInputField(),
+		podMacAddressField:          tview.NewInputField(),
+		podAddHostField:             tview.NewInputField(),
+		podNetworkField:             tview.NewDropDown(),
+		podPublishField:             tview.NewInputField(),
+		podMemoryField:              tview.NewInputField(),
+		podMemorySwapField:          tview.NewInputField(),
+		podCPUsField:                tview.NewInputField(),
+		podCPUSharesField:           tview.NewInputField(),
+		podCPUSetCPUsField:          tview.NewInputField(),
+		podCPUSetMemsField:          tview.NewInputField(),
+		podShmSizeField:             tview.NewInputField(),
+		podShmSizeSystemdField:      tview.NewInputField(),
+		podNamespaceShareField:      tview.NewInputField(),
+		podNamespacePidField:        tview.NewInputField(),
+		podNamespaceUserField:       tview.NewInputField(),
+		podNamespaceUtsField:        tview.NewInputField(),
+		podNamespaceUidmapField:     tview.NewInputField(),
+		podNamespaceSubuidNameField: tview.NewInputField(),
+		podNamespaceGidmapField:     tview.NewInputField(),
+		podNamespaceSubgidNameField: tview.NewInputField(),
 	}
 
 	podDialog.categories.SetDynamicColors(true).
@@ -208,6 +236,7 @@ func (d *PodCreateDialog) setupLayout() {
 	d.setupNetworkingUI()
 	d.setupSecurityOptionsUI()
 	d.setupResourceSettingsUI()
+	d.setupNamespaceOptionsUI()
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[createPodBasicInfoPageIndex], d.basicInfoPage, true, true)
@@ -216,6 +245,7 @@ func (d *PodCreateDialog) setupLayout() {
 	d.categoryPages.AddPage(d.categoryLabels[createPodNetworkingPageIndex], d.networkingPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[createPodSecurityOptsPageIndex], d.securityOptsPage, true, true)
 	d.categoryPages.AddPage(d.categoryLabels[createPodResourceSettingsPageIndex], d.resourcePage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[createPodNamespaceOptionsPageIndex], d.namespacePage, true, true)
 
 	// add it to layout.
 	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
@@ -557,6 +587,96 @@ func (d *PodCreateDialog) setupResourceSettingsUI() {
 	d.resourcePage.SetBackgroundColor(style.DialogBgColor)
 }
 
+func (d *PodCreateDialog) setupNamespaceOptionsUI() {
+	bgColor := style.DialogBgColor
+	inputFieldBgColor := style.InputFieldBgColor
+	namespacePageLabelWidth := 8
+
+	// share
+	d.podNamespaceShareField.SetLabel("share:")
+	d.podNamespaceShareField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespaceShareField.SetBackgroundColor(bgColor)
+	d.podNamespaceShareField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceShareField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// pid
+	d.podNamespacePidField.SetLabel("pid:")
+	d.podNamespacePidField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespacePidField.SetBackgroundColor(bgColor)
+	d.podNamespacePidField.SetLabelColor(style.DialogFgColor)
+	d.podNamespacePidField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// userns
+	d.podNamespaceUserField.SetLabel("userns:")
+	d.podNamespaceUserField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespaceUserField.SetBackgroundColor(bgColor)
+	d.podNamespaceUserField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceUserField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// uts
+	d.podNamespaceUtsField.SetLabel("uts:")
+	d.podNamespaceUtsField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespaceUtsField.SetBackgroundColor(bgColor)
+	d.podNamespaceUtsField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceUtsField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// uidmap
+	d.podNamespaceUidmapField.SetLabel("uidmap:")
+	d.podNamespaceUidmapField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespaceUidmapField.SetBackgroundColor(bgColor)
+	d.podNamespaceUidmapField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceUidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// subuidname
+	d.podNamespaceSubuidNameField.SetLabel("subuidname: ")
+	d.podNamespaceSubuidNameField.SetBackgroundColor(bgColor)
+	d.podNamespaceSubuidNameField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceSubuidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// gidmap
+	d.podNamespaceGidmapField.SetLabel("gidmap:")
+	d.podNamespaceGidmapField.SetLabelWidth(namespacePageLabelWidth)
+	d.podNamespaceGidmapField.SetBackgroundColor(bgColor)
+	d.podNamespaceGidmapField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceGidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// subgidname
+	d.podNamespaceSubgidNameField.SetLabel("subgidname: ")
+	d.podNamespaceSubgidNameField.SetBackgroundColor(bgColor)
+	d.podNamespaceSubgidNameField.SetLabelColor(style.DialogFgColor)
+	d.podNamespaceSubgidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+
+	// mapRow01Layout
+	mapRow01Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	mapRow01Layout.AddItem(d.podNamespaceUidmapField, 0, 1, true)
+	mapRow01Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	mapRow01Layout.AddItem(d.podNamespaceSubuidNameField, 0, 1, true)
+	mapRow01Layout.SetBackgroundColor(bgColor)
+
+	// mapRow02Layout
+	mapRow02Layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	mapRow02Layout.AddItem(d.podNamespaceGidmapField, 0, 1, true)
+	mapRow02Layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	mapRow02Layout.AddItem(d.podNamespaceSubgidNameField, 0, 1, true)
+	mapRow02Layout.SetBackgroundColor(bgColor)
+
+	// namespace options page
+	d.namespacePage.SetDirection(tview.FlexRow)
+	d.namespacePage.AddItem(d.podNamespaceShareField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.podNamespacePidField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.podNamespaceUserField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(d.podNamespaceUtsField, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(mapRow01Layout, 1, 0, true)
+	d.namespacePage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.namespacePage.AddItem(mapRow02Layout, 1, 0, true)
+
+	d.namespacePage.SetBackgroundColor(bgColor)
+}
+
 // Display displays this primitive.
 func (d *PodCreateDialog) Display() {
 	d.display = true
@@ -692,6 +812,23 @@ func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyc
 		delegate(d.podShmSizeField)
 	case createPodShmSizeSystemdFieldFocus:
 		delegate(d.podShmSizeSystemdField)
+	// namespace page
+	case createPodNamespaceShareFieldFocus:
+		delegate(d.podNamespaceShareField)
+	case createPodNamespacePidFieldFocus:
+		delegate(d.podNamespacePidField)
+	case createPodNamespaceUserFieldFocus:
+		delegate(d.podNamespaceUserField)
+	case createPodNamespaceUtsFieldFocus:
+		delegate(d.podNamespaceUtsField)
+	case createPodNamespaceUidmapFieldFocus:
+		delegate(d.podNamespaceUidmapField)
+	case createPodNamespaceSubuidNameFieldFocus:
+		delegate(d.podNamespaceSubuidNameField)
+	case createPodNamespaceGidmapFieldFocus:
+		delegate(d.podNamespaceGidmapField)
+	case createPodNamespaceSubgidNameFieldFocus:
+		delegate(d.podNamespaceSubgidNameField)
 	// category page
 	case createPodCategoryPagesFocus:
 		delegate(d.categoryPages)
@@ -782,6 +919,18 @@ func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 			if handler := d.resourcePage.InputHandler(); handler != nil {
 				if event.Key() == tcell.KeyTab {
 					d.setResourcePagePageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.namespacePage.HasFocus() {
+			if handler := d.namespacePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNamespacePageNextFocus()
 				}
 
 				handler(event, setFocus)
@@ -964,6 +1113,16 @@ func (d *PodCreateDialog) initData() {
 	d.podCPUSetMemsField.SetText("")
 	d.podShmSizeField.SetText("")
 	d.podShmSizeSystemdField.SetText("")
+
+	// namespace
+	d.podNamespaceShareField.SetText("ipc,net,uts")
+	d.podNamespacePidField.SetText("")
+	d.podNamespaceUserField.SetText("")
+	d.podNamespaceUtsField.SetText("")
+	d.podNamespaceUidmapField.SetText("")
+	d.podNamespaceSubuidNameField.SetText("")
+	d.podNamespaceGidmapField.SetText("")
+	d.podNamespaceSubgidNameField.SetText("")
 }
 
 func (d *PodCreateDialog) setResourcePagePageNextFocus() {
@@ -1128,6 +1287,52 @@ func (d *PodCreateDialog) setNetworkingPageNextFocus() {
 	d.focusElement = createPodFormFocus
 }
 
+func (d *PodCreateDialog) setNamespacePageNextFocus() {
+	if d.podNamespaceShareField.HasFocus() {
+		d.focusElement = createPodNamespacePidFieldFocus
+
+		return
+	}
+
+	if d.podNamespacePidField.HasFocus() {
+		d.focusElement = createPodNamespaceUserFieldFocus
+
+		return
+	}
+
+	if d.podNamespaceUserField.HasFocus() {
+		d.focusElement = createPodNamespaceUtsFieldFocus
+
+		return
+	}
+
+	if d.podNamespaceUtsField.HasFocus() {
+		d.focusElement = createPodNamespaceUidmapFieldFocus
+
+		return
+	}
+
+	if d.podNamespaceUidmapField.HasFocus() {
+		d.focusElement = createPodNamespaceSubuidNameFieldFocus
+
+		return
+	}
+
+	if d.podNamespaceSubuidNameField.HasFocus() {
+		d.focusElement = createPodNamespaceGidmapFieldFocus
+
+		return
+	}
+
+	if d.podNamespaceGidmapField.HasFocus() {
+		d.focusElement = createPodNamespaceSubgidNameFieldFocus
+
+		return
+	}
+
+	d.focusElement = createPodFormFocus
+}
+
 // GetPodSpec returns pod create option spec.
 func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cyclop
 	var (
@@ -1139,7 +1344,14 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 		network          string
 		securityOpts     []string
 		publish          []string
+		namespaceShare   []string
 	)
+
+	for _, nsshare := range strings.Split(d.podNamespaceShareField.GetText(), " ") {
+		if nsshare != "" {
+			namespaceShare = append(namespaceShare, nsshare)
+		}
+	}
 
 	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
 		if label != "" {
@@ -1222,30 +1434,38 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 	}
 
 	opts := pods.CreateOptions{
-		Name:            strings.TrimSpace(d.podNameField.GetText()),
-		NoHost:          d.podNoHostsCheckBox.IsChecked(),
-		Labels:          labels,
-		DNSServer:       dnsServers,
-		DNSOptions:      dnsOptions,
-		DNSSearchDomain: dnsSearchDomains,
-		Infra:           d.podInfraCheckBox.IsChecked(),
-		InfraImage:      strings.TrimSpace(d.podInfraImageField.GetText()),
-		InfraCommand:    strings.TrimSpace(d.podInfraCommandField.GetText()),
-		Hostname:        strings.TrimSpace(d.podHostnameField.GetText()),
-		IPAddress:       strings.TrimSpace(d.podIPAddressField.GetText()),
-		MacAddress:      strings.TrimSpace(d.podMacAddressField.GetText()),
-		AddHost:         addHost,
-		Network:         network,
-		SecurityOpts:    securityOpts,
-		Publish:         publish,
-		Memory:          strings.TrimSpace(d.podMemoryField.GetText()),
-		MemorySwap:      strings.TrimSpace(d.podMemorySwapField.GetText()),
-		CPUs:            strings.TrimSpace(d.podCPUsField.GetText()),
-		CPUShares:       strings.TrimSpace(d.podCPUSharesField.GetText()),
-		CPUSetCPUs:      strings.TrimSpace(d.podCPUSetCPUsField.GetText()),
-		CPUSetMems:      strings.TrimSpace(d.podCPUSetMemsField.GetText()),
-		ShmSize:         strings.TrimSpace(d.podShmSizeField.GetText()),
-		ShmSizeSystemd:  strings.TrimSpace(d.podShmSizeSystemdField.GetText()),
+		Name:                strings.TrimSpace(d.podNameField.GetText()),
+		NoHost:              d.podNoHostsCheckBox.IsChecked(),
+		Labels:              labels,
+		DNSServer:           dnsServers,
+		DNSOptions:          dnsOptions,
+		DNSSearchDomain:     dnsSearchDomains,
+		Infra:               d.podInfraCheckBox.IsChecked(),
+		InfraImage:          strings.TrimSpace(d.podInfraImageField.GetText()),
+		InfraCommand:        strings.TrimSpace(d.podInfraCommandField.GetText()),
+		Hostname:            strings.TrimSpace(d.podHostnameField.GetText()),
+		IPAddress:           strings.TrimSpace(d.podIPAddressField.GetText()),
+		MacAddress:          strings.TrimSpace(d.podMacAddressField.GetText()),
+		AddHost:             addHost,
+		Network:             network,
+		SecurityOpts:        securityOpts,
+		Publish:             publish,
+		Memory:              strings.TrimSpace(d.podMemoryField.GetText()),
+		MemorySwap:          strings.TrimSpace(d.podMemorySwapField.GetText()),
+		CPUs:                strings.TrimSpace(d.podCPUsField.GetText()),
+		CPUShares:           strings.TrimSpace(d.podCPUSharesField.GetText()),
+		CPUSetCPUs:          strings.TrimSpace(d.podCPUSetCPUsField.GetText()),
+		CPUSetMems:          strings.TrimSpace(d.podCPUSetMemsField.GetText()),
+		ShmSize:             strings.TrimSpace(d.podShmSizeField.GetText()),
+		ShmSizeSystemd:      strings.TrimSpace(d.podShmSizeSystemdField.GetText()),
+		NamespaceShare:      namespaceShare,
+		NamespacePid:        strings.TrimSpace(d.podNamespacePidField.GetText()),
+		NamespaceUser:       strings.TrimSpace(d.podNamespaceUserField.GetText()),
+		NamespaceUts:        strings.TrimSpace(d.podNamespaceUtsField.GetText()),
+		NamespaceUidmap:     strings.TrimSpace(d.podNamespaceUidmapField.GetText()),
+		NamespaceSubuidName: strings.TrimSpace(d.podNamespaceSubuidNameField.GetText()),
+		NamespaceGidmap:     strings.TrimSpace(d.podNamespaceGidmapField.GetText()),
+		NamespaceSubgidName: strings.TrimSpace(d.podNamespaceSubgidNameField.GetText()),
 	}
 
 	return opts

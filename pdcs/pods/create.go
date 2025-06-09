@@ -20,30 +20,38 @@ import (
 
 // CreateOptions implements pods create spec options.
 type CreateOptions struct {
-	Name            string
-	NoHost          bool
-	Labels          map[string]string
-	DNSServer       []string
-	DNSOptions      []string
-	DNSSearchDomain []string
-	Infra           bool
-	InfraCommand    string
-	InfraImage      string
-	Hostname        string
-	IPAddress       string
-	MacAddress      string
-	AddHost         []string
-	Network         string
-	Publish         []string
-	SecurityOpts    []string
-	Memory          string
-	MemorySwap      string
-	CPUs            string
-	CPUShares       string
-	CPUSetCPUs      string
-	CPUSetMems      string
-	ShmSize         string
-	ShmSizeSystemd  string
+	Name                string
+	NoHost              bool
+	Labels              map[string]string
+	DNSServer           []string
+	DNSOptions          []string
+	DNSSearchDomain     []string
+	Infra               bool
+	InfraCommand        string
+	InfraImage          string
+	Hostname            string
+	IPAddress           string
+	MacAddress          string
+	AddHost             []string
+	Network             string
+	Publish             []string
+	SecurityOpts        []string
+	Memory              string
+	MemorySwap          string
+	CPUs                string
+	CPUShares           string
+	CPUSetCPUs          string
+	CPUSetMems          string
+	ShmSize             string
+	ShmSizeSystemd      string
+	NamespaceShare      []string
+	NamespacePid        string
+	NamespaceUser       string
+	NamespaceUts        string
+	NamespaceUidmap     string
+	NamespaceSubuidName string
+	NamespaceGidmap     string
+	NamespaceSubgidName string
 }
 
 // Create creates a new pod.
@@ -116,8 +124,6 @@ func Create(opts CreateOptions) error { //nolint:cyclop,gocognit
 		return err
 	}
 
-	createOptions.Infra = opts.Infra
-
 	if createOptions.Infra { //nolint:nestif
 		if opts.InfraImage != "" {
 			createOptions.InfraImage = opts.InfraImage
@@ -144,6 +150,28 @@ func Create(opts CreateOptions) error { //nolint:cyclop,gocognit
 
 	createOptions.Hostname = opts.Hostname
 	createOptions.SecurityOpt = opts.SecurityOpts
+
+	// namespace
+	if len(opts.NamespaceShare) > 0 {
+		createOptions.Share = opts.NamespaceShare
+	}
+
+	if opts.NamespacePid != "" {
+		createOptions.Pid = opts.NamespacePid
+	}
+
+	if opts.NamespaceUser != "" {
+		userns, err := specgen.ParseUserNamespace(opts.NamespaceUser)
+		if err != nil {
+			return err
+		}
+
+		createOptions.Userns = userns
+	}
+
+	if opts.NamespaceUts != "" {
+		createOptions.Uts = opts.NamespaceUts
+	}
 
 	podSpec := specgen.NewPodSpecGenerator()
 
