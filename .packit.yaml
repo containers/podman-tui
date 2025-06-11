@@ -12,10 +12,8 @@ jobs:
       - openssl-devel
       - rpkg
     targets:
-      - fedora-latest-stable-x86_64
-      - fedora-latest-stable-aarch64
-      - fedora-development-x86_64
-      - fedora-development-aarch64
+      - fedora-all-x86_64
+      - fedora-all-aarch64
       - epel-9-x86_64
       - epel-9-aarch64
       #  temporary disabled since epel10 running go v1.23.1 and we need 1.23.3
