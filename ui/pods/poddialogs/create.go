@@ -1115,7 +1115,7 @@ func (d *PodCreateDialog) initData() {
 	d.podShmSizeSystemdField.SetText("")
 
 	// namespace
-	d.podNamespaceShareField.SetText("ipc,net,uts")
+	d.podNamespaceShareField.SetText("")
 	d.podNamespacePidField.SetText("")
 	d.podNamespaceUserField.SetText("")
 	d.podNamespaceUtsField.SetText("")
