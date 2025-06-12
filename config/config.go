@@ -11,54 +11,58 @@ import (
 )
 
 const (
-	// _configPath is the path to the podman-tui/podman-tui.conf
+	// _configPath is the path to the podman-tui/podman-tui.json
 	// inside a given config directory.
-	_configPath = "podman-tui/podman-tui.conf"
+	_configPath = "podman-tui/podman-tui.json"
 	// UserAppConfig holds the user podman-tui config path.
 	UserAppConfig = ".config/" + _configPath
 )
 
 var (
-	ErrRemotePodmanUDSReport   = errors.New("remote podman failed to report its UDS socket")
-	ErrInvalidURISchemaName    = errors.New("invalid schema name")
-	ErrInvalidTCPSchemaOption  = errors.New("invalid option for tcp")
-	ErrInvalidUnixSchemaOption = errors.New("invalid option for unix")
-	ErrFileNotUnixSocket       = errors.New("not a unix domain socket")
-	ErrEmptySSHIdentity        = errors.New("empty identity field for SSH connection")
-	ErrEmptyURIDestination     = errors.New("empty URI destination")
-	ErrEmptyServiceName        = errors.New("empty service name")
-	ErrDuplicatedServiceName   = errors.New("duplicated service name")
+	ErrRemotePodmanUDSReport    = errors.New("remote podman failed to report its UDS socket")
+	ErrInvalidURISchemaName     = errors.New("invalid schema name")
+	ErrInvalidTCPSchemaOption   = errors.New("invalid option for tcp")
+	ErrInvalidUnixSchemaOption  = errors.New("invalid option for unix")
+	ErrFileNotUnixSocket        = errors.New("not a unix domain socket")
+	ErrEmptySSHIdentity         = errors.New("empty identity field for SSH connection")
+	ErrEmptyURIDestination      = errors.New("empty URI destination")
+	ErrEmptyConnectionName      = errors.New("empty connection name")
+	ErrDuplicatedConnectionName = errors.New("duplicated connection name")
 )
 
 // Config contains configuration options for container tools.
 type Config struct {
-	mu sync.Mutex
-	// Services specify the service destination connections
-	Services map[string]Service `toml:"services,omitempty"`
+	mu         sync.Mutex
+	Connection RemoteConnections
 }
 
-// Service represents remote service destination.
-type Service struct {
+type RemoteConnections struct {
+	Connections map[string]RemoteConnection `json:"connections"`
+}
+
+type RemoteConnection struct {
 	// URI, required. Example: ssh://root@example.com:22/run/podman/podman.sock
-	URI string `toml:"uri"`
+	URI string `json:"uri"`
 
 	// Identity file with ssh key, optional
-	Identity string `toml:"identity,omitempty"`
+	Identity string `json:"identity,omitempty"`
 
-	// Default if its default service, optional
-	Default bool `toml:"default,omitempty"`
+	// Default if its default connection, optional
+	Default bool `json:"default,omitempty"`
 }
 
 // NewConfig returns new config.
 func NewConfig() (*Config, error) {
-	log.Debug().Msgf("config: new")
-
 	path, err := configPath()
 	if err != nil {
 		return nil, err
 	}
 
+	log.Debug().Msgf("loading config from %q", path)
+
 	newConfig := &Config{}
+	newConfig.Connection.Connections = make(map[string]RemoteConnection)
+
 	if _, err := os.Stat(path); err == nil {
 		if err := newConfig.readConfigFromFile(path); err != nil {
 			return nil, err
@@ -80,36 +84,36 @@ func NewConfig() (*Config, error) {
 }
 
 func (c *Config) addLocalHostIfEmptyConfig() {
-	if len(c.Services) > 0 {
+	if len(c.Connection.Connections) > 0 {
 		return
 	}
 
-	c.Services = make(map[string]Service)
-	c.Services["localhost"] = Service{
+	c.Connection.Connections = make(map[string]RemoteConnection)
+	c.Connection.Connections["localhost"] = RemoteConnection{
 		URI:     localNodeUnixSocket(),
 		Default: true,
 	}
 }
 
-// ServicesConnections returns list of available connections.
-func (c *Config) ServicesConnections() []registry.Connection {
-	conn := make([]registry.Connection, 0)
+// RemoteConnections returns list of available connections.
+func (c *Config) RemoteConnections() []registry.Connection {
+	rconn := make([]registry.Connection, 0)
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	for name, service := range c.Services {
-		conn = append(conn, registry.Connection{
+	for name, conn := range c.Connection.Connections {
+		rconn = append(rconn, registry.Connection{
 			Name:     name,
-			URI:      service.URI,
-			Identity: service.Identity,
-			Default:  service.Default,
+			URI:      conn.URI,
+			Identity: conn.Identity,
+			Default:  conn.Default,
 		})
 	}
 
-	sort.Sort(connectionListSortedName{conn})
+	sort.Sort(connectionListSortedName{rconn})
 
-	return conn
+	return rconn
 }
 
 type connSort []registry.Connection

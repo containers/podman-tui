@@ -5,7 +5,7 @@ PODMAN_TUI=${PODMAN_TUI:-./bin/podman-tui}
 PODMAN_TUI_DEBUG="$PODMAN_TUI -d"
 PODMAN_TUI_LOG="podman-tui.log"
 PODMAN_TUI_CONFIG_DIR="/root/.config/podman-tui"
-PODMAN_TUI_CONFIG_FILE="${PODMAN_TUI_CONFIG_DIR}/podman-tui.conf"
+PODMAN_TUI_CONFIG_FILE="${PODMAN_TUI_CONFIG_DIR}/podman-tui.json"
 TMUX_SESSION="podman_tui_test"
 
 
@@ -13,12 +13,7 @@ function setup() {
     # setup config file
     [ ! -d "${PODMAN_TUI_CONFIG_DIR}" ] && mkdir -p ${PODMAN_TUI_CONFIG_DIR}
     cat > ${PODMAN_TUI_CONFIG_FILE} << EOF
-[services]
-  [services.localhost]
-    uri = "unix://run/podman/podman.sock"
-    default = true
-  [services.localhost_test]
-    uri = "unix://run/podman/podman.sock"
+{"connections":{"localhost":{"uri":"unix://run/podman/podman.sock","default":true},"localhost_test":{"uri":"unix://run/podman/podman.sock"}}}
 EOF
 
     # start podman socket

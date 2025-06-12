@@ -12,16 +12,16 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-// Add adds new service connection.
+// Add adds a new remote connection.
 func (c *Config) Add(name string, uri string, identity string) error {
-	log.Debug().Msgf("config: adding new service %s %s %s", name, uri, identity)
+	log.Debug().Msgf("config: adding new remote connection %s %s %s", name, uri, identity)
 
-	newService, err := validateNewService(name, uri, identity)
+	conn, err := validateNewConnection(name, uri, identity)
 	if err != nil {
 		return err
 	}
 
-	if err := c.add(name, newService); err != nil {
+	if err := c.add(name, conn); err != nil {
 		return err
 	}
 
@@ -32,63 +32,61 @@ func (c *Config) Add(name string, uri string, identity string) error {
 	return c.reload()
 }
 
-func (c *Config) add(name string, newService Service) error {
+func (c *Config) add(name string, conn RemoteConnection) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	for serviceName := range c.Services {
-		if serviceName == name {
-			return ErrDuplicatedServiceName
+	for connName := range c.Connection.Connections {
+		if connName == name {
+			return ErrDuplicatedConnectionName
 		}
 	}
 
-	c.Services[name] = newService
+	c.Connection.Connections[name] = conn
 
 	return nil
 }
 
-// most of codes are from:
-// https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go.
-func validateNewService(name string, dest string, identity string) (Service, error) { //nolint:cyclop
+func validateNewConnection(name string, dest string, identity string) (RemoteConnection, error) { //nolint:cyclop
 	var (
-		service         Service
-		serviceIdentity string
+		conn         RemoteConnection
+		connIdentity string
 	)
 
 	if name == "" {
-		return service, ErrEmptyServiceName
+		return conn, ErrEmptyConnectionName
 	}
 
 	if dest == "" {
-		return service, ErrEmptyURIDestination
+		return conn, ErrEmptyURIDestination
 	}
 
 	if match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)); err != nil { //nolint:mirror
-		return service, fmt.Errorf("%w invalid destition", err)
+		return conn, fmt.Errorf("%w invalid destition", err)
 	} else if !match {
 		dest = "ssh://" + dest
 	}
 
 	uri, err := url.Parse(dest)
 	if err != nil {
-		return service, err
+		return conn, err
 	}
 
 	switch uri.Scheme {
 	case "ssh":
 		if uri.User.Username() == "" {
 			if uri.User, err = getUserInfo(uri); err != nil {
-				return service, err
+				return conn, err
 			}
 		}
 
-		serviceIdentity, err = utils.ResolveHomeDir(identity)
+		connIdentity, err = utils.ResolveHomeDir(identity)
 		if err != nil {
-			return service, err
+			return conn, err
 		}
 
 		if identity == "" {
-			return service, ErrEmptySSHIdentity
+			return conn, ErrEmptySSHIdentity
 		}
 
 		if uri.Port() == "" {
@@ -96,13 +94,13 @@ func validateNewService(name string, dest string, identity string) (Service, err
 		}
 
 		if uri.Path == "" || uri.Path == "/" {
-			if uri.Path, err = getUDS(uri, serviceIdentity); err != nil {
-				return service, err
+			if uri.Path, err = getUDS(uri, connIdentity); err != nil {
+				return conn, err
 			}
 		}
 	case "unix":
 		if identity != "" {
-			return service, fmt.Errorf("%w identity", ErrInvalidUnixSchemaOption)
+			return conn, fmt.Errorf("%w identity", ErrInvalidUnixSchemaOption)
 		}
 
 		info, err := os.Stat(uri.Path)
@@ -113,21 +111,21 @@ func validateNewService(name string, dest string, identity string) (Service, err
 		case errors.Is(err, os.ErrPermission):
 			log.Warn().Msgf("config: You do not have permission to read %q", uri.Path)
 		case err != nil:
-			return service, err
+			return conn, err
 		case info.Mode()&os.ModeSocket == 0:
-			return service, fmt.Errorf("%w %q", ErrFileNotUnixSocket, uri.Path)
+			return conn, fmt.Errorf("%w %q", ErrFileNotUnixSocket, uri.Path)
 		}
 	case "tcp":
 		if identity != "" {
-			return service, fmt.Errorf("%w identity", ErrInvalidTCPSchemaOption)
+			return conn, fmt.Errorf("%w identity", ErrInvalidTCPSchemaOption)
 		}
 	default:
-		return service, fmt.Errorf("%w %q", ErrInvalidURISchemaName, uri.Scheme)
+		return conn, fmt.Errorf("%w %q", ErrInvalidURISchemaName, uri.Scheme)
 	}
 
-	service.Identity = serviceIdentity
-	service.URI = uri.String()
-	service.Default = false
+	conn.Identity = connIdentity
+	conn.URI = uri.String()
+	conn.Default = false
 
-	return service, nil
+	return conn, nil
 }

@@ -48,7 +48,7 @@ func localNodeUnixSocket() string {
 		sockDir = os.Getenv("XDG_RUNTIME_DIR")
 	}
 
-	socket = "unix:" + sockDir + "/podman/podman.sock"
+	socket = "unix:/" + sockDir + "/podman/podman.sock"
 
 	return socket
 }

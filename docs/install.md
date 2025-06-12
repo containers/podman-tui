@@ -112,22 +112,27 @@ $ podman run -it --name podman-tui-app \
 
 ## Configuration Files
 
-### podman-tui.conf
+### podman-tui.json
 
-~/.config/podman-tui/podman-tui.conf
+~/.config/podman-tui/podman-tui.json
 
-podman-tui.conf is the configuration file which specifies local and remotes podman systems connections details.
+podman-tui.json is the configuration file which specifies local and remotes podman systems connections details.
 
 ```shell
-[services]
-
-  [services.fc36node01]
-    uri = "ssh://navid@fc36node01:22/run/user/1000/podman/podman.sock"
-    identity = "/home/navid/.ssh/id_ed25519"
-  [services.fc36node02]
-    uri = "ssh://navid@fc36node02:22/run/user/1000/podman/podman.sock"
-    identity = "/home/navid/.ssh/id_ed25519"
-    default = true
-  [services.localhost]
-    uri = "unix://run/user/1000/podman/podman.sock"
+{
+  "connections": {
+    "f42node01": {
+      "uri": "ssh://navid@f42node01:22/run/user/1000/podman/podman.sock",
+      "identity": "/home/navid/.ssh/id_ed25519"
+    },
+    "fc42node02": {
+      "uri": "ssh://navid@f42node02:22/run/user/1000/podman/podman.sock",
+      "identity": "/home/navid/.ssh/id_ed25519"
+    },
+    "localhost": {
+      "uri": "unix://run/user/1000/podman/podman.sock",
+      "default": true
+    }
+  }
+}
 ```

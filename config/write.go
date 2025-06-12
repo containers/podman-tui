@@ -1,10 +1,11 @@
 package config
 
 import (
+	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 
-	"github.com/BurntSushi/toml"
 	"github.com/rs/zerolog/log"
 )
 
@@ -33,7 +34,14 @@ func (c *Config) Write() error {
 
 	defer configFile.Close()
 
-	enc := toml.NewEncoder(configFile)
+	jsonData, err := json.Marshal(c.Connection)
+	if err != nil {
+		return fmt.Errorf("config: configuration json marshal %w", err)
+	}
 
-	return enc.Encode(c)
+	if _, err := configFile.Write(jsonData); err != nil {
+		return fmt.Errorf("config: %w write configuration %q", err, path)
+	}
+
+	return nil
 }
