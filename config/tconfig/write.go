@@ -1,4 +1,4 @@
-package config
+package tconfig
 
 import (
 	"encoding/json"
@@ -6,17 +6,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/containers/podman-tui/config/utils"
 	"github.com/rs/zerolog/log"
 )
 
 // Write writes config.
-func (c *Config) Write() error {
+func (c *Config) write() error {
 	var err error
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	path, err := configPath()
+	path, err := utils.ConfigPath()
 	if err != nil {
 		return err
 	}

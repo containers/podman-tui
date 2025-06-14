@@ -39,7 +39,7 @@ type App struct {
 	currentPage     string
 	needInitUI      bool
 	fastRefreshChan chan bool
-	config          *config.Config
+	config          config.Config
 }
 
 // NewApp returns new app.

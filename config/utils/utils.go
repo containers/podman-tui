@@ -1,8 +1,9 @@
-package config
+package utils
 
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -19,7 +20,17 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
-func configPath() (string, error) {
+const (
+	// _configPath is the path to the podman-tui/podman-tui.json
+	// inside a given config directory.
+	_configPath = "podman-tui/podman-tui.json"
+	// UserAppConfig holds the user podman-tui config path.
+	UserAppConfig = ".config/" + _configPath
+)
+
+var ErrRemotePodmanUDSReport = errors.New("remote podman failed to report its UDS socket")
+
+func ConfigPath() (string, error) {
 	if configHome := os.Getenv("XDG_CONFIG_HOME"); configHome != "" {
 		return filepath.Join(configHome, _configPath), nil
 	}
@@ -32,8 +43,8 @@ func configPath() (string, error) {
 	return filepath.Join(home, UserAppConfig), nil
 }
 
-// localNodeUnixSocket return local node unix socket file.
-func localNodeUnixSocket() string {
+// LocalNodeUnixSocket return local node unix socket file.
+func LocalNodeUnixSocket() string {
 	var (
 		sockDir string
 		socket  string
