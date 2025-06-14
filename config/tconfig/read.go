@@ -1,4 +1,4 @@
-package config
+package tconfig
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/containers/podman-tui/config/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -31,7 +32,7 @@ func (c *Config) readConfigFromFile(path string) error {
 func (c *Config) reload() error {
 	log.Debug().Msgf("config: reload configuration")
 
-	path, err := configPath()
+	path, err := utils.ConfigPath()
 	if err != nil {
 		return err
 	}

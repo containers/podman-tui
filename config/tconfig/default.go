@@ -1,6 +1,7 @@
-package config
+package tconfig
 
 import (
+	"github.com/containers/podman-tui/config/utils"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/rs/zerolog/log"
 )
@@ -13,7 +14,7 @@ func (c *Config) SetDefaultConnection(name string) error {
 		return err
 	}
 
-	if err := c.Write(); err != nil {
+	if err := c.write(); err != nil {
 		return err
 	}
 
@@ -25,20 +26,19 @@ func (c *Config) setDef(name string) error {
 	defer c.mu.Unlock()
 
 	for connName := range c.Connection.Connections {
-		dest := c.Connection.Connections[connName]
-		dest.Default = false
-
 		if connName == name {
+			dest := c.Connection.Connections[connName]
 			dest.Default = true
-		}
+			c.Connection.Connections[connName] = dest
 
-		c.Connection.Connections[connName] = dest
+			return nil
+		}
 	}
 
-	return nil
+	return utils.ErrConnectionNotFound
 }
 
-func (c *Config) getDefault() registry.Connection {
+func (c *Config) GetDefaultConnection() (registry.Connection, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -48,9 +48,9 @@ func (c *Config) getDefault() registry.Connection {
 				Name:     connName,
 				Identity: conn.Identity,
 				URI:      conn.URI,
-			}
+			}, nil
 		}
 	}
 
-	return registry.Connection{}
+	return registry.Connection{}, utils.ErrDefaultConnectionNotFound
 }
