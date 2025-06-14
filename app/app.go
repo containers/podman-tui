@@ -73,9 +73,9 @@ func NewApp(name string, version string) *App {
 	app.secrets = secrets.NewSecrets()
 	app.system = system.NewSystem()
 
-	app.system.SetConnectionListFunc(app.config.ServicesConnections)
+	app.system.SetConnectionListFunc(app.config.RemoteConnections)
 	app.system.SetConnectionSetDefaultFunc(func(name string) error {
-		err := app.config.SetDefaultService(name)
+		err := app.config.SetDefaultConnection(name)
 		app.system.UpdateData()
 
 		return err

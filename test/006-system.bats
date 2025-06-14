@@ -20,9 +20,8 @@ load helpers_tui
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Enter"
     sleep $TEST_TIMEOUT_LOW
 
-    run_helper tail -2 $PODMAN_TUI_CONFIG_FILE
-    assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
-    assert "$output" =~ "uri = \"unix://run/podman/podman.sock\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
+    run_helper jq ".connections.${TEST_SYSTEM_CONN_NAME}.uri" ${PODMAN_TUI_CONFIG_FILE}
+    assert "$output" == "\"$TEST_SYSTEM_CONN_URI\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
 }
 
 @test "system set default" {
@@ -34,10 +33,11 @@ load helpers_tui
     podman_tui_select_system_cmd "default"
     sleep $TEST_TIMEOUT_LOW
 
-    run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
-    assert "$output" =~ "[services.${TEST_SYSTEM_CONN_NAME}]" "expected [services.${TEST_SYSTEM_CONN_NAME}] in ${PODMAN_TUI_CONFIG_FILE}"
-    assert "$output" =~ "uri = \"unix://run/podman/podman.sock\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
-    assert "$output" =~ "default = true" "expected 'default = true' in ${PODMAN_TUI_CONFIG_FILE}"
+    run_helper jq ".connections.${TEST_SYSTEN_CONN_LOCAL}.uri" ${PODMAN_TUI_CONFIG_FILE}
+    assert "$output" == "\"$TEST_SYSTEM_CONN_URI\"" "expected ${TEST_SYSTEM_CONN_URI} in ${PODMAN_TUI_CONFIG_FILE}"
+
+    run_helper jq ".connections.${TEST_SYSTEN_CONN_LOCAL}.default" ${PODMAN_TUI_CONFIG_FILE}
+    assert "$output" == "true" "expected 'default = true' in ${PODMAN_TUI_CONFIG_FILE}"
 }
 
 @test "system remove" {
@@ -51,8 +51,8 @@ load helpers_tui
     podman_tui_send_inputs "Enter"
     sleep $TEST_TIMEOUT_LOW
 
-    run_helper tail -3 $PODMAN_TUI_CONFIG_FILE
-    assert "$output" !~ "services.${TEST_SYSTEM_CONN_NAME}" "expected [services.${TEST_SYSTEM_CONN_NAME}] not in ${PODMAN_TUI_CONFIG_FILE}"
+    run_helper jq ".connections.${TEST_SYSTEN_CONN_LOCAL}" ${PODMAN_TUI_CONFIG_FILE}
+    assert "$output" == "null" "expected ${TEST_SYSTEN_CONN_LOCAL} connection to be removed from in ${PODMAN_TUI_CONFIG_FILE}"
 }
 
 @test "system disconnect" {

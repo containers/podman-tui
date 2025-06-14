@@ -1,10 +1,11 @@
 package config
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 
-	"github.com/BurntSushi/toml"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,24 +15,17 @@ func (c *Config) readConfigFromFile(path string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	rawConfig, err := os.ReadFile(path)
+	cfgFile, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("config: %w open configuration %q", err, path)
+	}
+
+	cfgData, err := io.ReadAll(cfgFile)
 	if err != nil {
 		return fmt.Errorf("config: %w read configuration %q", err, path)
 	}
 
-	config := os.ExpandEnv(string(rawConfig))
-
-	meta, err := toml.Decode(config, c)
-	if err != nil {
-		return fmt.Errorf("config: %w decode configuration %q", err, path)
-	}
-
-	keys := meta.Undecoded()
-	if len(keys) > 0 {
-		log.Debug().Msgf("config: failed to decode the keys %q from %q.", keys, path)
-	}
-
-	return nil
+	return json.Unmarshal(cfgData, &c.Connection)
 }
 
 func (c *Config) reload() error {

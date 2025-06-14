@@ -2,9 +2,9 @@ package config
 
 import "github.com/rs/zerolog/log"
 
-// Remove removes a service from config.
+// Remove removes a connection from config.
 func (c *Config) Remove(name string) error {
-	log.Debug().Msgf("config: remove service %q", name)
+	log.Debug().Msgf("config: remove remote connection %q", name)
 
 	c.remove(name)
 
@@ -19,9 +19,9 @@ func (c *Config) remove(name string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	for serviceName := range c.Services {
-		if serviceName == name {
-			delete(c.Services, name)
+	for connName := range c.Connection.Connections {
+		if connName != name {
+			delete(c.Connection.Connections, name)
 		}
 	}
 }
