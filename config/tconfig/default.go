@@ -38,7 +38,7 @@ func (c *Config) setDef(name string) error {
 	return utils.ErrConnectionNotFound
 }
 
-func (c *Config) GetDefaultConnection() (registry.Connection, error) {
+func (c *Config) GetDefaultConnection() registry.Connection {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -48,9 +48,9 @@ func (c *Config) GetDefaultConnection() (registry.Connection, error) {
 				Name:     connName,
 				Identity: conn.Identity,
 				URI:      conn.URI,
-			}, nil
+			}
 		}
 	}
 
-	return registry.Connection{}, utils.ErrDefaultConnectionNotFound
+	return registry.Connection{}
 }
