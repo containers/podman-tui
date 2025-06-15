@@ -44,6 +44,8 @@ func (c *Config) RemoteConnections() []registry.Connection {
 		return nil
 	}
 
+	log.Debug().Msgf("connections: %v", conns)
+
 	for _, conn := range conns {
 		rconn = append(rconn, registry.Connection{
 			Name:     conn.Name,
@@ -115,16 +117,16 @@ func (c *Config) SetDefaultConnection(name string) error {
 	})
 }
 
-func (c *Config) GetDefaultConnection() (registry.Connection, error) {
+func (c *Config) GetDefaultConnection() registry.Connection {
 	for _, conn := range c.RemoteConnections() {
 		if conn.Default {
 			return registry.Connection{
 				Name:     conn.Name,
 				Identity: conn.Identity,
 				URI:      conn.URI,
-			}, nil
+			}
 		}
 	}
 
-	return registry.Connection{}, utils.ErrDefaultConnectionNotFound
+	return registry.Connection{}
 }

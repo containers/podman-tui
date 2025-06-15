@@ -9,7 +9,7 @@ import (
 type Config interface {
 	RemoteConnections() []registry.Connection
 	SetDefaultConnection(name string) error
-	GetDefaultConnection() (registry.Connection, error)
+	GetDefaultConnection() registry.Connection
 	Add(name string, uri string, identity string) error
 	Remove(name string) error
 }
@@ -34,12 +34,10 @@ func NewConfig() (Config, error) { //nolint:ireturn
 		cfg = tconfig
 	}
 
-	defaultConn, err := cfg.GetDefaultConnection()
-	if err != nil {
-		return nil, err
+	defaultConn := cfg.GetDefaultConnection()
+	if defaultConn.URI != "" && defaultConn.Name != "" {
+		registry.SetConnection(defaultConn)
 	}
-
-	registry.SetConnection(defaultConn)
 
 	return cfg, nil
 }

@@ -13,15 +13,14 @@ import (
 )
 
 var (
-	ErrInvalidURISchemaName      = errors.New("invalid schema name")
-	ErrInvalidTCPSchemaOption    = errors.New("invalid option for tcp")
-	ErrInvalidUnixSchemaOption   = errors.New("invalid option for unix")
-	ErrFileNotUnixSocket         = errors.New("not a unix domain socket")
-	ErrEmptySSHIdentity          = errors.New("empty identity field for SSH connection")
-	ErrEmptyURIDestination       = errors.New("empty URI destination")
-	ErrEmptyConnectionName       = errors.New("empty connection name")
-	ErrConnectionNotFound        = errors.New("connection not found")
-	ErrDefaultConnectionNotFound = errors.New("default connection not found")
+	ErrInvalidURISchemaName    = errors.New("invalid schema name")
+	ErrInvalidTCPSchemaOption  = errors.New("invalid option for tcp")
+	ErrInvalidUnixSchemaOption = errors.New("invalid option for unix")
+	ErrFileNotUnixSocket       = errors.New("not a unix domain socket")
+	ErrEmptySSHIdentity        = errors.New("empty identity field for SSH connection")
+	ErrEmptyURIDestination     = errors.New("empty URI destination")
+	ErrEmptyConnectionName     = errors.New("empty connection name")
+	ErrConnectionNotFound      = errors.New("connection not found")
 )
 
 func ValidateNewConnection(name string, dest string, identity string) (string, error) { //nolint:cyclop
