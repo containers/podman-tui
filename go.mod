@@ -5,7 +5,7 @@ go 1.23.3
 require (
 	github.com/containers/buildah v1.40.1
 	github.com/containers/common v0.63.1
-	github.com/containers/podman/v5 v5.5.1
+	github.com/containers/podman/v5 v5.5.2
 	github.com/containers/storage v1.58.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
