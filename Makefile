@@ -5,7 +5,7 @@ GOPKGDIR := $(FIRST_GOPATH)/src/$(PKG_PATH)
 GOPKGBASEDIR ?= $(shell dirname "$(GOPKGDIR)")
 GOBIN := $(shell $(GO) env GOBIN)
 BUILDFLAGS := -mod=vendor $(BUILDFLAGS)
-BUILDTAGS := "exclude_graphdriver_devicemapper exclude_graphdriver_btrfs btrfs_noversion containers_image_openpgp remote"
+BUILDTAGS := "exclude_graphdriver_btrfs containers_image_openpgp remote"
 COVERAGE_PATH ?= .coverage
 TARGET = podman-tui
 BIN = ./bin
