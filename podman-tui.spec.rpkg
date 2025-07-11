@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.7.0
+Version: 1.8.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,7 +60,21 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Wed May 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.7.0-dev-1
+* Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.0-dev-1
+
+* Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.7.0-1
+- Bump golang.org/x/crypto from 0.39.0 to 0.40.0
+- Remove unused BUILDTAGS
+- Bump github.com/containers/podman/v5 from 5.5.1 to 5.5.2
+- Bugfix invalid error when default remote connection is not defined
+- Add feature to use podman remote connections config if exist
+- Using json format for app config file
+- Packit - set rpm build for fedora-all
+- Added pod create namespace category
+- Added pod create namespace category
+- Added container create namespace (ipc, userns, uts, ...) category
+- Bugfix - connection list lock
+- UI code cleanup + set max with for container view image name
 
 * Wed May 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.6.0-1
 - Added container create health log dest, max count and size options
