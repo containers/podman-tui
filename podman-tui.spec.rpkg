@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.7.0
-Release: 1%{?dist}
+Version: 1.8.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.0-dev-1
+
 * Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.7.0-1
 - Bump golang.org/x/crypto from 0.39.0 to 0.40.0
 - Remove unused BUILDTAGS
