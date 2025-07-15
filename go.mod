@@ -6,7 +6,7 @@ require (
 	github.com/containers/buildah v1.40.1
 	github.com/containers/common v0.63.1
 	github.com/containers/podman/v5 v5.5.2
-	github.com/containers/storage v1.58.0
+	github.com/containers/storage v1.59.0
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
 	github.com/gdamore/tcell/v2 v2.8.1
@@ -28,7 +28,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/Microsoft/hcsshim v0.12.9 // indirect
+	github.com/Microsoft/hcsshim v0.13.0 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
@@ -134,7 +134,7 @@ require (
 	github.com/stefanberger/go-pkcs11uri v0.0.0-20230803200340-78284954bff6 // indirect
 	github.com/sylabs/sif/v2 v2.21.1 // indirect
 	github.com/syndtr/gocapability v0.0.0-20200815063812-42c35b437635 // indirect
-	github.com/tchap/go-patricia/v2 v2.3.2 // indirect
+	github.com/tchap/go-patricia/v2 v2.3.3 // indirect
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 // indirect
 	github.com/ulikunitz/xz v0.5.12 // indirect
 	github.com/vbatts/tar-split v0.12.1 // indirect
