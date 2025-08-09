@@ -32,6 +32,7 @@ const (
 // ImagePushDialog represents image push dialog primitive.
 type ImagePushDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	imageInfo     *tview.InputField
 	destination   *tview.InputField
@@ -245,12 +246,6 @@ func (d *ImagePushDialog) HasFocus() bool { //nolint:cyclop
 	return d.Box.HasFocus()
 }
 
-// dropdownHasFocus returns true if image push dialog dropdown primitives.
-// has focus.
-func (d *ImagePushDialog) dropdownHasFocus() bool {
-	return d.format.HasFocus()
-}
-
 // Focus is called when this primitive receives focus.
 func (d *ImagePushDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
@@ -368,25 +363,6 @@ func (d *ImagePushDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 	})
 }
 
-func (d *ImagePushDialog) setFocusElement() {
-	switch d.focusElement {
-	case imagePushDesitnationFocus:
-		d.focusElement = imagePushCompressFocus
-	case imagePushCompressFocus:
-		d.focusElement = imagePushFormatFocus
-	case imagePushFormatFocus:
-		d.focusElement = imagePushSkipTLSVerifyFocus
-	case imagePushSkipTLSVerifyFocus:
-		d.focusElement = imagePushUsernameFocus
-	case imagePushUsernameFocus:
-		d.focusElement = imagePushPasswordFocus
-	case imagePushPasswordFocus:
-		d.focusElement = imagePushAuthFileFocus
-	case imagePushAuthFileFocus:
-		d.focusElement = imagePushFormFocus
-	}
-}
-
 // SetRect set rects for this primitive.
 func (d *ImagePushDialog) SetRect(x, y, width, height int) {
 	if width > imagePushDialogMaxWidth {
@@ -410,8 +386,8 @@ func (d *ImagePushDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -456,4 +432,29 @@ func (d *ImagePushDialog) GetImagePushOptions() images.ImagePushOptions {
 	opts.AuthFile = strings.TrimSpace(d.authFile.GetText())
 
 	return opts
+}
+
+// dropdownHasFocus returns true if image push dialog dropdown primitives.
+// has focus.
+func (d *ImagePushDialog) dropdownHasFocus() bool {
+	return d.format.HasFocus()
+}
+
+func (d *ImagePushDialog) setFocusElement() {
+	switch d.focusElement {
+	case imagePushDesitnationFocus:
+		d.focusElement = imagePushCompressFocus
+	case imagePushCompressFocus:
+		d.focusElement = imagePushFormatFocus
+	case imagePushFormatFocus:
+		d.focusElement = imagePushSkipTLSVerifyFocus
+	case imagePushSkipTLSVerifyFocus:
+		d.focusElement = imagePushUsernameFocus
+	case imagePushUsernameFocus:
+		d.focusElement = imagePushPasswordFocus
+	case imagePushPasswordFocus:
+		d.focusElement = imagePushAuthFileFocus
+	case imagePushAuthFileFocus:
+		d.focusElement = imagePushFormFocus
+	}
 }

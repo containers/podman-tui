@@ -134,6 +134,7 @@ type ContainerCreateDialogMode int
 // ContainerCreateDialog implements container create dialog.
 type ContainerCreateDialog struct {
 	*tview.Box
+
 	mode                                ContainerCreateDialogMode
 	layout                              *tview.Flex
 	categoryLabels                      []string
@@ -362,6 +363,692 @@ func NewContainerCreateDialog(mode ContainerCreateDialogMode) *ContainerCreateDi
 	containerDialog.initCustomInputHanlers()
 
 	return &containerDialog
+}
+
+// Display displays this primitive.
+func (d *ContainerCreateDialog) Display() {
+	d.display = true
+	d.initData()
+	d.focusElement = createCategoryPagesFocus
+}
+
+// IsDisplay returns true if primitive is shown.
+func (d *ContainerCreateDialog) IsDisplay() bool {
+	return d.display
+}
+
+// Hide stops displaying this primitive.
+func (d *ContainerCreateDialog) Hide() {
+	d.display = false
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (d *ContainerCreateDialog) HasFocus() bool {
+	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
+		return true
+	}
+
+	return d.Box.HasFocus() || d.form.HasFocus()
+}
+
+// Focus is called when this primitive receives focus.
+func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop,maintidx
+	switch d.focusElement {
+	// form has focus
+	case createContainerFormFocus:
+		button := d.form.GetButton(d.form.GetButtonCount() - 1)
+		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			if event.Key() == tcell.KeyTab {
+				d.focusElement = createCategoriesFocus // category text view
+
+				d.Focus(delegate)
+				d.form.SetFocus(0)
+
+				return nil
+			}
+
+			if event.Key() == tcell.KeyEnter {
+				return nil
+			}
+
+			return event
+		})
+
+		delegate(d.form)
+	// category text view
+	case createCategoriesFocus:
+		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			if event.Key() == tcell.KeyTab {
+				d.focusElement = createCategoryPagesFocus // category page view
+				d.Focus(delegate)
+
+				return nil
+			}
+
+			// scroll between categories
+			event = utils.ParseKeyEventKey(event)
+			if event.Key() == tcell.KeyDown {
+				d.nextCategory()
+			}
+
+			if event.Key() == tcell.KeyUp {
+				d.previousCategory()
+			}
+
+			return event
+		})
+
+		delegate(d.categories)
+	// container info page
+	case createContainerNameFieldFocus:
+		delegate(d.containerNameField)
+	case createContainerCommandFieldFocus:
+		delegate(d.containerCommandField)
+	case createContainerImageFieldFocus:
+		delegate(d.containerImageField)
+	case createcontainerPodFieldFocus:
+		delegate(d.containerPodField)
+	case createContainerLabelsFieldFocus:
+		delegate(d.containerLabelsField)
+	case createContainerRemoveFieldFocus:
+		delegate(d.containerRemoveField)
+	case createContainerPrivilegedFieldFocus:
+		delegate(d.containerPrivilegedField)
+	case createContainerTimeoutFieldFocus:
+		delegate(d.containerTimeoutField)
+	case createContainerInteractiveFieldFocus:
+		delegate(d.containerInteractiveField)
+	case createContainerTtyFieldFocus:
+		delegate(d.containerTtyField)
+	case createContainerDetachFieldFocus:
+		delegate(d.containerDetachField)
+	case createContainerSecretFieldFocus:
+		delegate(d.containerSecretField)
+	// environment options page
+	case createContainerWorkDirFieldFocus:
+		delegate(d.containerWorkDirField)
+	case createContainerEnvVarsFieldFocus:
+		delegate(d.containerEnvVarsField)
+	case createContainerEnvFileFieldFocus:
+		delegate(d.containerEnvFileField)
+	case createContainerEnvMergeFieldFocus:
+		delegate(d.containerEnvMergeField)
+	case createContainerUnsetEnvFieldFocus:
+		delegate(d.containerUnsetEnvField)
+	case createContainerEnvHostFieldFocus:
+		delegate(d.containerEnvHostField)
+	case createContainerUnsetEnvAllFieldFocus:
+		delegate(d.containerUnsetEnvAllField)
+	case createContainerUmaskFieldFocus:
+		delegate(d.containerUmaskField)
+	// user and groups page
+	case createContainerUserFieldFocus:
+		delegate(d.containerUserField)
+	case createContainerHostUsersFieldFocus:
+		delegate(d.containerHostUsersField)
+	case createContainerPasswdEntryFieldFocus:
+		delegate(d.containerPasswdEntryField)
+	case createContainerGroupEntryFieldFocus:
+		delegate(d.containerGroupEntryField)
+	// security options page
+	case createcontainerSecLabelFieldFocus:
+		delegate(d.containerSecLabelField)
+	case createContainerApprarmorFieldFocus:
+		delegate(d.containerSecApparmorField)
+	case createContainerSeccompFeildFocus:
+		delegate(d.containerSeccompField)
+	case createcontainerSecMaskFieldFocus:
+		delegate(d.containerSecMaskField)
+	case createcontainerSecUnmaskFieldFocus:
+		delegate(d.containerSecUnmaskField)
+	case createcontainerSecNoNewPrivFieldFocus:
+		delegate(d.containerSecNoNewPrivField)
+	// networking page
+	case createContainerHostnameFieldFocus:
+		delegate(d.containerHostnameField)
+	case createContainerIPAddrFieldFocus:
+		delegate(d.containerIPAddrField)
+	case createContainerMacAddrFieldFocus:
+		delegate(d.containerMacAddrField)
+	case createContainerNetworkFieldFocus:
+		delegate(d.containerNetworkField)
+	// port page
+	// networking page
+	case createContainerPortPublishFieldFocus:
+		delegate(d.containerPortPublishField)
+	case createContainerPortPublishAllFieldFocus:
+		delegate(d.ContainerPortPublishAllField)
+	case createContainerPortExposeFieldFocus:
+		delegate(d.containerPortExposeField)
+	// dns page
+	case createContainerDNSServersFieldFocus:
+		delegate(d.containerDNSServersField)
+	case createContainerDNSOptionsFieldFocus:
+		delegate(d.containerDNSOptionsField)
+	case createContainerDNSSearchFieldFocus:
+		delegate(d.containerDNSSearchField)
+	// volume page
+	case createContainerVolumeFieldFocus:
+		delegate(d.containerVolumeField)
+	case createContainerImageVolumeFieldFocus:
+		delegate(d.containerImageVolumeField)
+	case createContainerMountFieldFocus:
+		delegate(d.containerMountField)
+	// health page
+	case createContainerHealthCmdFieldFocus:
+		delegate(d.containerHealthCmdField)
+	case createContainerHealthStartupCmdFieldFocus:
+		delegate(d.containerHealthStartupCmdField)
+	case createContainerHealthOnFailureFieldFocus:
+		delegate(d.containerHealthOnFailureField)
+	case createContainerHealthIntervalFieldFocus:
+		delegate(d.containerHealthIntervalField)
+	case createContainerHealthStartupIntervalFieldFocus:
+		delegate(d.containerHealthStartupIntervalField)
+	case createContainerHealthTimeoutFieldFocus:
+		delegate(d.containerHealthTimeoutField)
+	case createContainerHealthStartupTimeoutFieldFocus:
+		delegate(d.containerHealthStartupTimeoutField)
+	case createContainerHealthRetriesFieldFocus:
+		delegate(d.containerHealthRetriesField)
+	case createContainerHealthStartupRetriesFieldFocus:
+		delegate(d.containerHealthStartupRetriesField)
+	case createContainerHealthStartPeriodFieldFocus:
+		delegate(d.containerHealthStartPeriodField)
+	case createContainerHealthStartupSuccessFieldFocus:
+		delegate(d.containerHealthStartupSuccessField)
+	case createContainerHealthLogDestFocus:
+		delegate(d.containerHealthLogDestField)
+	case createContainerHealthMaxLogCountFocus:
+		delegate(d.containerHealthMaxLogCountField)
+	case createContainerHealthMaxLogSizeFocus:
+		delegate(d.containerHealthMaxLogSizeField)
+	// resource page
+	case createContainerMemoryFieldFocus:
+		delegate(d.containerMemoryField)
+	case createContainerMemoryReservatoinFieldFocus:
+		delegate(d.containerMemoryReservationField)
+	case createContainerMemorySwapFieldFocus:
+		delegate(d.containerMemorySwapField)
+	case createcontainerMemorySwappinessFieldFocus:
+		delegate(d.containerMemorySwappinessField)
+	case createContainerCPUsFieldFocus:
+		delegate(d.containerCPUsField)
+	case createContainerCPUSharesFieldFocus:
+		delegate(d.containerCPUSharesField)
+	case createContainerCPUPeriodFieldFocus:
+		delegate(d.containerCPUPeriodField)
+	case createContainerCPURtPeriodFieldFocus:
+		delegate(d.containerCPURtPeriodField)
+	case createContainerCPUQuotaFieldFocus:
+		delegate(d.containerCPUQuotaField)
+	case createContainerCPURtRuntimeFeildFocus:
+		delegate(d.containerCPURtRuntimeField)
+	case createContainerCPUSetCPUsFieldFocus:
+		delegate(d.containerCPUSetCPUsField)
+	case createContainerCPUSetMemsFieldFocus:
+		delegate(d.containerCPUSetMemsField)
+	case createContainerShmSizeFieldFocus:
+		delegate(d.containerShmSizeField)
+	case createContainerShmSizeSystemdFieldFocus:
+		delegate(d.containerShmSizeSystemdField)
+	// namespace page
+	case createContainerNamespaceCgroupFieldFocus:
+		delegate(d.containerNamespaceCgroupField)
+	case createContainerNamespaceIpcFieldFocus:
+		delegate(d.containerNamespaceIpcField)
+	case createContainerNamespacePidFieldFocus:
+		delegate(d.containerNamespacePidField)
+	case createContainerNamespaceUserFieldFocus:
+		delegate(d.containerNamespaceUserField)
+	case createContainerNamespaceUtsFieldFocus:
+		delegate(d.containerNamespaceUtsField)
+	case createContainerNamespaceUidmapFieldFocus:
+		delegate(d.containerNamespaceUidmapField)
+	case createContainerNamespaceSubuidNameFieldFocus:
+		delegate(d.containerNamespaceSubuidNameField)
+	case createContainerNamespaceGidmapFieldFocus:
+		delegate(d.containerNamespaceGidmapField)
+	case createContainerNamespaceSubgidNameFieldFocus:
+		delegate(d.containerNamespaceSubgidNameField)
+	// category page
+	case createCategoryPagesFocus:
+		delegate(d.categoryPages)
+	}
+}
+
+// InputHandler returns input handler function for this primitive.
+func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop,gocyclo
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+		log.Debug().Msgf("container create dialog: event %v received", event)
+
+		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
+			d.cancelHandler()
+
+			return
+		}
+
+		if d.containerInfoPage.HasFocus() {
+			if handler := d.containerInfoPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setContainerInfoPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.environmentPage.HasFocus() {
+			if handler := d.environmentPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setEnvironmentPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.userGroupsPage.HasFocus() {
+			if handler := d.userGroupsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setUserGroupsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.dnsPage.HasFocus() {
+			if handler := d.dnsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setDNSSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.networkingPage.HasFocus() {
+			if handler := d.networkingPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNetworkSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.portPage.HasFocus() {
+			if handler := d.portPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setPortPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptionsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.volumePage.HasFocus() {
+			if handler := d.volumePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setVolumeSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.healthPage.HasFocus() {
+			if handler := d.healthPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setHealthSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.resourcePage.HasFocus() {
+			if handler := d.resourcePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setResourceSettingsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.namespacePage.HasFocus() {
+			if handler := d.namespacePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNamespaceOptionsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.categories.HasFocus() {
+			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
+				categroryHandler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.form.HasFocus() { //nolint:nestif
+			if formHandler := d.form.InputHandler(); formHandler != nil {
+				if event.Key() == tcell.KeyEnter {
+					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+					if enterButton.HasFocus() {
+						d.enterHandler()
+					}
+				}
+
+				formHandler(event, setFocus)
+
+				return
+			}
+		}
+	})
+}
+
+// SetRect set rects for this primitive.
+func (d *ContainerCreateDialog) SetRect(x, y, width, height int) {
+	if width > containerCreateDialogMaxWidth {
+		emptySpace := (width - containerCreateDialogMaxWidth) / 2 //nolint:mnd
+		x += emptySpace
+		width = containerCreateDialogMaxWidth
+	}
+
+	maxAllowedHeight := containerCreateOnlyDialogHeight
+	if d.mode == ContainerCreateAndRunDialogMode {
+		maxAllowedHeight = containerCreateAndRunDialogHeight
+	}
+
+	if height > maxAllowedHeight {
+		emptySpace := (height - maxAllowedHeight) / 2 //nolint:mnd
+		y += emptySpace
+		height = maxAllowedHeight
+	}
+
+	d.Box.SetRect(x, y, width, height)
+}
+
+// Draw draws this primitive onto the screen.
+func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
+	if !d.display {
+		return
+	}
+
+	d.DrawForSubclass(screen, d)
+
+	x, y, width, height := d.GetInnerRect()
+
+	d.layout.SetRect(x, y, width, height)
+	d.layout.Draw(screen)
+}
+
+// SetCancelFunc sets form cancel button selected function.
+func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDialog {
+	d.cancelHandler = handler
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
+
+	cancelButton.SetSelectedFunc(handler)
+
+	return d
+}
+
+// SetHandlerFunc sets form create or run button selected function.
+func (d *ContainerCreateDialog) SetHandlerFunc(handler func()) *ContainerCreateDialog {
+	d.enterHandler = handler
+	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
+	enterButton.SetSelectedFunc(handler)
+
+	return d
+}
+
+// ContainerCreateOptions returns new network options.
+func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit,gocyclo,maintidx,lll
+	var (
+		labels           []string
+		imageID          string
+		podID            string
+		dnsServers       []string
+		dnsOptions       []string
+		dnsSearchDomains []string
+		publish          []string
+		expose           []string
+		imageVolume      string
+		selinuxOpts      []string
+		envVars          []string
+		envFile          []string
+		envMerge         []string
+		unsetEnv         []string
+		hostUsers        []string
+		secret           []string
+	)
+
+	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
+		if label != "" {
+			labels = append(labels, label)
+		}
+	}
+
+	selectedImageIndex, _ := d.containerImageField.GetCurrentOption()
+	if len(d.imageList) > 0 && selectedImageIndex > 0 {
+		imageID = d.imageList[selectedImageIndex-1].ID
+	}
+
+	selectedPodIndex, _ := d.containerPodField.GetCurrentOption()
+	if len(d.podList) > 0 && selectedPodIndex > 0 {
+		podID = d.podList[selectedPodIndex-1].Id
+	}
+
+	// ports
+	for _, p := range strings.Split(d.containerPortPublishField.GetText(), " ") {
+		if p != "" {
+			publish = append(publish, p)
+		}
+	}
+
+	for _, e := range strings.Split(d.containerPortExposeField.GetText(), " ") {
+		if e != "" {
+			expose = append(expose, e)
+		}
+	}
+
+	// DNS setting
+	for _, dns := range strings.Split(d.containerDNSServersField.GetText(), " ") {
+		if dns != "" {
+			dnsServers = append(dnsServers, dns)
+		}
+	}
+
+	for _, do := range strings.Split(d.containerDNSOptionsField.GetText(), " ") {
+		if do != "" {
+			dnsOptions = append(dnsOptions, do)
+		}
+	}
+
+	for _, ds := range strings.Split(d.containerDNSSearchField.GetText(), " ") {
+		if ds != "" {
+			dnsSearchDomains = append(dnsSearchDomains, ds)
+		}
+	}
+
+	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
+
+	// security options
+	for _, selinuxLabel := range strings.Split(d.containerSecLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			selinuxOpts = append(selinuxOpts, selinuxLabel)
+		}
+	}
+
+	// health check
+	_, healthOnFailure := d.containerHealthOnFailureField.GetCurrentOption()
+
+	// env vars
+	for _, evar := range strings.Split(d.containerEnvVarsField.GetText(), " ") {
+		if evar != "" {
+			envVars = append(envVars, evar)
+		}
+	}
+
+	// env file
+	for _, efile := range strings.Split(d.containerEnvFileField.GetText(), " ") {
+		if efile != "" {
+			envFile = append(envFile, efile)
+		}
+	}
+
+	// env merge
+	for _, emerge := range strings.Split(d.containerEnvMergeField.GetText(), " ") {
+		if emerge != "" {
+			envMerge = append(envMerge, emerge)
+		}
+	}
+
+	// unset env
+	for _, eunset := range strings.Split(d.containerUnsetEnvField.GetText(), " ") {
+		if eunset != "" {
+			unsetEnv = append(unsetEnv, eunset)
+		}
+	}
+
+	// host users
+	for _, huser := range strings.Split(d.containerHostUsersField.GetText(), " ") {
+		if huser != "" {
+			hostUsers = append(hostUsers, huser)
+		}
+	}
+
+	// secret
+	for _, sec := range strings.Split(d.containerSecretField.GetText(), " ") {
+		if sec != "" {
+			secret = append(secret, sec)
+		}
+	}
+
+	_, network := d.containerNetworkField.GetCurrentOption()
+	opts := containers.CreateOptions{
+		Name:                  strings.TrimSpace(d.containerNameField.GetText()),
+		Command:               strings.TrimSpace(d.containerCommandField.GetText()),
+		Image:                 imageID,
+		Pod:                   podID,
+		Labels:                labels,
+		Remove:                d.containerRemoveField.IsChecked(),
+		Privileged:            d.containerPrivilegedField.IsChecked(),
+		Timeout:               strings.TrimSpace(d.containerTimeoutField.GetText()),
+		TTY:                   d.containerTtyField.IsChecked(),
+		Detach:                d.containerDetachField.IsChecked(),
+		Interactive:           d.containerInteractiveField.IsChecked(),
+		Secret:                secret,
+		WorkDir:               strings.TrimSpace(d.containerWorkDirField.GetText()),
+		EnvVars:               envVars,
+		EnvFile:               envFile,
+		EnvMerge:              envMerge,
+		UnsetEnv:              unsetEnv,
+		EnvHost:               d.containerEnvHostField.IsChecked(),
+		UnsetEnvAll:           d.containerUnsetEnvAllField.IsChecked(),
+		Umask:                 strings.TrimSpace(d.containerUmaskField.GetText()),
+		User:                  strings.TrimSpace(d.containerUserField.GetText()),
+		HostUsers:             hostUsers,
+		PasswdEntry:           strings.TrimSpace(d.containerPasswdEntryField.GetText()),
+		GroupEntry:            strings.TrimSpace(d.containerGroupEntryField.GetText()),
+		Hostname:              strings.TrimSpace(d.containerHostnameField.GetText()),
+		MacAddress:            strings.TrimSpace(d.containerMacAddrField.GetText()),
+		IPAddress:             strings.TrimSpace(d.containerIPAddrField.GetText()),
+		Network:               network,
+		Publish:               publish,
+		Expose:                expose,
+		PublishAll:            d.ContainerPortPublishAllField.IsChecked(),
+		DNSServer:             dnsServers,
+		DNSOptions:            dnsOptions,
+		DNSSearchDomain:       dnsSearchDomains,
+		Volume:                strings.TrimSpace(d.containerVolumeField.GetText()),
+		ImageVolume:           imageVolume,
+		Mount:                 strings.TrimSpace(d.containerMountField.GetText()),
+		SelinuxOpts:           selinuxOpts,
+		ApparmorProfile:       strings.TrimSpace(d.containerSecApparmorField.GetText()),
+		Seccomp:               strings.TrimSpace(d.containerSeccompField.GetText()),
+		SecNoNewPriv:          d.containerSecNoNewPrivField.IsChecked(),
+		SecMask:               strings.TrimSpace(d.containerSecMaskField.GetText()),
+		SecUnmask:             strings.TrimSpace(d.containerSecUnmaskField.GetText()),
+		HealthCmd:             strings.TrimSpace(d.containerHealthCmdField.GetText()),
+		HealthInterval:        strings.TrimSpace(d.containerHealthIntervalField.GetText()),
+		HealthRetries:         strings.TrimSpace(d.containerHealthRetriesField.GetText()),
+		HealthStartPeroid:     strings.TrimSpace(d.containerHealthStartPeriodField.GetText()),
+		HealthTimeout:         strings.TrimSpace(d.containerHealthTimeoutField.GetText()),
+		HealthOnFailure:       strings.TrimSpace(healthOnFailure),
+		HealthStartupCmd:      strings.TrimSpace(d.containerHealthStartupCmdField.GetText()),
+		HealthStartupInterval: strings.TrimSpace(d.containerHealthStartupIntervalField.GetText()),
+		HealthStartupRetries:  strings.TrimSpace(d.containerHealthStartupRetriesField.GetText()),
+		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
+		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
+		HealthLogDestination:  strings.TrimSpace(d.containerHealthLogDestField.GetText()),
+		HealthMaxLogSize:      strings.TrimSpace(d.containerHealthMaxLogSizeField.GetText()),
+		HealthMaxLogCount:     strings.TrimSpace(d.containerHealthMaxLogCountField.GetText()),
+		Memory:                strings.TrimSpace(d.containerMemoryField.GetText()),
+		MemoryReservation:     strings.TrimSpace(d.containerMemoryReservationField.GetText()),
+		MemorySwap:            strings.TrimSpace(d.containerMemorySwapField.GetText()),
+		MemorySwappiness:      strings.TrimSpace(d.containerMemorySwappinessField.GetText()),
+		CPUs:                  strings.TrimSpace(d.containerCPUsField.GetText()),
+		CPUShares:             strings.TrimSpace(d.containerCPUSharesField.GetText()),
+		CPUPeriod:             strings.TrimSpace(d.containerCPUPeriodField.GetText()),
+		CPURtPeriod:           strings.TrimSpace(d.containerCPURtPeriodField.GetText()),
+		CPUQuota:              strings.TrimSpace(d.containerCPUQuotaField.GetText()),
+		CPURtRuntime:          strings.TrimSpace(d.containerCPURtRuntimeField.GetText()),
+		CPUSetCPUs:            strings.TrimSpace(d.containerCPUSetCPUsField.GetText()),
+		CPUSetMems:            strings.TrimSpace(d.containerCPUSetMemsField.GetText()),
+		SHMSize:               strings.TrimSpace(d.containerShmSizeField.GetText()),
+		SHMSizeSystemd:        strings.TrimSpace(d.containerShmSizeSystemdField.GetText()),
+		NamespaceCgroup:       strings.TrimSpace(d.containerNamespaceCgroupField.GetText()),
+		NamespaceIpc:          strings.TrimSpace(d.containerNamespaceIpcField.GetText()),
+		NamespacePid:          strings.TrimSpace(d.containerNamespacePidField.GetText()),
+		NamespaceUser:         strings.TrimSpace(d.containerNamespaceUserField.GetText()),
+		NamespaceUts:          strings.TrimSpace(d.containerNamespaceUtsField.GetText()),
+		NamespaceUidmap:       strings.TrimSpace(d.containerNamespaceUidmapField.GetText()),
+		NamespaceSubuidName:   strings.TrimSpace(d.containerNamespaceSubuidNameField.GetText()),
+		NamespaceGidmap:       strings.TrimSpace(d.containerNamespaceGidmapField.GetText()),
+		NamespaceSubgidName:   strings.TrimSpace(d.containerNamespaceSubgidNameField.GetText()),
+	}
+
+	return opts
 }
 
 func (d *ContainerCreateDialog) setupLayout() {
@@ -1380,32 +2067,6 @@ func (d *ContainerCreateDialog) setupNamespacePageUI() {
 	d.namespacePage.SetBackgroundColor(bgColor)
 }
 
-// Display displays this primitive.
-func (d *ContainerCreateDialog) Display() {
-	d.display = true
-	d.initData()
-	d.focusElement = createCategoryPagesFocus
-}
-
-// IsDisplay returns true if primitive is shown.
-func (d *ContainerCreateDialog) IsDisplay() bool {
-	return d.display
-}
-
-// Hide stops displaying this primitive.
-func (d *ContainerCreateDialog) Hide() {
-	d.display = false
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (d *ContainerCreateDialog) HasFocus() bool {
-	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
-		return true
-	}
-
-	return d.Box.HasFocus() || d.form.HasFocus()
-}
-
 // dropdownHasFocus returns true if container create dialog dropdown primitives
 // has focus.
 func (d *ContainerCreateDialog) dropdownHasFocus() bool {
@@ -1418,232 +2079,6 @@ func (d *ContainerCreateDialog) dropdownHasFocus() bool {
 	}
 
 	return d.containerHealthOnFailureField.HasFocus()
-}
-
-// Focus is called when this primitive receives focus.
-func (d *ContainerCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:gocyclo,cyclop,maintidx
-	switch d.focusElement {
-	// form has focus
-	case createContainerFormFocus:
-		button := d.form.GetButton(d.form.GetButtonCount() - 1)
-		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			if event.Key() == tcell.KeyTab {
-				d.focusElement = createCategoriesFocus // category text view
-
-				d.Focus(delegate)
-				d.form.SetFocus(0)
-
-				return nil
-			}
-
-			if event.Key() == tcell.KeyEnter {
-				return nil
-			}
-
-			return event
-		})
-
-		delegate(d.form)
-	// category text view
-	case createCategoriesFocus:
-		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			if event.Key() == tcell.KeyTab {
-				d.focusElement = createCategoryPagesFocus // category page view
-				d.Focus(delegate)
-
-				return nil
-			}
-
-			// scroll between categories
-			event = utils.ParseKeyEventKey(event)
-			if event.Key() == tcell.KeyDown {
-				d.nextCategory()
-			}
-
-			if event.Key() == tcell.KeyUp {
-				d.previousCategory()
-			}
-
-			return event
-		})
-
-		delegate(d.categories)
-	// container info page
-	case createContainerNameFieldFocus:
-		delegate(d.containerNameField)
-	case createContainerCommandFieldFocus:
-		delegate(d.containerCommandField)
-	case createContainerImageFieldFocus:
-		delegate(d.containerImageField)
-	case createcontainerPodFieldFocus:
-		delegate(d.containerPodField)
-	case createContainerLabelsFieldFocus:
-		delegate(d.containerLabelsField)
-	case createContainerRemoveFieldFocus:
-		delegate(d.containerRemoveField)
-	case createContainerPrivilegedFieldFocus:
-		delegate(d.containerPrivilegedField)
-	case createContainerTimeoutFieldFocus:
-		delegate(d.containerTimeoutField)
-	case createContainerInteractiveFieldFocus:
-		delegate(d.containerInteractiveField)
-	case createContainerTtyFieldFocus:
-		delegate(d.containerTtyField)
-	case createContainerDetachFieldFocus:
-		delegate(d.containerDetachField)
-	case createContainerSecretFieldFocus:
-		delegate(d.containerSecretField)
-	// environment options page
-	case createContainerWorkDirFieldFocus:
-		delegate(d.containerWorkDirField)
-	case createContainerEnvVarsFieldFocus:
-		delegate(d.containerEnvVarsField)
-	case createContainerEnvFileFieldFocus:
-		delegate(d.containerEnvFileField)
-	case createContainerEnvMergeFieldFocus:
-		delegate(d.containerEnvMergeField)
-	case createContainerUnsetEnvFieldFocus:
-		delegate(d.containerUnsetEnvField)
-	case createContainerEnvHostFieldFocus:
-		delegate(d.containerEnvHostField)
-	case createContainerUnsetEnvAllFieldFocus:
-		delegate(d.containerUnsetEnvAllField)
-	case createContainerUmaskFieldFocus:
-		delegate(d.containerUmaskField)
-	// user and groups page
-	case createContainerUserFieldFocus:
-		delegate(d.containerUserField)
-	case createContainerHostUsersFieldFocus:
-		delegate(d.containerHostUsersField)
-	case createContainerPasswdEntryFieldFocus:
-		delegate(d.containerPasswdEntryField)
-	case createContainerGroupEntryFieldFocus:
-		delegate(d.containerGroupEntryField)
-	// security options page
-	case createcontainerSecLabelFieldFocus:
-		delegate(d.containerSecLabelField)
-	case createContainerApprarmorFieldFocus:
-		delegate(d.containerSecApparmorField)
-	case createContainerSeccompFeildFocus:
-		delegate(d.containerSeccompField)
-	case createcontainerSecMaskFieldFocus:
-		delegate(d.containerSecMaskField)
-	case createcontainerSecUnmaskFieldFocus:
-		delegate(d.containerSecUnmaskField)
-	case createcontainerSecNoNewPrivFieldFocus:
-		delegate(d.containerSecNoNewPrivField)
-	// networking page
-	case createContainerHostnameFieldFocus:
-		delegate(d.containerHostnameField)
-	case createContainerIPAddrFieldFocus:
-		delegate(d.containerIPAddrField)
-	case createContainerMacAddrFieldFocus:
-		delegate(d.containerMacAddrField)
-	case createContainerNetworkFieldFocus:
-		delegate(d.containerNetworkField)
-	// port page
-	// networking page
-	case createContainerPortPublishFieldFocus:
-		delegate(d.containerPortPublishField)
-	case createContainerPortPublishAllFieldFocus:
-		delegate(d.ContainerPortPublishAllField)
-	case createContainerPortExposeFieldFocus:
-		delegate(d.containerPortExposeField)
-	// dns page
-	case createContainerDNSServersFieldFocus:
-		delegate(d.containerDNSServersField)
-	case createContainerDNSOptionsFieldFocus:
-		delegate(d.containerDNSOptionsField)
-	case createContainerDNSSearchFieldFocus:
-		delegate(d.containerDNSSearchField)
-	// volume page
-	case createContainerVolumeFieldFocus:
-		delegate(d.containerVolumeField)
-	case createContainerImageVolumeFieldFocus:
-		delegate(d.containerImageVolumeField)
-	case createContainerMountFieldFocus:
-		delegate(d.containerMountField)
-	// health page
-	case createContainerHealthCmdFieldFocus:
-		delegate(d.containerHealthCmdField)
-	case createContainerHealthStartupCmdFieldFocus:
-		delegate(d.containerHealthStartupCmdField)
-	case createContainerHealthOnFailureFieldFocus:
-		delegate(d.containerHealthOnFailureField)
-	case createContainerHealthIntervalFieldFocus:
-		delegate(d.containerHealthIntervalField)
-	case createContainerHealthStartupIntervalFieldFocus:
-		delegate(d.containerHealthStartupIntervalField)
-	case createContainerHealthTimeoutFieldFocus:
-		delegate(d.containerHealthTimeoutField)
-	case createContainerHealthStartupTimeoutFieldFocus:
-		delegate(d.containerHealthStartupTimeoutField)
-	case createContainerHealthRetriesFieldFocus:
-		delegate(d.containerHealthRetriesField)
-	case createContainerHealthStartupRetriesFieldFocus:
-		delegate(d.containerHealthStartupRetriesField)
-	case createContainerHealthStartPeriodFieldFocus:
-		delegate(d.containerHealthStartPeriodField)
-	case createContainerHealthStartupSuccessFieldFocus:
-		delegate(d.containerHealthStartupSuccessField)
-	case createContainerHealthLogDestFocus:
-		delegate(d.containerHealthLogDestField)
-	case createContainerHealthMaxLogCountFocus:
-		delegate(d.containerHealthMaxLogCountField)
-	case createContainerHealthMaxLogSizeFocus:
-		delegate(d.containerHealthMaxLogSizeField)
-	// resource page
-	case createContainerMemoryFieldFocus:
-		delegate(d.containerMemoryField)
-	case createContainerMemoryReservatoinFieldFocus:
-		delegate(d.containerMemoryReservationField)
-	case createContainerMemorySwapFieldFocus:
-		delegate(d.containerMemorySwapField)
-	case createcontainerMemorySwappinessFieldFocus:
-		delegate(d.containerMemorySwappinessField)
-	case createContainerCPUsFieldFocus:
-		delegate(d.containerCPUsField)
-	case createContainerCPUSharesFieldFocus:
-		delegate(d.containerCPUSharesField)
-	case createContainerCPUPeriodFieldFocus:
-		delegate(d.containerCPUPeriodField)
-	case createContainerCPURtPeriodFieldFocus:
-		delegate(d.containerCPURtPeriodField)
-	case createContainerCPUQuotaFieldFocus:
-		delegate(d.containerCPUQuotaField)
-	case createContainerCPURtRuntimeFeildFocus:
-		delegate(d.containerCPURtRuntimeField)
-	case createContainerCPUSetCPUsFieldFocus:
-		delegate(d.containerCPUSetCPUsField)
-	case createContainerCPUSetMemsFieldFocus:
-		delegate(d.containerCPUSetMemsField)
-	case createContainerShmSizeFieldFocus:
-		delegate(d.containerShmSizeField)
-	case createContainerShmSizeSystemdFieldFocus:
-		delegate(d.containerShmSizeSystemdField)
-	// namespace page
-	case createContainerNamespaceCgroupFieldFocus:
-		delegate(d.containerNamespaceCgroupField)
-	case createContainerNamespaceIpcFieldFocus:
-		delegate(d.containerNamespaceIpcField)
-	case createContainerNamespacePidFieldFocus:
-		delegate(d.containerNamespacePidField)
-	case createContainerNamespaceUserFieldFocus:
-		delegate(d.containerNamespaceUserField)
-	case createContainerNamespaceUtsFieldFocus:
-		delegate(d.containerNamespaceUtsField)
-	case createContainerNamespaceUidmapFieldFocus:
-		delegate(d.containerNamespaceUidmapField)
-	case createContainerNamespaceSubuidNameFieldFocus:
-		delegate(d.containerNamespaceSubuidNameField)
-	case createContainerNamespaceGidmapFieldFocus:
-		delegate(d.containerNamespaceGidmapField)
-	case createContainerNamespaceSubgidNameFieldFocus:
-		delegate(d.containerNamespaceSubgidNameField)
-	// category page
-	case createCategoryPagesFocus:
-		delegate(d.categoryPages)
-	}
 }
 
 func (d *ContainerCreateDialog) initCustomInputHanlers() {
@@ -1674,230 +2109,6 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 
 		return event
 	})
-}
-
-// InputHandler returns input handler function for this primitive.
-func (d *ContainerCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop,gocyclo
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("container create dialog: event %v received", event)
-
-		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
-			d.cancelHandler()
-
-			return
-		}
-
-		if d.containerInfoPage.HasFocus() {
-			if handler := d.containerInfoPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setContainerInfoPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.environmentPage.HasFocus() {
-			if handler := d.environmentPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setEnvironmentPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.userGroupsPage.HasFocus() {
-			if handler := d.userGroupsPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setUserGroupsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.dnsPage.HasFocus() {
-			if handler := d.dnsPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setDNSSettingsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.networkingPage.HasFocus() {
-			if handler := d.networkingPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setNetworkSettingsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.portPage.HasFocus() {
-			if handler := d.portPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setPortPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.securityOptsPage.HasFocus() {
-			if handler := d.securityOptsPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setSecurityOptionsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.volumePage.HasFocus() {
-			if handler := d.volumePage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setVolumeSettingsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.healthPage.HasFocus() {
-			if handler := d.healthPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setHealthSettingsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.resourcePage.HasFocus() {
-			if handler := d.resourcePage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setResourceSettingsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.namespacePage.HasFocus() {
-			if handler := d.namespacePage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setNamespaceOptionsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.categories.HasFocus() {
-			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
-				categroryHandler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.form.HasFocus() { //nolint:nestif
-			if formHandler := d.form.InputHandler(); formHandler != nil {
-				if event.Key() == tcell.KeyEnter {
-					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-					if enterButton.HasFocus() {
-						d.enterHandler()
-					}
-				}
-
-				formHandler(event, setFocus)
-
-				return
-			}
-		}
-	})
-}
-
-// SetRect set rects for this primitive.
-func (d *ContainerCreateDialog) SetRect(x, y, width, height int) {
-	if width > containerCreateDialogMaxWidth {
-		emptySpace := (width - containerCreateDialogMaxWidth) / 2 //nolint:mnd
-		x += emptySpace
-		width = containerCreateDialogMaxWidth
-	}
-
-	maxAllowedHeight := containerCreateOnlyDialogHeight
-	if d.mode == ContainerCreateAndRunDialogMode {
-		maxAllowedHeight = containerCreateAndRunDialogHeight
-	}
-
-	if height > maxAllowedHeight {
-		emptySpace := (height - maxAllowedHeight) / 2 //nolint:mnd
-		y += emptySpace
-		height = maxAllowedHeight
-	}
-
-	d.Box.SetRect(x, y, width, height)
-}
-
-// Draw draws this primitive onto the screen.
-func (d *ContainerCreateDialog) Draw(screen tcell.Screen) {
-	if !d.display {
-		return
-	}
-
-	d.Box.DrawForSubclass(screen, d)
-
-	x, y, width, height := d.Box.GetInnerRect()
-
-	d.layout.SetRect(x, y, width, height)
-	d.layout.Draw(screen)
-}
-
-// SetCancelFunc sets form cancel button selected function.
-func (d *ContainerCreateDialog) SetCancelFunc(handler func()) *ContainerCreateDialog {
-	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
-
-	cancelButton.SetSelectedFunc(handler)
-
-	return d
-}
-
-// SetHandlerFunc sets form create or run button selected function.
-func (d *ContainerCreateDialog) SetHandlerFunc(handler func()) *ContainerCreateDialog {
-	d.enterHandler = handler
-	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-
-	enterButton.SetSelectedFunc(handler)
-
-	return d
 }
 
 func (d *ContainerCreateDialog) setActiveCategory(index int) {
@@ -2569,214 +2780,4 @@ func (d *ContainerCreateDialog) setVolumeSettingsPageNextFocus() {
 	}
 
 	d.focusElement = createContainerFormFocus
-}
-
-// ContainerCreateOptions returns new network options.
-func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOptions { //nolint:cyclop,gocognit,gocyclo,maintidx,lll
-	var (
-		labels           []string
-		imageID          string
-		podID            string
-		dnsServers       []string
-		dnsOptions       []string
-		dnsSearchDomains []string
-		publish          []string
-		expose           []string
-		imageVolume      string
-		selinuxOpts      []string
-		envVars          []string
-		envFile          []string
-		envMerge         []string
-		unsetEnv         []string
-		hostUsers        []string
-		secret           []string
-	)
-
-	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
-		if label != "" {
-			labels = append(labels, label)
-		}
-	}
-
-	selectedImageIndex, _ := d.containerImageField.GetCurrentOption()
-	if len(d.imageList) > 0 && selectedImageIndex > 0 {
-		imageID = d.imageList[selectedImageIndex-1].ID
-	}
-
-	selectedPodIndex, _ := d.containerPodField.GetCurrentOption()
-	if len(d.podList) > 0 && selectedPodIndex > 0 {
-		podID = d.podList[selectedPodIndex-1].Id
-	}
-
-	// ports
-	for _, p := range strings.Split(d.containerPortPublishField.GetText(), " ") {
-		if p != "" {
-			publish = append(publish, p)
-		}
-	}
-
-	for _, e := range strings.Split(d.containerPortExposeField.GetText(), " ") {
-		if e != "" {
-			expose = append(expose, e)
-		}
-	}
-
-	// DNS setting
-	for _, dns := range strings.Split(d.containerDNSServersField.GetText(), " ") {
-		if dns != "" {
-			dnsServers = append(dnsServers, dns)
-		}
-	}
-
-	for _, do := range strings.Split(d.containerDNSOptionsField.GetText(), " ") {
-		if do != "" {
-			dnsOptions = append(dnsOptions, do)
-		}
-	}
-
-	for _, ds := range strings.Split(d.containerDNSSearchField.GetText(), " ") {
-		if ds != "" {
-			dnsSearchDomains = append(dnsSearchDomains, ds)
-		}
-	}
-
-	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
-
-	// security options
-	for _, selinuxLabel := range strings.Split(d.containerSecLabelField.GetText(), " ") {
-		if selinuxLabel != "" {
-			selinuxOpts = append(selinuxOpts, selinuxLabel)
-		}
-	}
-
-	// health check
-	_, healthOnFailure := d.containerHealthOnFailureField.GetCurrentOption()
-
-	// env vars
-	for _, evar := range strings.Split(d.containerEnvVarsField.GetText(), " ") {
-		if evar != "" {
-			envVars = append(envVars, evar)
-		}
-	}
-
-	// env file
-	for _, efile := range strings.Split(d.containerEnvFileField.GetText(), " ") {
-		if efile != "" {
-			envFile = append(envFile, efile)
-		}
-	}
-
-	// env merge
-	for _, emerge := range strings.Split(d.containerEnvMergeField.GetText(), " ") {
-		if emerge != "" {
-			envMerge = append(envMerge, emerge)
-		}
-	}
-
-	// unset env
-	for _, eunset := range strings.Split(d.containerUnsetEnvField.GetText(), " ") {
-		if eunset != "" {
-			unsetEnv = append(unsetEnv, eunset)
-		}
-	}
-
-	// host users
-	for _, huser := range strings.Split(d.containerHostUsersField.GetText(), " ") {
-		if huser != "" {
-			hostUsers = append(hostUsers, huser)
-		}
-	}
-
-	// secret
-	for _, sec := range strings.Split(d.containerSecretField.GetText(), " ") {
-		if sec != "" {
-			secret = append(secret, sec)
-		}
-	}
-
-	_, network := d.containerNetworkField.GetCurrentOption()
-	opts := containers.CreateOptions{
-		Name:                  strings.TrimSpace(d.containerNameField.GetText()),
-		Command:               strings.TrimSpace(d.containerCommandField.GetText()),
-		Image:                 imageID,
-		Pod:                   podID,
-		Labels:                labels,
-		Remove:                d.containerRemoveField.IsChecked(),
-		Privileged:            d.containerPrivilegedField.IsChecked(),
-		Timeout:               strings.TrimSpace(d.containerTimeoutField.GetText()),
-		TTY:                   d.containerTtyField.IsChecked(),
-		Detach:                d.containerDetachField.IsChecked(),
-		Interactive:           d.containerInteractiveField.IsChecked(),
-		Secret:                secret,
-		WorkDir:               strings.TrimSpace(d.containerWorkDirField.GetText()),
-		EnvVars:               envVars,
-		EnvFile:               envFile,
-		EnvMerge:              envMerge,
-		UnsetEnv:              unsetEnv,
-		EnvHost:               d.containerEnvHostField.IsChecked(),
-		UnsetEnvAll:           d.containerUnsetEnvAllField.IsChecked(),
-		Umask:                 strings.TrimSpace(d.containerUmaskField.GetText()),
-		User:                  strings.TrimSpace(d.containerUserField.GetText()),
-		HostUsers:             hostUsers,
-		PasswdEntry:           strings.TrimSpace(d.containerPasswdEntryField.GetText()),
-		GroupEntry:            strings.TrimSpace(d.containerGroupEntryField.GetText()),
-		Hostname:              strings.TrimSpace(d.containerHostnameField.GetText()),
-		MacAddress:            strings.TrimSpace(d.containerMacAddrField.GetText()),
-		IPAddress:             strings.TrimSpace(d.containerIPAddrField.GetText()),
-		Network:               network,
-		Publish:               publish,
-		Expose:                expose,
-		PublishAll:            d.ContainerPortPublishAllField.IsChecked(),
-		DNSServer:             dnsServers,
-		DNSOptions:            dnsOptions,
-		DNSSearchDomain:       dnsSearchDomains,
-		Volume:                strings.TrimSpace(d.containerVolumeField.GetText()),
-		ImageVolume:           imageVolume,
-		Mount:                 strings.TrimSpace(d.containerMountField.GetText()),
-		SelinuxOpts:           selinuxOpts,
-		ApparmorProfile:       strings.TrimSpace(d.containerSecApparmorField.GetText()),
-		Seccomp:               strings.TrimSpace(d.containerSeccompField.GetText()),
-		SecNoNewPriv:          d.containerSecNoNewPrivField.IsChecked(),
-		SecMask:               strings.TrimSpace(d.containerSecMaskField.GetText()),
-		SecUnmask:             strings.TrimSpace(d.containerSecUnmaskField.GetText()),
-		HealthCmd:             strings.TrimSpace(d.containerHealthCmdField.GetText()),
-		HealthInterval:        strings.TrimSpace(d.containerHealthIntervalField.GetText()),
-		HealthRetries:         strings.TrimSpace(d.containerHealthRetriesField.GetText()),
-		HealthStartPeroid:     strings.TrimSpace(d.containerHealthStartPeriodField.GetText()),
-		HealthTimeout:         strings.TrimSpace(d.containerHealthTimeoutField.GetText()),
-		HealthOnFailure:       strings.TrimSpace(healthOnFailure),
-		HealthStartupCmd:      strings.TrimSpace(d.containerHealthStartupCmdField.GetText()),
-		HealthStartupInterval: strings.TrimSpace(d.containerHealthStartupIntervalField.GetText()),
-		HealthStartupRetries:  strings.TrimSpace(d.containerHealthStartupRetriesField.GetText()),
-		HealthStartupSuccess:  strings.TrimSpace(d.containerHealthStartupSuccessField.GetText()),
-		HealthStartupTimeout:  strings.TrimSpace(d.containerHealthStartupTimeoutField.GetText()),
-		HealthLogDestination:  strings.TrimSpace(d.containerHealthLogDestField.GetText()),
-		HealthMaxLogSize:      strings.TrimSpace(d.containerHealthMaxLogSizeField.GetText()),
-		HealthMaxLogCount:     strings.TrimSpace(d.containerHealthMaxLogCountField.GetText()),
-		Memory:                strings.TrimSpace(d.containerMemoryField.GetText()),
-		MemoryReservation:     strings.TrimSpace(d.containerMemoryReservationField.GetText()),
-		MemorySwap:            strings.TrimSpace(d.containerMemorySwapField.GetText()),
-		MemorySwappiness:      strings.TrimSpace(d.containerMemorySwappinessField.GetText()),
-		CPUs:                  strings.TrimSpace(d.containerCPUsField.GetText()),
-		CPUShares:             strings.TrimSpace(d.containerCPUSharesField.GetText()),
-		CPUPeriod:             strings.TrimSpace(d.containerCPUPeriodField.GetText()),
-		CPURtPeriod:           strings.TrimSpace(d.containerCPURtPeriodField.GetText()),
-		CPUQuota:              strings.TrimSpace(d.containerCPUQuotaField.GetText()),
-		CPURtRuntime:          strings.TrimSpace(d.containerCPURtRuntimeField.GetText()),
-		CPUSetCPUs:            strings.TrimSpace(d.containerCPUSetCPUsField.GetText()),
-		CPUSetMems:            strings.TrimSpace(d.containerCPUSetMemsField.GetText()),
-		SHMSize:               strings.TrimSpace(d.containerShmSizeField.GetText()),
-		SHMSizeSystemd:        strings.TrimSpace(d.containerShmSizeSystemdField.GetText()),
-		NamespaceCgroup:       strings.TrimSpace(d.containerNamespaceCgroupField.GetText()),
-		NamespaceIpc:          strings.TrimSpace(d.containerNamespaceIpcField.GetText()),
-		NamespacePid:          strings.TrimSpace(d.containerNamespacePidField.GetText()),
-		NamespaceUser:         strings.TrimSpace(d.containerNamespaceUserField.GetText()),
-		NamespaceUts:          strings.TrimSpace(d.containerNamespaceUtsField.GetText()),
-		NamespaceUidmap:       strings.TrimSpace(d.containerNamespaceUidmapField.GetText()),
-		NamespaceSubuidName:   strings.TrimSpace(d.containerNamespaceSubuidNameField.GetText()),
-		NamespaceGidmap:       strings.TrimSpace(d.containerNamespaceGidmapField.GetText()),
-		NamespaceSubgidName:   strings.TrimSpace(d.containerNamespaceSubgidNameField.GetText()),
-	}
-
-	return opts
 }

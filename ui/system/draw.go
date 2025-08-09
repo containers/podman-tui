@@ -6,7 +6,7 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (sys *System) Draw(screen tcell.Screen) { //nolint:cyclop
-	sys.Box.DrawForSubclass(screen, sys)
+	sys.DrawForSubclass(screen, sys)
 
 	sysViewX, sysViewY, sysViewW, sysViewH := sys.GetInnerRect()
 

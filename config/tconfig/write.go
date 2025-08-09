@@ -24,23 +24,30 @@ func (c *Config) write() error {
 
 	log.Debug().Msgf("config: write configuration file %q", path)
 
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil { //nolint:mnd
-		return err
-	}
-
-	configFile, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0o640) //nolint:mnd
+	err = os.MkdirAll(filepath.Dir(path), 0o750) //nolint:mnd
 	if err != nil {
 		return err
 	}
 
-	defer configFile.Close()
+	configFile, err := os.OpenFile(path, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0o600) //nolint:mnd,gosec
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		err := configFile.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close config file after write: %s", err.Error())
+		}
+	}()
 
 	jsonData, err := json.Marshal(c.Connection)
 	if err != nil {
 		return fmt.Errorf("config: configuration json marshal %w", err)
 	}
 
-	if _, err := configFile.Write(jsonData); err != nil {
+	_, err = configFile.Write(jsonData)
+	if err != nil {
 		return fmt.Errorf("config: %w write configuration %q", err, path)
 	}
 

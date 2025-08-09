@@ -224,7 +224,8 @@ func Create(opts CreateOptions) error { //nolint:cyclop,gocognit,gocyclo
 	}
 
 	// validate spec
-	if err := podSpec.Validate(); err != nil {
+	err = podSpec.Validate()
+	if err != nil {
 		errList = append(errList, err)
 	}
 

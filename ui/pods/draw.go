@@ -6,8 +6,8 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (pods *Pods) Draw(screen tcell.Screen) {
-	pods.Box.DrawForSubclass(screen, pods)
-	pods.Box.SetBorder(false)
+	pods.DrawForSubclass(screen, pods)
+	pods.SetBorder(false)
 
 	podViewX, podViewY, podViewW, podViewH := pods.GetInnerRect()
 

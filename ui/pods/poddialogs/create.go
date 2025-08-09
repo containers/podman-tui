@@ -75,6 +75,7 @@ const (
 // PodCreateDialog implements pod create dialog.
 type PodCreateDialog struct {
 	*tview.Box
+
 	layout                      *tview.Flex
 	categoryLabels              []string
 	categories                  *tview.TextView
@@ -227,6 +228,466 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.initCustomInputHandlers()
 
 	return &podDialog
+}
+
+// Display displays this primitive.
+func (d *PodCreateDialog) Display() {
+	d.display = true
+	d.initData()
+	d.focusElement = createPodCategoryPagesFocus
+}
+
+// IsDisplay returns true if primitive is shown.
+func (d *PodCreateDialog) IsDisplay() bool {
+	return d.display
+}
+
+// Hide stops displaying this primitive.
+func (d *PodCreateDialog) Hide() {
+	d.display = false
+}
+
+// HasFocus returns whether or not this primitive has focus.
+func (d *PodCreateDialog) HasFocus() bool {
+	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
+		return true
+	}
+
+	return d.Box.HasFocus() || d.form.HasFocus()
+}
+
+// Focus is called when this primitive receives focus.
+func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop,gocyclo
+	switch d.focusElement {
+	// form has focus
+	case createPodFormFocus:
+		button := d.form.GetButton(d.form.GetButtonCount() - 1)
+		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			if event.Key() == tcell.KeyTab {
+				d.focusElement = createPodCategoriesFocus // category text view
+				d.Focus(delegate)
+				d.form.SetFocus(0)
+
+				return nil
+			}
+
+			if event.Key() == tcell.KeyEnter {
+				// d.pullSelectHandler()
+				return nil
+			}
+
+			return event
+		})
+
+		delegate(d.form)
+	// category text view
+	case createPodCategoriesFocus:
+		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+			if event.Key() == tcell.KeyTab {
+				d.focusElement = createPodCategoryPagesFocus // category page view
+				d.Focus(delegate)
+
+				return nil
+			}
+
+			// scroll between categories
+			event = utils.ParseKeyEventKey(event)
+			if event.Key() == tcell.KeyDown {
+				d.nextCategory()
+			}
+
+			if event.Key() == tcell.KeyUp {
+				d.previousCategory()
+			}
+
+			return nil
+		})
+		delegate(d.categories)
+	// basic info page
+	case createPodNoHostsCheckBoxFocus:
+		delegate(d.podNoHostsCheckBox)
+	case createPodLabelsFieldFocus:
+		delegate(d.podLabelsField)
+	// security options page
+	case createPodSelinuxLabelFieldFocus:
+		delegate(d.podSelinuxLabelField)
+	case createPodApparmorFieldFocus:
+		delegate(d.podApparmorField)
+	case createPodSeccompFieldFocus:
+		delegate(d.podSeccompField)
+	case createPodMaskFieldFocus:
+		delegate(d.podMaskField)
+	case createPodUnmaskFieldFocus:
+		delegate(d.podUnmaskField)
+	case createPodNoNewPrivFieldFocus:
+		delegate(d.podNoNewPrivField)
+	// dns page
+	case createPodDNSOptionsFieldFocus:
+		delegate(d.podDNSOptionsField)
+	case createPodDNSSearchDomaindFieldFocus:
+		delegate(d.podDNSSearchDomaindField)
+	// infra page
+	case createPodInfraCommandFieldFocus:
+		delegate(d.podInfraCommandField)
+	case createPodInfraImageFieldFocus:
+		delegate(d.podInfraImageField)
+	// networking page
+	case createPodIPAddressFieldFocus:
+		delegate(d.podIPAddressField)
+	case createPodMacAddressFieldFocus:
+		delegate(d.podMacAddressField)
+	case createPodAddHostFieldFocus:
+		delegate(d.podAddHostField)
+	case createPodNetworkFieldFocus:
+		delegate(d.podNetworkField)
+	case createPodPublishFieldFocus:
+		delegate(d.podPublishField)
+	// resource page
+	case createPodMemoryFieldFocus:
+		delegate(d.podMemoryField)
+	case createPodMemorySwapFieldFocus:
+		delegate(d.podMemorySwapField)
+	case createPodCPUsFieldFocus:
+		delegate(d.podCPUsField)
+	case createPodCPUSharesFieldFocus:
+		delegate(d.podCPUSharesField)
+	case createPodCPUSetCPUsFieldFocus:
+		delegate(d.podCPUSetCPUsField)
+	case createPodCPUSetMemsFieldFocus:
+		delegate(d.podCPUSetMemsField)
+	case createPodShmSizeFieldFocus:
+		delegate(d.podShmSizeField)
+	case createPodShmSizeSystemdFieldFocus:
+		delegate(d.podShmSizeSystemdField)
+	// namespace page
+	case createPodNamespaceShareFieldFocus:
+		delegate(d.podNamespaceShareField)
+	case createPodNamespacePidFieldFocus:
+		delegate(d.podNamespacePidField)
+	case createPodNamespaceUserFieldFocus:
+		delegate(d.podNamespaceUserField)
+	case createPodNamespaceUtsFieldFocus:
+		delegate(d.podNamespaceUtsField)
+	case createPodNamespaceUidmapFieldFocus:
+		delegate(d.podNamespaceUidmapField)
+	case createPodNamespaceSubuidNameFieldFocus:
+		delegate(d.podNamespaceSubuidNameField)
+	case createPodNamespaceGidmapFieldFocus:
+		delegate(d.podNamespaceGidmapField)
+	case createPodNamespaceSubgidNameFieldFocus:
+		delegate(d.podNamespaceSubgidNameField)
+	// category page
+	case createPodCategoryPagesFocus:
+		delegate(d.categoryPages)
+	}
+}
+
+// InputHandler returns input handler function for this primitive.
+func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+		log.Debug().Msgf("pod create dialog: event %v received", event)
+
+		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
+			d.cancelHandler()
+
+			return
+		}
+
+		if d.basicInfoPage.HasFocus() {
+			if handler := d.basicInfoPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setBasicInfoPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.dnsSetupPage.HasFocus() {
+			if handler := d.dnsSetupPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setDNSSetupPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.infraSetupPage.HasFocus() {
+			if handler := d.infraSetupPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setInfraSetupPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.networkingPage.HasFocus() {
+			if handler := d.networkingPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNetworkingPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.securityOptsPage.HasFocus() {
+			if handler := d.securityOptsPage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setSecurityOptsPageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.resourcePage.HasFocus() {
+			if handler := d.resourcePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setResourcePagePageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.namespacePage.HasFocus() {
+			if handler := d.namespacePage.InputHandler(); handler != nil {
+				if event.Key() == tcell.KeyTab {
+					d.setNamespacePageNextFocus()
+				}
+
+				handler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.categories.HasFocus() {
+			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
+				categroryHandler(event, setFocus)
+
+				return
+			}
+		}
+
+		if d.form.HasFocus() { //nolint:nestif
+			if formHandler := d.form.InputHandler(); formHandler != nil {
+				if event.Key() == tcell.KeyEnter {
+					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+					if enterButton.HasFocus() {
+						d.createHandler()
+					}
+				}
+
+				formHandler(event, setFocus)
+
+				return
+			}
+		}
+	})
+}
+
+// SetRect set rects for this primitive.
+func (d *PodCreateDialog) SetRect(x, y, width, height int) {
+	if width > podCreateDialogMaxWidth {
+		emptySpace := (width - podCreateDialogMaxWidth) / 2 //nolint:mnd
+		x += emptySpace
+		width = podCreateDialogMaxWidth
+	}
+
+	if height > podCreateDialogHeight {
+		emptySpace := (height - podCreateDialogHeight) / 2 //nolint:mnd
+		y += emptySpace
+		height = podCreateDialogHeight
+	}
+
+	d.Box.SetRect(x, y, width, height)
+}
+
+// Draw draws this primitive onto the screen.
+func (d *PodCreateDialog) Draw(screen tcell.Screen) {
+	if !d.display {
+		return
+	}
+
+	d.DrawForSubclass(screen, d)
+
+	x, y, width, height := d.GetInnerRect()
+
+	d.layout.SetRect(x, y, width, height)
+	d.layout.Draw(screen)
+}
+
+// SetCancelFunc sets form cancel button selected function.
+func (d *PodCreateDialog) SetCancelFunc(handler func()) *PodCreateDialog {
+	d.cancelHandler = handler
+	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
+	cancelButton.SetSelectedFunc(handler)
+
+	return d
+}
+
+// SetCreateFunc sets form create button selected function.
+func (d *PodCreateDialog) SetCreateFunc(handler func()) *PodCreateDialog {
+	d.createHandler = handler
+	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
+
+	enterButton.SetSelectedFunc(handler)
+
+	return d
+}
+
+// GetPodSpec returns pod create option spec.
+func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cyclop
+	var (
+		labels           = make(map[string]string)
+		dnsServers       []string
+		dnsOptions       []string
+		dnsSearchDomains []string
+		addHost          []string
+		network          string
+		securityOpts     []string
+		publish          []string
+		namespaceShare   []string
+	)
+
+	for _, nsshare := range strings.Split(d.podNamespaceShareField.GetText(), " ") {
+		if nsshare != "" {
+			namespaceShare = append(namespaceShare, nsshare)
+		}
+	}
+
+	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
+		if label != "" {
+			split := strings.Split(label, "=")
+			if len(split) == 2 { //nolint:mnd
+				key := split[0]
+				value := split[1]
+
+				if key != "" && value != "" {
+					labels[key] = value
+				}
+			}
+		}
+	}
+
+	for _, dns := range strings.Split(d.podDNSServerField.GetText(), " ") {
+		if dns != "" {
+			dnsServers = append(dnsServers, dns)
+		}
+	}
+
+	for _, do := range strings.Split(d.podDNSOptionsField.GetText(), " ") {
+		if do != "" {
+			dnsOptions = append(dnsOptions, do)
+		}
+	}
+
+	for _, ds := range strings.Split(d.podDNSSearchDomaindField.GetText(), " ") {
+		if ds != "" {
+			dnsSearchDomains = append(dnsSearchDomains, ds)
+		}
+	}
+
+	for _, hadd := range strings.Split(d.podAddHostField.GetText(), " ") {
+		if hadd != "" {
+			addHost = append(addHost, hadd)
+		}
+	}
+
+	index, netName := d.podNetworkField.GetCurrentOption()
+	if index > 0 {
+		network = netName
+	}
+
+	for _, p := range strings.Split(d.podPublishField.GetText(), " ") {
+		if p != "" {
+			publish = append(publish, p)
+		}
+	}
+
+	// securuty options
+	if d.podNoNewPrivField.IsChecked() {
+		securityOpts = append(securityOpts, "no-new-privileges")
+	}
+
+	apparmor := strings.TrimSpace(d.podApparmorField.GetText())
+	if apparmor != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor)) //nolint:perfsprint
+	}
+
+	seccomp := strings.TrimSpace(d.podSeccompField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp)) //nolint:perfsprint
+	}
+
+	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel)) //nolint:perfsprint
+		}
+	}
+
+	mask := strings.TrimSpace(d.podMaskField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask)) //nolint:perfsprint
+	}
+
+	unmask := strings.TrimSpace(d.podUnmaskField.GetText())
+	if seccomp != "" {
+		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask)) //nolint:perfsprint
+	}
+
+	opts := pods.CreateOptions{
+		Name:                strings.TrimSpace(d.podNameField.GetText()),
+		NoHost:              d.podNoHostsCheckBox.IsChecked(),
+		Labels:              labels,
+		DNSServer:           dnsServers,
+		DNSOptions:          dnsOptions,
+		DNSSearchDomain:     dnsSearchDomains,
+		Infra:               d.podInfraCheckBox.IsChecked(),
+		InfraImage:          strings.TrimSpace(d.podInfraImageField.GetText()),
+		InfraCommand:        strings.TrimSpace(d.podInfraCommandField.GetText()),
+		Hostname:            strings.TrimSpace(d.podHostnameField.GetText()),
+		IPAddress:           strings.TrimSpace(d.podIPAddressField.GetText()),
+		MacAddress:          strings.TrimSpace(d.podMacAddressField.GetText()),
+		AddHost:             addHost,
+		Network:             network,
+		SecurityOpts:        securityOpts,
+		Publish:             publish,
+		Memory:              strings.TrimSpace(d.podMemoryField.GetText()),
+		MemorySwap:          strings.TrimSpace(d.podMemorySwapField.GetText()),
+		CPUs:                strings.TrimSpace(d.podCPUsField.GetText()),
+		CPUShares:           strings.TrimSpace(d.podCPUSharesField.GetText()),
+		CPUSetCPUs:          strings.TrimSpace(d.podCPUSetCPUsField.GetText()),
+		CPUSetMems:          strings.TrimSpace(d.podCPUSetMemsField.GetText()),
+		ShmSize:             strings.TrimSpace(d.podShmSizeField.GetText()),
+		ShmSizeSystemd:      strings.TrimSpace(d.podShmSizeSystemdField.GetText()),
+		NamespaceShare:      namespaceShare,
+		NamespacePid:        strings.TrimSpace(d.podNamespacePidField.GetText()),
+		NamespaceUser:       strings.TrimSpace(d.podNamespaceUserField.GetText()),
+		NamespaceUts:        strings.TrimSpace(d.podNamespaceUtsField.GetText()),
+		NamespaceUidmap:     strings.TrimSpace(d.podNamespaceUidmapField.GetText()),
+		NamespaceSubuidName: strings.TrimSpace(d.podNamespaceSubuidNameField.GetText()),
+		NamespaceGidmap:     strings.TrimSpace(d.podNamespaceGidmapField.GetText()),
+		NamespaceSubgidName: strings.TrimSpace(d.podNamespaceSubgidNameField.GetText()),
+	}
+
+	return opts
 }
 
 func (d *PodCreateDialog) setupLayout() {
@@ -677,162 +1138,10 @@ func (d *PodCreateDialog) setupNamespaceOptionsUI() {
 	d.namespacePage.SetBackgroundColor(bgColor)
 }
 
-// Display displays this primitive.
-func (d *PodCreateDialog) Display() {
-	d.display = true
-	d.initData()
-	d.focusElement = createPodCategoryPagesFocus
-}
-
-// IsDisplay returns true if primitive is shown.
-func (d *PodCreateDialog) IsDisplay() bool {
-	return d.display
-}
-
-// Hide stops displaying this primitive.
-func (d *PodCreateDialog) Hide() {
-	d.display = false
-}
-
-// HasFocus returns whether or not this primitive has focus.
-func (d *PodCreateDialog) HasFocus() bool {
-	if d.categories.HasFocus() || d.categoryPages.HasFocus() {
-		return true
-	}
-
-	return d.Box.HasFocus() || d.form.HasFocus()
-}
-
 // dropdownHasFocus returns true if pod create dialog dropdown primitives.
 // has focus.
 func (d *PodCreateDialog) dropdownHasFocus() bool {
 	return d.podNetworkField.HasFocus()
-}
-
-// Focus is called when this primitive receives focus.
-func (d *PodCreateDialog) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop,gocyclo
-	switch d.focusElement {
-	// form has focus
-	case createPodFormFocus:
-		button := d.form.GetButton(d.form.GetButtonCount() - 1)
-		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			if event.Key() == tcell.KeyTab {
-				d.focusElement = createPodCategoriesFocus // category text view
-				d.Focus(delegate)
-				d.form.SetFocus(0)
-
-				return nil
-			}
-
-			if event.Key() == tcell.KeyEnter {
-				// d.pullSelectHandler()
-				return nil
-			}
-
-			return event
-		})
-
-		delegate(d.form)
-	// category text view
-	case createPodCategoriesFocus:
-		d.categories.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-			if event.Key() == tcell.KeyTab {
-				d.focusElement = createPodCategoryPagesFocus // category page view
-				d.Focus(delegate)
-
-				return nil
-			}
-
-			// scroll between categories
-			event = utils.ParseKeyEventKey(event)
-			if event.Key() == tcell.KeyDown {
-				d.nextCategory()
-			}
-
-			if event.Key() == tcell.KeyUp {
-				d.previousCategory()
-			}
-
-			return nil
-		})
-		delegate(d.categories)
-	// basic info page
-	case createPodNoHostsCheckBoxFocus:
-		delegate(d.podNoHostsCheckBox)
-	case createPodLabelsFieldFocus:
-		delegate(d.podLabelsField)
-	// security options page
-	case createPodSelinuxLabelFieldFocus:
-		delegate(d.podSelinuxLabelField)
-	case createPodApparmorFieldFocus:
-		delegate(d.podApparmorField)
-	case createPodSeccompFieldFocus:
-		delegate(d.podSeccompField)
-	case createPodMaskFieldFocus:
-		delegate(d.podMaskField)
-	case createPodUnmaskFieldFocus:
-		delegate(d.podUnmaskField)
-	case createPodNoNewPrivFieldFocus:
-		delegate(d.podNoNewPrivField)
-	// dns page
-	case createPodDNSOptionsFieldFocus:
-		delegate(d.podDNSOptionsField)
-	case createPodDNSSearchDomaindFieldFocus:
-		delegate(d.podDNSSearchDomaindField)
-	// infra page
-	case createPodInfraCommandFieldFocus:
-		delegate(d.podInfraCommandField)
-	case createPodInfraImageFieldFocus:
-		delegate(d.podInfraImageField)
-	// networking page
-	case createPodIPAddressFieldFocus:
-		delegate(d.podIPAddressField)
-	case createPodMacAddressFieldFocus:
-		delegate(d.podMacAddressField)
-	case createPodAddHostFieldFocus:
-		delegate(d.podAddHostField)
-	case createPodNetworkFieldFocus:
-		delegate(d.podNetworkField)
-	case createPodPublishFieldFocus:
-		delegate(d.podPublishField)
-	// resource page
-	case createPodMemoryFieldFocus:
-		delegate(d.podMemoryField)
-	case createPodMemorySwapFieldFocus:
-		delegate(d.podMemorySwapField)
-	case createPodCPUsFieldFocus:
-		delegate(d.podCPUsField)
-	case createPodCPUSharesFieldFocus:
-		delegate(d.podCPUSharesField)
-	case createPodCPUSetCPUsFieldFocus:
-		delegate(d.podCPUSetCPUsField)
-	case createPodCPUSetMemsFieldFocus:
-		delegate(d.podCPUSetMemsField)
-	case createPodShmSizeFieldFocus:
-		delegate(d.podShmSizeField)
-	case createPodShmSizeSystemdFieldFocus:
-		delegate(d.podShmSizeSystemdField)
-	// namespace page
-	case createPodNamespaceShareFieldFocus:
-		delegate(d.podNamespaceShareField)
-	case createPodNamespacePidFieldFocus:
-		delegate(d.podNamespacePidField)
-	case createPodNamespaceUserFieldFocus:
-		delegate(d.podNamespaceUserField)
-	case createPodNamespaceUtsFieldFocus:
-		delegate(d.podNamespaceUtsField)
-	case createPodNamespaceUidmapFieldFocus:
-		delegate(d.podNamespaceUidmapField)
-	case createPodNamespaceSubuidNameFieldFocus:
-		delegate(d.podNamespaceSubuidNameField)
-	case createPodNamespaceGidmapFieldFocus:
-		delegate(d.podNamespaceGidmapField)
-	case createPodNamespaceSubgidNameFieldFocus:
-		delegate(d.podNamespaceSubgidNameField)
-	// category page
-	case createPodCategoryPagesFocus:
-		delegate(d.categoryPages)
-	}
 }
 
 func (d *PodCreateDialog) initCustomInputHandlers() {
@@ -842,176 +1151,6 @@ func (d *PodCreateDialog) initCustomInputHandlers() {
 
 		return event
 	})
-}
-
-// InputHandler returns input handler function for this primitive.
-func (d *PodCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("pod create dialog: event %v received", event)
-
-		if event.Key() == tcell.KeyEsc && !d.dropdownHasFocus() {
-			d.cancelHandler()
-
-			return
-		}
-
-		if d.basicInfoPage.HasFocus() {
-			if handler := d.basicInfoPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setBasicInfoPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.dnsSetupPage.HasFocus() {
-			if handler := d.dnsSetupPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setDNSSetupPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.infraSetupPage.HasFocus() {
-			if handler := d.infraSetupPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setInfraSetupPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.networkingPage.HasFocus() {
-			if handler := d.networkingPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setNetworkingPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.securityOptsPage.HasFocus() {
-			if handler := d.securityOptsPage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setSecurityOptsPageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.resourcePage.HasFocus() {
-			if handler := d.resourcePage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setResourcePagePageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.namespacePage.HasFocus() {
-			if handler := d.namespacePage.InputHandler(); handler != nil {
-				if event.Key() == tcell.KeyTab {
-					d.setNamespacePageNextFocus()
-				}
-
-				handler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.categories.HasFocus() {
-			if categroryHandler := d.categories.InputHandler(); categroryHandler != nil {
-				categroryHandler(event, setFocus)
-
-				return
-			}
-		}
-
-		if d.form.HasFocus() { //nolint:nestif
-			if formHandler := d.form.InputHandler(); formHandler != nil {
-				if event.Key() == tcell.KeyEnter {
-					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-					if enterButton.HasFocus() {
-						d.createHandler()
-					}
-				}
-
-				formHandler(event, setFocus)
-
-				return
-			}
-		}
-	})
-}
-
-// SetRect set rects for this primitive.
-func (d *PodCreateDialog) SetRect(x, y, width, height int) {
-	if width > podCreateDialogMaxWidth {
-		emptySpace := (width - podCreateDialogMaxWidth) / 2 //nolint:mnd
-		x += emptySpace
-		width = podCreateDialogMaxWidth
-	}
-
-	if height > podCreateDialogHeight {
-		emptySpace := (height - podCreateDialogHeight) / 2 //nolint:mnd
-		y += emptySpace
-		height = podCreateDialogHeight
-	}
-
-	d.Box.SetRect(x, y, width, height)
-}
-
-// Draw draws this primitive onto the screen.
-func (d *PodCreateDialog) Draw(screen tcell.Screen) {
-	if !d.display {
-		return
-	}
-
-	d.Box.DrawForSubclass(screen, d)
-
-	x, y, width, height := d.Box.GetInnerRect()
-
-	d.layout.SetRect(x, y, width, height)
-	d.layout.Draw(screen)
-}
-
-// SetCancelFunc sets form cancel button selected function.
-func (d *PodCreateDialog) SetCancelFunc(handler func()) *PodCreateDialog {
-	d.cancelHandler = handler
-	cancelButton := d.form.GetButton(d.form.GetButtonCount() - 2) //nolint:mnd
-	cancelButton.SetSelectedFunc(handler)
-
-	return d
-}
-
-// SetCreateFunc sets form create button selected function.
-func (d *PodCreateDialog) SetCreateFunc(handler func()) *PodCreateDialog {
-	d.createHandler = handler
-	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-
-	enterButton.SetSelectedFunc(handler)
-
-	return d
 }
 
 func (d *PodCreateDialog) setActiveCategory(index int) {
@@ -1331,142 +1470,4 @@ func (d *PodCreateDialog) setNamespacePageNextFocus() {
 	}
 
 	d.focusElement = createPodFormFocus
-}
-
-// GetPodSpec returns pod create option spec.
-func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cyclop
-	var (
-		labels           = make(map[string]string)
-		dnsServers       []string
-		dnsOptions       []string
-		dnsSearchDomains []string
-		addHost          []string
-		network          string
-		securityOpts     []string
-		publish          []string
-		namespaceShare   []string
-	)
-
-	for _, nsshare := range strings.Split(d.podNamespaceShareField.GetText(), " ") {
-		if nsshare != "" {
-			namespaceShare = append(namespaceShare, nsshare)
-		}
-	}
-
-	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
-		if label != "" {
-			split := strings.Split(label, "=")
-			if len(split) == 2 { //nolint:mnd
-				key := split[0]
-				value := split[1]
-
-				if key != "" && value != "" {
-					labels[key] = value
-				}
-			}
-		}
-	}
-
-	for _, dns := range strings.Split(d.podDNSServerField.GetText(), " ") {
-		if dns != "" {
-			dnsServers = append(dnsServers, dns)
-		}
-	}
-
-	for _, do := range strings.Split(d.podDNSOptionsField.GetText(), " ") {
-		if do != "" {
-			dnsOptions = append(dnsOptions, do)
-		}
-	}
-
-	for _, ds := range strings.Split(d.podDNSSearchDomaindField.GetText(), " ") {
-		if ds != "" {
-			dnsSearchDomains = append(dnsSearchDomains, ds)
-		}
-	}
-
-	for _, hadd := range strings.Split(d.podAddHostField.GetText(), " ") {
-		if hadd != "" {
-			addHost = append(addHost, hadd)
-		}
-	}
-
-	index, netName := d.podNetworkField.GetCurrentOption()
-	if index > 0 {
-		network = netName
-	}
-
-	for _, p := range strings.Split(d.podPublishField.GetText(), " ") {
-		if p != "" {
-			publish = append(publish, p)
-		}
-	}
-
-	// securuty options
-	if d.podNoNewPrivField.IsChecked() {
-		securityOpts = append(securityOpts, "no-new-privileges")
-	}
-
-	apparmor := strings.TrimSpace(d.podApparmorField.GetText())
-	if apparmor != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("apparmor=%s", apparmor)) //nolint:perfsprint
-	}
-
-	seccomp := strings.TrimSpace(d.podSeccompField.GetText())
-	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp)) //nolint:perfsprint
-	}
-
-	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
-		if selinuxLabel != "" {
-			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel)) //nolint:perfsprint
-		}
-	}
-
-	mask := strings.TrimSpace(d.podMaskField.GetText())
-	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("mask=%s", mask)) //nolint:perfsprint
-	}
-
-	unmask := strings.TrimSpace(d.podUnmaskField.GetText())
-	if seccomp != "" {
-		securityOpts = append(securityOpts, fmt.Sprintf("unmask=%s", unmask)) //nolint:perfsprint
-	}
-
-	opts := pods.CreateOptions{
-		Name:                strings.TrimSpace(d.podNameField.GetText()),
-		NoHost:              d.podNoHostsCheckBox.IsChecked(),
-		Labels:              labels,
-		DNSServer:           dnsServers,
-		DNSOptions:          dnsOptions,
-		DNSSearchDomain:     dnsSearchDomains,
-		Infra:               d.podInfraCheckBox.IsChecked(),
-		InfraImage:          strings.TrimSpace(d.podInfraImageField.GetText()),
-		InfraCommand:        strings.TrimSpace(d.podInfraCommandField.GetText()),
-		Hostname:            strings.TrimSpace(d.podHostnameField.GetText()),
-		IPAddress:           strings.TrimSpace(d.podIPAddressField.GetText()),
-		MacAddress:          strings.TrimSpace(d.podMacAddressField.GetText()),
-		AddHost:             addHost,
-		Network:             network,
-		SecurityOpts:        securityOpts,
-		Publish:             publish,
-		Memory:              strings.TrimSpace(d.podMemoryField.GetText()),
-		MemorySwap:          strings.TrimSpace(d.podMemorySwapField.GetText()),
-		CPUs:                strings.TrimSpace(d.podCPUsField.GetText()),
-		CPUShares:           strings.TrimSpace(d.podCPUSharesField.GetText()),
-		CPUSetCPUs:          strings.TrimSpace(d.podCPUSetCPUsField.GetText()),
-		CPUSetMems:          strings.TrimSpace(d.podCPUSetMemsField.GetText()),
-		ShmSize:             strings.TrimSpace(d.podShmSizeField.GetText()),
-		ShmSizeSystemd:      strings.TrimSpace(d.podShmSizeSystemdField.GetText()),
-		NamespaceShare:      namespaceShare,
-		NamespacePid:        strings.TrimSpace(d.podNamespacePidField.GetText()),
-		NamespaceUser:       strings.TrimSpace(d.podNamespaceUserField.GetText()),
-		NamespaceUts:        strings.TrimSpace(d.podNamespaceUtsField.GetText()),
-		NamespaceUidmap:     strings.TrimSpace(d.podNamespaceUidmapField.GetText()),
-		NamespaceSubuidName: strings.TrimSpace(d.podNamespaceSubuidNameField.GetText()),
-		NamespaceGidmap:     strings.TrimSpace(d.podNamespaceGidmapField.GetText()),
-		NamespaceSubgidName: strings.TrimSpace(d.podNamespaceSubgidNameField.GetText()),
-	}
-
-	return opts
 }

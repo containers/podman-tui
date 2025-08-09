@@ -20,11 +20,13 @@ func RunInitAttach(cntID string, stdin io.Reader, stdout io.Writer, attachReady 
 	attachOptions := new(containers.AttachOptions)
 	attachOptions.WithDetachKeys(detachKey)
 
-	if err := containers.ContainerInit(conn, cntID, new(containers.InitOptions)); err != nil {
+	err = containers.ContainerInit(conn, cntID, new(containers.InitOptions))
+	if err != nil {
 		return err
 	}
 
-	if err := containers.Attach(conn, cntID, stdin, stdout, stdout, attachReady, attachOptions); err != nil {
+	err = containers.Attach(conn, cntID, stdin, stdout, stdout, attachReady, attachOptions)
+	if err != nil {
 		return err
 	}
 

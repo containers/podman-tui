@@ -7,6 +7,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -22,7 +23,7 @@ func (img *Images) runCommand(cmd string) { //nolint:cyclop
 		img.importDialog.Display()
 	case "inspect":
 		img.inspect()
-	case "prune": //nolint:goconst
+	case utils.PruneCommandLabel:
 		img.cprune()
 	case "push":
 		img.cpush()
@@ -248,7 +249,8 @@ func (img *Images) push() {
 	img.progressDialog.Display()
 
 	push := func() {
-		if err := images.Push(img.selectedID, pushOptions); err != nil {
+		err := images.Push(img.selectedID, pushOptions)
+		if err != nil {
 			img.progressDialog.Hide()
 			title := fmt.Sprintf("IMAGE (%s) PUSH ERROR", img.selectedID)
 
@@ -402,7 +404,8 @@ func (img *Images) ctag() {
 }
 
 func (img *Images) tag(tag string) {
-	if err := images.Tag(img.selectedID, tag); err != nil {
+	err := images.Tag(img.selectedID, tag)
+	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) TAG ERROR", img.selectedID)
 		img.displayError(title, err)
 	}
@@ -463,7 +466,8 @@ func (img *Images) tree() {
 }
 
 func (img *Images) untag(id string) {
-	if err := images.Untag(id); err != nil {
+	err := images.Untag(id)
+	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) UNTAG ERROR", img.selectedID)
 
 		img.displayError(title, err)

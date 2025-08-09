@@ -10,6 +10,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/system/sysdialogs"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
 )
 
@@ -18,6 +19,7 @@ var ErrConnectionInprogres = errors.New("connection is in progress, need to disc
 // System implemnents the system information page primitive.
 type System struct {
 	*tview.Box
+
 	title                    string
 	connTable                *tview.Table
 	connTableHeaders         []string
@@ -117,7 +119,7 @@ func NewSystem() *System {
 		sys.confirmDialog.Hide()
 
 		switch sys.confirmData {
-		case "prune":
+		case utils.PruneCommandLabel:
 			sys.prune()
 		case "remove_conn":
 			sys.remove()
@@ -307,33 +309,6 @@ func (sys *System) ConnectionProgressDisplay(display bool) {
 	sys.connPrgDialog.Hide()
 }
 
-func (sys *System) getSelectedItem() *sysSelectedItem {
-	selectedItem := sysSelectedItem{}
-
-	if sys.connTable.GetRowCount() <= 1 {
-		return &selectedItem
-	}
-
-	row, _ := sys.connTable.GetSelection()
-	selectedItem.name = sys.connTable.GetCell(row, 0).Text
-	selectedItem.status = sys.connTable.GetCell(row, 2).Text   //nolint:mnd
-	selectedItem.uri = sys.connTable.GetCell(row, 3).Text      //nolint:mnd
-	selectedItem.identity = sys.connTable.GetCell(row, 4).Text //nolint:mnd
-
-	return &selectedItem
-}
-
-func (sys *System) hideAllDialogs() {
-	sys.errorDialog.Hide()
-	sys.cmdDialog.Hide()
-	sys.confirmDialog.Hide()
-	sys.messageDialog.Hide()
-	sys.dfDialog.Hide()
-	sys.progressDialog.Hide()
-	sys.eventDialog.Hide()
-	sys.connAddDialog.Hide()
-}
-
 // SetConnectionListFunc sets list destination function.
 func (sys *System) SetConnectionListFunc(list func() []registry.Connection) {
 	sys.connectionListFunc = list
@@ -362,4 +337,31 @@ func (sys *System) SetConnectionAddFunc(add func(name string, uri string, identi
 // SetConnectionRemoveFunc sets system remove connection function.
 func (sys *System) SetConnectionRemoveFunc(remove func(name string) error) {
 	sys.connectionRemoveFunc = remove
+}
+
+func (sys *System) getSelectedItem() *sysSelectedItem {
+	selectedItem := sysSelectedItem{}
+
+	if sys.connTable.GetRowCount() <= 1 {
+		return &selectedItem
+	}
+
+	row, _ := sys.connTable.GetSelection()
+	selectedItem.name = sys.connTable.GetCell(row, 0).Text
+	selectedItem.status = sys.connTable.GetCell(row, 2).Text   //nolint:mnd
+	selectedItem.uri = sys.connTable.GetCell(row, 3).Text      //nolint:mnd
+	selectedItem.identity = sys.connTable.GetCell(row, 4).Text //nolint:mnd
+
+	return &selectedItem
+}
+
+func (sys *System) hideAllDialogs() {
+	sys.errorDialog.Hide()
+	sys.cmdDialog.Hide()
+	sys.confirmDialog.Hide()
+	sys.messageDialog.Hide()
+	sys.dfDialog.Hide()
+	sys.progressDialog.Hide()
+	sys.eventDialog.Hide()
+	sys.connAddDialog.Hide()
 }

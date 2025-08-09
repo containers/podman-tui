@@ -23,6 +23,7 @@ const (
 // SimpleInputDialog is an input dialog primitive.
 type SimpleInputDialog struct {
 	*tview.Box
+
 	height        int
 	layout        *tview.Flex
 	textview      *tview.TextView
@@ -95,44 +96,16 @@ func (d *SimpleInputDialog) Hide() {
 	d.display = false
 }
 
-func (d *SimpleInputDialog) setLayout(haveDesc bool) {
-	d.layout.Clear()
-
-	descHeight := siDescHeight
-
-	if !haveDesc {
-		descHeight = 1
-		d.height = siDialogHeight - 3 //nolint:mnd
-	} else {
-		d.height = siDialogHeight
-	}
-
-	d.layout.AddItem(
-		tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
-			AddItem(d.textview, 0, 1, false).
-			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
-		descHeight, 0, true)
-
-	d.layout.AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
-		AddItem(d.input, 0, 1, false).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
-		1, 0, true)
-
-	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
-	d.layout.SetBorder(true)
-	d.layout.SetBorderColor(style.DialogBorderColor)
-	d.layout.SetBackgroundColor(style.DialogBgColor)
-}
-
 // SetDescription sets dialogs description.
 func (d *SimpleInputDialog) SetDescription(text string) {
 	d.textview.Clear()
 
 	haveDesc := true
 
-	fmt.Fprintf(d.textview, "\n%s", text)
+	_, err := fmt.Fprintf(d.textview, "\n%s", text)
+	if err != nil {
+		log.Error().Msgf("failed to write to ui text view: %s", err.Error())
+	}
 
 	if len(text) == 0 {
 		haveDesc = false
@@ -293,8 +266,8 @@ func (d *SimpleInputDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -315,4 +288,35 @@ func (d *SimpleInputDialog) SetCancelFunc(handler func()) *SimpleInputDialog {
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
+}
+
+func (d *SimpleInputDialog) setLayout(haveDesc bool) {
+	d.layout.Clear()
+
+	descHeight := siDescHeight
+
+	if !haveDesc {
+		descHeight = 1
+		d.height = siDialogHeight - 3 //nolint:mnd
+	} else {
+		d.height = siDialogHeight
+	}
+
+	d.layout.AddItem(
+		tview.NewFlex().SetDirection(tview.FlexColumn).
+			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+			AddItem(d.textview, 0, 1, false).
+			AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
+		descHeight, 0, true)
+
+	d.layout.AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		AddItem(d.input, 0, 1, false).
+		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false),
+		1, 0, true)
+
+	d.layout.AddItem(d.form, DialogFormHeight, 0, true)
+	d.layout.SetBorder(true)
+	d.layout.SetBorderColor(style.DialogBorderColor)
+	d.layout.SetBackgroundColor(style.DialogBgColor)
 }

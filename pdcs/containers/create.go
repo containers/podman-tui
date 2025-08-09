@@ -254,7 +254,8 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 	}
 
 	// add healthcheck options
-	if err := containerHealthOptions(&createOptions, opts); err != nil {
+	err = containerHealthOptions(&createOptions, opts)
+	if err != nil {
 		return warningResponse, containerID, err
 	}
 
@@ -389,7 +390,9 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 
 	// generate spec
 	s := specgen.NewSpecGenerator(opts.Name, false)
-	if err := specgenutil.FillOutSpecGen(s, &createOptions, nil); err != nil {
+
+	err = specgenutil.FillOutSpecGen(s, &createOptions, nil)
+	if err != nil {
 		return warningResponse, containerID, err
 	}
 
@@ -403,7 +406,8 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 	}
 
 	// validate spec
-	if err := s.Validate(); err != nil {
+	err = s.Validate()
+	if err != nil {
 		return warningResponse, containerID, err
 	}
 

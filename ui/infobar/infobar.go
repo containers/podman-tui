@@ -29,6 +29,7 @@ const (
 // InfoBar implements the info bar primitive.
 type InfoBar struct {
 	*tview.Box
+
 	table      *tview.Table
 	title      string
 	connStatus registry.ConnStatus
@@ -163,8 +164,9 @@ func (info *InfoBar) UpdateSystemUsageInfo(memUsage float64, swapUsage float64) 
 
 // UpdateConnStatus updates connection status value.
 func (info *InfoBar) UpdateConnStatus(status registry.ConnStatus) {
+	var connStatus string
+
 	info.connStatus = status
-	connStatus := ""
 
 	switch info.connStatus {
 	case registry.ConnectionStatusConnected:
@@ -180,8 +182,8 @@ func (info *InfoBar) UpdateConnStatus(status registry.ConnStatus) {
 
 // Draw draws this primitive onto the screen.
 func (info *InfoBar) Draw(screen tcell.Screen) {
-	info.Box.DrawForSubclass(screen, info)
-	info.Box.SetBorder(false)
+	info.DrawForSubclass(screen, info)
+	info.SetBorder(false)
 
 	x, y, width, height := info.GetInnerRect()
 

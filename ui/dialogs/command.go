@@ -22,6 +22,7 @@ const (
 // CommandDialog is a commands list dialog.
 type CommandDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	table         *tview.Table
 	form          *tview.Form
@@ -37,6 +38,12 @@ type CommandDialog struct {
 
 // NewCommandDialog returns a command list primitive.
 func NewCommandDialog(options [][]string) *CommandDialog {
+	var cmdWidth int
+
+	// command table items
+	col1Width := 0
+	col2Width := 0
+
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
 		SetButtonsAlign(tview.AlignRight)
@@ -47,7 +54,6 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdsTable := tview.NewTable()
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
-	cmdWidth := 0
 	// command table header
 	cmdsTable.SetCell(0, 0,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", style.GetColorHex(style.TableHeaderFgColor))).
@@ -64,10 +70,6 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetTextColor(style.TableHeaderFgColor).
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
-
-	// command table items
-	col1Width := 0
-	col2Width := 0
 
 	for i := range options {
 		cmdsTable.SetCell(i+1, 0,
@@ -273,7 +275,7 @@ func (cmd *CommandDialog) SetRect(x, y, width, height int) {
 
 	cmd.Box.SetRect(x+ws, dy, bWidth, bHeight)
 
-	x, y, width, height = cmd.Box.GetInnerRect()
+	x, y, width, height = cmd.GetInnerRect()
 
 	cmd.layout.SetRect(x, y, width, height)
 }
@@ -284,7 +286,7 @@ func (cmd *CommandDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	cmd.Box.DrawForSubclass(screen, cmd)
+	cmd.DrawForSubclass(screen, cmd)
 	cmd.layout.Draw(screen)
 }
 

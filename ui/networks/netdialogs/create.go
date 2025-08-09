@@ -42,6 +42,7 @@ const (
 // NetworkCreateDialog implements network create dialog.
 type NetworkCreateDialog struct {
 	*tview.Box
+
 	layout                    *tview.Flex
 	categoryLabels            []string
 	categories                *tview.TextView
@@ -202,49 +203,6 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.setActiveCategory(0)
 
 	return &netDialog
-}
-
-func (d *NetworkCreateDialog) setupLayout() {
-	bgColor := style.DialogBgColor
-
-	// basic info page
-	d.basicInfoPage.SetDirection(tview.FlexRow)
-	d.basicInfoPage.AddItem(d.networkNameField, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.networkLabelsField, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.networkInternalCheckBox, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.networkDriverField, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.networkDriverOptionsField, 1, 0, true)
-	d.basicInfoPage.SetBackgroundColor(bgColor)
-
-	// ip settings page
-	d.ipSettingsPage.SetDirection(tview.FlexRow)
-	d.ipSettingsPage.AddItem(d.networkIpv6CheckBox, 1, 0, true)
-	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.ipSettingsPage.AddItem(d.networkGatewayField, 1, 0, true)
-	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.ipSettingsPage.AddItem(d.networkIPRangeField, 1, 0, true)
-	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.ipSettingsPage.AddItem(d.networkSubnetField, 1, 0, true)
-	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.ipSettingsPage.AddItem(d.networkDisableDNSCheckBox, 1, 0, true)
-	d.ipSettingsPage.SetBackgroundColor(bgColor)
-
-	// adding category pages
-	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[ipSettingsPageIndex], d.ipSettingsPage, true, true)
-
-	// add it to layout.
-	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
-	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
-	layout.AddItem(d.categoryPages, 0, 1, true)
-	layout.SetBackgroundColor(bgColor)
-
-	d.layout.AddItem(layout, 0, 1, true)
 }
 
 // Display displays this primitive.
@@ -434,8 +392,8 @@ func (d *NetworkCreateDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -459,6 +417,115 @@ func (d *NetworkCreateDialog) SetCreateFunc(handler func()) *NetworkCreateDialog
 	enterButton.SetSelectedFunc(handler)
 
 	return d
+}
+
+// NetworkCreateOptions returns new network options.
+func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //nolint:cyclop
+	var (
+		labels   = make(map[string]string)
+		options  = make(map[string]string)
+		subnets  []string
+		gateways []string
+		ipranges []string
+	)
+
+	for _, label := range strings.Split(d.networkLabelsField.GetText(), " ") {
+		if label != "" {
+			split := strings.Split(label, "=")
+			if len(split) == 2 { //nolint:mnd
+				key := split[0]
+				value := split[1]
+
+				if key != "" && value != "" {
+					labels[key] = value
+				}
+			}
+		}
+	}
+
+	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
+		if option != "" {
+			split := strings.Split(option, "=")
+			if len(split) == 2 { //nolint:mnd
+				key := split[0]
+				value := split[1]
+
+				if key != "" && value != "" {
+					options[key] = value
+				}
+			}
+		}
+	}
+
+	if strings.Trim(d.networkGatewayField.GetText(), " ") != "" {
+		gateways = strings.Split(d.networkGatewayField.GetText(), " ")
+	}
+
+	if strings.Trim(d.networkSubnetField.GetText(), " ") != "" {
+		subnets = strings.Split(d.networkSubnetField.GetText(), " ")
+	}
+
+	if strings.Trim(d.networkIPRangeField.GetText(), " ") != "" {
+		ipranges = strings.Split(d.networkIPRangeField.GetText(), " ")
+	}
+
+	opts := networks.CreateOptions{
+		Name:           strings.TrimSpace(d.networkNameField.GetText()),
+		Labels:         labels,
+		Internal:       d.networkInternalCheckBox.IsChecked(),
+		Drivers:        strings.TrimSpace(d.networkDriverField.GetText()),
+		DriversOptions: options,
+		IPv6:           d.networkIpv6CheckBox.IsChecked(),
+		Gateways:       gateways,
+		Subnets:        subnets,
+		IPRanges:       ipranges,
+		DisableDNS:     d.networkDisableDNSCheckBox.IsChecked(),
+	}
+
+	return opts
+}
+
+func (d *NetworkCreateDialog) setupLayout() {
+	bgColor := style.DialogBgColor
+
+	// basic info page
+	d.basicInfoPage.SetDirection(tview.FlexRow)
+	d.basicInfoPage.AddItem(d.networkNameField, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.networkLabelsField, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.networkInternalCheckBox, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.networkDriverField, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.networkDriverOptionsField, 1, 0, true)
+	d.basicInfoPage.SetBackgroundColor(bgColor)
+
+	// ip settings page
+	d.ipSettingsPage.SetDirection(tview.FlexRow)
+	d.ipSettingsPage.AddItem(d.networkIpv6CheckBox, 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.ipSettingsPage.AddItem(d.networkGatewayField, 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.ipSettingsPage.AddItem(d.networkIPRangeField, 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.ipSettingsPage.AddItem(d.networkSubnetField, 1, 0, true)
+	d.ipSettingsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.ipSettingsPage.AddItem(d.networkDisableDNSCheckBox, 1, 0, true)
+	d.ipSettingsPage.SetBackgroundColor(bgColor)
+
+	// adding category pages
+	d.categoryPages.AddPage(d.categoryLabels[basicInfoPageIndex], d.basicInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[ipSettingsPageIndex], d.ipSettingsPage, true, true)
+
+	// add it to layout.
+	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
+	layout.AddItem(d.categoryPages, 0, 1, true)
+	layout.SetBackgroundColor(bgColor)
+
+	d.layout.AddItem(layout, 0, 1, true)
 }
 
 func (d *NetworkCreateDialog) setActiveCategory(index int) {
@@ -583,70 +650,4 @@ func (d *NetworkCreateDialog) setIPSettingsPageNextFocus() {
 	}
 
 	d.focusElement = formFocus
-}
-
-// NetworkCreateOptions returns new network options.
-func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //nolint:cyclop
-	var (
-		labels   = make(map[string]string)
-		options  = make(map[string]string)
-		subnets  []string
-		gateways []string
-		ipranges []string
-	)
-
-	for _, label := range strings.Split(d.networkLabelsField.GetText(), " ") {
-		if label != "" {
-			split := strings.Split(label, "=")
-			if len(split) == 2 { //nolint:mnd
-				key := split[0]
-				value := split[1]
-
-				if key != "" && value != "" {
-					labels[key] = value
-				}
-			}
-		}
-	}
-
-	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
-		if option != "" {
-			split := strings.Split(option, "=")
-			if len(split) == 2 { //nolint:mnd
-				key := split[0]
-				value := split[1]
-
-				if key != "" && value != "" {
-					options[key] = value
-				}
-			}
-		}
-	}
-
-	if strings.Trim(d.networkGatewayField.GetText(), " ") != "" {
-		gateways = strings.Split(d.networkGatewayField.GetText(), " ")
-	}
-
-	if strings.Trim(d.networkSubnetField.GetText(), " ") != "" {
-		subnets = strings.Split(d.networkSubnetField.GetText(), " ")
-	}
-
-	if strings.Trim(d.networkIPRangeField.GetText(), " ") != "" {
-		ipranges = strings.Split(d.networkIPRangeField.GetText(), " ")
-	}
-
-	opts := networks.CreateOptions{
-		Name:           strings.TrimSpace(d.networkNameField.GetText()),
-		Labels:         labels,
-		Internal:       d.networkInternalCheckBox.IsChecked(),
-		Drivers:        strings.TrimSpace(d.networkDriverField.GetText()),
-		DriversOptions: options,
-		IPv6:           d.networkIpv6CheckBox.IsChecked(),
-		Gateways:       gateways,
-		Subnets:        subnets,
-		IPRanges:       ipranges,
-		DisableDNS:     d.networkDisableDNSCheckBox.IsChecked(),
-	}
-
-	return opts
 }

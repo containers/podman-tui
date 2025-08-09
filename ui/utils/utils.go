@@ -16,7 +16,11 @@ const (
 	IDLength = 12
 	// RefreshInterval application refresh interval.
 	RefreshInterval = 1000 * time.Millisecond
-	idLimit         = 12
+
+	ContainerIDLabel  = "CONTAINER ID:"
+	PruneCommandLabel = "prune"
+
+	idLimit = 12
 )
 
 var (
@@ -77,7 +81,7 @@ func ResolveHomeDir(path string) (string, error) {
 	// check if the path references the home dir to avoid work
 	// don't use strings.HasPrefix(path, "~") as this doesn't match "~" alone
 	// use strings.HasPrefix(...) to not match "something/~/something"
-	if !(path == "~" || strings.HasPrefix(path, "~/")) {
+	if path != "~" && !strings.HasPrefix(path, "~/") {
 		// path does not reference home dir -> Nothing to do
 		return path, nil
 	}

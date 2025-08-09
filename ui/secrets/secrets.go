@@ -31,6 +31,7 @@ var (
 // Secrets implements the secrets page primitive.
 type Secrets struct {
 	*tview.Box
+
 	title           string
 	headers         []string
 	table           *tview.Table

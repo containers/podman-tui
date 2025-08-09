@@ -34,7 +34,8 @@ func ValidateNewConnection(name string, dest string, identity string) (string, e
 		return "", ErrEmptyURIDestination
 	}
 
-	if match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)); err != nil { //nolint:mirror
+	match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)) //nolint:mirror
+	if err != nil {
 		return "", fmt.Errorf("%w invalid destition", err)
 	} else if !match {
 		dest = "ssh://" + dest
@@ -48,7 +49,8 @@ func ValidateNewConnection(name string, dest string, identity string) (string, e
 	switch uri.Scheme {
 	case "ssh":
 		if uri.User.Username() == "" {
-			if uri.User, err = getUserInfo(uri); err != nil {
+			uri.User, err = getUserInfo(uri)
+			if err != nil {
 				return "", err
 			}
 		}
@@ -67,7 +69,8 @@ func ValidateNewConnection(name string, dest string, identity string) (string, e
 		}
 
 		if uri.Path == "" || uri.Path == "/" {
-			if uri.Path, err = getUDS(uri, connIdentity); err != nil {
+			uri.Path, err = getUDS(uri, connIdentity)
+			if err != nil {
 				return "", err
 			}
 		}

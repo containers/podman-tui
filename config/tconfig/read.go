@@ -16,7 +16,7 @@ func (c *Config) readConfigFromFile(path string) error {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
-	cfgFile, err := os.Open(path)
+	cfgFile, err := os.Open(path) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("config: %w open configuration %q", err, path)
 	}
@@ -37,7 +37,8 @@ func (c *Config) reload() error {
 		return err
 	}
 
-	if err := c.readConfigFromFile(path); err != nil {
+	err = c.readConfigFromFile(path)
+	if err != nil {
 		return err
 	}
 

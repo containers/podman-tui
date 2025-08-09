@@ -26,6 +26,7 @@ const (
 // NetworkDisconnectDialog implements network disconnect dialog primitive.
 type NetworkDisconnectDialog struct {
 	*tview.Box
+
 	layout            *tview.Flex
 	network           *tview.InputField
 	container         *tview.DropDown
@@ -224,9 +225,9 @@ func (d *NetworkDisconnectDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -264,12 +265,6 @@ func (d *NetworkDisconnectDialog) SetContainers(cntList []entities.ListContainer
 	d.container.SetOptions(containers, nil)
 }
 
-func (d *NetworkDisconnectDialog) setFocusElement() {
-	if d.focusElement == netDisconnectContainerFocus {
-		d.focusElement = netConnectFormFocus
-	}
-}
-
 // SetNetworkInfo sets selected network name in disconnect dialog.
 func (d *NetworkDisconnectDialog) SetNetworkInfo(id string, name string) {
 	d.networkName = name
@@ -284,4 +279,10 @@ func (d *NetworkDisconnectDialog) GetDisconnectOptions() (string, string) {
 	container := strings.Split(selectedCnt, " ")[0]
 
 	return d.networkName, container
+}
+
+func (d *NetworkDisconnectDialog) setFocusElement() {
+	if d.focusElement == netDisconnectContainerFocus {
+		d.focusElement = netConnectFormFocus
+	}
 }

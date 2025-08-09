@@ -91,7 +91,7 @@ func getUserInfo(uri *url.URL) (*url.Userinfo, error) {
 }
 
 // most of the codes are from https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go.
-func getUDS(uri *url.URL, iden string) (string, error) {
+func getUDS(uri *url.URL, iden string) (string, error) { //nolint:cyclop
 	cfg, err := validateAndConfigure(uri, iden)
 	if err != nil {
 		return "", fmt.Errorf("%w failed to validate", err)
@@ -102,14 +102,24 @@ func getUDS(uri *url.URL, iden string) (string, error) {
 		return "", fmt.Errorf("%w failed to connect", err)
 	}
 
-	defer dial.Close()
+	defer func() {
+		err := dial.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close SSH tcp connection: %s", err.Error())
+		}
+	}()
 
 	session, err := dial.NewSession()
 	if err != nil {
 		return "", fmt.Errorf("%w failed to create new ssh session on %q", err, uri.Host)
 	}
 
-	defer session.Close()
+	defer func() {
+		err := session.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close SSH session: %s", err.Error())
+		}
+	}()
 
 	// Override podman binary for testing etc
 	podman := "podman"
@@ -123,7 +133,9 @@ func getUDS(uri *url.URL, iden string) (string, error) {
 	}
 
 	var info define.Info
-	if err := json.Unmarshal(infoJSON, &info); err != nil {
+
+	err = json.Unmarshal(infoJSON, &info)
+	if err != nil {
 		return "", fmt.Errorf("%w failed to parse 'podman info' results", err)
 	}
 
@@ -167,7 +179,7 @@ func validateAndConfigure(uri *url.URL, iden string) (*ssh.ClientConfig, error) 
 	if sock, found := os.LookupEnv("SSH_AUTH_SOCK"); found {
 		log.Debug().Msgf("config: Found SSH_AUTH_SOCK %q, ssh-agent signer enabled", sock)
 
-		c, err := net.Dial("unix", sock)
+		c, err := net.Dial("unix", sock) //nolint:noctx
 		if err != nil {
 			return nil, err
 		}
@@ -233,7 +245,12 @@ func execRemoteCommand(dial *ssh.Client, run string) ([]byte, error) {
 		return nil, err
 	}
 
-	defer sess.Close()
+	defer func() {
+		err := sess.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close exec session: %s", err.Error())
+		}
+	}()
 
 	var (
 		buffer    bytes.Buffer
@@ -243,7 +260,8 @@ func execRemoteCommand(dial *ssh.Client, run string) ([]byte, error) {
 	sess.Stdout = &buffer    // output from client funneled into buffer
 	sess.Stderr = &bufferErr // err form client funneled into buffer
 
-	if err := sess.Run(run); err != nil { // run the command on the ssh client
+	err = sess.Run(run)
+	if err != nil { // run the command on the ssh client
 		return nil, fmt.Errorf("%w %s", err, bufferErr.String())
 	}
 

@@ -95,7 +95,8 @@ func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 
 	conn, err := registry.GetConnection()
 	if err != nil {
-		if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))); err != nil {
+		_, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))) //nolint:staticcheck
+		if err != nil {
 			log.Error().Msgf("%v", err)
 		}
 
@@ -116,10 +117,12 @@ func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 			execStartAttachOpts.InputStream = opts.InputStream
 		}
 
-		if err := containers.ExecStartAndAttach(conn, sessionID, execStartAttachOpts); err != nil {
+		err := containers.ExecStartAndAttach(conn, sessionID, execStartAttachOpts)
+		if err != nil {
 			log.Error().Msgf("pdcs: podman session (%s) exec error %v", sessionID, err)
 
-			if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))); err != nil {
+			_, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))) //nolint:staticcheck
+			if err != nil {
 				log.Error().Msgf("%v", err)
 			}
 		}
@@ -129,10 +132,12 @@ func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 		return
 	}
 
-	if err := containers.ExecStart(conn, sessionID, &containers.ExecStartOptions{}); err != nil {
+	err = containers.ExecStart(conn, sessionID, &containers.ExecStartOptions{})
+	if err != nil {
 		log.Error().Msgf("pdcs: podman session (%s) exec error %v", sessionID, err)
 
-		if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))); err != nil {
+		_, err := opts.OutputStream.Write([]byte(fmt.Sprintf("%v", err))) //nolint:staticcheck
+		if err != nil {
 			log.Error().Msgf("%v", err)
 		}
 
@@ -141,19 +146,23 @@ func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 
 	log.Debug().Msgf("pdcs: podman session (%s) exec finished successfully", sessionID)
 
-	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("session_id ...... : %s\r\n", sessionID))); err != nil {
+	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("session_id ...... : %s\r\n", sessionID))) //nolint:staticcheck
+	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("exec_mode  ...... : %s\r\n", "detached"))); err != nil {
+	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_mode  ...... : %s\r\n", "detached"))) //nolint:staticcheck
+	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " ")))); err != nil { //nolint:lll
+	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " ")))) //nolint:staticcheck,lll
+	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	if _, err := opts.OutputStream.Write([]byte(fmt.Sprintf("exec_status ..... : %s\r\n", "OK"))); err != nil {
+	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_status ..... : %s\r\n", "OK"))) //nolint:staticcheck
+	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 }

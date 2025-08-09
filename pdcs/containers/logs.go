@@ -44,6 +44,7 @@ func Logs(id string) ([]string, error) {
 	if err != nil {
 		return logs, err
 	}
+
 	done <- true
 	// logs = append(logs, <-logout)
 	// logs = append(logs, <-logerr)

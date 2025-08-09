@@ -16,6 +16,7 @@ import (
 // Volumes implemnents the volumes page primitive.
 type Volumes struct {
 	*tview.Box
+
 	title           string
 	headers         []string
 	table           *tview.Table
@@ -51,77 +52,6 @@ func NewVolumes() *Volumes {
 	vols.initUI()
 
 	return vols
-}
-
-func (vols *Volumes) initUI() {
-	vols.cmdDialog = dialogs.NewCommandDialog([][]string{
-		{"create", "create a new volume"},
-		{"inspect", "display detailed volume's information"},
-		{"prune", "remove all unused volumes"},
-		{"rm", "remove the selected volume"},
-	})
-
-	vols.table = tview.NewTable()
-
-	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
-	vols.table.SetBorderColor(style.BorderColor)
-	vols.table.SetBackgroundColor(style.BgColor)
-	vols.table.SetTitleColor(style.FgColor)
-	vols.table.SetBorder(true)
-
-	for i := range vols.headers {
-		vols.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
-														SetExpansion(1).
-														SetBackgroundColor(style.PageHeaderBgColor).
-														SetTextColor(style.PageHeaderFgColor).
-														SetAlign(tview.AlignLeft).
-														SetSelectable(false))
-	}
-
-	vols.table.SetFixed(1, 1)
-	vols.table.SetSelectable(true, false)
-
-	// set command dialog functions
-	vols.cmdDialog.SetSelectedFunc(func() {
-		vols.cmdDialog.Hide()
-		vols.runCommand(vols.cmdDialog.GetSelectedItem())
-	})
-
-	vols.cmdDialog.SetCancelFunc(func() {
-		vols.cmdDialog.Hide()
-	})
-
-	// set message dialog functions
-	vols.messageDialog.SetCancelFunc(func() {
-		vols.messageDialog.Hide()
-	})
-
-	// set confirm dialogs functions
-	vols.confirmDialog.SetSelectedFunc(func() {
-		vols.confirmDialog.Hide()
-
-		switch vols.confirmData {
-		case "prune":
-			vols.prune()
-		case "rm":
-			vols.remove()
-		}
-	})
-
-	vols.confirmDialog.SetCancelFunc(func() {
-		vols.confirmDialog.Hide()
-	})
-
-	// set create dialog functions
-	vols.createDialog.SetCancelFunc(func() {
-		vols.createDialog.Hide()
-	})
-
-	vols.createDialog.SetCreateFunc(func() {
-		vols.createDialog.Hide()
-		vols.create()
-	})
 }
 
 // SetAppFocusHandler sets application focus handler.
@@ -198,4 +128,75 @@ func (vols *Volumes) getSelectedItem() string {
 	volID := vols.table.GetCell(row, 1).Text
 
 	return volID
+}
+
+func (vols *Volumes) initUI() {
+	vols.cmdDialog = dialogs.NewCommandDialog([][]string{
+		{"create", "create a new volume"},
+		{"inspect", "display detailed volume's information"},
+		{"prune", "remove all unused volumes"},
+		{"rm", "remove the selected volume"},
+	})
+
+	vols.table = tview.NewTable()
+
+	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
+	vols.table.SetBorderColor(style.BorderColor)
+	vols.table.SetBackgroundColor(style.BgColor)
+	vols.table.SetTitleColor(style.FgColor)
+	vols.table.SetBorder(true)
+
+	for i := range vols.headers {
+		vols.table.SetCell(0, i,
+			tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(vols.headers[i]))). //nolint:perfsprint
+														SetExpansion(1).
+														SetBackgroundColor(style.PageHeaderBgColor).
+														SetTextColor(style.PageHeaderFgColor).
+														SetAlign(tview.AlignLeft).
+														SetSelectable(false))
+	}
+
+	vols.table.SetFixed(1, 1)
+	vols.table.SetSelectable(true, false)
+
+	// set command dialog functions
+	vols.cmdDialog.SetSelectedFunc(func() {
+		vols.cmdDialog.Hide()
+		vols.runCommand(vols.cmdDialog.GetSelectedItem())
+	})
+
+	vols.cmdDialog.SetCancelFunc(func() {
+		vols.cmdDialog.Hide()
+	})
+
+	// set message dialog functions
+	vols.messageDialog.SetCancelFunc(func() {
+		vols.messageDialog.Hide()
+	})
+
+	// set confirm dialogs functions
+	vols.confirmDialog.SetSelectedFunc(func() {
+		vols.confirmDialog.Hide()
+
+		switch vols.confirmData {
+		case utils.PruneCommandLabel:
+			vols.prune()
+		case "rm":
+			vols.remove()
+		}
+	})
+
+	vols.confirmDialog.SetCancelFunc(func() {
+		vols.confirmDialog.Hide()
+	})
+
+	// set create dialog functions
+	vols.createDialog.SetCancelFunc(func() {
+		vols.createDialog.Hide()
+	})
+
+	vols.createDialog.SetCreateFunc(func() {
+		vols.createDialog.Hide()
+		vols.create()
+	})
 }

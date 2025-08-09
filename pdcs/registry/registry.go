@@ -49,14 +49,17 @@ func SetConnectionStatus(status ConnStatus) {
 
 	pdcsRegistry.mu.Lock()
 	defer pdcsRegistry.mu.Unlock()
+
 	pdcsRegistry.connection.Status = status
 }
 
 // SetConnection sets registry connection.
 func SetConnection(connection Connection) {
 	log.Debug().Msgf("pdcs: registry set connection %v", connection)
+
 	pdcsRegistry.mu.Lock()
 	defer pdcsRegistry.mu.Unlock()
+
 	pdcsRegistry.connection = connection
 	pdcsRegistry.connectionIsSet = true
 }

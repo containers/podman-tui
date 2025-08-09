@@ -4,8 +4,8 @@ import "github.com/gdamore/tcell/v2"
 
 // Draw draws this primitive onto the screen.
 func (s *Secrets) Draw(screen tcell.Screen) {
-	s.Box.DrawForSubclass(screen, s)
-	s.Box.SetBorder(false)
+	s.DrawForSubclass(screen, s)
+	s.SetBorder(false)
 
 	secretViewX, secretViewY, secretViewW, secretViewH := s.GetInnerRect()
 

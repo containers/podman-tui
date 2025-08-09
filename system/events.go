@@ -40,7 +40,8 @@ func (engine *Engine) startEventStreamer() {
 
 	go engine.eventReader()
 	go func() {
-		if err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan); err != nil {
+		err := sysinfo.Events(engine.sysEvents.eventChan, engine.sysEvents.eventCancelChan)
+		if err != nil {
 			log.Error().Msgf("health check: event streamer %v", err)
 
 			engine.sysEvents.cancelChan <- true
@@ -55,6 +56,7 @@ func (engine *Engine) eventReader() {
 		select {
 		case <-engine.sysEvents.cancelChan:
 			log.Debug().Msg("health check: event reader stopped")
+
 			engine.sysEvents.eventCancelChan <- true
 
 			engine.sysEvents.mu.Lock()
@@ -94,10 +96,10 @@ func (engine *Engine) GetEventMessages() []string {
 
 // HasNewEvent returns true if there is new event added to event buffer.
 func (engine *Engine) HasNewEvent() bool {
-	hasEvent := false
-
 	engine.sysEvents.mu.Lock()
-	hasEvent = engine.sysEvents.hasNewEvent
+
+	hasEvent := engine.sysEvents.hasNewEvent
+
 	engine.sysEvents.mu.Unlock()
 
 	return hasEvent
@@ -105,6 +107,7 @@ func (engine *Engine) HasNewEvent() bool {
 
 func (engine *Engine) addEventMessage(msg string) {
 	engine.sysEvents.mu.Lock()
+
 	if len(engine.sysEvents.messageBuffer) == engine.sysEvents.messageBufferSize {
 		// empty first 10 entries
 		engine.sysEvents.messageBuffer = engine.sysEvents.messageBuffer[20:]

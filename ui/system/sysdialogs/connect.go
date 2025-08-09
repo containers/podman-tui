@@ -19,6 +19,7 @@ const (
 // ConnectDialog implements the Connection progress dialog primitive.
 type ConnectDialog struct {
 	*tview.Box
+
 	layout         *tview.Flex
 	textview       *tview.TextView
 	progressDialog *tvxwidgets.ActivityModeGauge
@@ -37,7 +38,7 @@ func NewConnectDialog() *ConnectDialog {
 	}
 
 	// connect dialog box
-	conn.Box.SetBorder(false)
+	conn.SetBorder(false)
 
 	// progress bar
 	conn.progressDialog.SetBackgroundColor(style.DialogBgColor)
@@ -141,8 +142,8 @@ func (d *ConnectDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.progressDialog.Pulse()
 	d.layout.Draw(screen)

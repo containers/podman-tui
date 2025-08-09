@@ -48,6 +48,7 @@ const (
 // ContainerRestoreDialog implements container restore dialog primitive.
 type ContainerRestoreDialog struct {
 	*tview.Box
+
 	layout          *tview.Flex
 	containers      *tview.DropDown
 	pods            *tview.DropDown
@@ -434,9 +435,9 @@ func (d *ContainerRestoreDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -460,36 +461,6 @@ func (d *ContainerRestoreDialog) SetCancelFunc(handler func()) *ContainerRestore
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
-}
-
-func (d *ContainerRestoreDialog) setFocusElement() {
-	if d.focusElement < cntRestoreFormFocus {
-		d.focusElement++
-
-		return
-	}
-
-	d.focusElement = cntRestoreContainersFocus
-}
-
-func (d *ContainerRestoreDialog) getInnerPrimitives() []tview.Primitive {
-	// the item sort is important to be same as focus element number
-	return []tview.Primitive{
-		d.containers,
-		d.pods,
-		d.name,
-		d.publishPorts,
-		d.importArchive,
-		d.keep,
-		d.ignoreStaticIP,
-		d.ignoreStaticMAC,
-		d.fileLocks,
-		d.printStats,
-		d.tcpEstablished,
-		d.ignoreVolumes,
-		d.ignoreRootFS,
-		d.form,
-	}
 }
 
 // SetContainers sets containers dropdown options.
@@ -555,4 +526,34 @@ func (d *ContainerRestoreDialog) GetRestoreOptions() containers.CntRestoreOption
 	opts.IgnoreRootfs = d.ignoreRootFS.IsChecked()
 
 	return opts
+}
+
+func (d *ContainerRestoreDialog) setFocusElement() {
+	if d.focusElement < cntRestoreFormFocus {
+		d.focusElement++
+
+		return
+	}
+
+	d.focusElement = cntRestoreContainersFocus
+}
+
+func (d *ContainerRestoreDialog) getInnerPrimitives() []tview.Primitive {
+	// the item sort is important to be same as focus element number
+	return []tview.Primitive{
+		d.containers,
+		d.pods,
+		d.name,
+		d.publishPorts,
+		d.importArchive,
+		d.keep,
+		d.ignoreStaticIP,
+		d.ignoreStaticMAC,
+		d.fileLocks,
+		d.printStats,
+		d.tcpEstablished,
+		d.ignoreVolumes,
+		d.ignoreRootFS,
+		d.form,
+	}
 }

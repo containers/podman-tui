@@ -17,6 +17,7 @@ import (
 // ContainerStatsDialog implements the containers stats dialog primitive.
 type ContainerStatsDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	form          *tview.Form
 	table         *tview.Table
@@ -48,11 +49,9 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog.initTableUI()
 
 	// container info text view
-	cntInfoLabel := "CONTAINER ID:"
-
 	statsDialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
-	statsDialog.containerInfo.SetLabel("[::b]" + cntInfoLabel)
-	statsDialog.containerInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	statsDialog.containerInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
+	statsDialog.containerInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	statsDialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	statsDialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -121,7 +120,9 @@ func (d *ContainerStatsDialog) Hide() {
 	d.setContainerBlockOutput(0)
 	d.setContainerNetInput(0)
 	d.setContainerNetOutput(0)
+
 	d.mu.Lock()
+
 	defer d.mu.Unlock()
 
 	*d.statsStream = false
@@ -168,8 +169,8 @@ func (d *ContainerStatsDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }

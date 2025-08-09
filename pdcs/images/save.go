@@ -44,7 +44,13 @@ func Save(imageID string, opts ImageSaveOptions) error { //nolint:cyclop
 
 		return err
 	}
-	defer outputFile.Close()
+
+	defer func() {
+		err := outputFile.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close image save output file: %s", err.Error())
+		}
+	}()
 
 	cancelChan := make(chan bool, 1)
 	writerChan := make(chan []byte, 1024) //nolint:mnd
@@ -62,7 +68,8 @@ func Save(imageID string, opts ImageSaveOptions) error { //nolint:cyclop
 
 				return
 			case data := <-writerChan:
-				if _, err := outputFile.Write(data); err != nil {
+				_, err := outputFile.Write(data)
+				if err != nil {
 					outputErrors = append(outputErrors, err)
 				}
 			}
@@ -77,6 +84,7 @@ func Save(imageID string, opts ImageSaveOptions) error { //nolint:cyclop
 	saveOpts.WithOciAcceptUncompressedLayers(opts.OciAcceptUncompressedLayers)
 
 	err = images.Export(conn, []string{imageID}, outputWriter, &saveOpts)
+
 	cancelChan <- true
 
 	if err != nil {

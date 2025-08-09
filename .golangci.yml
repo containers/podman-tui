@@ -1,33 +1,40 @@
+version: "2"
 run:
-  timeout: 10m
-  deadline: 5m
+  modules-download-mode: readonly
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: disable
+
 linters:
-  enable-all: true
+  default: all
   disable:
+    - gochecknoinits
     - gochecknoglobals
     - exhaustruct
     - varnamelen
-    - gochecknoinits
-    - wrapcheck
     - funlen
     - depguard
-    - nolintlint
-    # generics disabled
-    - wastedassign
-    - rowserrcheck
-    # deprecated
-    - gomoddirectives
-    - tenv
-linters-settings:
-#  typecheck:
-#    enabled: false
-  errcheck:
-    check-blank: false
-    exclude-functions:
-      - fmt:.*
-  nolintlint:
-    require-specific: true
-
+    - wrapcheck
+    - wsl
+  settings:
+    errcheck:
+      check-blank: false
+      exclude-functions:
+        - fmt:.*
+    nolintlint:
+      require-specific: true
+    revive:
+      rules:
+        - name: package-comments
+          disabled: true
+  exclusions:
+    paths:
+      - test/
+      - ".*_test.go"
 issues:
-  exclude-files:
-    - ".*_test.go"
+  max-issues-per-linter: 0
+  max-same-issues: 0

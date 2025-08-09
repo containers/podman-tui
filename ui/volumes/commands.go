@@ -8,6 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/volumes"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -19,7 +20,7 @@ func (vols *Volumes) runCommand(cmd string) {
 		vols.createDialog.Display()
 	case "inspect":
 		vols.inspect()
-	case "prune": //nolint:goconst
+	case "prune":
 		vols.prunePrep()
 	case "rm":
 		vols.removePrep()
@@ -71,7 +72,7 @@ func (vols *Volumes) inspect() {
 
 func (vols *Volumes) prunePrep() {
 	vols.confirmDialog.SetTitle("podman volume prune")
-	vols.confirmData = "prune"
+	vols.confirmData = utils.PruneCommandLabel
 	vols.confirmDialog.SetText("Are you sure you want to remove all unused volumes ?")
 	vols.confirmDialog.Display()
 }
@@ -94,7 +95,7 @@ func (vols *Volumes) prune() {
 		}
 
 		if len(errData) > 0 {
-			pruneError := errors.New(strings.Join(errData, "\n")) //nolint:goerr113
+			pruneError := errors.New(strings.Join(errData, "\n")) //nolint:err113
 			vols.displayError(errorTitle, pruneError)
 			vols.appFocusHandler()
 		}

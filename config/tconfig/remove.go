@@ -8,7 +8,8 @@ func (c *Config) Remove(name string) error {
 
 	c.remove(name)
 
-	if err := c.write(); err != nil {
+	err := c.write()
+	if err != nil {
 		return err
 	}
 

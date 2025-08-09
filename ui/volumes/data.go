@@ -28,15 +28,6 @@ func (vols *Volumes) UpdateData() {
 	vols.volumeList.report = volList
 }
 
-func (vols *Volumes) getData() []*entities.VolumeListReport {
-	vols.volumeList.mu.Lock()
-	defer vols.volumeList.mu.Unlock()
-
-	data := vols.volumeList.report
-
-	return data
-}
-
 // ClearData clears table data.
 func (vols *Volumes) ClearData() {
 	vols.volumeList.mu.Lock()
@@ -61,4 +52,13 @@ func (vols *Volumes) ClearData() {
 	}
 
 	vols.table.SetTitle(fmt.Sprintf("[::b]%s[0]", strings.ToUpper(vols.title)))
+}
+
+func (vols *Volumes) getData() []*entities.VolumeListReport {
+	vols.volumeList.mu.Lock()
+	defer vols.volumeList.mu.Unlock()
+
+	data := vols.volumeList.report
+
+	return data
 }

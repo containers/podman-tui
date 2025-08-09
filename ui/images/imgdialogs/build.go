@@ -71,6 +71,7 @@ const (
 // ImageBuildDialog represents image build dialog primitive.
 type ImageBuildDialog struct {
 	*tview.Box
+
 	layout                  *tview.Flex
 	form                    *tview.Form
 	categoryLabels          []string
@@ -490,117 +491,6 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	return buildDialog
 }
 
-func (d *ImageBuildDialog) setupLayout() {
-	bgColor := style.DialogBgColor
-	// basic info page
-	d.basicInfoPage.SetDirection(tview.FlexRow)
-	d.basicInfoPage.AddItem(d.contextDirectoryPath, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.containerFilePath, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.pullPolicyField, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.tagField, 1, 0, true)
-	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.basicInfoPage.AddItem(d.registryField, 1, 0, true)
-	d.basicInfoPage.SetBackgroundColor(bgColor)
-
-	// layers setup page
-	secondRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	secondRowLayout.SetBackgroundColor(bgColor)
-	secondRowLayout.AddItem(d.formatField, 0, 2, true) //nolint:mnd
-	secondRowLayout.AddItem(d.SquashField, 0, 1, true)
-	secondRowLayout.AddItem(d.layersField, 0, 1, true)
-	secondRowLayout.AddItem(d.noCacheField, 0, 1, true)
-
-	cntRmRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	cntRmRowLayout.SetBackgroundColor(bgColor)
-	cntRmRowLayout.AddItem(d.forceRemoveCntField, 0, 1, true)
-	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true) //nolint:mnd
-
-	// build setup page
-	d.buildInfoPage.SetDirection(tview.FlexRow)
-	d.buildInfoPage.AddItem(d.buildArgsField, 1, 0, true)
-	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.buildInfoPage.AddItem(secondRowLayout, 1, 0, true)
-	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.buildInfoPage.AddItem(d.labelsField, 1, 0, true)
-	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.buildInfoPage.AddItem(d.annotationsField, 1, 0, true)
-	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.buildInfoPage.AddItem(cntRmRowLayout, 1, 0, true)
-	d.buildInfoPage.SetBackgroundColor(bgColor)
-
-	// security options page
-	d.securityOptsPage.SetDirection(tview.FlexRow)
-	d.securityOptsPage.AddItem(d.selinuxLabelField, 1, 0, true)
-	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.apparmorProfileField, 1, 0, true)
-	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.securityOptsPage.AddItem(d.seccompProfilePathField, 1, 0, true)
-
-	// networking setup page
-	netFirstRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-	netFirstRow.SetBackgroundColor(bgColor)
-	netFirstRow.AddItem(d.networkField, 0, 1, true)
-	netFirstRow.AddItem(d.httpProxyField, 0, 1, true)
-	d.networkingPage.SetDirection(tview.FlexRow)
-	d.networkingPage.AddItem(netFirstRow, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.addHostField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.dnsServersField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.dnsOptionsField, 1, 0, true)
-	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.networkingPage.AddItem(d.dnsSearchField, 1, 0, true)
-	d.networkingPage.SetBackgroundColor(bgColor)
-
-	// capability page
-	d.capabilityPage.SetDirection(tview.FlexRow)
-	d.capabilityPage.AddItem(d.addCapabilityField, 1, 0, true)
-	d.capabilityPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	d.capabilityPage.AddItem(d.removeCapabilityField, 1, 0, true)
-
-	// cpu and memory page
-	cpuSetRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-	cpuSetRow.AddItem(d.cpuSetCpusField, 0, 1, true)
-	cpuSetRow.AddItem(d.cpuSetMemsField, 0, 1, true)
-
-	// memory and swap
-	memSwapRow := tview.NewFlex().SetDirection(tview.FlexColumn)
-	memSwapRow.AddItem(d.memoryField, 0, 1, true)
-	memSwapRow.AddItem(d.memorySwapField, 0, 1, true)
-
-	d.cpuMemoryPage.SetDirection(tview.FlexRow)
-	d.cpuMemoryPage.AddItem(d.cpuPeriodField, 0, 1, true)
-	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
-	d.cpuMemoryPage.AddItem(d.cpuQuataField, 0, 1, true)
-	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
-	d.cpuMemoryPage.AddItem(d.cpuSharesField, 0, 1, true)
-	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
-	d.cpuMemoryPage.AddItem(cpuSetRow, 0, 1, true)
-	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
-	d.cpuMemoryPage.AddItem(memSwapRow, 0, 1, true)
-
-	// adding category pages
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogBasicInfoPageIndex], d.basicInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogBuildInfoPageIndex], d.buildInfoPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogCapabilityPageIndex], d.capabilityPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogCPUMemoryPageIndex], d.cpuMemoryPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogNetworkingPageIndex], d.networkingPage, true, true)
-	d.categoryPages.AddPage(d.categoryLabels[buildDialogSecurityOptsPageIndex], d.securityOptsPage, true, true)
-
-	// add it to layout.
-	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
-	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
-	layout.AddItem(d.categoryPages, 0, 1, true)
-	layout.SetBackgroundColor(bgColor)
-
-	d.layout.AddItem(layout, 0, 1, true)
-}
-
 // Display displays this primitive.
 func (d *ImageBuildDialog) Display() {
 	d.focusElement = buildDialogContextDirectoryPathFieldFocus
@@ -755,7 +645,7 @@ func (d *ImageBuildDialog) InputHandler() func(event *tcell.EventKey, setFocus f
 		log.Debug().Msgf("image build dialog: event %v received", event)
 
 		if event.Key() == utils.CloseDialogKey.Key {
-			if !(d.pullPolicyField.HasFocus() || d.networkField.HasFocus() || d.formatField.HasFocus()) {
+			if !d.pullPolicyField.HasFocus() && !d.networkField.HasFocus() && !d.formatField.HasFocus() {
 				d.cancelHandler()
 
 				return
@@ -921,8 +811,8 @@ func (d *ImageBuildDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -943,6 +833,352 @@ func (d *ImageBuildDialog) SetBuildFunc(handler func()) *ImageBuildDialog {
 	buildButton.SetSelectedFunc(handler)
 
 	return d
+}
+
+// ImageBuildOptions returns image build options.
+func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error) { //nolint:gocognit,gocyclo,cyclop,maintidx,lll
+	var (
+		memoryLimit        int64
+		memorySwap         int64
+		cpuPeriod          uint64
+		cpuQuota           int64
+		cpuShares          uint64
+		cpuSetCpus         string
+		cpuSetMems         string
+		containerFiles     []string
+		dnsServers         []string
+		dnsOptions         []string
+		dnsSearchDomains   []string
+		addHost            []string
+		labelOpts          []string
+		apparmorProfile    string
+		seccompProfilePath string
+	)
+
+	// basic info page
+	// Containerfiles
+	for _, cntFile := range strings.Split(strings.TrimSpace(d.containerFilePath.GetText()), " ") {
+		if cntFile != "" {
+			cFile, err := utils.ResolveHomeDir(cntFile)
+			if err != nil {
+				return images.ImageBuildOptions{}, err
+			}
+
+			containerFiles = append(containerFiles, cFile)
+		}
+	}
+
+	opts := images.ImageBuildOptions{
+		ContainerFiles: containerFiles,
+		BuildOptions:   entities.BuildOptions{},
+	}
+
+	dir, err := utils.ResolveHomeDir(strings.TrimSpace(d.contextDirectoryPath.GetText()))
+	if err != nil {
+		return images.ImageBuildOptions{}, fmt.Errorf("cannot resolve home directory %w", err)
+	}
+
+	opts.BuildOptions.ContextDirectory = dir
+	opts.BuildOptions.AdditionalTags = append(opts.BuildOptions.AdditionalTags, strings.TrimSpace(d.tagField.GetText()))
+	opts.BuildOptions.Registry = strings.TrimSpace(d.registryField.GetText())
+
+	_, pullOption := d.pullPolicyField.GetCurrentOption()
+	switch pullOption {
+	case "missing":
+		opts.BuildOptions.PullPolicy = define.PullIfMissing
+	case "always":
+		opts.BuildOptions.PullPolicy = define.PullAlways
+	case "ifnewer":
+		opts.BuildOptions.PullPolicy = define.PullIfNewer
+	case "never":
+		opts.BuildOptions.PullPolicy = define.PullNever
+	}
+
+	_, format := d.formatField.GetCurrentOption()
+	switch format {
+	case "oci":
+		opts.BuildOptions.OutputFormat = define.OCIv1ImageManifest
+	case "docker":
+		opts.BuildOptions.OutputFormat = define.Dockerv2ImageManifest
+	}
+
+	// build settings
+	opts.BuildOptions.Squash = d.SquashField.IsChecked()
+	opts.BuildOptions.Layers = d.layersField.IsChecked()
+	opts.BuildOptions.NoCache = d.noCacheField.IsChecked()
+	opts.BuildOptions.RemoveIntermediateCtrs = d.removeCntField.IsChecked()
+	opts.BuildOptions.ForceRmIntermediateCtrs = d.forceRemoveCntField.IsChecked()
+
+	labels := strings.TrimSpace(d.labelsField.GetText())
+	if labels != "" {
+		opts.BuildOptions.Labels = strings.Split(labels, " ")
+	}
+
+	annotations := strings.TrimSpace(d.annotationsField.GetText())
+	if annotations != "" {
+		opts.BuildOptions.Annotations = strings.Split(annotations, " ")
+	}
+
+	// capability pages
+	addCap := strings.TrimSpace(d.addCapabilityField.GetText())
+	if addCap != "" {
+		opts.BuildOptions.AddCapabilities = strings.Split(addCap, " ")
+	}
+
+	removeCap := strings.TrimSpace(d.removeCapabilityField.GetText())
+	if removeCap != "" {
+		opts.BuildOptions.DropCapabilities = strings.Split(removeCap, " ")
+	}
+
+	// cpu and memory page
+	opts.BuildOptions.CommonBuildOpts = &define.CommonBuildOptions{}
+
+	cpuPeriodVal := d.cpuPeriodField.GetText()
+	if cpuPeriodVal != "" {
+		period, err := strconv.Atoi(cpuPeriodVal)
+		if err != nil {
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU period value %q %w", cpuPeriodVal, err)
+		}
+
+		cpuPeriod = uint64(period) //nolint:gosec
+	}
+
+	cpuQuotaVal := d.cpuQuataField.GetText()
+	if cpuQuotaVal != "" {
+		quota, err := strconv.Atoi(cpuQuotaVal)
+		if err != nil {
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuQuotaVal, err)
+		}
+
+		cpuQuota = int64(quota)
+	}
+
+	cpuSharesVal := d.cpuSharesField.GetText()
+	if cpuSharesVal != "" {
+		shares, err := strconv.Atoi(cpuSharesVal)
+		if err != nil {
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuSharesVal, err)
+		}
+
+		cpuShares = uint64(shares) //nolint:gosec
+	}
+
+	cpuSetCpusVal := d.cpuSetCpusField.GetText()
+	if cpuSetCpusVal != "" {
+		cpuSetCpus = cpuSetCpusVal
+	}
+
+	cpuSetMemsVal := d.cpuSetMemsField.GetText()
+	if cpuSetMemsVal != "" {
+		cpuSetMems = cpuSetMemsVal
+	}
+
+	memoryVal := d.memoryField.GetText()
+	if memoryVal != "" {
+		memory, err := strconv.Atoi(memoryVal)
+		if err != nil {
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory value %q %w", memoryVal, err)
+		}
+
+		memoryLimit = int64(memory)
+	}
+
+	memorySwapVal := d.memorySwapField.GetText()
+	if memorySwapVal != "" {
+		swap, err := strconv.Atoi(memorySwapVal)
+		if err != nil {
+			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory swap value %q %w", memorySwapVal, err)
+		}
+
+		memorySwap = int64(swap)
+	}
+
+	// networking page
+	// network policy
+	_, configureNetwork := d.networkField.GetCurrentOption()
+	switch configureNetwork {
+	case "NetworkDefault":
+		opts.BuildOptions.ConfigureNetwork = define.NetworkDefault
+	case "NetworkDisabled":
+		opts.BuildOptions.ConfigureNetwork = define.NetworkDisabled
+	case "NetworkEnabled":
+		opts.BuildOptions.ConfigureNetwork = define.NetworkEnabled
+	}
+	// add hosts
+	hosts := strings.TrimSpace(d.addHostField.GetText())
+	if hosts != "" {
+		addHost = strings.Split(hosts, " ")
+	}
+
+	// dns page
+	dnsServersList := strings.TrimSpace(d.dnsServersField.GetText())
+	for _, dns := range strings.Split(dnsServersList, " ") {
+		if dns != "" {
+			dnsServers = append(dnsServers, dns)
+		}
+	}
+
+	for _, do := range strings.Split(d.dnsOptionsField.GetText(), " ") {
+		if do != "" {
+			dnsOptions = append(dnsOptions, do)
+		}
+	}
+
+	for _, ds := range strings.Split(d.dnsSearchField.GetText(), " ") {
+		if ds != "" {
+			dnsSearchDomains = append(dnsSearchDomains, ds)
+		}
+	}
+
+	// security options page
+	for _, selinuxLabel := range strings.Split(d.selinuxLabelField.GetText(), " ") {
+		if selinuxLabel != "" {
+			labelOpts = append(labelOpts, selinuxLabel)
+		}
+	}
+
+	apparmor := strings.TrimSpace(d.apparmorProfileField.GetText())
+	if apparmor != "" {
+		apparmorProfile = apparmor
+	}
+
+	seccomp := strings.TrimSpace(d.seccompProfilePathField.GetText())
+	if seccomp != "" {
+		seccompProfilePath = seccomp
+	}
+
+	commonOpts := &define.CommonBuildOptions{
+		AddHost:            addHost,
+		HTTPProxy:          d.httpProxyField.IsChecked(),
+		CPUPeriod:          cpuPeriod,
+		CPUQuota:           cpuQuota,
+		CPUSetCPUs:         cpuSetCpus,
+		CPUSetMems:         cpuSetMems,
+		CPUShares:          cpuShares,
+		DNSServers:         dnsServers,
+		DNSOptions:         dnsOptions,
+		DNSSearch:          dnsSearchDomains,
+		Memory:             memoryLimit,
+		MemorySwap:         memorySwap,
+		LabelOpts:          labelOpts,
+		ApparmorProfile:    apparmorProfile,
+		SeccompProfilePath: seccompProfilePath,
+	}
+
+	opts.BuildOptions.CommonBuildOpts = commonOpts
+
+	return opts, nil
+}
+
+func (d *ImageBuildDialog) setupLayout() {
+	bgColor := style.DialogBgColor
+	// basic info page
+	d.basicInfoPage.SetDirection(tview.FlexRow)
+	d.basicInfoPage.AddItem(d.contextDirectoryPath, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.containerFilePath, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.pullPolicyField, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.tagField, 1, 0, true)
+	d.basicInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.basicInfoPage.AddItem(d.registryField, 1, 0, true)
+	d.basicInfoPage.SetBackgroundColor(bgColor)
+
+	// layers setup page
+	secondRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	secondRowLayout.SetBackgroundColor(bgColor)
+	secondRowLayout.AddItem(d.formatField, 0, 2, true) //nolint:mnd
+	secondRowLayout.AddItem(d.SquashField, 0, 1, true)
+	secondRowLayout.AddItem(d.layersField, 0, 1, true)
+	secondRowLayout.AddItem(d.noCacheField, 0, 1, true)
+
+	cntRmRowLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cntRmRowLayout.SetBackgroundColor(bgColor)
+	cntRmRowLayout.AddItem(d.forceRemoveCntField, 0, 1, true)
+	cntRmRowLayout.AddItem(d.removeCntField, 0, 2, true) //nolint:mnd
+
+	// build setup page
+	d.buildInfoPage.SetDirection(tview.FlexRow)
+	d.buildInfoPage.AddItem(d.buildArgsField, 1, 0, true)
+	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.buildInfoPage.AddItem(secondRowLayout, 1, 0, true)
+	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.buildInfoPage.AddItem(d.labelsField, 1, 0, true)
+	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.buildInfoPage.AddItem(d.annotationsField, 1, 0, true)
+	d.buildInfoPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.buildInfoPage.AddItem(cntRmRowLayout, 1, 0, true)
+	d.buildInfoPage.SetBackgroundColor(bgColor)
+
+	// security options page
+	d.securityOptsPage.SetDirection(tview.FlexRow)
+	d.securityOptsPage.AddItem(d.selinuxLabelField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.apparmorProfileField, 1, 0, true)
+	d.securityOptsPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.securityOptsPage.AddItem(d.seccompProfilePathField, 1, 0, true)
+
+	// networking setup page
+	netFirstRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	netFirstRow.SetBackgroundColor(bgColor)
+	netFirstRow.AddItem(d.networkField, 0, 1, true)
+	netFirstRow.AddItem(d.httpProxyField, 0, 1, true)
+	d.networkingPage.SetDirection(tview.FlexRow)
+	d.networkingPage.AddItem(netFirstRow, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.addHostField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.dnsServersField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.dnsOptionsField, 1, 0, true)
+	d.networkingPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.networkingPage.AddItem(d.dnsSearchField, 1, 0, true)
+	d.networkingPage.SetBackgroundColor(bgColor)
+
+	// capability page
+	d.capabilityPage.SetDirection(tview.FlexRow)
+	d.capabilityPage.AddItem(d.addCapabilityField, 1, 0, true)
+	d.capabilityPage.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	d.capabilityPage.AddItem(d.removeCapabilityField, 1, 0, true)
+
+	// cpu and memory page
+	cpuSetRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	cpuSetRow.AddItem(d.cpuSetCpusField, 0, 1, true)
+	cpuSetRow.AddItem(d.cpuSetMemsField, 0, 1, true)
+
+	// memory and swap
+	memSwapRow := tview.NewFlex().SetDirection(tview.FlexColumn)
+	memSwapRow.AddItem(d.memoryField, 0, 1, true)
+	memSwapRow.AddItem(d.memorySwapField, 0, 1, true)
+
+	d.cpuMemoryPage.SetDirection(tview.FlexRow)
+	d.cpuMemoryPage.AddItem(d.cpuPeriodField, 0, 1, true)
+	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	d.cpuMemoryPage.AddItem(d.cpuQuataField, 0, 1, true)
+	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	d.cpuMemoryPage.AddItem(d.cpuSharesField, 0, 1, true)
+	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	d.cpuMemoryPage.AddItem(cpuSetRow, 0, 1, true)
+	d.cpuMemoryPage.AddItem(utils.EmptyBoxSpace(bgColor), 0, 1, true)
+	d.cpuMemoryPage.AddItem(memSwapRow, 0, 1, true)
+
+	// adding category pages
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogBasicInfoPageIndex], d.basicInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogBuildInfoPageIndex], d.buildInfoPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogCapabilityPageIndex], d.capabilityPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogCPUMemoryPageIndex], d.cpuMemoryPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogNetworkingPageIndex], d.networkingPage, true, true)
+	d.categoryPages.AddPage(d.categoryLabels[buildDialogSecurityOptsPageIndex], d.securityOptsPage, true, true)
+
+	// add it to layout.
+	_, layoutWidth := utils.AlignStringListWidth(d.categoryLabels)
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	layout.AddItem(d.categories, layoutWidth+6, 0, true) //nolint:mnd
+	layout.AddItem(d.categoryPages, 0, 1, true)
+	layout.SetBackgroundColor(bgColor)
+
+	d.layout.AddItem(layout, 0, 1, true)
 }
 
 func (d *ImageBuildDialog) initData() {
@@ -1222,239 +1458,4 @@ func (d *ImageBuildDialog) setSecurityOptionsPageNextFocus() {
 	}
 
 	d.focusElement = buildDialogFormFocus
-}
-
-// ImageBuildOptions returns image build options.
-func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error) { //nolint:gocognit,gocyclo,cyclop,maintidx,lll
-	var (
-		memoryLimit        int64
-		memorySwap         int64
-		cpuPeriod          uint64
-		cpuQuota           int64
-		cpuShares          uint64
-		cpuSetCpus         string
-		cpuSetMems         string
-		containerFiles     []string
-		dnsServers         []string
-		dnsOptions         []string
-		dnsSearchDomains   []string
-		addHost            []string
-		labelOpts          []string
-		apparmorProfile    string
-		seccompProfilePath string
-	)
-
-	// basic info page
-	// Containerfiles
-	for _, cntFile := range strings.Split(strings.TrimSpace(d.containerFilePath.GetText()), " ") {
-		if cntFile != "" {
-			cFile, err := utils.ResolveHomeDir(cntFile)
-			if err != nil {
-				return images.ImageBuildOptions{}, err
-			}
-
-			containerFiles = append(containerFiles, cFile)
-		}
-	}
-
-	opts := images.ImageBuildOptions{
-		ContainerFiles: containerFiles,
-		BuildOptions:   entities.BuildOptions{},
-	}
-
-	dir, err := utils.ResolveHomeDir(strings.TrimSpace(d.contextDirectoryPath.GetText()))
-	if err != nil {
-		return images.ImageBuildOptions{}, fmt.Errorf("cannot resolve home directory %w", err)
-	}
-
-	opts.BuildOptions.ContextDirectory = dir
-	opts.BuildOptions.AdditionalTags = append(opts.BuildOptions.AdditionalTags, strings.TrimSpace(d.tagField.GetText()))
-	opts.BuildOptions.Registry = strings.TrimSpace(d.registryField.GetText())
-
-	_, pullOption := d.pullPolicyField.GetCurrentOption()
-	switch pullOption {
-	case "missing":
-		opts.BuildOptions.PullPolicy = define.PullIfMissing
-	case "always":
-		opts.BuildOptions.PullPolicy = define.PullAlways
-	case "ifnewer":
-		opts.BuildOptions.PullPolicy = define.PullIfNewer
-	case "never":
-		opts.BuildOptions.PullPolicy = define.PullNever
-	}
-
-	_, format := d.formatField.GetCurrentOption()
-	switch format {
-	case "oci":
-		opts.BuildOptions.OutputFormat = define.OCIv1ImageManifest
-	case "docker":
-		opts.BuildOptions.OutputFormat = define.Dockerv2ImageManifest
-	}
-
-	// build settings
-	opts.BuildOptions.Squash = d.SquashField.IsChecked()
-	opts.BuildOptions.Layers = d.layersField.IsChecked()
-	opts.BuildOptions.NoCache = d.noCacheField.IsChecked()
-	opts.BuildOptions.RemoveIntermediateCtrs = d.removeCntField.IsChecked()
-	opts.BuildOptions.ForceRmIntermediateCtrs = d.forceRemoveCntField.IsChecked()
-
-	labels := strings.TrimSpace(d.labelsField.GetText())
-	if labels != "" {
-		opts.BuildOptions.Labels = strings.Split(labels, " ")
-	}
-
-	annotations := strings.TrimSpace(d.annotationsField.GetText())
-	if annotations != "" {
-		opts.BuildOptions.Annotations = strings.Split(annotations, " ")
-	}
-
-	// capability pages
-	addCap := strings.TrimSpace(d.addCapabilityField.GetText())
-	if addCap != "" {
-		opts.BuildOptions.AddCapabilities = strings.Split(addCap, " ")
-	}
-
-	removeCap := strings.TrimSpace(d.removeCapabilityField.GetText())
-	if removeCap != "" {
-		opts.BuildOptions.DropCapabilities = strings.Split(removeCap, " ")
-	}
-
-	// cpu and memory page
-	opts.BuildOptions.CommonBuildOpts = &define.CommonBuildOptions{}
-
-	cpuPeriodVal := d.cpuPeriodField.GetText()
-	if cpuPeriodVal != "" {
-		period, err := strconv.Atoi(cpuPeriodVal)
-		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU period value %q %w", cpuPeriodVal, err)
-		}
-
-		cpuPeriod = uint64(period) //nolint:gosec
-	}
-
-	cpuQuotaVal := d.cpuQuataField.GetText()
-	if cpuQuotaVal != "" {
-		quota, err := strconv.Atoi(cpuQuotaVal)
-		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuQuotaVal, err)
-		}
-
-		cpuQuota = int64(quota)
-	}
-
-	cpuSharesVal := d.cpuSharesField.GetText()
-	if cpuSharesVal != "" {
-		shares, err := strconv.Atoi(cpuSharesVal)
-		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid CPU quota value %q %w", cpuSharesVal, err)
-		}
-
-		cpuShares = uint64(shares) //nolint:gosec
-	}
-
-	cpuSetCpusVal := d.cpuSetCpusField.GetText()
-	if cpuSetCpusVal != "" {
-		cpuSetCpus = cpuSetCpusVal
-	}
-
-	cpuSetMemsVal := d.cpuSetMemsField.GetText()
-	if cpuSetMemsVal != "" {
-		cpuSetMems = cpuSetMemsVal
-	}
-
-	memoryVal := d.memoryField.GetText()
-	if memoryVal != "" {
-		memory, err := strconv.Atoi(memoryVal)
-		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory value %q %w", memoryVal, err)
-		}
-
-		memoryLimit = int64(memory)
-	}
-
-	memorySwapVal := d.memorySwapField.GetText()
-	if memorySwapVal != "" {
-		swap, err := strconv.Atoi(memorySwapVal)
-		if err != nil {
-			return images.ImageBuildOptions{}, fmt.Errorf("invalid memory swap value %q %w", memorySwapVal, err)
-		}
-
-		memorySwap = int64(swap)
-	}
-
-	// networking page
-	// network policy
-	_, configureNetwork := d.networkField.GetCurrentOption()
-	switch configureNetwork {
-	case "NetworkDefault":
-		opts.BuildOptions.ConfigureNetwork = define.NetworkDefault
-	case "NetworkDisabled":
-		opts.BuildOptions.ConfigureNetwork = define.NetworkDisabled
-	case "NetworkEnabled":
-		opts.BuildOptions.ConfigureNetwork = define.NetworkEnabled
-	}
-	// add hosts
-	hosts := strings.TrimSpace(d.addHostField.GetText())
-	if hosts != "" {
-		addHost = strings.Split(hosts, " ")
-	}
-
-	// dns page
-	dnsServersList := strings.TrimSpace(d.dnsServersField.GetText())
-	for _, dns := range strings.Split(dnsServersList, " ") {
-		if dns != "" {
-			dnsServers = append(dnsServers, dns)
-		}
-	}
-
-	for _, do := range strings.Split(d.dnsOptionsField.GetText(), " ") {
-		if do != "" {
-			dnsOptions = append(dnsOptions, do)
-		}
-	}
-
-	for _, ds := range strings.Split(d.dnsSearchField.GetText(), " ") {
-		if ds != "" {
-			dnsSearchDomains = append(dnsSearchDomains, ds)
-		}
-	}
-
-	// security options page
-	for _, selinuxLabel := range strings.Split(d.selinuxLabelField.GetText(), " ") {
-		if selinuxLabel != "" {
-			labelOpts = append(labelOpts, selinuxLabel)
-		}
-	}
-
-	apparmor := strings.TrimSpace(d.apparmorProfileField.GetText())
-	if apparmor != "" {
-		apparmorProfile = apparmor
-	}
-
-	seccomp := strings.TrimSpace(d.seccompProfilePathField.GetText())
-	if seccomp != "" {
-		seccompProfilePath = seccomp
-	}
-
-	commonOpts := &define.CommonBuildOptions{
-		AddHost:            addHost,
-		HTTPProxy:          d.httpProxyField.IsChecked(),
-		CPUPeriod:          cpuPeriod,
-		CPUQuota:           cpuQuota,
-		CPUSetCPUs:         cpuSetCpus,
-		CPUSetMems:         cpuSetMems,
-		CPUShares:          cpuShares,
-		DNSServers:         dnsServers,
-		DNSOptions:         dnsOptions,
-		DNSSearch:          dnsSearchDomains,
-		Memory:             memoryLimit,
-		MemorySwap:         memorySwap,
-		LabelOpts:          labelOpts,
-		ApparmorProfile:    apparmorProfile,
-		SeccompProfilePath: seccompProfilePath,
-	}
-
-	opts.BuildOptions.CommonBuildOpts = commonOpts
-
-	return opts, nil
 }

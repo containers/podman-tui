@@ -24,6 +24,7 @@ import (
 // App represents main application struct.
 type App struct {
 	*tview.Application
+
 	infoBar         *infobar.InfoBar
 	pages           *tview.Pages
 	pods            *pods.Pods
@@ -86,7 +87,8 @@ func NewApp(name string, version string) *App {
 	app.system.SetConnectionAddFunc(app.config.Add)
 	app.system.SetConnectionRemoveFunc(app.config.Remove)
 	app.system.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.system)
+		app.SetFocus(app.system)
+
 		app.fastRefreshChan <- true
 	})
 
@@ -102,32 +104,38 @@ func NewApp(name string, version string) *App {
 
 	// set app set focus
 	app.containers.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.containers)
+		app.SetFocus(app.containers)
+
 		app.fastRefreshChan <- true
 	})
 
 	app.pods.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.pods)
+		app.SetFocus(app.pods)
+
 		app.fastRefreshChan <- true
 	})
 
 	app.images.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.images)
+		app.SetFocus(app.images)
+
 		app.fastRefreshChan <- true
 	})
 
 	app.volumes.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.volumes)
+		app.SetFocus(app.volumes)
+
 		app.fastRefreshChan <- true
 	})
 
 	app.networks.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.networks)
+		app.SetFocus(app.networks)
+
 		app.fastRefreshChan <- true
 	})
 
 	app.secrets.SetAppFocusHandler(func() {
-		app.Application.SetFocus(app.secrets)
+		app.SetFocus(app.secrets)
+
 		app.fastRefreshChan <- true
 	})
 
@@ -272,7 +280,8 @@ func (app *App) Run() error { //nolint:cyclop
 	// start fast refresh loop
 	go app.fastRefresh()
 
-	if err := app.SetRoot(flex, true).SetFocus(app.system).EnableMouse(false).Run(); err != nil {
+	err := app.SetRoot(flex, true).SetFocus(app.system).EnableMouse(false).Run()
+	if err != nil {
 		return err
 	}
 

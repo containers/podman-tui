@@ -9,6 +9,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/pods/poddialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
@@ -40,6 +41,7 @@ var (
 // Pods implemnents the pods page primitive.
 type Pods struct {
 	*tview.Box
+
 	title           string
 	headers         []string
 	table           *tview.Table
@@ -138,7 +140,7 @@ func NewPods() *Pods {
 		pods.confirmDialog.Hide()
 
 		switch pods.confirmData {
-		case "prune":
+		case utils.PruneCommandLabel:
 			pods.prune()
 		case "rm":
 			pods.remove()
@@ -275,41 +277,6 @@ func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 	delegate(pods.table)
 }
 
-func (pods *Pods) getSelectedItem() (string, string) {
-	var (
-		id   string
-		name string
-	)
-
-	if pods.table.GetRowCount() <= 1 {
-		return id, name
-	}
-
-	row, _ := pods.table.GetSelection()
-	id = pods.table.GetCell(row, 0).Text
-	name = pods.table.GetCell(row, 1).Text
-
-	return id, name
-}
-
-func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {
-	var items []poddialogs.PodStatsDropDownOptions
-
-	rows := pods.table.GetRowCount()
-
-	for i := 1; i < rows; i++ {
-		podID := pods.table.GetCell(i, 0).Text
-		podName := pods.table.GetCell(i, 1).Text
-
-		items = append(items, poddialogs.PodStatsDropDownOptions{
-			ID:   podID,
-			Name: podName,
-		})
-	}
-
-	return items
-}
-
 // HideAllDialogs hides all sub dialogs.
 func (pods *Pods) HideAllDialogs() {
 	if pods.errorDialog.IsDisplay() {
@@ -343,4 +310,39 @@ func (pods *Pods) HideAllDialogs() {
 	if pods.statsDialog.IsDisplay() {
 		pods.statsDialog.Hide()
 	}
+}
+
+func (pods *Pods) getSelectedItem() (string, string) {
+	var (
+		id   string
+		name string
+	)
+
+	if pods.table.GetRowCount() <= 1 {
+		return id, name
+	}
+
+	row, _ := pods.table.GetSelection()
+	id = pods.table.GetCell(row, 0).Text
+	name = pods.table.GetCell(row, 1).Text
+
+	return id, name
+}
+
+func (pods *Pods) getAllItemsForStats() []poddialogs.PodStatsDropDownOptions {
+	var items []poddialogs.PodStatsDropDownOptions
+
+	rows := pods.table.GetRowCount()
+
+	for i := 1; i < rows; i++ {
+		podID := pods.table.GetCell(i, 0).Text
+		podName := pods.table.GetCell(i, 1).Text
+
+		items = append(items, poddialogs.PodStatsDropDownOptions{
+			ID:   podID,
+			Name: podName,
+		})
+	}
+
+	return items
 }

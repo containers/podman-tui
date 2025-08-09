@@ -20,11 +20,13 @@ func (c *Config) Add(name string, uri string, identity string) error {
 		Default:  false,
 	}
 
-	if err := c.add(name, conn); err != nil {
+	err = c.add(name, conn)
+	if err != nil {
 		return err
 	}
 
-	if err := c.write(); err != nil {
+	err = c.write()
+	if err != nil {
 		return err
 	}
 

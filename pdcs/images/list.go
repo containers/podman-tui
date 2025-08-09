@@ -42,9 +42,10 @@ func List() ([]ImageListReporter, error) {
 
 // ImageListReporter image list report.
 type ImageListReporter struct {
+	entities.ImageSummary
+
 	Repository string `json:"repository,omitempty"`
 	Tag        string `json:"tag,omitempty"`
-	entities.ImageSummary
 }
 
 func sortImages(imageS []*entities.ImageSummary) ([]ImageListReporter, error) {

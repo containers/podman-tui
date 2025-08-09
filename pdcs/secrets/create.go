@@ -77,7 +77,13 @@ func Create(opts *SecretCreateOptions) error { //nolint:cyclop
 			return err
 		}
 
-		defer file.Close()
+		defer func() {
+			err := file.Close()
+			if err != nil {
+				log.Error().Msgf("failed to close secret file input: %s", err.Error())
+			}
+		}()
+
 		reader = file
 	}
 
@@ -90,7 +96,8 @@ func Create(opts *SecretCreateOptions) error { //nolint:cyclop
 		return err
 	}
 
-	if _, err := secrets.Create(conn, reader, createOpts); err != nil {
+	_, err = secrets.Create(conn, reader, createOpts)
+	if err != nil {
 		return err
 	}
 

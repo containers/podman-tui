@@ -29,7 +29,7 @@ func Execute() {
 	cobra.CheckErr(rootCmd.Execute())
 }
 
-func run(cmd *cobra.Command, args []string) error { //nolint:cyclop,revive
+func run(cmd *cobra.Command, args []string) error { //nolint:cyclop
 	var (
 		logOutput = io.Discard
 		runLog    = fmt.Sprintf("starting %s version %s", appName, appVersion)
@@ -54,12 +54,12 @@ func run(cmd *cobra.Command, args []string) error { //nolint:cyclop,revive
 			return err
 		}
 
-		logFD, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm)
+		logFD, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, os.ModePerm) //nolint:gosec
 		if err != nil {
 			return err
 		}
 
-		defer logFD.Close()
+		defer logFD.Close() //nolint:errcheck
 
 		logOutput = logFD
 	}
@@ -95,9 +95,11 @@ func run(cmd *cobra.Command, args []string) error { //nolint:cyclop,revive
 	}
 
 	app := app.NewApp(appName, appVersion)
-	if err := app.Run(); err != nil {
+
+	err = app.Run()
+	if err != nil {
 		if setSSHIdentityPassphrase {
-			os.Unsetenv("CONTAINER_PASSPHRASE")
+			os.Unsetenv("CONTAINER_PASSPHRASE") //nolint:errcheck
 		}
 
 		return err
@@ -106,7 +108,10 @@ func run(cmd *cobra.Command, args []string) error { //nolint:cyclop,revive
 	// unset CONTAINER_PASSPHRASE environment variable if we have set it
 	// after application exits
 	if setSSHIdentityPassphrase {
-		os.Unsetenv("CONTAINER_PASSPHRASE")
+		err := os.Unsetenv("CONTAINER_PASSPHRASE")
+		if err != nil {
+			log.Error().Msgf("failed to unset env var CONTAINER_PASSPHRASE: %s", err.Error())
+		}
 	}
 
 	return nil

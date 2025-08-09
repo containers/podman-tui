@@ -6,6 +6,7 @@ import (
 
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
+	"github.com/rs/zerolog/log"
 )
 
 func newMenu(menuItems [][]string) *tview.TextView {
@@ -27,7 +28,10 @@ func newMenu(menuItems [][]string) *tview.TextView {
 		menuList = append(menuList, key+item)
 	}
 
-	fmt.Fprintf(menu, "%s", strings.Join(menuList, " "))
+	_, err := fmt.Fprintf(menu, "%s", strings.Join(menuList, " "))
+	if err != nil {
+		log.Warn().Msgf("failed to create new menu: %s", err.Error())
+	}
 
 	return menu
 }

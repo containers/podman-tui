@@ -8,6 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	bcontainers "github.com/containers/podman/v5/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
 )
@@ -36,7 +37,7 @@ func (cnt *Containers) runCommand(cmd string) { //nolint:cyclop
 		cnt.logs()
 	case "pause":
 		cnt.pause()
-	case "prune": //nolint:goconst
+	case utils.PruneCommandLabel:
 		cnt.cprune()
 	case "rename":
 		cnt.rename()
@@ -333,7 +334,7 @@ func (cnt *Containers) stats() {
 	}
 
 	if cntStatus != "running" {
-		cnt.displayError("", fmt.Errorf("container (%s) status improper", cntID)) //nolint:goerr113
+		cnt.displayError("", fmt.Errorf("container (%s) status improper", cntID)) //nolint:err113
 
 		return
 	}
@@ -450,7 +451,8 @@ func (cnt *Containers) runDetach(runOpts containers.CreateOptions) {
 			return
 		}
 
-		if err := containers.Start(cntID); err != nil {
+		err = containers.Start(cntID)
+		if err != nil {
 			cnt.progressDialog.Hide()
 			cnt.displayError("CONTAINER RUN ERROR", err)
 			cnt.appFocusHandler()
@@ -525,7 +527,8 @@ func (cnt *Containers) runAttach(runOpts containers.CreateOptions) {
 				cnt.progressDialog.Hide()
 
 				if isReady {
-					if err := containers.Start(cntID); err != nil {
+					err := containers.Start(cntID)
+					if err != nil {
 						cnt.displayError("CONTAINER RUN ERROR", err)
 						cnt.appFocusHandler()
 
@@ -768,7 +771,7 @@ func (cnt *Containers) prune() {
 		}
 
 		if len(errData) > 0 {
-			cnt.displayError("CONTAINER PRUNE ERROR", fmt.Errorf("%v", errData)) //nolint:goerr113
+			cnt.displayError("CONTAINER PRUNE ERROR", fmt.Errorf("%v", errData)) //nolint:err113
 		}
 	}
 
@@ -787,8 +790,8 @@ func (cnt *Containers) rename() {
 	fgColor := style.GetColorHex(style.DialogFgColor)
 	bgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
 	containerInfo := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
-	description := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s",
-		fgColor, bgColor, containerInfo)
+	description := fmt.Sprintf("[%s:%s:b]%s[:-:-] %s",
+		fgColor, bgColor, utils.ContainerIDLabel, containerInfo)
 
 	cnt.cmdInputDialog.SetDescription(description)
 	cnt.cmdInputDialog.SetSelectButtonLabel("rename")
@@ -838,7 +841,7 @@ func (cnt *Containers) rm() {
 	cnt.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 	fgColor := style.GetColorHex(style.DialogFgColor)
-	containerItem := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-] %s(%s)", fgColor, bgColor, cntID, cntName)
+	containerItem := fmt.Sprintf("[%s:%s:b]%s[:-:-] %s(%s)", fgColor, bgColor, utils.ContainerIDLabel, cntID, cntName)
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", //nolint:perfsprint
 		containerItem)
 
@@ -867,7 +870,7 @@ func (cnt *Containers) remove() {
 		if len(errData) > 0 {
 			title := fmt.Sprintf("CONTAINER (%s) REMOVE ERROR", cnt.selectedID)
 
-			cnt.displayError(title, fmt.Errorf("%v", errData)) //nolint:goerr113
+			cnt.displayError(title, fmt.Errorf("%v", errData)) //nolint:err113
 			cnt.appFocusHandler()
 		}
 	}

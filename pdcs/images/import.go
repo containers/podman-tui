@@ -40,7 +40,12 @@ func Import(opts ImageImportOptions) (string, error) {
 			return "", err
 		}
 
-		defer tarFile.Close()
+		defer func() {
+			err := tarFile.Close()
+			if err != nil {
+				log.Error().Msgf("failed to close tar file: %s", err.Error())
+			}
+		}()
 
 		reader = bufio.NewReader(tarFile)
 	}
