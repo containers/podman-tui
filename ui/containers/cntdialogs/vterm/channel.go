@@ -49,7 +49,9 @@ func (w *writer) Write(b []byte) (int, error) {
 	}
 
 	buf := make([]byte, len(b))
+
 	copy(buf, b)
+
 	w.ch <- buf
 
 	return len(b), nil

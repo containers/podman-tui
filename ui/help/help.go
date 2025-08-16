@@ -12,6 +12,7 @@ import (
 // Help is a help primitive dialog.
 type Help struct {
 	*tview.Box
+
 	title  string
 	layout *tview.Flex
 }
@@ -116,12 +117,12 @@ func (help *Help) Focus(delegate func(p tview.Primitive)) {
 
 // Draw draws this primitive onto the screen.
 func (help *Help) Draw(screen tcell.Screen) {
-	x, y, width, height := help.Box.GetInnerRect()
+	x, y, width, height := help.GetInnerRect()
 	if height <= 3 { //nolint:mnd
 		return
 	}
 
-	help.Box.DrawForSubclass(screen, help)
+	help.DrawForSubclass(screen, help)
 	help.layout.SetRect(x, y, width, height)
 	help.layout.Draw(screen)
 }

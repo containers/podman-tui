@@ -6,8 +6,8 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (vols *Volumes) Draw(screen tcell.Screen) {
-	vols.Box.DrawForSubclass(screen, vols)
-	vols.Box.SetBorder(false)
+	vols.DrawForSubclass(screen, vols)
+	vols.SetBorder(false)
 
 	x, y, width, height := vols.GetInnerRect()
 

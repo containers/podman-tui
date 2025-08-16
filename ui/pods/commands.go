@@ -7,6 +7,7 @@ import (
 	ppods "github.com/containers/podman-tui/pdcs/pods"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -20,9 +21,9 @@ func (p *Pods) runCommand(cmd string) { //nolint:cyclop
 		p.kill()
 	case "pause":
 		p.pause()
-	case "prune": //nolint:goconst
+	case utils.PruneCommandLabel:
 		p.confirmDialog.SetTitle("podman pod prune")
-		p.confirmData = "prune"
+		p.confirmData = utils.PruneCommandLabel
 		p.confirmDialog.SetText("Are you sure you want to remove all stopped pods ?")
 		p.confirmDialog.Display()
 	case "restart":

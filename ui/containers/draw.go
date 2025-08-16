@@ -6,8 +6,8 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
-	cnt.Box.DrawForSubclass(screen, cnt)
-	cnt.Box.SetBorder(false)
+	cnt.DrawForSubclass(screen, cnt)
+	cnt.SetBorder(false)
 
 	cntViewX, cntViewY, cntViewW, cntViewH := cnt.GetInnerRect()
 

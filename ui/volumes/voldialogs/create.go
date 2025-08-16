@@ -28,6 +28,7 @@ const (
 // VolumeCreateDialog implements volume create dialog.
 type VolumeCreateDialog struct {
 	*tview.Box
+
 	layout                   *tview.Flex
 	form                     *tview.Form
 	display                  bool
@@ -99,31 +100,6 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 	volDialog.layout.SetTitle("PODMAN VOLUME CREATE")
 
 	return &volDialog
-}
-
-func (d *VolumeCreateDialog) setupLayout() {
-	bgColor := style.DialogBgColor
-
-	// layouts
-	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)
-	inputFieldLayout.SetBackgroundColor(bgColor)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	inputFieldLayout.AddItem(d.volumeNameField, 1, 0, true)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	inputFieldLayout.AddItem(d.volumeLabelField, 1, 0, true)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	inputFieldLayout.AddItem(d.volumeDriverField, 1, 0, true)
-	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	inputFieldLayout.AddItem(d.volumeDriverOptionsField, 1, 0, true)
-
-	// adding an empty column space to beginning and end of the fields layout
-	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	layout.AddItem(inputFieldLayout, 0, 1, true)
-	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-
-	d.layout.AddItem(layout, 0, 1, true)
-	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
 }
 
 // Display displays this primitive.
@@ -233,19 +209,6 @@ func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus
 	})
 }
 
-func (d *VolumeCreateDialog) nextFocus() {
-	switch d.focusElement {
-	case volumeNameFieldFocus:
-		d.focusElement = volumeLabelsFieldFocus
-	case volumeLabelsFieldFocus:
-		d.focusElement = volumeDriverNameFocus
-	case volumeDriverNameFocus:
-		d.focusElement = volumeDriverOptionsFocus
-	case volumeDriverOptionsFocus:
-		d.focusElement = formFocus
-	}
-}
-
 // SetRect set rects for this primitive.
 func (d *VolumeCreateDialog) SetRect(x, y, width, height int) {
 	if width > volumeCreateDialogMaxWidth {
@@ -269,8 +232,8 @@ func (d *VolumeCreateDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -291,13 +254,6 @@ func (d *VolumeCreateDialog) SetCreateFunc(handler func()) *VolumeCreateDialog {
 	enterButton.SetSelectedFunc(handler)
 
 	return d
-}
-
-func (d *VolumeCreateDialog) initData() {
-	d.volumeNameField.SetText("")
-	d.volumeLabelField.SetText("")
-	d.volumeDriverField.SetText("")
-	d.volumeDriverOptionsField.SetText("")
 }
 
 // VolumeCreateOptions returns new volume options.
@@ -345,6 +301,13 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() volumes.CreateOptions { //nol
 	return opts
 }
 
+func (d *VolumeCreateDialog) initData() {
+	d.volumeNameField.SetText("")
+	d.volumeLabelField.SetText("")
+	d.volumeDriverField.SetText("")
+	d.volumeDriverOptionsField.SetText("")
+}
+
 func (d *VolumeCreateDialog) getInnerPrimitives() []tview.Primitive {
 	return []tview.Primitive{
 		d.volumeNameField,
@@ -352,4 +315,42 @@ func (d *VolumeCreateDialog) getInnerPrimitives() []tview.Primitive {
 		d.volumeDriverField,
 		d.volumeDriverOptionsField,
 	}
+}
+
+func (d *VolumeCreateDialog) nextFocus() {
+	switch d.focusElement {
+	case volumeNameFieldFocus:
+		d.focusElement = volumeLabelsFieldFocus
+	case volumeLabelsFieldFocus:
+		d.focusElement = volumeDriverNameFocus
+	case volumeDriverNameFocus:
+		d.focusElement = volumeDriverOptionsFocus
+	case volumeDriverOptionsFocus:
+		d.focusElement = formFocus
+	}
+}
+
+func (d *VolumeCreateDialog) setupLayout() {
+	bgColor := style.DialogBgColor
+
+	// layouts
+	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	inputFieldLayout.SetBackgroundColor(bgColor)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeNameField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeLabelField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeDriverField, 1, 0, true)
+	inputFieldLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	inputFieldLayout.AddItem(d.volumeDriverOptionsField, 1, 0, true)
+
+	// adding an empty column space to beginning and end of the fields layout
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	layout.AddItem(inputFieldLayout, 0, 1, true)
+	layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+
+	d.layout.AddItem(layout, 0, 1, true)
+	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
 }

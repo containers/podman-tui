@@ -32,6 +32,7 @@ const (
 // ImageImportDialog represents image import dialog primitive.
 type ImageImportDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	path          *tview.InputField
 	change        *tview.InputField
@@ -271,23 +272,10 @@ func (d *ImageImportDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
-}
-
-func (d *ImageImportDialog) setFocusElement() {
-	switch d.focusElement {
-	case imageImportPathFocus:
-		d.focusElement = imageImportChangeFocus
-	case imageImportChangeFocus:
-		d.focusElement = imageImportCommitMessageFocus
-	case imageImportCommitMessageFocus:
-		d.focusElement = imageImportReferenceFocus
-	case imageImportReferenceFocus:
-		d.focusElement = imageImportFormFocus
-	}
 }
 
 // SetImportFunc sets form import button selected function.
@@ -338,8 +326,8 @@ func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, err
 	}
 
 	errFileName := utils.ValidateFileName(path)
-	errURL := utils.ValidURL(path)
 
+	errURL := utils.ValidURL(path)
 	if errURL == nil {
 		opts.URL = true
 	}
@@ -351,4 +339,17 @@ func (d *ImageImportDialog) ImageImportOptions() (images.ImageImportOptions, err
 	opts.Source = path
 
 	return opts, nil
+}
+
+func (d *ImageImportDialog) setFocusElement() {
+	switch d.focusElement {
+	case imageImportPathFocus:
+		d.focusElement = imageImportChangeFocus
+	case imageImportChangeFocus:
+		d.focusElement = imageImportCommitMessageFocus
+	case imageImportCommitMessageFocus:
+		d.focusElement = imageImportReferenceFocus
+	case imageImportReferenceFocus:
+		d.focusElement = imageImportFormFocus
+	}
 }

@@ -45,6 +45,7 @@ const (
 // ImageSearchDialog represents image search dialogs.
 type ImageSearchDialog struct {
 	*tview.Box
+
 	layout              *tview.Flex
 	searchLayout        *tview.Flex
 	input               *tview.InputField
@@ -124,62 +125,6 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.layout.AddItem(dialog.form, dialogs.DialogFormHeight, 0, true)
 
 	return dialog
-}
-
-func (d *ImageSearchDialog) initTable() {
-	bgColor := style.TableHeaderBgColor
-	fgColor := style.TableHeaderFgColor
-
-	d.searchResult.Clear()
-	d.searchResult.SetCell(0, searchResultIndexColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]INDEX", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignLeft).
-			SetSelectable(false))
-
-	d.searchResult.SetCell(0, searchResultNameColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]NAME", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignLeft).
-			SetSelectable(false))
-
-	d.searchResult.SetCell(0, searchResultStarsColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]STARS", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignCenter).
-			SetSelectable(false))
-
-	d.searchResult.SetCell(0, searchResultOfficialColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]OFFICIAL", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignCenter).
-			SetSelectable(false))
-	d.searchResult.SetCell(0, searchResultAutomatedColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]AUTOMATED", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignCenter).
-			SetSelectable(false))
-
-	d.searchResult.SetCell(0, searchResultDescColIndex,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(fgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(bgColor).
-			SetTextColor(fgColor).
-			SetAlign(tview.AlignCenter).
-			SetSelectable(false))
-
-	d.searchResult.SetFixed(1, 1)
-	d.searchResult.SetSelectable(true, false)
 }
 
 // Display displays this primitive.
@@ -333,9 +278,9 @@ func (d *ImageSearchDialog) Draw(screen tcell.Screen) {
 	}
 
 	bgColor := style.DialogBgColor
-	d.Box.SetBackgroundColor(bgColor)
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.SetBackgroundColor(bgColor)
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.SetBorder(true)
 	d.layout.SetBackgroundColor(bgColor)
@@ -504,4 +449,60 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 		d.searchResult.Select(1, 1)
 		d.searchResult.ScrollToBeginning()
 	}
+}
+
+func (d *ImageSearchDialog) initTable() {
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
+
+	d.searchResult.Clear()
+	d.searchResult.SetCell(0, searchResultIndexColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]INDEX", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignLeft).
+			SetSelectable(false))
+
+	d.searchResult.SetCell(0, searchResultNameColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]NAME", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignLeft).
+			SetSelectable(false))
+
+	d.searchResult.SetCell(0, searchResultStarsColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]STARS", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	d.searchResult.SetCell(0, searchResultOfficialColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]OFFICIAL", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+	d.searchResult.SetCell(0, searchResultAutomatedColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]AUTOMATED", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	d.searchResult.SetCell(0, searchResultDescColIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(fgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(bgColor).
+			SetTextColor(fgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	d.searchResult.SetFixed(1, 1)
+	d.searchResult.SetSelectable(true, false)
 }

@@ -21,6 +21,7 @@ const (
 // ImageBuildProgressDialog implements build progress dialog primitive.
 type ImageBuildProgressDialog struct {
 	*tview.Box
+
 	layout             *tview.Flex
 	output             *tview.TextView
 	progressBar        *tvxwidgets.ActivityModeGauge
@@ -92,7 +93,9 @@ func (d *ImageBuildProgressDialog) IsDisplay() bool {
 func (d *ImageBuildProgressDialog) Hide() {
 	d.display = false
 	d.cancelChan <- true
+
 	close(d.writerChan)
+
 	d.output.SetText("")
 	d.progressBar.Reset()
 }
@@ -113,7 +116,7 @@ func (d *ImageBuildProgressDialog) Focus(delegate func(p tview.Primitive)) {
 
 // InputHandler returns input handler function for this primitive.
 func (d *ImageBuildProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:revive
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("image build progress dialog: event %v received", event)
 	})
 }
@@ -141,10 +144,21 @@ func (d *ImageBuildProgressDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
+}
+
+// LogWriter returns output log writer.
+func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser { //nolint:ireturn
+	return channel.NewWriter(d.writerChan)
+}
+
+// SetFastRefreshHandler sets fast refresh handler
+// fast refresh is used to print image build output as fast as possible.
+func (d *ImageBuildProgressDialog) SetFastRefreshHandler(handler func()) {
+	d.fastRefreshHandler = handler
 }
 
 func (d *ImageBuildProgressDialog) outputReaderLoop() {
@@ -164,20 +178,14 @@ func (d *ImageBuildProgressDialog) outputReaderLoop() {
 			return
 		case data := <-d.writerChan:
 			d.mu.Lock()
-			d.output.Write(data) //nolint:errcheck
+
+			_, err := d.output.Write(data)
+			if err != nil {
+				log.Error().Msgf("failed to write data to output: %s", err.Error())
+			}
+
 			d.mu.Unlock()
 			d.fastRefreshHandler()
 		}
 	}
-}
-
-// LogWriter returns output log writer.
-func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser { //nolint:ireturn
-	return channel.NewWriter(d.writerChan)
-}
-
-// SetFastRefreshHandler sets fast refresh handler
-// fast refresh is used to print image build output as fast as possible.
-func (d *ImageBuildProgressDialog) SetFastRefreshHandler(handler func()) {
-	d.fastRefreshHandler = handler
 }

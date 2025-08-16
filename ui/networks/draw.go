@@ -6,8 +6,8 @@ import (
 
 // Draw draws this primitive onto the screen.
 func (nets *Networks) Draw(screen tcell.Screen) {
-	nets.Box.DrawForSubclass(screen, nets)
-	nets.Box.SetBorder(false)
+	nets.DrawForSubclass(screen, nets)
+	nets.SetBorder(false)
 
 	netViewX, netViewY, netViewW, netViewH := nets.GetInnerRect()
 

@@ -13,6 +13,7 @@ import (
 // MessageDialog is a simaple message dialog primitive.
 type MessageDialog struct {
 	*tview.Box
+
 	layout          *tview.Flex
 	infoType        *tview.InputField
 	textview        *tview.TextView
@@ -132,7 +133,7 @@ func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, me
 	case MessagePodInfo:
 		msgTypeLabel = "POD ID:"
 	case MessageContainerInfo:
-		msgTypeLabel = "CONTAINER ID:"
+		msgTypeLabel = utils.ContainerIDLabel
 	case MessageVolumeInfo:
 		msgTypeLabel = "VOLUME NAME:"
 	case MessageImageInfo:
@@ -236,8 +237,8 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }

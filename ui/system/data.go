@@ -7,6 +7,23 @@ import (
 	"github.com/containers/podman-tui/ui/style"
 )
 
+type connectionItemStatus struct {
+	status registry.ConnStatus
+}
+
+func (connStatus connectionItemStatus) StatusString() string {
+	var status string
+
+	switch connStatus.status {
+	case registry.ConnectionStatusConnected:
+		status = fmt.Sprintf("%s %s", style.HeavyGreenCheckMark, "connected")
+	case registry.ConnectionStatusConnectionError:
+		status = fmt.Sprintf("%s %s", style.HeavyRedCrossMark, "connection error")
+	}
+
+	return status
+}
+
 // UpdateData retrieves connections list data.
 func (sys *System) UpdateData() {
 	destinations := sys.connectionListFunc()
@@ -43,21 +60,4 @@ func (sys *System) getConnectionsData() []registry.Connection {
 	destReport := sys.connectionList.report
 
 	return destReport
-}
-
-type connectionItemStatus struct {
-	status registry.ConnStatus
-}
-
-func (connStatus connectionItemStatus) StatusString() string {
-	var status string
-
-	switch connStatus.status {
-	case registry.ConnectionStatusConnected:
-		status = fmt.Sprintf("%s %s", style.HeavyGreenCheckMark, "connected")
-	case registry.ConnectionStatusConnectionError:
-		status = fmt.Sprintf("%s %s", style.HeavyRedCrossMark, "connection error")
-	}
-
-	return status
 }

@@ -45,7 +45,7 @@ func (app *App) refresh() {
 
 		app.initInfoBar()
 		app.infoBar.UpdateConnStatus(connStatus)
-		app.Application.Draw()
+		app.Draw()
 	}
 }
 
@@ -97,7 +97,7 @@ func (app *App) fastRefresh() {
 	for {
 		refresh := <-app.fastRefreshChan
 		if refresh {
-			app.Application.Draw()
+			app.Draw()
 		}
 	}
 }

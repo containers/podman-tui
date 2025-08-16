@@ -20,6 +20,7 @@ const (
 // DfDialog is a simple dialog with disk usage result table.
 type DfDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	serviceName   *tview.InputField
 	table         *tview.Table
@@ -162,8 +163,8 @@ func (d *DfDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -173,29 +174,6 @@ func (d *DfDialog) SetCancelFunc(handler func()) *DfDialog {
 	d.cancelHandler = handler
 
 	return d
-}
-
-func (d *DfDialog) initTable() {
-	bgColor := style.TableHeaderBgColor
-	fgColor := style.TableHeaderFgColor
-
-	d.table.Clear()
-	d.table.SetFixed(1, 1)
-	d.table.SetSelectable(true, false)
-
-	// add headers
-	for i := range d.tableHeaders {
-		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
-	}
-
-	d.table.SetFixed(1, 1)
-	d.table.SetSelectable(true, false)
 }
 
 // UpdateDiskSummary updates disk summary table result.
@@ -228,4 +206,27 @@ func (d *DfDialog) UpdateDiskSummary(sum []*sysinfo.DfSummary) {
 
 		rowIndex++
 	}
+}
+
+func (d *DfDialog) initTable() {
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
+
+	d.table.Clear()
+	d.table.SetFixed(1, 1)
+	d.table.SetSelectable(true, false)
+
+	// add headers
+	for i := range d.tableHeaders {
+		d.table.SetCell(0, i,
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+				SetExpansion(1).
+				SetBackgroundColor(bgColor).
+				SetTextColor(fgColor).
+				SetAlign(tview.AlignLeft).
+				SetSelectable(false))
+	}
+
+	d.table.SetFixed(1, 1)
+	d.table.SetSelectable(true, false)
 }

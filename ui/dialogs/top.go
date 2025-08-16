@@ -25,6 +25,7 @@ const (
 // TopDialog is a simple dialog with pod/container top result table.
 type TopDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	table         *tview.Table
 	info          *tview.InputField
@@ -174,8 +175,8 @@ func (d *TopDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -187,28 +188,9 @@ func (d *TopDialog) SetCancelFunc(handler func()) *TopDialog {
 	return d
 }
 
-func (d *TopDialog) initTable() {
-	bgColor := style.TableHeaderBgColor
-	fgColor := style.TableHeaderFgColor
-
-	d.table.Clear()
-	d.table.SetFixed(1, 1)
-	d.table.SetSelectable(true, false)
-
-	for i := range d.tableHeaders {
-		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
-				SetExpansion(0).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
-	}
-}
-
 // UpdateResults updates result table.
 func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data [][]string) {
-	headerInfo := "CONTAINER ID:"
+	headerInfo := utils.ContainerIDLabel
 	if infoType == TopPodInfo {
 		headerInfo = "POD ID:"
 	}
@@ -294,6 +276,25 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 	if len(data) > 0 {
 		d.table.Select(1, 1)
 		d.table.ScrollToBeginning()
+	}
+}
+
+func (d *TopDialog) initTable() {
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
+
+	d.table.Clear()
+	d.table.SetFixed(1, 1)
+	d.table.SetSelectable(true, false)
+
+	for i := range d.tableHeaders {
+		d.table.SetCell(0, i,
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+				SetExpansion(0).
+				SetBackgroundColor(bgColor).
+				SetTextColor(fgColor).
+				SetAlign(tview.AlignLeft).
+				SetSelectable(false))
 	}
 }
 

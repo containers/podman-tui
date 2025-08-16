@@ -54,6 +54,7 @@ func sortStats(podSReport []*entities.PodStatsReport, sortBy int) []StatReporter
 
 	for _, item := range podSReport {
 		var reporterItem StatReporter
+
 		reporterItem.Pod = item.Pod
 		reporterItem.CID = item.CID
 		reporterItem.Name = item.Name

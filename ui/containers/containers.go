@@ -10,6 +10,7 @@ import (
 	"github.com/containers/podman-tui/ui/containers/cntdialogs/vterm"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
 )
@@ -49,6 +50,7 @@ var (
 // Containers implements the containers page primitive.
 type Containers struct {
 	*tview.Box
+
 	title            string
 	headers          []string
 	table            *tview.Table
@@ -170,7 +172,7 @@ func NewContainers() *Containers {
 		containers.confirmDialog.Hide()
 
 		switch containers.confirmData {
-		case "prune":
+		case utils.PruneCommandLabel:
 			containers.prune()
 		case "rm":
 			containers.remove()
@@ -410,23 +412,6 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	delegate(cnt.table)
 }
 
-func (cnt *Containers) getSelectedItem() (string, string) {
-	var (
-		cntID   string
-		cntName string
-	)
-
-	if cnt.table.GetRowCount() <= 1 {
-		return cntID, cntName
-	}
-
-	row, _ := cnt.table.GetSelection()
-	cntID = cnt.table.GetCell(row, viewContainersIDColIndex).Text
-	cntName = cnt.table.GetCell(row, viewContainersNamesColIndex).Text
-
-	return cntID, cntName
-}
-
 // SetFastRefreshChannel sets channel for fastRefresh func.
 func (cnt *Containers) SetFastRefreshChannel(refresh chan bool) {
 	cnt.fastRefreshChan = refresh
@@ -493,4 +478,21 @@ func (cnt *Containers) HideAllDialogs() { //nolint:cyclop
 	if cnt.terminalDialog.IsDisplay() {
 		cnt.terminalDialog.Hide()
 	}
+}
+
+func (cnt *Containers) getSelectedItem() (string, string) {
+	var (
+		cntID   string
+		cntName string
+	)
+
+	if cnt.table.GetRowCount() <= 1 {
+		return cntID, cntName
+	}
+
+	row, _ := cnt.table.GetSelection()
+	cntID = cnt.table.GetCell(row, viewContainersIDColIndex).Text
+	cntName = cnt.table.GetCell(row, viewContainersNamesColIndex).Text
+
+	return cntID, cntName
 }

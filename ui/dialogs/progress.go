@@ -17,6 +17,7 @@ const (
 // ProgressDialog represents progress bar permitive.
 type ProgressDialog struct {
 	*tview.Box
+
 	x            int
 	y            int
 	width        int
@@ -46,8 +47,8 @@ func (d *ProgressDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, _ := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, _ := d.GetInnerRect()
 	tickStr := d.tickStr(width)
 	tview.Print(screen, tickStr, x, y, width, tview.AlignLeft, tcell.ColorYellow)
 }
@@ -90,7 +91,7 @@ func (d *ProgressDialog) IsDisplay() bool {
 }
 
 // Focus is called when this primitive receives focus.
-func (d *ProgressDialog) Focus(delegate func(p tview.Primitive)) {} //nolint:revive
+func (d *ProgressDialog) Focus(delegate func(p tview.Primitive)) {}
 
 // HasFocus returns whether or not this primitive has focus.
 func (d *ProgressDialog) HasFocus() bool {
@@ -99,12 +100,16 @@ func (d *ProgressDialog) HasFocus() bool {
 
 // InputHandler returns input handler function for this primitive.
 func (d *ProgressDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:revive
+	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("progress dialog: event %v received", event)
 	})
 }
 
 func (d *ProgressDialog) tickStr(maxCount int) string {
+	prgStr := prgCell + prgCell + prgCell + prgCell
+	prgHeadStr := ""
+	hWidth := 0
+	prgEndStr := ""
 	barColor := style.GetColorHex(style.PrgBarColor)
 	counter := d.counterValue
 
@@ -114,17 +119,10 @@ func (d *ProgressDialog) tickStr(maxCount int) string {
 		d.counterValue = 0
 	}
 
-	prgHeadStr := ""
-	hWidth := 0
-	prgEndStr := ""
-	prgStr := ""
-
 	for range d.counterValue {
 		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
 		hWidth++
 	}
-
-	prgStr = prgCell + prgCell + prgCell + prgCell
 
 	for range maxCount + hWidth + 4 {
 		prgEndStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint

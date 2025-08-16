@@ -32,6 +32,7 @@ const (
 // NetworkConnectDialog implements network connect dialog primitive.
 type NetworkConnectDialog struct {
 	*tview.Box
+
 	layout         *tview.Flex
 	network        *tview.InputField
 	container      *tview.DropDown
@@ -322,9 +323,9 @@ func (d *NetworkConnectDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -348,21 +349,6 @@ func (d *NetworkConnectDialog) SetCancelFunc(handler func()) *NetworkConnectDial
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
-}
-
-func (d *NetworkConnectDialog) setFocusElement() {
-	switch d.focusElement {
-	case netConnectContainerFocus:
-		d.focusElement = netConnectAliasesFocus
-	case netConnectAliasesFocus:
-		d.focusElement = netConnectAliasesIPv4Focus
-	case netConnectAliasesIPv4Focus:
-		d.focusElement = netConnectAliasesIPv6Focus
-	case netConnectAliasesIPv6Focus:
-		d.focusElement = netConnectMacAddrFocus
-	case netConnectMacAddrFocus:
-		d.focusElement = netConnectFormFocus
-	}
 }
 
 // SetNetworkInfo sets selected network name in connect dialog.
@@ -399,4 +385,19 @@ func (d *NetworkConnectDialog) GetConnectOptions() networks.NetworkConnect {
 	connectOptions.Aliases = strings.Split(strings.TrimSpace(d.aliases.GetText()), " ")
 
 	return connectOptions
+}
+
+func (d *NetworkConnectDialog) setFocusElement() {
+	switch d.focusElement {
+	case netConnectContainerFocus:
+		d.focusElement = netConnectAliasesFocus
+	case netConnectAliasesFocus:
+		d.focusElement = netConnectAliasesIPv4Focus
+	case netConnectAliasesIPv4Focus:
+		d.focusElement = netConnectAliasesIPv6Focus
+	case netConnectAliasesIPv6Focus:
+		d.focusElement = netConnectMacAddrFocus
+	case netConnectMacAddrFocus:
+		d.focusElement = netConnectFormFocus
+	}
 }

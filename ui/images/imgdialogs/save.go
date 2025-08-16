@@ -33,6 +33,7 @@ const (
 // ImageSaveDialog represents image save dialog primitive.
 type ImageSaveDialog struct {
 	*tview.Box
+
 	layout                *tview.Flex
 	imageInfo             *tview.InputField
 	output                *tview.InputField
@@ -307,23 +308,10 @@ func (d *ImageSaveDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
-}
-
-func (d *ImageSaveDialog) setFocusElement() {
-	switch d.focusElement {
-	case imageSaveOutputFocus:
-		d.focusElement = imageSaveCompressFocus
-	case imageSaveCompressFocus:
-		d.focusElement = imageSaveAcceptUncompressedFocus
-	case imageSaveAcceptUncompressedFocus:
-		d.focusElement = imageSaveFormatFocus
-	case imageSaveFormatFocus:
-		d.focusElement = imageSaveFormFocus
-	}
 }
 
 // SetSaveFunc sets form save button selected function.
@@ -383,4 +371,17 @@ func (d *ImageSaveDialog) ImageSaveOptions() (images.ImageSaveOptions, error) {
 	opts.Output = outputPath
 
 	return opts, nil
+}
+
+func (d *ImageSaveDialog) setFocusElement() {
+	switch d.focusElement {
+	case imageSaveOutputFocus:
+		d.focusElement = imageSaveCompressFocus
+	case imageSaveCompressFocus:
+		d.focusElement = imageSaveAcceptUncompressedFocus
+	case imageSaveAcceptUncompressedFocus:
+		d.focusElement = imageSaveFormatFocus
+	case imageSaveFormatFocus:
+		d.focusElement = imageSaveFormFocus
+	}
 }

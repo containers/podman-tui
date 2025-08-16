@@ -35,6 +35,7 @@ const (
 // ContainerCheckpointDialog implements container checkpoint dialog primitive.
 type ContainerCheckpointDialog struct {
 	*tview.Box
+
 	layout            *tview.Flex
 	containerInfo     *tview.InputField
 	createImage       *tview.InputField
@@ -82,7 +83,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// containerInfo
 	dialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.containerInfo.SetLabel("[::b]CONTAINER ID:")
+	dialog.containerInfo.SetLabel(fmt.Sprintf("[::b]%s:", utils.ContainerIDLabel))
 	dialog.containerInfo.SetLabelWidth(labelWidth)
 	dialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
@@ -453,9 +454,9 @@ func (d *ContainerCheckpointDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -479,31 +480,6 @@ func (d *ContainerCheckpointDialog) SetCancelFunc(handler func()) *ContainerChec
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
-}
-
-func (d *ContainerCheckpointDialog) setFocusElement() { //nolint:cyclop
-	switch d.focusElement {
-	case cntCheckpointImageFocus:
-		d.focusElement = cntCheckpointExportFocus
-	case cntCheckpointExportFocus:
-		d.focusElement = cntCheckpointFileLockFocus
-	case cntCheckpointFileLockFocus:
-		d.focusElement = cntCheckpointIgnoreRootFsFocus
-	case cntCheckpointIgnoreRootFsFocus:
-		d.focusElement = cntCheckpointTCPEstablishedFocus
-	case cntCheckpointTCPEstablishedFocus:
-		d.focusElement = cntCheckpointPreCheckpointFocus
-	case cntCheckpointPreCheckpointFocus:
-		d.focusElement = cntCheckpointPrintStatsFocus
-	case cntCheckpointPrintStatsFocus:
-		d.focusElement = cntCheckpointKeepFocus
-	case cntCheckpointKeepFocus:
-		d.focusElement = cntCheckpointLeaveRunningFocus
-	case cntCheckpointLeaveRunningFocus:
-		d.focusElement = cntCheckpointWithPreviousFocus
-	case cntCheckpointWithPreviousFocus:
-		d.focusElement = cntCheckpointFormFocus
-	}
 }
 
 // SetContainerInfo sets selected container ID and name information.
@@ -537,4 +513,29 @@ func (d *ContainerCheckpointDialog) GetCheckpointOptions() containers.CntCheckPo
 	opts.WithPrevious = d.withPrevious.IsChecked()
 
 	return opts
+}
+
+func (d *ContainerCheckpointDialog) setFocusElement() { //nolint:cyclop
+	switch d.focusElement {
+	case cntCheckpointImageFocus:
+		d.focusElement = cntCheckpointExportFocus
+	case cntCheckpointExportFocus:
+		d.focusElement = cntCheckpointFileLockFocus
+	case cntCheckpointFileLockFocus:
+		d.focusElement = cntCheckpointIgnoreRootFsFocus
+	case cntCheckpointIgnoreRootFsFocus:
+		d.focusElement = cntCheckpointTCPEstablishedFocus
+	case cntCheckpointTCPEstablishedFocus:
+		d.focusElement = cntCheckpointPreCheckpointFocus
+	case cntCheckpointPreCheckpointFocus:
+		d.focusElement = cntCheckpointPrintStatsFocus
+	case cntCheckpointPrintStatsFocus:
+		d.focusElement = cntCheckpointKeepFocus
+	case cntCheckpointKeepFocus:
+		d.focusElement = cntCheckpointLeaveRunningFocus
+	case cntCheckpointLeaveRunningFocus:
+		d.focusElement = cntCheckpointWithPreviousFocus
+	case cntCheckpointWithPreviousFocus:
+		d.focusElement = cntCheckpointFormFocus
+	}
 }

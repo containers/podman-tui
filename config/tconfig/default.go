@@ -10,32 +10,17 @@ import (
 func (c *Config) SetDefaultConnection(name string) error {
 	log.Debug().Msgf("config: set %s as default connection", name)
 
-	if err := c.setDef(name); err != nil {
+	err := c.setDef(name)
+	if err != nil {
 		return err
 	}
 
-	if err := c.write(); err != nil {
+	err = c.write()
+	if err != nil {
 		return err
 	}
 
 	return c.reload()
-}
-
-func (c *Config) setDef(name string) error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-
-	for connName := range c.Connection.Connections {
-		if connName == name {
-			dest := c.Connection.Connections[connName]
-			dest.Default = true
-			c.Connection.Connections[connName] = dest
-
-			return nil
-		}
-	}
-
-	return utils.ErrConnectionNotFound
 }
 
 func (c *Config) GetDefaultConnection() registry.Connection {
@@ -53,4 +38,21 @@ func (c *Config) GetDefaultConnection() registry.Connection {
 	}
 
 	return registry.Connection{}
+}
+
+func (c *Config) setDef(name string) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	for connName := range c.Connection.Connections {
+		if connName == name {
+			dest := c.Connection.Connections[connName]
+			dest.Default = true
+			c.Connection.Connections[connName] = dest
+
+			return nil
+		}
+	}
+
+	return utils.ErrConnectionNotFound
 }

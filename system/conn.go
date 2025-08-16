@@ -15,9 +15,10 @@ type apiConn struct {
 
 // ConnStatus returns connection status.
 func (conn *apiConn) ConnStatus() (registry.ConnStatus, string) {
-	var status registry.ConnStatus
-
-	message := ""
+	var (
+		status  registry.ConnStatus
+		message string
+	)
 
 	conn.mu.Lock()
 	status = conn.connStaus

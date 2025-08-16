@@ -26,6 +26,7 @@ const (
 // AddConnectionDialog implements new connection create dialog.
 type AddConnectionDialog struct {
 	*tview.Box
+
 	layout               *tview.Flex
 	connNameField        *tview.InputField
 	connURIField         *tview.InputField
@@ -286,7 +287,7 @@ func (addDialog *AddConnectionDialog) SetRect(x, y, width, height int) {
 
 	addDialog.Box.SetRect(x, y, dBWidth, dHeight)
 
-	x, y, width, height = addDialog.Box.GetInnerRect()
+	x, y, width, height = addDialog.GetInnerRect()
 
 	addDialog.layout.SetRect(x, y, width, height)
 }
@@ -297,7 +298,7 @@ func (addDialog *AddConnectionDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	addDialog.Box.DrawForSubclass(screen, addDialog)
+	addDialog.DrawForSubclass(screen, addDialog)
 	addDialog.layout.Draw(screen)
 }
 

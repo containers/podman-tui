@@ -43,7 +43,8 @@ func (s *Secrets) create() {
 		return
 	}
 
-	if err := secrets.Create(createOpts); err != nil {
+	err := secrets.Create(createOpts)
+	if err != nil {
 		s.displayError("SECRET CREATE ERROR", err)
 
 		return

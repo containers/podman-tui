@@ -88,21 +88,21 @@ func (app *App) switchToNextScreen() {
 func (app *App) setPageFocus(page string) {
 	switch page {
 	case app.help.GetTitle():
-		app.Application.SetFocus(app.help)
+		app.SetFocus(app.help)
 	case app.system.GetTitle():
-		app.Application.SetFocus(app.system)
+		app.SetFocus(app.system)
 	case app.pods.GetTitle():
-		app.Application.SetFocus(app.pods)
+		app.SetFocus(app.pods)
 	case app.containers.GetTitle():
-		app.Application.SetFocus(app.containers)
+		app.SetFocus(app.containers)
 	case app.networks.GetTitle():
-		app.Application.SetFocus(app.networks)
+		app.SetFocus(app.networks)
 	case app.images.GetTitle():
-		app.Application.SetFocus(app.images)
+		app.SetFocus(app.images)
 	case app.volumes.GetTitle():
-		app.Application.SetFocus(app.volumes)
+		app.SetFocus(app.volumes)
 	case app.secrets.GetTitle():
-		app.Application.SetFocus(app.secrets)
+		app.SetFocus(app.secrets)
 	}
 }
 

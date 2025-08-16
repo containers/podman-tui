@@ -32,8 +32,9 @@ const (
 
 // VtermDialog implements virtual terminal that can be used during
 // exec, attach, run activity.
-type VtermDialog struct { //nolint:revive
+type VtermDialog struct {
 	*tview.Box
+
 	layout                *tview.Flex
 	form                  *tview.Form
 	containerInfo         *tview.InputField
@@ -86,73 +87,6 @@ func NewVtermDialog() *VtermDialog {
 	return dialog
 }
 
-func (d *VtermDialog) initLayoutUI() {
-	bgColor := style.DialogBgColor
-	borderColor := style.DialogBorderColor
-	terminalBgColor := style.TerminalBgColor
-	terminalBorderColor := style.TerminalBorderColor
-
-	// container information field
-	// label
-	cntInfoLabel := "CONTAINER ID:"
-
-	d.containerInfo.SetBackgroundColor(bgColor)
-	d.containerInfo.SetLabel("[::b]" + cntInfoLabel)
-	d.containerInfo.SetLabelWidth(len(cntInfoLabel) + 1)
-	d.containerInfo.SetFieldBackgroundColor(bgColor)
-	d.containerInfo.SetLabelStyle(tcell.StyleDefault.
-		Background(borderColor).
-		Foreground(style.DialogFgColor))
-
-	// form fields
-	d.form.AddButton("Cancel", nil).
-		SetButtonsAlign(tview.AlignRight)
-	d.form.SetBackgroundColor(bgColor)
-	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
-
-	// terminal screen
-	d.termScreen.SetBackgroundColor(terminalBgColor)
-	d.termScreen.SetBorder(true)
-	d.termScreen.SetBorderColor(terminalBorderColor)
-
-	// layout setup
-	layout := tview.NewFlex().SetDirection(tview.FlexRow)
-	termLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
-
-	layout.SetBackgroundColor(bgColor)
-	layout.SetBorder(false)
-	layout.AddItem(d.containerInfo, 1, 0, true)
-	// layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
-	layout.AddItem(d.termScreen, 0, 1, true)
-
-	termLayout.SetBackgroundColor(bgColor)
-	termLayout.SetBorder(false)
-	termLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-	termLayout.AddItem(layout, 0, 1, false)
-	termLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
-
-	// main layout
-	d.layout.SetDirection(tview.FlexRow)
-	d.layout.SetBorder(true)
-	d.layout.SetBorderColor(borderColor)
-	d.layout.SetBackgroundColor(bgColor)
-	// d.layout.SetTitle("CONTAINER TERMINAL")
-
-	d.layout.AddItem(termLayout, 0, 1, true)
-	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
-}
-
-func (d *VtermDialog) initChannelsCommon() {
-	d.sessionOutputDoneChan = make(chan bool, 2) //nolint:mnd
-	d.vtTerminal = vt10x.New()
-	sessionStdinPipeIn, sessionStdinPipeOut := io.Pipe()
-	d.sessionStdin = bufio.NewReader(sessionStdinPipeIn)
-	d.sessionStdinWriter = bufio.NewWriter(sessionStdinPipeOut)
-
-	d.vtTermPipeReader, d.vtTermPipeWriter = io.Pipe()
-	d.vtTermBuffer = bufio.NewReader(d.vtTermPipeReader)
-}
-
 // InitChannels will init buffers and channels for attach.
 func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 	log.Debug().Msg("view: container terminal dialog init channels (attach)")
@@ -194,9 +128,10 @@ func (d *VtermDialog) Display() {
 		return
 	}
 
-	if d.sessionMode == sessionModeAttach {
+	switch d.sessionMode {
+	case sessionModeAttach:
 		go d.sessionOutputStreamer()
-	} else if d.sessionMode == sessionModeExec {
+	case sessionModeExec:
 		go d.execSessionOutputStreamer()
 	}
 
@@ -249,11 +184,21 @@ func (d *VtermDialog) Hide() {
 	}
 
 	if d.sessionMode == sessionModeExec {
-		d.execSessionStdout.Close()
+		err := d.execSessionStdout.Close()
+		if err != nil {
+			log.Error().Msgf("failed to close vterm exec stdout session: %s", err.Error())
+		}
 	}
 
-	d.vtTermPipeReader.Close()
-	d.vtTermPipeWriter.Close()
+	err := d.vtTermPipeReader.Close()
+	if err != nil {
+		log.Error().Msgf("failed to close vterm pipe reader: %s", err.Error())
+	}
+
+	err = d.vtTermPipeWriter.Close()
+	if err != nil {
+		log.Error().Msgf("failed to close vterm pipe writer: %s", err.Error())
+	}
 }
 
 // HasFocus returns true if terminal dialog has focus.
@@ -354,8 +299,8 @@ func (d *VtermDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 
@@ -387,23 +332,6 @@ func (d *VtermDialog) Draw(screen tcell.Screen) {
 
 	if cursor.Y < height && cursor.X < width {
 		tview.Print(screen, "▉", cursorX, cursorY, 1, tview.AlignCenter, terminalFgColor)
-	}
-}
-
-func (d *VtermDialog) setTTYSize(width int, height int) {
-	if width < 0 || height < 0 {
-		return
-	}
-
-	d.ttyWidth = width
-	d.ttyHeight = height
-
-	d.vtTerminal.Resize(width, height)
-
-	if d.sessionMode == sessionModeAttach {
-		go containers.ResizeContainerTTY(d.containerID, width, height) //nolint:errcheck
-	} else if d.sessionMode == sessionModeExec {
-		go containers.ResizeExecTty(d.sessionID, d.ttyHeight, d.ttyWidth)
 	}
 }
 
@@ -454,28 +382,31 @@ func (d *VtermDialog) SetFastRefreshHandler(handler func()) {
 func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
 	switch event.Key() { //nolint:exhaustive
 	case tcell.KeyUp:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(65)) //nolint:errcheck,mnd
+		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(65)) //nolint:mnd
 	case tcell.KeyDown:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(66)) //nolint:errcheck,mnd
+		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(66)) //nolint:mnd
 	case tcell.KeyRight:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(67)) //nolint:errcheck,mnd
+		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(67)) //nolint:mnd
 	case tcell.KeyLeft:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(91)) //nolint:errcheck,mnd
-		d.sessionStdinWriter.WriteRune(rune(68)) //nolint:errcheck,mnd
+		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
+		d.writeToStdinSessionWriter(rune(68)) //nolint:mnd
 	case tcell.KeyEsc:
-		d.sessionStdinWriter.WriteRune(rune(27)) //nolint:errcheck,mnd
+		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 	default:
-		d.sessionStdinWriter.WriteRune(event.Rune()) //nolint:errcheck
+		d.writeToStdinSessionWriter(event.Rune())
 	}
 
-	d.sessionStdinWriter.Flush()
+	err := d.sessionStdinWriter.Flush()
+	if err != nil {
+		log.Error().Msgf("failed to flush vterm stdin writer session: %s", err.Error())
+	}
 }
 
 func (d *VtermDialog) sendDetachToSession() {
@@ -484,10 +415,13 @@ func (d *VtermDialog) sendDetachToSession() {
 	keys := d.detachKeys.keys()
 
 	for i := range keys {
-		d.sessionStdinWriter.WriteRune(rune(keys[i])) //nolint:errcheck
+		d.writeToStdinSessionWriter(rune(keys[i]))
 	}
 
-	d.sessionStdinWriter.Flush()
+	err := d.sessionStdinWriter.Flush()
+	if err != nil {
+		log.Error().Msgf("failed to flush vterm stdin writer session: %s", err.Error())
+	}
 }
 
 // vtContent returns current content and cursor location of vt10x terminal.
@@ -530,7 +464,11 @@ func (d *VtermDialog) execSessionOutputStreamer() {
 
 			return
 		case data := <-d.execSessionStdout.Chan():
-			d.vtTermPipeWriter.Write(data) //nolint:errcheck
+			_, err := d.vtTermPipeWriter.Write(data)
+			if err != nil {
+				log.Error().Msgf("failed to write %s to vterm pipe writer: %s", data, err.Error())
+			}
+
 			d.fastRefreshHandler()
 		}
 	}
@@ -549,7 +487,11 @@ func (d *VtermDialog) sessionOutputStreamer() {
 			dataString := string(data)
 			dataString = strings.ReplaceAll(dataString, "\n", "\r\n")
 
-			d.vtTermPipeWriter.Write([]byte(dataString)) //nolint:errcheck
+			_, err := d.vtTermPipeWriter.Write([]byte(dataString))
+			if err != nil {
+				log.Error().Msgf("failed to write %s to vterm pipe writer: %s", []byte(dataString), err.Error())
+			}
+
 			d.fastRefreshHandler()
 		}
 	}
@@ -566,4 +508,94 @@ func (dkey termDetachKeys) string() string {
 
 func (dkey termDetachKeys) keys() []tcell.Key {
 	return dkey.tcellKeys
+}
+
+func (d *VtermDialog) initLayoutUI() {
+	bgColor := style.DialogBgColor
+	borderColor := style.DialogBorderColor
+	terminalBgColor := style.TerminalBgColor
+	terminalBorderColor := style.TerminalBorderColor
+
+	// container information field
+	// label
+	d.containerInfo.SetBackgroundColor(bgColor)
+	d.containerInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
+	d.containerInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
+	d.containerInfo.SetFieldBackgroundColor(bgColor)
+	d.containerInfo.SetLabelStyle(tcell.StyleDefault.
+		Background(borderColor).
+		Foreground(style.DialogFgColor))
+
+	// form fields
+	d.form.AddButton("Cancel", nil).
+		SetButtonsAlign(tview.AlignRight)
+	d.form.SetBackgroundColor(bgColor)
+	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
+
+	// terminal screen
+	d.termScreen.SetBackgroundColor(terminalBgColor)
+	d.termScreen.SetBorder(true)
+	d.termScreen.SetBorderColor(terminalBorderColor)
+
+	// layout setup
+	layout := tview.NewFlex().SetDirection(tview.FlexRow)
+	termLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
+
+	layout.SetBackgroundColor(bgColor)
+	layout.SetBorder(false)
+	layout.AddItem(d.containerInfo, 1, 0, true)
+	// layout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, true)
+	layout.AddItem(d.termScreen, 0, 1, true)
+
+	termLayout.SetBackgroundColor(bgColor)
+	termLayout.SetBorder(false)
+	termLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+	termLayout.AddItem(layout, 0, 1, false)
+	termLayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
+
+	// main layout
+	d.layout.SetDirection(tview.FlexRow)
+	d.layout.SetBorder(true)
+	d.layout.SetBorderColor(borderColor)
+	d.layout.SetBackgroundColor(bgColor)
+	// d.layout.SetTitle("CONTAINER TERMINAL")
+
+	d.layout.AddItem(termLayout, 0, 1, true)
+	d.layout.AddItem(d.form, dialogs.DialogFormHeight, 0, true)
+}
+
+func (d *VtermDialog) initChannelsCommon() {
+	d.sessionOutputDoneChan = make(chan bool, 2) //nolint:mnd
+	d.vtTerminal = vt10x.New()
+	sessionStdinPipeIn, sessionStdinPipeOut := io.Pipe()
+	d.sessionStdin = bufio.NewReader(sessionStdinPipeIn)
+	d.sessionStdinWriter = bufio.NewWriter(sessionStdinPipeOut)
+
+	d.vtTermPipeReader, d.vtTermPipeWriter = io.Pipe()
+	d.vtTermBuffer = bufio.NewReader(d.vtTermPipeReader)
+}
+
+func (d *VtermDialog) setTTYSize(width int, height int) {
+	if width < 0 || height < 0 {
+		return
+	}
+
+	d.ttyWidth = width
+	d.ttyHeight = height
+
+	d.vtTerminal.Resize(width, height)
+
+	switch d.sessionMode {
+	case sessionModeAttach:
+		go containers.ResizeContainerTTY(d.containerID, width, height) //nolint:errcheck
+	case sessionModeExec:
+		go containers.ResizeExecTty(d.sessionID, d.ttyHeight, d.ttyWidth)
+	}
+}
+
+func (d *VtermDialog) writeToStdinSessionWriter(val rune) {
+	_, err := d.sessionStdinWriter.WriteRune(val)
+	if err != nil {
+		log.Error().Msgf("failed to write value %d to vterm session writer rune: %s", val, err.Error())
+	}
 }

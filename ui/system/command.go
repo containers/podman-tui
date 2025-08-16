@@ -8,6 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/sysinfo"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -25,7 +26,7 @@ func (sys *System) runCommand(cmd string) {
 		sys.events()
 	case "info":
 		sys.info()
-	case "prune": //nolint:goconst
+	case utils.PruneCommandLabel:
 		sys.cprune()
 	case "remove connection":
 		sys.cremove()
@@ -152,7 +153,7 @@ func (sys *System) cprune() {
 	connName := registry.ConnectionName()
 
 	sys.confirmDialog.SetTitle("podman system prune")
-	sys.confirmData = "prune"
+	sys.confirmData = utils.PruneCommandLabel
 	confirmMsg := fmt.Sprintf(
 		"Are you sure you want to remove all unused pod, container, image and volume data on %s?",
 		connName)
@@ -238,7 +239,8 @@ func (sys *System) setDefault() {
 	setDefFunc := func() {
 		sys.progressDialog.Hide()
 
-		if err := sys.connectionSetDefaultFunc(selectedItem.name); err != nil {
+		err := sys.connectionSetDefaultFunc(selectedItem.name)
+		if err != nil {
 			sys.displayError("SYSTEM CONNECTION SET DEFAULT ERROR", err)
 			sys.appFocusHandler()
 

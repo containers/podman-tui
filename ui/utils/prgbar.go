@@ -29,8 +29,10 @@ func ProgressUsageString(percentage float64) string {
 }
 
 func getBarColor(value int) string {
-	barCell := ""
-	barColor := ""
+	var (
+		barCell  string
+		barColor string
+	)
 
 	switch {
 	case value < prgWarn:

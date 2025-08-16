@@ -32,6 +32,7 @@ const (
 // SecretCreateDialog implements secret create dialog.
 type SecretCreateDialog struct {
 	*tview.Box
+
 	layout              *tview.Flex
 	form                *tview.Form
 	secretName          *tview.InputField
@@ -276,9 +277,9 @@ func (d *SecretCreateDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -388,6 +389,21 @@ func (d *SecretCreateDialog) SetCancelFunc(handler func()) *SecretCreateDialog {
 	return d
 }
 
+// GetCreateOptions returns secret create options.
+func (d *SecretCreateDialog) GetCreateOptions() *secrets.SecretCreateOptions {
+	var createOptions secrets.SecretCreateOptions
+
+	createOptions.Name = strings.TrimSpace(d.secretName.GetText())
+	createOptions.File = strings.TrimSpace(d.secretFile.GetText())
+	createOptions.Text = strings.TrimSpace(d.secretText.GetText())
+	createOptions.Labels = strings.Split(strings.TrimSpace(d.secretLabels.GetText()), " ")
+	createOptions.Replace = d.secretReplace.IsChecked()
+	_, createOptions.Driver = d.secretDriver.GetCurrentOption()
+	createOptions.DriverOptions = strings.Split(strings.TrimSpace(d.secretDriverOptions.GetText()), " ")
+
+	return &createOptions
+}
+
 func (d *SecretCreateDialog) setFocusElement() {
 	switch d.focusElement {
 	case secretNameFocus:
@@ -405,19 +421,4 @@ func (d *SecretCreateDialog) setFocusElement() {
 	case secretDriverOptionsFocus:
 		d.focusElement = secretFormFocus
 	}
-}
-
-// GetCreateOptions returns secret create options.
-func (d *SecretCreateDialog) GetCreateOptions() *secrets.SecretCreateOptions {
-	var createOptions secrets.SecretCreateOptions
-
-	createOptions.Name = strings.TrimSpace(d.secretName.GetText())
-	createOptions.File = strings.TrimSpace(d.secretFile.GetText())
-	createOptions.Text = strings.TrimSpace(d.secretText.GetText())
-	createOptions.Labels = strings.Split(strings.TrimSpace(d.secretLabels.GetText()), " ")
-	createOptions.Replace = d.secretReplace.IsChecked()
-	_, createOptions.Driver = d.secretDriver.GetCurrentOption()
-	createOptions.DriverOptions = strings.Split(strings.TrimSpace(d.secretDriverOptions.GetText()), " ")
-
-	return &createOptions
 }

@@ -43,9 +43,9 @@ type conReporter struct {
 }
 
 func (con conReporter) ports() string {
-	if len(con.ListContainer.Ports) < 1 {
+	if len(con.Ports) < 1 {
 		return ""
 	}
 
-	return utils.PortsToString(con.ListContainer.Ports)
+	return utils.PortsToString(con.Ports)
 }

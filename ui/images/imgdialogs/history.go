@@ -27,6 +27,7 @@ const (
 // ImageHistoryDialog represents image history dialog primitive.
 type ImageHistoryDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	imageInfo     *tview.InputField
 	table         *tview.Table
@@ -170,8 +171,8 @@ func (d *ImageHistoryDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -183,25 +184,6 @@ func (d *ImageHistoryDialog) SetCancelFunc(handler func()) *ImageHistoryDialog {
 	cancelButton.SetSelectedFunc(handler)
 
 	return d
-}
-
-func (d *ImageHistoryDialog) initTable() {
-	bgColor := style.TableHeaderBgColor
-	fgColor := style.TableHeaderFgColor
-
-	d.table.Clear()
-	d.table.SetFixed(1, 1)
-	d.table.SetSelectable(true, false)
-
-	for i := range d.tableHeaders {
-		d.table.SetCell(0, i,
-			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
-				SetExpansion(1).
-				SetBackgroundColor(bgColor).
-				SetTextColor(fgColor).
-				SetAlign(tview.AlignLeft).
-				SetSelectable(false))
-	}
 }
 
 // UpdateResults updates result table.
@@ -310,4 +292,23 @@ func (d *ImageHistoryDialog) getCreatedByWidth() int {
 	}
 
 	return createdByWidth
+}
+
+func (d *ImageHistoryDialog) initTable() {
+	bgColor := style.TableHeaderBgColor
+	fgColor := style.TableHeaderFgColor
+
+	d.table.Clear()
+	d.table.SetFixed(1, 1)
+	d.table.SetSelectable(true, false)
+
+	for i := range d.tableHeaders {
+		d.table.SetCell(0, i,
+			tview.NewTableCell(fmt.Sprintf("[%s::b]%s", style.GetColorHex(fgColor), strings.ToUpper(d.tableHeaders[i]))).
+				SetExpansion(1).
+				SetBackgroundColor(bgColor).
+				SetTextColor(fgColor).
+				SetAlign(tview.AlignLeft).
+				SetSelectable(false))
+	}
 }

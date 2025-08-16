@@ -9,6 +9,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/networks/netdialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
 )
 
@@ -28,6 +29,7 @@ var (
 // Networks implemnents the Networks page primitive.
 type Networks struct {
 	*tview.Box
+
 	title            string
 	headers          []string
 	table            *tview.Table
@@ -114,7 +116,7 @@ func NewNetworks() *Networks {
 		nets.confirmDialog.Hide()
 
 		switch nets.confirmData {
-		case "prune":
+		case utils.PruneCommandLabel:
 			nets.prune()
 		case "rm":
 			nets.remove()
@@ -256,18 +258,6 @@ func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 	delegate(nets.table)
 }
 
-func (nets *Networks) getSelectedItem() (string, string) {
-	if nets.table.GetRowCount() <= 1 {
-		return "", ""
-	}
-
-	row, _ := nets.table.GetSelection()
-	netID := nets.table.GetCell(row, 0).Text
-	netName := nets.table.GetCell(row, 1).Text
-
-	return netID, netName
-}
-
 // HideAllDialogs hides all sub dialogs.
 func (nets *Networks) HideAllDialogs() {
 	if nets.errorDialog.IsDisplay() {
@@ -301,4 +291,16 @@ func (nets *Networks) HideAllDialogs() {
 	if nets.disconnectDialog.IsDisplay() {
 		nets.disconnectDialog.Hide()
 	}
+}
+
+func (nets *Networks) getSelectedItem() (string, string) {
+	if nets.table.GetRowCount() <= 1 {
+		return "", ""
+	}
+
+	row, _ := nets.table.GetSelection()
+	netID := nets.table.GetCell(row, 0).Text
+	netName := nets.table.GetCell(row, 1).Text
+
+	return netID, netName
 }

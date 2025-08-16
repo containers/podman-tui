@@ -10,6 +10,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/images/imgdialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
 )
 
@@ -37,6 +38,7 @@ var (
 // Images implements the images primitive.
 type Images struct {
 	*tview.Box
+
 	title           string
 	headers         []string
 	table           *tview.Table
@@ -151,7 +153,7 @@ func NewImages() *Images {
 		images.confirmDialog.Hide()
 
 		switch images.confirmData {
-		case "prune":
+		case utils.PruneCommandLabel:
 			images.prune()
 		case "rm":
 			images.remove()
@@ -368,20 +370,6 @@ func (img *Images) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 	delegate(img.table)
 }
 
-func (img *Images) getSelectedItem() (string, string) {
-	if img.table.GetRowCount() <= 1 {
-		return "", ""
-	}
-
-	row, _ := img.table.GetSelection()
-	imageRepo := img.table.GetCell(row, 0).Text
-	imageTag := img.table.GetCell(row, 1).Text
-	imageName := imageRepo + ":" + imageTag
-	imageID := img.table.GetCell(row, 2).Text //nolint:mnd
-
-	return imageID, imageName
-}
-
 // HideAllDialogs hides all sub dialogs.
 func (img *Images) HideAllDialogs() { //nolint:cyclop
 	if img.errorDialog.IsDisplay() {
@@ -440,4 +428,18 @@ func (img *Images) HideAllDialogs() { //nolint:cyclop
 // SetFastRefreshChannel sets channel for fastRefresh func.
 func (img *Images) SetFastRefreshChannel(refresh chan bool) {
 	img.fastRefreshChan = refresh
+}
+
+func (img *Images) getSelectedItem() (string, string) {
+	if img.table.GetRowCount() <= 1 {
+		return "", ""
+	}
+
+	row, _ := img.table.GetSelection()
+	imageRepo := img.table.GetCell(row, 0).Text
+	imageTag := img.table.GetCell(row, 1).Text
+	imageName := imageRepo + ":" + imageTag
+	imageID := img.table.GetCell(row, 2).Text //nolint:mnd
+
+	return imageID, imageName
 }

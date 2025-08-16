@@ -38,7 +38,7 @@ func (pods *Pods) getData() []*entities.ListPodsReport {
 }
 
 // ClearData clears table data.
-func (pods *Pods) ClearData() { //nolint:stylecheck
+func (pods *Pods) ClearData() {
 	pods.podsList.mu.Lock()
 	defer pods.podsList.mu.Unlock()
 

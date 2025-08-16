@@ -36,6 +36,7 @@ const (
 // PodStatsDialog implements the pods stats dialog primitive.
 type PodStatsDialog struct {
 	*tview.Box
+
 	layout               *tview.Flex
 	controlLayout        *tview.Flex
 	form                 *tview.Form
@@ -170,7 +171,9 @@ func (d *PodStatsDialog) Hide() {
 	d.SetPodsOptions([]PodStatsDropDownOptions{})
 
 	d.mu.Lock()
+
 	defer d.mu.Unlock()
+
 	close(d.doneChan)
 }
 
@@ -287,9 +290,9 @@ func (d *PodStatsDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -387,7 +390,7 @@ func (d *PodStatsDialog) getStatsQueryOptions() *ppods.StatsOptions {
 	return opts
 }
 
-func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) { //nolint:revive
+func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) {
 	if index == -1 {
 		return
 	}
@@ -406,13 +409,15 @@ func (d *PodStatsDialog) setStatsQueryPodIDs(name string, index int) { //nolint:
 	go d.query()
 }
 
-func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) { //nolint:revive
+func (d *PodStatsDialog) setStatsQuerySortBy(name string, index int) {
 	if index == -1 {
 		return
 	}
 
 	d.mu.Lock()
+
 	defer d.mu.Unlock()
+
 	d.statQueryOpts.SortBy = index
 
 	go d.query()

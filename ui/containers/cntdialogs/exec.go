@@ -36,6 +36,7 @@ const (
 // ContainerExecDialog represents container exec dialog primitive.
 type ContainerExecDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	cntInfo       *tview.InputField
 	command       *tview.InputField
@@ -77,11 +78,9 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	inputFieldBgColor := style.InputFieldBgColor
 
 	// label (container ID and Name)
-	cntInfoLabel := "CONTAINER ID:"
-
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
-	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	dialog.cntInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
+	dialog.cntInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -606,9 +605,9 @@ func (d *ContainerExecDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 

@@ -76,7 +76,7 @@ func (con conReporter) names() string {
 func (con conReporter) state() string {
 	var state string
 
-	switch con.ListContainer.State {
+	switch con.State {
 	case "running":
 		t := units.HumanDuration(time.Since(time.Unix(con.StartedAt, 0)))
 		state = "Up " + t + " ago"
@@ -86,14 +86,14 @@ func (con conReporter) state() string {
 		t := units.HumanDuration(time.Since(time.Unix(con.ExitedAt, 0)))
 		state = fmt.Sprintf("Exited (%d) %s ago", con.ExitCode, t)
 	default:
-		state = con.ListContainer.State
+		state = con.State
 	}
 
 	return state
 }
 
 func (con conReporter) status() string {
-	hc := con.ListContainer.Status
+	hc := con.Status
 	if hc != "" {
 		return con.state() + " (" + hc + ")"
 	}
@@ -102,9 +102,9 @@ func (con conReporter) status() string {
 }
 
 func (con conReporter) ports() string {
-	if len(con.ListContainer.Ports) < 1 {
+	if len(con.Ports) < 1 {
 		return ""
 	}
 
-	return putils.PortsToString(con.ListContainer.Ports)
+	return putils.PortsToString(con.Ports)
 }

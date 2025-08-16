@@ -54,31 +54,19 @@ func NewConfig() (*Config, error) {
 	newConfig := &Config{}
 	newConfig.Connection.Connections = make(map[string]RemoteConnection)
 
-	if _, err := os.Stat(path); err == nil {
-		if err := newConfig.readConfigFromFile(path); err != nil {
+	_, err = os.Stat(path)
+	if err == nil {
+		err := newConfig.readConfigFromFile(path)
+		if err != nil {
 			return nil, err
 		}
-	} else {
-		if !os.IsNotExist(err) {
-			return nil, err
-		}
+	} else if !os.IsNotExist(err) {
+		return nil, err
 	}
 
 	newConfig.addLocalHostIfEmptyConfig()
 
 	return newConfig, nil
-}
-
-func (c *Config) addLocalHostIfEmptyConfig() {
-	if len(c.Connection.Connections) > 0 {
-		return
-	}
-
-	c.Connection.Connections = make(map[string]RemoteConnection)
-	c.Connection.Connections["localhost"] = RemoteConnection{
-		URI:     utils.LocalNodeUnixSocket(),
-		Default: true,
-	}
 }
 
 // RemoteConnections returns list of available connections.
@@ -100,4 +88,16 @@ func (c *Config) RemoteConnections() []registry.Connection {
 	sort.Sort(utils.ConnectionListSortedName{rconn}) //nolint:govet
 
 	return rconn
+}
+
+func (c *Config) addLocalHostIfEmptyConfig() {
+	if len(c.Connection.Connections) > 0 {
+		return
+	}
+
+	c.Connection.Connections = make(map[string]RemoteConnection)
+	c.Connection.Connections["localhost"] = RemoteConnection{
+		URI:     utils.LocalNodeUnixSocket(),
+		Default: true,
+	}
 }

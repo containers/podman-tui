@@ -12,6 +12,7 @@ import (
 // ErrorDialog is an error dialog primitive.
 type ErrorDialog struct {
 	*tview.Box
+
 	modal   *tview.Modal
 	title   string
 	message string
@@ -29,7 +30,7 @@ func NewErrorDialog() *ErrorDialog {
 
 	dialog.modal.SetButtonBackgroundColor(style.ErrorDialogButtonBgColor)
 
-	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) { //nolint:revive
+	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		dialog.Hide()
 	})
 
@@ -116,7 +117,7 @@ func (d *ErrorDialog) Draw(screen tcell.Screen) {
 
 // SetDoneFunc sets modal done function.
 func (d *ErrorDialog) SetDoneFunc(handler func()) *ErrorDialog {
-	d.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) { //nolint:revive
+	d.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		handler()
 	})
 

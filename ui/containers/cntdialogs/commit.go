@@ -33,6 +33,7 @@ const (
 // ContainerCommitDialog represents container commit dialog primitive.
 type ContainerCommitDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	cntInfo       *tview.InputField
 	image         *tview.InputField
@@ -71,11 +72,9 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	labelWidth := 9
 
 	// container info input field
-	cntInfoLabel := "CONTAINER ID:" //nolint:goconst
-
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.cntInfo.SetLabel("[::b]" + cntInfoLabel)
-	dialog.cntInfo.SetLabelWidth(len(cntInfoLabel) + 1)
+	dialog.cntInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
+	dialog.cntInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -366,25 +365,6 @@ func (d *ContainerCommitDialog) InputHandler() func(event *tcell.EventKey, setFo
 	})
 }
 
-func (d *ContainerCommitDialog) setFocusElement() {
-	switch d.focusElement {
-	case cntCommitImageFocus:
-		d.focusElement = cntCommitAuthorFocus
-	case cntCommitAuthorFocus:
-		d.focusElement = cntCommitChangeFocus
-	case cntCommitChangeFocus:
-		d.focusElement = cntCommitFormatFocus
-	case cntCommitFormatFocus:
-		d.focusElement = cntCommitSquashFocus
-	case cntCommitSquashFocus:
-		d.focusElement = cntCommitPauseFocus
-	case cntCommitPauseFocus:
-		d.focusElement = cntCommitMessageFocus
-	case cntCommitMessageFocus:
-		d.focusElement = cntCommitFormFocus
-	}
-}
-
 // SetRect set rects for this primitive.
 func (d *ContainerCommitDialog) SetRect(x, y, width, height int) {
 	if width > cntCommitDialogMaxWidth {
@@ -408,9 +388,9 @@ func (d *ContainerCommitDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
+	d.DrawForSubclass(screen, d)
 
-	x, y, width, height := d.Box.GetInnerRect()
+	x, y, width, height := d.GetInnerRect()
 
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
@@ -464,4 +444,23 @@ func (d *ContainerCommitDialog) GetContainerCommitOptions() containers.CntCommit
 	opts.Message = strings.TrimSpace(d.message.GetText())
 
 	return opts
+}
+
+func (d *ContainerCommitDialog) setFocusElement() {
+	switch d.focusElement {
+	case cntCommitImageFocus:
+		d.focusElement = cntCommitAuthorFocus
+	case cntCommitAuthorFocus:
+		d.focusElement = cntCommitChangeFocus
+	case cntCommitChangeFocus:
+		d.focusElement = cntCommitFormatFocus
+	case cntCommitFormatFocus:
+		d.focusElement = cntCommitSquashFocus
+	case cntCommitSquashFocus:
+		d.focusElement = cntCommitPauseFocus
+	case cntCommitPauseFocus:
+		d.focusElement = cntCommitMessageFocus
+	case cntCommitMessageFocus:
+		d.focusElement = cntCommitFormFocus
+	}
 }

@@ -17,6 +17,7 @@ const (
 // EventsDialog implements system events view dialog primitive.
 type EventsDialog struct {
 	*tview.Box
+
 	layout        *tview.Flex
 	serviceName   *tview.InputField
 	textview      *tview.TextView
@@ -175,8 +176,8 @@ func (d *EventsDialog) Draw(screen tcell.Screen) {
 		return
 	}
 
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }

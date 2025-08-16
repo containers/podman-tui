@@ -8,6 +8,7 @@ import (
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rs/zerolog/log"
 )
 
@@ -21,7 +22,7 @@ func (nets *Networks) runCommand(cmd string) {
 		nets.cdisconnect()
 	case "inspect":
 		nets.inspect()
-	case "prune": //nolint:goconst
+	case utils.PruneCommandLabel:
 		nets.cprune()
 	case "rm":
 		nets.rm()
@@ -75,7 +76,8 @@ func (nets *Networks) connect() {
 		nets.progressDialog.SetTitle("podman network connect")
 		nets.progressDialog.Display()
 
-		if err := networks.Connect(connectOptions); err != nil {
+		err := networks.Connect(connectOptions)
+		if err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK CONNECT ERROR", err)
 			nets.appFocusHandler()
@@ -129,7 +131,8 @@ func (nets *Networks) disconnect() {
 		nets.progressDialog.SetTitle("podman network disconnect")
 		nets.progressDialog.Display()
 
-		if err := networks.Disconnect(networkName, containerID); err != nil {
+		err := networks.Disconnect(networkName, containerID)
+		if err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK DISCONNECT ERROR", err)
 			nets.appFocusHandler()
@@ -182,7 +185,7 @@ func (nets *Networks) inspect() {
 func (nets *Networks) cprune() {
 	nets.confirmDialog.SetTitle("podman network prune")
 
-	nets.confirmData = "prune"
+	nets.confirmData = utils.PruneCommandLabel
 
 	nets.confirmDialog.SetText("Are you sure you want to remove all un used network ?")
 	nets.confirmDialog.Display()
@@ -193,7 +196,8 @@ func (nets *Networks) prune() {
 	nets.progressDialog.Display()
 
 	prune := func() {
-		if err := networks.Prune(); err != nil {
+		err := networks.Prune()
+		if err != nil {
 			nets.progressDialog.Hide()
 			nets.displayError("NETWORK PRUNE ERROR", err)
 			nets.appFocusHandler()
