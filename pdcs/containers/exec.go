@@ -173,7 +173,7 @@ func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
 	createCfg := &handlers.ExecCreateConfig{}
 	createCfg.Cmd = opts.Cmd
 	createCfg.Tty = opts.Tty
-	createCfg.Detach = opts.Detach
+	createCfg.Detach = opts.Detach //nolint:staticcheck
 	createCfg.WorkingDir = opts.WorkDir
 	createCfg.User = opts.User
 
