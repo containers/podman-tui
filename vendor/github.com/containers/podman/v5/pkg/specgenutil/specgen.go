@@ -531,6 +531,14 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		s.Annotations[define.PIDsLimitAnnotation] = strconv.FormatInt(*c.PIDsLimit, 10)
 	}
 
+	if c.CPUSetCPUs != "" {
+		s.Annotations[define.CpusetAnnotation] = c.CPUSetCPUs
+	}
+
+	if c.CPUSetMems != "" {
+		s.Annotations[define.MemoryNodesAnnotation] = c.CPUSetMems
+	}
+
 	if len(c.StorageOpts) > 0 {
 		opts := make(map[string]string, len(c.StorageOpts))
 		for _, opt := range c.StorageOpts {
@@ -729,8 +737,13 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		case "proc-opts":
 			s.ProcOpts = strings.Split(val, ",")
 		case "seccomp":
-			s.SeccompProfilePath = val
-			s.Annotations[define.InspectAnnotationSeccomp] = val
+			convertedPath, err := specgen.ConvertWinMountPath(val)
+			if err != nil {
+				// If the conversion fails, use the original path
+				convertedPath = val
+			}
+			s.SeccompProfilePath = convertedPath
+			s.Annotations[define.InspectAnnotationSeccomp] = convertedPath
 			// this option is for docker compatibility, it is the same as unmask=ALL
 		case "systempaths":
 			if val == "unconfined" {
@@ -739,9 +752,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 				return fmt.Errorf("invalid systempaths option %q, only `unconfined` is supported", val)
 			}
 		case "unmask":
-			if hasVal {
-				s.ContainerSecurityConfig.Unmask = append(s.ContainerSecurityConfig.Unmask, val)
-			}
+			s.ContainerSecurityConfig.Unmask = append(s.ContainerSecurityConfig.Unmask, strings.Split(val, ":")...)
 		case "no-new-privileges":
 			noNewPrivileges := true
 			if hasVal {

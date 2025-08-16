@@ -93,6 +93,10 @@ type ContainerEngine interface { //nolint:interfacebloat
 	PodStop(ctx context.Context, namesOrIds []string, options PodStopOptions) ([]*PodStopReport, error)
 	PodTop(ctx context.Context, options PodTopOptions) (*StringSliceReport, error)
 	PodUnpause(ctx context.Context, namesOrIds []string, options PodunpauseOptions) ([]*PodUnpauseReport, error)
+	QuadletInstall(ctx context.Context, pathsOrURLs []string, options QuadletInstallOptions) (*QuadletInstallReport, error)
+	QuadletList(ctx context.Context, options QuadletListOptions) ([]*ListQuadlet, error)
+	QuadletPrint(ctx context.Context, quadlet string) (string, error)
+	QuadletRemove(ctx context.Context, quadlets []string, options QuadletRemoveOptions) (*QuadletRemoveReport, error)
 	Renumber(ctx context.Context) error
 	Reset(ctx context.Context) error
 	SetupRootless(ctx context.Context, noMoveProcess bool, cgroupMode string) error
@@ -116,4 +120,6 @@ type ContainerEngine interface { //nolint:interfacebloat
 	VolumeRm(ctx context.Context, namesOrIds []string, opts VolumeRmOptions) ([]*VolumeRmReport, error)
 	VolumeUnmount(ctx context.Context, namesOrIds []string) ([]*VolumeUnmountReport, error)
 	VolumeReload(ctx context.Context) (*VolumeReloadReport, error)
+	VolumeExport(ctx context.Context, nameOrID string, options VolumeExportOptions) error
+	VolumeImport(ctx context.Context, nameOrID string, options VolumeImportOptions) error
 }
