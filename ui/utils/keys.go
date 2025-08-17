@@ -14,6 +14,12 @@ var (
 		KeyLabel: "m",
 		KeyDesc:  "display command menu",
 	}
+	SortMenuKey = uiKeyInfo{
+		Key:      tcell.Key(256), //nolint:mnd
+		KeyRune:  rune('s'),
+		KeyLabel: "s",
+		KeyDesc:  "display sort menu",
+	}
 	NextScreenKey = uiKeyInfo{
 		Key:      tcell.Key(256), //nolint:mnd
 		KeyRune:  rune('l'),
@@ -133,6 +139,7 @@ var (
 // UIKeysBindings user interface key bindings.
 var UIKeysBindings = []uiKeyInfo{
 	CommandMenuKey,
+	SortMenuKey,
 	NextScreenKey,
 	PreviousScreenKey,
 	MoveUpKey,

@@ -107,6 +107,13 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 			}
 		}
 
+		// container sort dialog handler
+		if cnt.sortDialog.HasFocus() {
+			if cntSortDialogHandler := cnt.sortDialog.InputHandler(); cntSortDialogHandler != nil {
+				cntSortDialogHandler(event, setFocus)
+			}
+		}
+
 		// container terminal dialog handler
 		if cnt.terminalDialog.HasFocus() {
 			if cntTerminalDialogHandler := cnt.terminalDialog.InputHandler(); cntTerminalDialogHandler != nil {
@@ -117,12 +124,21 @@ func (cnt *Containers) InputHandler() func(event *tcell.EventKey, setFocus func(
 		// table handlers
 		if cnt.table.HasFocus() { //nolint:nestif
 			cnt.selectedID, cnt.selectedName = cnt.getSelectedItem()
+			// display command menu
 			if event.Rune() == utils.CommandMenuKey.Rune() {
 				if cnt.cmdDialog.GetCommandCount() <= 1 {
 					return
 				}
 
 				cnt.cmdDialog.Display()
+				setFocus(cnt)
+
+				return
+			}
+
+			// display sort menu
+			if event.Rune() == utils.SortMenuKey.Rune() {
+				cnt.sortDialog.Display()
 				setFocus(cnt)
 
 				return

@@ -140,4 +140,12 @@ func (cnt *Containers) Draw(screen tcell.Screen) { //nolint:cyclop
 
 		return
 	}
+
+	// sort dialog
+	if cnt.sortDialog.IsDisplay() {
+		cnt.sortDialog.SetRect(cntViewX, cntViewY, cntViewW, cntViewH)
+		cnt.sortDialog.Draw(screen)
+
+		return
+	}
 }

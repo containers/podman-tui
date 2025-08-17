@@ -69,6 +69,7 @@ type Containers struct {
 	commitDialog     *cntdialogs.ContainerCommitDialog
 	checkpointDialog *cntdialogs.ContainerCheckpointDialog
 	restoreDialog    *cntdialogs.ContainerRestoreDialog
+	sortDialog       *dialogs.SortDialog
 	containersList   containerListReport
 	selectedID       string
 	selectedName     string
@@ -78,8 +79,10 @@ type Containers struct {
 }
 
 type containerListReport struct {
-	mu     sync.Mutex
-	report []entities.ListContainer
+	mu        sync.Mutex
+	report    []entities.ListContainer
+	sortBy    string
+	ascending bool
 }
 
 // NewContainers returns containers page view.
@@ -102,7 +105,10 @@ func NewContainers() *Containers {
 		commitDialog:     cntdialogs.NewContainerCommitDialog(),
 		checkpointDialog: cntdialogs.NewContainerCheckpointDialog(),
 		restoreDialog:    cntdialogs.NewContainerRestoreDialog(),
+		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created"}, 3), //nolint:mnd
+		containersList:   containerListReport{sortBy: "created", ascending: true},
 	}
+
 	containers.topDialog.SetTitle("podman container top")
 
 	containers.cmdDialog = dialogs.NewCommandDialog([][]string{
@@ -226,6 +232,10 @@ func NewContainers() *Containers {
 	containers.restoreDialog.SetRestoreFunc(containers.restore)
 	containers.restoreDialog.SetCancelFunc(containers.restoreDialog.Hide)
 
+	// set sort dialog functions
+	containers.sortDialog.SetSelectFunc(containers.SortView)
+	containers.sortDialog.SetCancelFunc(containers.sortDialog.Hide)
+
 	return containers
 }
 
@@ -273,7 +283,11 @@ func (cnt *Containers) HasFocus() bool { //nolint:cyclop
 		return true
 	}
 
-	return cnt.Box.HasFocus()
+	if cnt.sortDialog.HasFocus() || cnt.Box.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
@@ -306,7 +320,11 @@ func (cnt *Containers) SubDialogHasFocus() bool { //nolint:cyclop
 		return true
 	}
 
-	return cnt.runDialog.HasFocus()
+	if cnt.sortDialog.HasFocus() || cnt.runDialog.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // Focus is called when this primitive receives focus.
@@ -409,6 +427,13 @@ func (cnt *Containers) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
 		return
 	}
 
+	// sort dialog
+	if cnt.sortDialog.IsDisplay() {
+		delegate(cnt.sortDialog)
+
+		return
+	}
+
 	delegate(cnt.table)
 }
 
@@ -477,6 +502,10 @@ func (cnt *Containers) HideAllDialogs() { //nolint:cyclop
 
 	if cnt.terminalDialog.IsDisplay() {
 		cnt.terminalDialog.Hide()
+	}
+
+	if cnt.sortDialog.IsDisplay() {
+		cnt.sortDialog.Hide()
 	}
 }
 
