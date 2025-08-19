@@ -44,8 +44,8 @@ func NewHelp(appName string, appVersion string) *Help {
 		SetTextAlign(tview.AlignLeft)
 	appinfo.SetBackgroundColor(bgColor)
 
-	licenseInfo := "Released under the Apache License 2.0."
-	appInfoText := fmt.Sprintf("%s %s - (C) 2022 podman-tui dev team.\n%s", appName, appVersion, licenseInfo)
+	licenseInfo := "released under the Apache License 2.0."
+	appInfoText := fmt.Sprintf("%s %s - %s", appName, appVersion, licenseInfo)
 
 	appinfo.SetText(appInfoText)
 	appinfo.SetTextColor(headerColor)
@@ -55,7 +55,7 @@ func NewHelp(appName string, appVersion string) *Help {
 	rowIndex := 0
 	colIndex := 0
 	needInit := true
-	maxRowIndex := len(utils.UIKeysBindings)/2 + 1 //nolint:mnd
+	maxRowIndex := len(utils.UIKeysBindings) / 2 //nolint:mnd
 
 	for i := range utils.UIKeysBindings {
 		if i >= maxRowIndex {
@@ -83,7 +83,7 @@ func NewHelp(appName string, appVersion string) *Help {
 
 	// appinfo and appkeys layout
 	mlayout := tview.NewFlex().SetDirection(tview.FlexRow)
-	mlayout.AddItem(appinfo, 2, 0, false) //nolint:mnd
+	mlayout.AddItem(appinfo, 1, 0, false)
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
 	mlayout.AddItem(keyinfo, 0, 1, false)
 	mlayout.AddItem(utils.EmptyBoxSpace(bgColor), 1, 0, false)
