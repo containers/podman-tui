@@ -53,6 +53,7 @@ type Pods struct {
 	topDialog       *dialogs.TopDialog
 	createDialog    *poddialogs.PodCreateDialog
 	statsDialog     *poddialogs.PodStatsDialog
+	sortDialog      *dialogs.SortDialog
 	podsList        podsListReport
 	selectedID      string
 	confirmData     string
@@ -60,8 +61,10 @@ type Pods struct {
 }
 
 type podsListReport struct {
-	mu     sync.Mutex
-	report []*entities.ListPodsReport
+	mu        sync.Mutex
+	report    []*entities.ListPodsReport
+	sortBy    string
+	ascending bool
 }
 
 // NewPods returns pods page view.
@@ -77,6 +80,8 @@ func NewPods() *Pods {
 		topDialog:      dialogs.NewTopDialog(),
 		createDialog:   poddialogs.NewPodCreateDialog(),
 		statsDialog:    poddialogs.NewPodStatsDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"name", "created", "status", "# of containers"}, 1),
+		podsList:       podsListReport{sortBy: "created", ascending: true},
 	}
 
 	pods.topDialog.SetTitle("podman pod top")
@@ -161,8 +166,12 @@ func NewPods() *Pods {
 		pods.create()
 	})
 
-	// set stats dialogs functions
+	// set stats dialog functions
 	pods.statsDialog.SetDoneFunc(pods.statsDialog.Hide)
+
+	// set sort dialog functions
+	pods.sortDialog.SetCancelFunc(pods.sortDialog.Hide)
+	pods.sortDialog.SetSelectFunc(pods.SortView)
 
 	return pods
 }
@@ -178,7 +187,7 @@ func (pods *Pods) GetTitle() string {
 }
 
 // HasFocus returns whether or not this primitive has focus.
-func (pods *Pods) HasFocus() bool {
+func (pods *Pods) HasFocus() bool { //nolint:cyclop
 	if pods.table.HasFocus() || pods.errorDialog.HasFocus() {
 		return true
 	}
@@ -195,7 +204,7 @@ func (pods *Pods) HasFocus() bool {
 		return true
 	}
 
-	if pods.statsDialog.HasFocus() {
+	if pods.statsDialog.HasFocus() || pods.sortDialog.HasFocus() {
 		return true
 	}
 
@@ -220,7 +229,7 @@ func (pods *Pods) SubDialogHasFocus() bool {
 		return true
 	}
 
-	return false
+	return pods.sortDialog.HasFocus()
 }
 
 // Focus is called when this primitive receives focus.
@@ -274,6 +283,13 @@ func (pods *Pods) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
+	// sort dialog
+	if pods.sortDialog.IsDisplay() {
+		delegate(pods.sortDialog)
+
+		return
+	}
+
 	delegate(pods.table)
 }
 
@@ -309,6 +325,10 @@ func (pods *Pods) HideAllDialogs() {
 
 	if pods.statsDialog.IsDisplay() {
 		pods.statsDialog.Hide()
+	}
+
+	if pods.sortDialog.IsDisplay() {
+		pods.sortDialog.Hide()
 	}
 }
 

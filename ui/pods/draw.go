@@ -5,7 +5,7 @@ import (
 )
 
 // Draw draws this primitive onto the screen.
-func (pods *Pods) Draw(screen tcell.Screen) {
+func (pods *Pods) Draw(screen tcell.Screen) { //nolint:cyclop
 	pods.DrawForSubclass(screen, pods)
 	pods.SetBorder(false)
 
@@ -78,10 +78,18 @@ func (pods *Pods) Draw(screen tcell.Screen) {
 		return
 	}
 
-	// stats dialogs
+	// stats dialog
 	if pods.statsDialog.IsDisplay() {
 		pods.statsDialog.SetRect(podViewX, podViewY, podViewW, podViewH)
 		pods.statsDialog.Draw(screen)
+
+		return
+	}
+
+	// sort dialog
+	if pods.sortDialog.IsDisplay() {
+		pods.sortDialog.SetRect(podViewX, podViewY, podViewW, podViewH)
+		pods.sortDialog.Draw(screen)
 
 		return
 	}
