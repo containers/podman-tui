@@ -1,8 +1,6 @@
 package pods
 
 import (
-	"sort"
-
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v5/pkg/bindings/pods"
 	"github.com/containers/podman/v5/pkg/domain/entities"
@@ -23,18 +21,7 @@ func List() ([]*entities.ListPodsReport, error) {
 		return nil, err
 	}
 
-	sort.Sort(podPsSortedName{response})
-
 	log.Debug().Msgf("pdcs: %v", response)
 
 	return response, nil
 }
-
-type lprSort []*entities.ListPodsReport
-
-func (a lprSort) Len() int      { return len(a) }
-func (a lprSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-
-type podPsSortedName struct{ lprSort }
-
-func (a podPsSortedName) Less(i, j int) bool { return a.lprSort[i].Name < a.lprSort[j].Name }

@@ -150,6 +150,12 @@ func (a containerListSorted) Less(i, j int) bool {
 		}
 
 		return a.lprSort[i].Image > a.lprSort[j].Image
+	case "status":
+		if a.ascending {
+			return a.lprSort[i].State < a.lprSort[j].State
+		}
+
+		return a.lprSort[i].State > a.lprSort[j].State
 	case "created":
 		if a.ascending {
 			return a.lprSort[i].Created.After(a.lprSort[j].Created)

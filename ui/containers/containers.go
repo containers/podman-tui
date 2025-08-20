@@ -105,7 +105,7 @@ func NewContainers() *Containers {
 		commitDialog:     cntdialogs.NewContainerCommitDialog(),
 		checkpointDialog: cntdialogs.NewContainerCheckpointDialog(),
 		restoreDialog:    cntdialogs.NewContainerRestoreDialog(),
-		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created"}, 3), //nolint:mnd
+		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created", "status"}, 3), //nolint:mnd
 		containersList:   containerListReport{sortBy: "created", ascending: true},
 	}
 

@@ -65,6 +65,13 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 			}
 		}
 
+		// pod sort dialog handler
+		if pods.sortDialog.HasFocus() {
+			if podsSortDialogHandler := pods.sortDialog.InputHandler(); podsSortDialogHandler != nil {
+				podsSortDialogHandler(event, setFocus)
+			}
+		}
+
 		// table handlers
 		if pods.table.HasFocus() { //nolint:nestif
 			pods.selectedID, _ = pods.getSelectedItem()
@@ -74,6 +81,14 @@ func (pods *Pods) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 				}
 
 				pods.cmdDialog.Display()
+				setFocus(pods)
+
+				return
+			}
+
+			// display sort menu
+			if event.Rune() == utils.SortMenuKey.Rune() {
+				pods.sortDialog.Display()
 				setFocus(pods)
 
 				return
