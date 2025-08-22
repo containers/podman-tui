@@ -2,6 +2,7 @@ package volumes
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/volumes"
@@ -10,6 +11,18 @@ import (
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
 )
+
+// SortView sorts data view called from sort dialog.
+func (vols *Volumes) SortView(option string, ascending bool) {
+	log.Debug().Msgf("view: vols sort by %s", option)
+
+	vols.volumeList.mu.Lock()
+	defer vols.volumeList.mu.Unlock()
+
+	vols.volumeList.sortBy = option
+	vols.volumeList.ascending = ascending
+	sort.Sort(volListSorted{vols.volumeList.report, option, ascending})
+}
 
 // UpdateData retrieves pods list data.
 func (vols *Volumes) UpdateData() {
@@ -24,6 +37,8 @@ func (vols *Volumes) UpdateData() {
 
 	vols.volumeList.mu.Lock()
 	defer vols.volumeList.mu.Unlock()
+
+	sort.Sort(volListSorted{volList, vols.volumeList.sortBy, vols.volumeList.ascending})
 
 	vols.volumeList.report = volList
 }
@@ -61,4 +76,45 @@ func (vols *Volumes) getData() []*entities.VolumeListReport {
 	data := vols.volumeList.report
 
 	return data
+}
+
+type lprSort []*entities.VolumeListReport
+
+func (a lprSort) Len() int      { return len(a) }
+func (a lprSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+
+type volListSorted struct {
+	lprSort
+
+	option    string
+	ascending bool
+}
+
+func (a volListSorted) Less(i, j int) bool {
+	switch a.option {
+	case "driver":
+		if a.ascending {
+			return a.lprSort[i].Driver < a.lprSort[j].Driver
+		}
+
+		return a.lprSort[i].Driver > a.lprSort[j].Driver
+	case "mount point":
+		if a.ascending {
+			return a.lprSort[i].Mountpoint < a.lprSort[j].Mountpoint
+		}
+
+		return a.lprSort[i].Mountpoint > a.lprSort[j].Mountpoint
+	case "created":
+		if a.ascending {
+			return a.lprSort[i].CreatedAt.After(a.lprSort[j].CreatedAt)
+		}
+
+		return a.lprSort[i].CreatedAt.Before(a.lprSort[j].CreatedAt)
+	}
+
+	if a.ascending {
+		return a.lprSort[i].Name < a.lprSort[j].Name
+	}
+
+	return a.lprSort[i].Name > a.lprSort[j].Name
 }

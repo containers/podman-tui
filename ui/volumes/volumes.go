@@ -26,14 +26,17 @@ type Volumes struct {
 	cmdDialog       *dialogs.CommandDialog
 	messageDialog   *dialogs.MessageDialog
 	createDialog    *voldialogs.VolumeCreateDialog
+	sortDialog      *dialogs.SortDialog
 	volumeList      volListReport
 	confirmData     string
 	appFocusHandler func()
 }
 
 type volListReport struct {
-	mu     sync.Mutex
-	report []*entities.VolumeListReport
+	mu        sync.Mutex
+	report    []*entities.VolumeListReport
+	sortBy    string
+	ascending bool
 }
 
 // NewVolumes returns new vols page view.
@@ -47,6 +50,8 @@ func NewVolumes() *Volumes {
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		createDialog:   voldialogs.NewVolumeCreateDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"driver", "name", "created", "mount point"}, 2), //nolint:mnd
+		volumeList:     volListReport{sortBy: "created", ascending: true},
 	}
 
 	vols.initUI()
@@ -114,6 +119,7 @@ func (vols *Volumes) getInnerDialogs() []utils.UIDialog {
 		vols.cmdDialog,
 		vols.messageDialog,
 		vols.createDialog,
+		vols.sortDialog,
 	}
 
 	return dialogs
@@ -199,4 +205,8 @@ func (vols *Volumes) initUI() {
 		vols.createDialog.Hide()
 		vols.create()
 	})
+
+	// set sort dialog functions
+	vols.sortDialog.SetSelectFunc(vols.SortView)
+	vols.sortDialog.SetCancelFunc(vols.sortDialog.Hide)
 }

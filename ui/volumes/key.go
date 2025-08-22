@@ -44,6 +44,14 @@ func (vols *Volumes) processTableInputHandler(event *tcell.EventKey, setFocus fu
 		return
 	}
 
+	// display sort menu
+	if event.Rune() == utils.SortMenuKey.Rune() {
+		vols.sortDialog.Display()
+		setFocus(vols)
+
+		return
+	}
+
 	if event.Key() == utils.DeleteKey.EventKey() {
 		vols.removePrep()
 

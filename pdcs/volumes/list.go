@@ -1,8 +1,6 @@
 package volumes
 
 import (
-	"sort"
-
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v5/pkg/bindings/volumes"
 	"github.com/containers/podman/v5/pkg/domain/entities"
@@ -23,17 +21,7 @@ func List() ([]*entities.VolumeListReport, error) {
 		return nil, err
 	}
 
-	sort.Sort(volumeListSortedName{response})
 	log.Debug().Msgf("pdcs: %v", response)
 
 	return response, nil
 }
-
-type lprSort []*entities.VolumeListReport
-
-func (a lprSort) Len() int      { return len(a) }
-func (a lprSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-
-type volumeListSortedName struct{ lprSort }
-
-func (a volumeListSortedName) Less(i, j int) bool { return a.lprSort[i].Name < a.lprSort[j].Name }
