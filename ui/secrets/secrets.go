@@ -9,6 +9,7 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/secrets/secdialogs"
 	"github.com/containers/podman-tui/ui/style"
+	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rivo/tview"
 )
@@ -40,14 +41,17 @@ type Secrets struct {
 	errorDialog     *dialogs.ErrorDialog
 	progressDialog  *dialogs.ProgressDialog
 	confirmDialog   *dialogs.ConfirmDialog
+	sortDialog      *dialogs.SortDialog
 	createDialog    *secdialogs.SecretCreateDialog
 	secretList      secretListReport
 	appFocusHandler func()
 }
 
 type secretListReport struct {
-	mu     sync.Mutex
-	report []*types.SecretInfoReport
+	mu        sync.Mutex
+	report    []*types.SecretInfoReport
+	sortBy    string
+	ascending bool
 }
 
 // NewSecrets returns secrets page view.
@@ -61,6 +65,7 @@ func NewSecrets() *Secrets {
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"name", "driver", "created", "updated"}, 2), //nolint:mnd
 		createDialog:   secdialogs.NewSecretCreateDialog(),
 	}
 
@@ -115,6 +120,10 @@ func NewSecrets() *Secrets {
 		secrets.create()
 	})
 
+	// set sort dialog function
+	secrets.sortDialog.SetCancelFunc(secrets.sortDialog.Hide)
+	secrets.sortDialog.SetSelectFunc(secrets.SortView)
+
 	return secrets
 }
 
@@ -130,19 +139,11 @@ func (s *Secrets) GetTitle() string {
 
 // HasFocus returns whether or not this primitive has focus.
 func (s *Secrets) HasFocus() bool {
+	if s.SubDialogHasFocus() {
+		return true
+	}
+
 	if s.table.HasFocus() || s.Box.HasFocus() {
-		return true
-	}
-
-	if s.cmdDialog.HasFocus() || s.errorDialog.HasFocus() {
-		return true
-	}
-
-	if s.messageDialog.HasFocus() || s.progressDialog.HasFocus() {
-		return true
-	}
-
-	if s.confirmDialog.HasFocus() || s.createDialog.HasFocus() {
 		return true
 	}
 
@@ -151,16 +152,10 @@ func (s *Secrets) HasFocus() bool {
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
 func (s *Secrets) SubDialogHasFocus() bool {
-	if s.cmdDialog.HasFocus() || s.errorDialog.HasFocus() {
-		return true
-	}
-
-	if s.messageDialog.HasFocus() || s.progressDialog.HasFocus() {
-		return true
-	}
-
-	if s.confirmDialog.HasFocus() || s.createDialog.HasFocus() {
-		return true
+	for _, dialog := range s.getInnerDialogs() {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
 	return false
@@ -175,32 +170,12 @@ func (s *Secrets) Focus(delegate func(p tview.Primitive)) {
 		return
 	}
 
-	// message dialog
-	if s.messageDialog.IsDisplay() {
-		delegate(s.messageDialog)
+	for _, dialog := range s.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			delegate(dialog)
 
-		return
-	}
-
-	// confirmation dialog
-	if s.confirmDialog.IsDisplay() {
-		delegate(s.confirmDialog)
-
-		return
-	}
-
-	// cmd dialog
-	if s.cmdDialog.IsDisplay() {
-		delegate(s.cmdDialog)
-
-		return
-	}
-
-	// create dialog
-	if s.createDialog.IsDisplay() {
-		delegate(s.createDialog)
-
-		return
+			return
+		}
 	}
 
 	delegate(s.table)
@@ -208,28 +183,10 @@ func (s *Secrets) Focus(delegate func(p tview.Primitive)) {
 
 // HideAllDialogs hides all sub dialogs.
 func (s *Secrets) HideAllDialogs() {
-	if s.errorDialog.IsDisplay() {
-		s.errorDialog.Hide()
-	}
-
-	if s.messageDialog.IsDisplay() {
-		s.messageDialog.Hide()
-	}
-
-	if s.progressDialog.IsDisplay() {
-		s.progressDialog.Hide()
-	}
-
-	if s.confirmDialog.IsDisplay() {
-		s.confirmDialog.Hide()
-	}
-
-	if s.cmdDialog.IsDisplay() {
-		s.cmdDialog.Hide()
-	}
-
-	if s.createDialog.IsDisplay() {
-		s.createDialog.Hide()
+	for _, dialog := range s.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			dialog.Hide()
+		}
 	}
 }
 
@@ -249,4 +206,18 @@ func (s *Secrets) getSelectedItem() (int, string, string) {
 	secName = s.table.GetCell(rowIndex, 1).Text
 
 	return rowIndex, secID, secName
+}
+
+func (s *Secrets) getInnerDialogs() []utils.UIDialog {
+	dialogs := []utils.UIDialog{
+		s.progressDialog,
+		s.errorDialog,
+		s.confirmDialog,
+		s.cmdDialog,
+		s.createDialog,
+		s.messageDialog,
+		s.sortDialog,
+	}
+
+	return dialogs
 }

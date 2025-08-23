@@ -23,17 +23,18 @@ type System struct {
 	title                    string
 	connTable                *tview.Table
 	connTableHeaders         []string
-	connectionList           connectionListReport
 	cmdDialog                *dialogs.CommandDialog
 	confirmDialog            *dialogs.ConfirmDialog
 	messageDialog            *dialogs.MessageDialog
 	progressDialog           *dialogs.ProgressDialog
 	errorDialog              *dialogs.ErrorDialog
+	sortDialog               *dialogs.SortDialog
 	eventDialog              *sysdialogs.EventsDialog
 	dfDialog                 *sysdialogs.DfDialog
 	connPrgDialog            *sysdialogs.ConnectDialog
 	connAddDialog            *sysdialogs.AddConnectionDialog
 	confirmData              string
+	connectionList           connectionListReport
 	connectionListFunc       func() []registry.Connection
 	connectionAddFunc        func(string, string, string) error
 	connectionRemoveFunc     func(string) error
@@ -44,8 +45,10 @@ type System struct {
 }
 
 type connectionListReport struct {
-	mu     sync.Mutex
-	report []registry.Connection
+	mu        sync.Mutex
+	report    []registry.Connection
+	sortBy    string
+	ascending bool
 }
 
 type sysSelectedItem struct {
@@ -57,19 +60,22 @@ type sysSelectedItem struct {
 
 // NewSystem returns new system page view.
 func NewSystem() *System {
+	headers := []string{"name", "default", "status", "uri", "identity"}
 	sys := &System{
 		Box:              tview.NewBox(),
 		title:            "system",
 		connTable:        tview.NewTable(),
-		connTableHeaders: []string{"name", "default", "status", "uri", "identity"},
+		connTableHeaders: headers,
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		progressDialog:   dialogs.NewProgressDialog(),
 		errorDialog:      dialogs.NewErrorDialog(),
 		messageDialog:    dialogs.NewMessageDialog(""),
+		sortDialog:       dialogs.NewSortDialog(headers, 0),
 		eventDialog:      sysdialogs.NewEventDialog(),
 		dfDialog:         sysdialogs.NewDfDialog(),
 		connPrgDialog:    sysdialogs.NewConnectDialog(),
 		connAddDialog:    sysdialogs.NewAddConnectionDialog(),
+		connectionList:   connectionListReport{sortBy: "name", ascending: true},
 	}
 
 	// connection table
@@ -159,6 +165,10 @@ func NewSystem() *System {
 		sys.addConnection()
 	})
 
+	// set connection sort dialog functions
+	sys.sortDialog.SetCancelFunc(sys.sortDialog.Hide)
+	sys.sortDialog.SetSelectFunc(sys.SortView)
+
 	return sys
 }
 
@@ -173,47 +183,27 @@ func (sys *System) GetTitle() string {
 }
 
 // HasFocus returns whether or not this primitive has focus.
-func (sys *System) HasFocus() bool { //nolint:cyclop
-	if sys.cmdDialog.HasFocus() || sys.confirmDialog.HasFocus() {
+func (sys *System) HasFocus() bool {
+	for _, dialog := range sys.getInnerDialogs(true) {
+		if dialog.HasFocus() {
+			return true
+		}
+	}
+
+	if sys.connTable.HasFocus() || sys.Box.HasFocus() {
 		return true
 	}
 
-	if sys.progressDialog.HasFocus() || sys.errorDialog.HasFocus() {
-		return true
-	}
-
-	if sys.eventDialog.HasFocus() || sys.dfDialog.HasFocus() {
-		return true
-	}
-
-	if sys.messageDialog.HasFocus() || sys.connTable.HasFocus() {
-		return true
-	}
-
-	if sys.connPrgDialog.HasFocus() || sys.connAddDialog.HasFocus() {
-		return true
-	}
-
-	return sys.Box.HasFocus()
+	return false
 }
 
 // SubDialogHasFocus returns true if there is an active dialog
 // displayed on the front screen.
 func (sys *System) SubDialogHasFocus() bool {
-	if sys.cmdDialog.HasFocus() || sys.confirmDialog.HasFocus() {
-		return true
-	}
-
-	if sys.progressDialog.HasFocus() || sys.errorDialog.HasFocus() {
-		return true
-	}
-
-	if sys.dfDialog.HasFocus() || sys.messageDialog.HasFocus() {
-		return true
-	}
-
-	if sys.eventDialog.HasFocus() || sys.connAddDialog.HasFocus() {
-		return true
+	for _, dialog := range sys.getInnerDialogs(false) {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
 	return false
@@ -221,60 +211,12 @@ func (sys *System) SubDialogHasFocus() bool {
 
 // Focus is called when this primitive receives focus.
 func (sys *System) Focus(delegate func(p tview.Primitive)) {
-	// error dialog
-	if sys.errorDialog.IsDisplay() {
-		delegate(sys.errorDialog)
+	for _, dialog := range sys.getInnerDialogs(true) {
+		if dialog.IsDisplay() {
+			delegate(dialog)
 
-		return
-	}
-
-	// message dialog
-	if sys.messageDialog.IsDisplay() {
-		delegate(sys.messageDialog)
-
-		return
-	}
-
-	// command dialog
-	if sys.cmdDialog.IsDisplay() {
-		delegate(sys.cmdDialog)
-
-		return
-	}
-
-	// confirm dialog
-	if sys.confirmDialog.IsDisplay() {
-		delegate(sys.confirmDialog)
-
-		return
-	}
-
-	// disk usage dialog
-	if sys.dfDialog.IsDisplay() {
-		delegate(sys.dfDialog)
-
-		return
-	}
-
-	// connection progress dialog
-	if sys.connPrgDialog.IsDisplay() {
-		delegate(sys.connPrgDialog)
-
-		return
-	}
-
-	// event dialog
-	if sys.eventDialog.IsDisplay() {
-		delegate(sys.eventDialog)
-
-		return
-	}
-
-	// connection create dialog
-	if sys.connAddDialog.IsDisplay() {
-		delegate(sys.connAddDialog)
-
-		return
+			return
+		}
 	}
 
 	delegate(sys.connTable)
@@ -300,7 +242,7 @@ func (sys *System) SetConnectionProgressDestName(name string) {
 // ConnectionProgressDisplay displays or hide the connection progress dialog.
 func (sys *System) ConnectionProgressDisplay(display bool) {
 	if display {
-		sys.hideAllDialogs()
+		sys.hideAllDialogs(false)
 		sys.connPrgDialog.Display()
 
 		return
@@ -355,13 +297,39 @@ func (sys *System) getSelectedItem() *sysSelectedItem {
 	return &selectedItem
 }
 
-func (sys *System) hideAllDialogs() {
-	sys.errorDialog.Hide()
-	sys.cmdDialog.Hide()
-	sys.confirmDialog.Hide()
-	sys.messageDialog.Hide()
-	sys.dfDialog.Hide()
-	sys.progressDialog.Hide()
-	sys.eventDialog.Hide()
-	sys.connAddDialog.Hide()
+func (sys *System) hideAllDialogs(all bool) {
+	for _, dialog := range sys.getInnerDialogs(all) {
+		if dialog.IsDisplay() {
+			dialog.Hide()
+		}
+	}
+}
+
+func (sys *System) getInnerDialogs(all bool) []utils.UIDialog {
+	if all {
+		return []utils.UIDialog{
+			sys.progressDialog,
+			sys.cmdDialog,
+			sys.confirmDialog,
+			sys.messageDialog,
+			sys.dfDialog,
+			sys.errorDialog,
+			sys.connPrgDialog,
+			sys.eventDialog,
+			sys.connAddDialog,
+			sys.sortDialog,
+		}
+	}
+
+	return []utils.UIDialog{
+		sys.progressDialog,
+		sys.cmdDialog,
+		sys.confirmDialog,
+		sys.messageDialog,
+		sys.dfDialog,
+		sys.errorDialog,
+		sys.eventDialog,
+		sys.connAddDialog,
+		sys.sortDialog,
+	}
 }

@@ -51,9 +51,9 @@ type Pods struct {
 	cmdDialog       *dialogs.CommandDialog
 	messageDialog   *dialogs.MessageDialog
 	topDialog       *dialogs.TopDialog
+	sortDialog      *dialogs.SortDialog
 	createDialog    *poddialogs.PodCreateDialog
 	statsDialog     *poddialogs.PodStatsDialog
-	sortDialog      *dialogs.SortDialog
 	podsList        podsListReport
 	selectedID      string
 	confirmData     string
@@ -78,9 +78,9 @@ func NewPods() *Pods {
 		progressDialog: dialogs.NewProgressDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		topDialog:      dialogs.NewTopDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"name", "created", "status", "# of containers"}, 1),
 		createDialog:   poddialogs.NewPodCreateDialog(),
 		statsDialog:    poddialogs.NewPodStatsDialog(),
-		sortDialog:     dialogs.NewSortDialog([]string{"name", "created", "status", "# of containers"}, 1),
 		podsList:       podsListReport{sortBy: "created", ascending: true},
 	}
 

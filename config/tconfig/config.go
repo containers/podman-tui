@@ -3,7 +3,6 @@ package tconfig
 import (
 	"errors"
 	"os"
-	"sort"
 	"sync"
 
 	"github.com/containers/podman-tui/config/utils"
@@ -84,8 +83,6 @@ func (c *Config) RemoteConnections() []registry.Connection {
 			Default:  conn.Default,
 		})
 	}
-
-	sort.Sort(utils.ConnectionListSortedName{rconn}) //nolint:govet
 
 	return rconn
 }

@@ -55,10 +55,9 @@ func (sys *System) addConnection() {
 
 		if err != nil {
 			sys.displayError("ADD NEW CONNECTION ERROR", err)
-			sys.appFocusHandler()
-
-			return
 		}
+
+		sys.appFocusHandler()
 	}()
 }
 
@@ -131,18 +130,28 @@ func (sys *System) info() {
 		return
 	}
 
-	data, err := sysinfo.Info()
-	if err != nil {
-		sys.displayError("SYSTEM INFO ERROR", err)
+	sys.progressDialog.SetTitle("podman system info in progress")
+	sys.progressDialog.Display()
 
-		return
-	}
+	go func() {
+		data, err := sysinfo.Info()
 
-	connName := registry.ConnectionName()
+		sys.progressDialog.Hide()
 
-	sys.messageDialog.SetTitle("SYSTEM INFORMATION")
-	sys.messageDialog.SetText(dialogs.MessageSystemInfo, connName, data)
-	sys.messageDialog.DisplayFullSize()
+		if err != nil {
+			sys.displayError("SYSTEM INFO ERROR", err)
+			sys.appFocusHandler()
+
+			return
+		}
+
+		connName := registry.ConnectionName()
+
+		sys.messageDialog.SetTitle("SYSTEM INFORMATION")
+		sys.messageDialog.SetText(dialogs.MessageSystemInfo, connName, data)
+		sys.messageDialog.DisplayFullSize()
+		sys.appFocusHandler()
+	}()
 }
 
 func (sys *System) cprune() {
@@ -225,11 +234,9 @@ func (sys *System) remove() {
 
 		if err != nil {
 			sys.displayError("SYSTEM CONNECTION REMOVE ERROR", err)
-			sys.appFocusHandler()
-
-			return
 		}
 
+		sys.appFocusHandler()
 		sys.UpdateData()
 	}()
 }
@@ -242,10 +249,9 @@ func (sys *System) setDefault() {
 		err := sys.connectionSetDefaultFunc(selectedItem.name)
 		if err != nil {
 			sys.displayError("SYSTEM CONNECTION SET DEFAULT ERROR", err)
-			sys.appFocusHandler()
-
-			return
 		}
+
+		sys.appFocusHandler()
 	}
 
 	sys.progressDialog.Display()
