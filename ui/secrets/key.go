@@ -8,7 +8,7 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (s *Secrets) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,cyclop,lll
+func (s *Secrets) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:cyclop
 	return s.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: secrets event %v received", event)
 
@@ -16,38 +16,11 @@ func (s *Secrets) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 			return
 		}
 
-		// error dialog handler
-		if s.errorDialog.HasFocus() {
-			if errorDialogHandler := s.errorDialog.InputHandler(); errorDialogHandler != nil {
-				errorDialogHandler(event, setFocus)
-			}
-		}
-
-		// message dialog handler
-		if s.messageDialog.HasFocus() {
-			if messageDialogHandler := s.messageDialog.InputHandler(); messageDialogHandler != nil {
-				messageDialogHandler(event, setFocus)
-			}
-		}
-
-		// confirm dialog handler
-		if s.confirmDialog.HasFocus() {
-			if confirmDialogHandler := s.confirmDialog.InputHandler(); confirmDialogHandler != nil {
-				confirmDialogHandler(event, setFocus)
-			}
-		}
-
-		// command dialog handler
-		if s.cmdDialog.HasFocus() {
-			if cmdHandler := s.cmdDialog.InputHandler(); cmdHandler != nil {
-				cmdHandler(event, setFocus)
-			}
-		}
-
-		// create dialog
-		if s.createDialog.HasFocus() {
-			if createHandler := s.createDialog.InputHandler(); createHandler != nil {
-				createHandler(event, setFocus)
+		for _, dialog := range s.getInnerDialogs() {
+			if dialog.HasFocus() {
+				if dialogHandler := dialog.InputHandler(); dialogHandler != nil {
+					dialogHandler(event, setFocus)
+				}
 			}
 		}
 
@@ -59,6 +32,14 @@ func (s *Secrets) InputHandler() func(event *tcell.EventKey, setFocus func(p tvi
 				}
 
 				s.cmdDialog.Display()
+				setFocus(s)
+
+				return
+			}
+
+			// display sort menu
+			if event.Rune() == utils.SortMenuKey.Rune() {
+				s.sortDialog.Display()
 				setFocus(s)
 
 				return

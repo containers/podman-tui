@@ -8,7 +8,7 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,cyclop,lll
+func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:cyclop
 	return sys.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: system event %v received", event)
 
@@ -16,72 +16,44 @@ func (sys *System) InputHandler() func(event *tcell.EventKey, setFocus func(p tv
 			return
 		}
 
-		// command dialog handler
-		if sys.cmdDialog.HasFocus() {
-			if cmdHandler := sys.cmdDialog.InputHandler(); cmdHandler != nil {
-				cmdHandler(event, setFocus)
-			}
-		}
-
-		// confirm dialog handler
-		if sys.confirmDialog.HasFocus() {
-			if confirmDialogHandler := sys.confirmDialog.InputHandler(); confirmDialogHandler != nil {
-				confirmDialogHandler(event, setFocus)
-			}
-		}
-
-		// message dialog handler
-		if sys.messageDialog.HasFocus() {
-			if messageDialogHandler := sys.messageDialog.InputHandler(); messageDialogHandler != nil {
-				messageDialogHandler(event, setFocus)
-			}
-		}
-
-		// disk usage dialog
-		if sys.dfDialog.HasFocus() {
-			if dfDialogHandler := sys.dfDialog.InputHandler(); dfDialogHandler != nil {
-				dfDialogHandler(event, setFocus)
-			}
-		}
-
-		// error dialog handler
-		if sys.errorDialog.HasFocus() {
-			if errorDialogHandler := sys.errorDialog.InputHandler(); errorDialogHandler != nil {
-				errorDialogHandler(event, setFocus)
-			}
-		}
-
-		// connection progress dialog handler
-		if sys.connPrgDialog.HasFocus() {
-			if connectionPrgDialog := sys.connPrgDialog.InputHandler(); connectionPrgDialog != nil {
-				connectionPrgDialog(event, setFocus)
-			}
-		}
-
-		// event dialog handler
-		if sys.eventDialog.HasFocus() {
-			if eventDialogHandler := sys.eventDialog.InputHandler(); eventDialogHandler != nil {
-				eventDialogHandler(event, setFocus)
-			}
-		}
-
-		// connection create dialog handler
-		if sys.connAddDialog.HasFocus() {
-			if connAddDialogHandler := sys.connAddDialog.InputHandler(); connAddDialogHandler != nil {
-				connAddDialogHandler(event, setFocus)
+		for _, dialog := range sys.getInnerDialogs(true) {
+			if dialog.HasFocus() {
+				if handler := dialog.InputHandler(); handler != nil {
+					handler(event, setFocus)
+				}
 			}
 		}
 
 		// table handlers
 		if sys.connTable.HasFocus() { //nolint:nestif
-			if event.Rune() == utils.CommandMenuKey.Rune() { //nolint:gocritic
-				sys.cmdDialog.Display()
-			} else if event.Key() == utils.DeleteKey.EventKey() {
-				sys.cremove()
-			} else {
-				if tableHandler := sys.connTable.InputHandler(); tableHandler != nil {
-					tableHandler(event, setFocus)
+			if event.Rune() == utils.CommandMenuKey.Rune() {
+				if sys.cmdDialog.GetCommandCount() <= 1 {
+					return
 				}
+
+				sys.cmdDialog.Display()
+				setFocus(sys)
+
+				return
+			}
+
+			// display sort menu
+			if event.Rune() == utils.SortMenuKey.Rune() {
+				sys.sortDialog.Display()
+				setFocus(sys)
+
+				return
+			}
+
+			if event.Key() == utils.DeleteKey.EventKey() {
+				sys.cremove()
+				setFocus(sys)
+
+				return
+			}
+
+			if tableHandler := sys.connTable.InputHandler(); tableHandler != nil {
+				tableHandler(event, setFocus)
 			}
 		}
 

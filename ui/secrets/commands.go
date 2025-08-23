@@ -46,8 +46,6 @@ func (s *Secrets) create() {
 	err := secrets.Create(createOpts)
 	if err != nil {
 		s.displayError("SECRET CREATE ERROR", err)
-
-		return
 	}
 
 	s.UpdateData()
@@ -125,6 +123,7 @@ func (s *Secrets) remove() {
 			s.table.Select(rowIndex, 0)
 		}
 
+		s.appFocusHandler()
 		s.UpdateData()
 	}
 

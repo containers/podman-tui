@@ -25,8 +25,8 @@ type Volumes struct {
 	confirmDialog   *dialogs.ConfirmDialog
 	cmdDialog       *dialogs.CommandDialog
 	messageDialog   *dialogs.MessageDialog
-	createDialog    *voldialogs.VolumeCreateDialog
 	sortDialog      *dialogs.SortDialog
+	createDialog    *voldialogs.VolumeCreateDialog
 	volumeList      volListReport
 	confirmData     string
 	appFocusHandler func()
@@ -49,8 +49,8 @@ func NewVolumes() *Volumes {
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
-		createDialog:   voldialogs.NewVolumeCreateDialog(),
 		sortDialog:     dialogs.NewSortDialog([]string{"driver", "name", "created", "mount point"}, 2), //nolint:mnd
+		createDialog:   voldialogs.NewVolumeCreateDialog(),
 		volumeList:     volListReport{sortBy: "created", ascending: true},
 	}
 
@@ -71,7 +71,7 @@ func (vols *Volumes) GetTitle() string {
 
 // HasFocus returns whether or not this primitive has focus.
 func (vols *Volumes) HasFocus() bool {
-	if vols.SubDialogHasFocus() || vols.table.HasFocus() {
+	if vols.SubDialogHasFocus() {
 		return true
 	}
 

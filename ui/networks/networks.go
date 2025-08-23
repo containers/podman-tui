@@ -170,10 +170,8 @@ func (nets *Networks) GetTitle() string {
 
 // HasFocus returns whether or not this primitive has focus.
 func (nets *Networks) HasFocus() bool {
-	for _, dialog := range nets.getInnerDialogs() {
-		if dialog.HasFocus() {
-			return true
-		}
+	if nets.SubDialogHasFocus() {
+		return true
 	}
 
 	if nets.table.HasFocus() || nets.Box.HasFocus() {

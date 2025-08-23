@@ -60,16 +60,16 @@ type Containers struct {
 	confirmDialog    *dialogs.ConfirmDialog
 	messageDialog    *dialogs.MessageDialog
 	progressDialog   *dialogs.ProgressDialog
+	sortDialog       *dialogs.SortDialog
 	topDialog        *dialogs.TopDialog
 	createDialog     *cntdialogs.ContainerCreateDialog
 	runDialog        *cntdialogs.ContainerCreateDialog
 	execDialog       *cntdialogs.ContainerExecDialog
-	terminalDialog   *vterm.VtermDialog
 	statsDialog      *cntdialogs.ContainerStatsDialog
 	commitDialog     *cntdialogs.ContainerCommitDialog
 	checkpointDialog *cntdialogs.ContainerCheckpointDialog
 	restoreDialog    *cntdialogs.ContainerRestoreDialog
-	sortDialog       *dialogs.SortDialog
+	terminalDialog   *vterm.VtermDialog
 	containersList   containerListReport
 	selectedID       string
 	selectedName     string
@@ -97,15 +97,15 @@ func NewContainers() *Containers {
 		progressDialog:   dialogs.NewProgressDialog(),
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		topDialog:        dialogs.NewTopDialog(),
+		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created", "status"}, 3), //nolint:mnd
 		createDialog:     cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateOnlyDialogMode),
 		runDialog:        cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateAndRunDialogMode),
 		execDialog:       cntdialogs.NewContainerExecDialog(),
-		terminalDialog:   vterm.NewVtermDialog(),
 		statsDialog:      cntdialogs.NewContainerStatsDialog(),
 		commitDialog:     cntdialogs.NewContainerCommitDialog(),
 		checkpointDialog: cntdialogs.NewContainerCheckpointDialog(),
 		restoreDialog:    cntdialogs.NewContainerRestoreDialog(),
-		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created", "status"}, 3), //nolint:mnd
+		terminalDialog:   vterm.NewVtermDialog(),
 		containersList:   containerListReport{sortBy: "created", ascending: true},
 	}
 

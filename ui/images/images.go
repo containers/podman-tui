@@ -43,19 +43,19 @@ type Images struct {
 	headers         []string
 	table           *tview.Table
 	errorDialog     *dialogs.ErrorDialog
+	progressDialog  *dialogs.ProgressDialog
 	cmdDialog       *dialogs.CommandDialog
 	cmdInputDialog  *dialogs.SimpleInputDialog
 	messageDialog   *dialogs.MessageDialog
 	confirmDialog   *dialogs.ConfirmDialog
+	sortDialog      *dialogs.SortDialog
 	searchDialog    *imgdialogs.ImageSearchDialog
 	historyDialog   *imgdialogs.ImageHistoryDialog
 	importDialog    *imgdialogs.ImageImportDialog
 	buildDialog     *imgdialogs.ImageBuildDialog
 	buildPrgDialog  *imgdialogs.ImageBuildProgressDialog
-	progressDialog  *dialogs.ProgressDialog
 	saveDialog      *imgdialogs.ImageSaveDialog
 	pushDialog      *imgdialogs.ImagePushDialog
-	sortDialog      *dialogs.SortDialog
 	imagesList      imageListReport
 	selectedID      string
 	selectedName    string
@@ -78,9 +78,11 @@ func NewImages() *Images {
 		title:          "images",
 		headers:        []string{"repository", "tag", "image id", "created at", "size"},
 		errorDialog:    dialogs.NewErrorDialog(),
+		progressDialog: dialogs.NewProgressDialog(),
 		cmdInputDialog: dialogs.NewSimpleInputDialog(""),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		confirmDialog:  dialogs.NewConfirmDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"repository", "created", "size"}, 1),
 		searchDialog:   imgdialogs.NewImageSearchDialog(),
 		historyDialog:  imgdialogs.NewImageHistoryDialog(),
 		importDialog:   imgdialogs.NewImageImportDialog(),
@@ -88,8 +90,6 @@ func NewImages() *Images {
 		buildPrgDialog: imgdialogs.NewImageBuildProgressDialog(),
 		saveDialog:     imgdialogs.NewImageSaveDialog(),
 		pushDialog:     imgdialogs.NewImagePushDialog(),
-		sortDialog:     dialogs.NewSortDialog([]string{"repository", "created", "size"}, 1),
-		progressDialog: dialogs.NewProgressDialog(),
 		imagesList:     imageListReport{sortBy: "created", ascending: true},
 	}
 
@@ -231,7 +231,7 @@ func (img *Images) GetTitle() string {
 
 // HasFocus returns whether or not this primitive has focus.
 func (img *Images) HasFocus() bool {
-	if img.SubDialogHasFocus() || img.table.HasFocus() {
+	if img.SubDialogHasFocus() {
 		return true
 	}
 
