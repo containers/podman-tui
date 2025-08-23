@@ -8,7 +8,7 @@ import (
 )
 
 // InputHandler returns the handler for this primitive.
-func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:gocognit,lll,cyclop
+func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) { //nolint:cyclop
 	return nets.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 		log.Debug().Msgf("view: networks event %v received", event)
 
@@ -16,52 +16,11 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 			return
 		}
 
-		// error dialog handler
-		if nets.errorDialog.HasFocus() {
-			if errorDialogHandler := nets.errorDialog.InputHandler(); errorDialogHandler != nil {
-				errorDialogHandler(event, setFocus)
-			}
-		}
-
-		// message dialog handler
-		if nets.messageDialog.HasFocus() {
-			if messageDialogHandler := nets.messageDialog.InputHandler(); messageDialogHandler != nil {
-				messageDialogHandler(event, setFocus)
-			}
-		}
-
-		// create dialog handler
-		if nets.createDialog.HasFocus() {
-			if createDialogHandler := nets.createDialog.InputHandler(); createDialogHandler != nil {
-				createDialogHandler(event, setFocus)
-			}
-		}
-
-		// connect dialog handler
-		if nets.connectDialog.HasFocus() {
-			if connectDialogHandler := nets.connectDialog.InputHandler(); connectDialogHandler != nil {
-				connectDialogHandler(event, setFocus)
-			}
-		}
-
-		// disconnect dialog handler
-		if nets.disconnectDialog.HasFocus() {
-			if disconnectDialogHandler := nets.disconnectDialog.InputHandler(); disconnectDialogHandler != nil {
-				disconnectDialogHandler(event, setFocus)
-			}
-		}
-
-		// confirm dialog handler
-		if nets.confirmDialog.HasFocus() {
-			if confirmDialogHandler := nets.confirmDialog.InputHandler(); confirmDialogHandler != nil {
-				confirmDialogHandler(event, setFocus)
-			}
-		}
-
-		// command dialog handler
-		if nets.cmdDialog.HasFocus() {
-			if cmdHandler := nets.cmdDialog.InputHandler(); cmdHandler != nil {
-				cmdHandler(event, setFocus)
+		for _, dialog := range nets.getInnerDialogs() {
+			if dialog.HasFocus() {
+				if dialogHandler := dialog.InputHandler(); dialogHandler != nil {
+					dialogHandler(event, setFocus)
+				}
 			}
 		}
 
@@ -74,6 +33,14 @@ func (nets *Networks) InputHandler() func(event *tcell.EventKey, setFocus func(p
 				}
 
 				nets.cmdDialog.Display()
+				setFocus(nets)
+
+				return
+			}
+
+			// display sort menu
+			if event.Rune() == utils.SortMenuKey.Rune() {
+				nets.sortDialog.Display()
 				setFocus(nets)
 
 				return

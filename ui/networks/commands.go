@@ -77,15 +77,14 @@ func (nets *Networks) connect() {
 		nets.progressDialog.Display()
 
 		err := networks.Connect(connectOptions)
-		if err != nil {
-			nets.progressDialog.Hide()
-			nets.displayError("NETWORK CONNECT ERROR", err)
-			nets.appFocusHandler()
-
-			return
-		}
 
 		nets.progressDialog.Hide()
+
+		if err != nil {
+			nets.displayError("NETWORK CONNECT ERROR", err)
+		}
+
+		nets.appFocusHandler()
 	}
 
 	go connect()
@@ -103,8 +102,10 @@ func (nets *Networks) cdisconnect() {
 		nets.progressDialog.Display()
 
 		cntListReport, err := containers.List()
+
+		nets.progressDialog.Hide()
+
 		if err != nil {
-			nets.progressDialog.Hide()
 			nets.displayError("NETWORK DISCONNECT ERROR", err)
 			nets.appFocusHandler()
 
@@ -115,7 +116,6 @@ func (nets *Networks) cdisconnect() {
 
 		nets.disconnectDialog.SetNetworkInfo(netID, netName)
 		nets.disconnectDialog.SetContainers(cntListReport)
-		nets.progressDialog.Hide()
 		nets.disconnectDialog.Display()
 		nets.appFocusHandler()
 	}
@@ -132,15 +132,14 @@ func (nets *Networks) disconnect() {
 		nets.progressDialog.Display()
 
 		err := networks.Disconnect(networkName, containerID)
-		if err != nil {
-			nets.progressDialog.Hide()
-			nets.displayError("NETWORK DISCONNECT ERROR", err)
-			nets.appFocusHandler()
-
-			return
-		}
 
 		nets.progressDialog.Hide()
+
+		if err != nil {
+			nets.displayError("NETWORK DISCONNECT ERROR", err)
+		}
+
+		nets.appFocusHandler()
 	}
 
 	go disconnect()
@@ -197,16 +196,15 @@ func (nets *Networks) prune() {
 
 	prune := func() {
 		err := networks.Prune()
-		if err != nil {
-			nets.progressDialog.Hide()
-			nets.displayError("NETWORK PRUNE ERROR", err)
-			nets.appFocusHandler()
 
-			return
+		nets.progressDialog.Hide()
+
+		if err != nil {
+			nets.displayError("NETWORK PRUNE ERROR", err)
 		}
 
+		nets.appFocusHandler()
 		nets.UpdateData()
-		nets.progressDialog.Hide()
 	}
 
 	go prune()
@@ -246,11 +244,9 @@ func (nets *Networks) remove() {
 			title := fmt.Sprintf("NETWORK (%s) REMOVE ERROR", nets.selectedID)
 
 			nets.displayError(title, err)
-			nets.appFocusHandler()
-
-			return
 		}
 
+		nets.appFocusHandler()
 		nets.UpdateData()
 	}
 

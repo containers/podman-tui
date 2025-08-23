@@ -235,7 +235,11 @@ func (img *Images) HasFocus() bool {
 		return true
 	}
 
-	return img.Box.HasFocus()
+	if img.table.HasFocus() || img.Box.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
