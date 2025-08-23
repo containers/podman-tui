@@ -140,6 +140,8 @@ func (img *Images) history() {
 	if err != nil {
 		title := fmt.Sprintf("IMAGE (%s) HISTORY ERROR", img.selectedID)
 		img.displayError(title, err)
+
+		return
 	}
 
 	img.historyDialog.SetImageInfo(img.selectedID, img.selectedName)
@@ -221,10 +223,9 @@ func (img *Images) prune() {
 
 		if err != nil {
 			img.displayError("IMAGE PRUNE ERROR", err)
-			img.appFocusHandler()
-
-			return
 		}
+
+		img.appFocusHandler()
 	}
 
 	go prune()
@@ -250,17 +251,16 @@ func (img *Images) push() {
 
 	push := func() {
 		err := images.Push(img.selectedID, pushOptions)
+
+		img.progressDialog.Hide()
+
 		if err != nil {
-			img.progressDialog.Hide()
 			title := fmt.Sprintf("IMAGE (%s) PUSH ERROR", img.selectedID)
 
 			img.displayError(title, err)
-			img.appFocusHandler()
-
-			return
 		}
 
-		img.progressDialog.Hide()
+		img.appFocusHandler()
 	}
 
 	go push()
@@ -347,10 +347,9 @@ func (img *Images) save() {
 			title := fmt.Sprintf("IMAGE (%s) SAVE ERROR", img.selectedID)
 
 			img.displayError(title, err)
-			img.appFocusHandler()
-
-			return
 		}
+
+		img.appFocusHandler()
 	}
 
 	go saveFunc()
@@ -363,15 +362,17 @@ func (img *Images) search(term string) {
 
 	search := func(term string) {
 		result, err := images.Search(term)
+
+		img.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) SEARCH ERROR", img.selectedID)
 
 			img.displayError(title, err)
-			img.appFocusHandler()
 		}
 
 		img.searchDialog.UpdateResults(result)
-		img.progressDialog.Hide()
+		img.appFocusHandler()
 	}
 
 	go search(term)
@@ -481,14 +482,15 @@ func (img *Images) pull(image string) {
 
 	pull := func(name string) {
 		err := images.Pull(name)
+
+		img.progressDialog.Hide()
+
 		if err != nil {
 			title := fmt.Sprintf("IMAGE (%s) PULL ERROR", img.selectedID)
 
 			img.displayError(title, err)
 			img.appFocusHandler()
 		}
-
-		img.progressDialog.Hide()
 	}
 
 	go pull(image)
