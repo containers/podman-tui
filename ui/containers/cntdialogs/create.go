@@ -2197,8 +2197,8 @@ func (d *ContainerCreateDialog) initData() {
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
 
-	for i := range networkList {
-		networkOptions = append(networkOptions, networkList[i][1])
+	for _, net := range networkList {
+		networkOptions = append(networkOptions, net.Name)
 	}
 
 	// get available volumes

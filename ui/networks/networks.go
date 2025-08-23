@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/networks/netdialogs"
 	"github.com/containers/podman-tui/ui/style"
@@ -38,6 +39,7 @@ type Networks struct {
 	confirmDialog    *dialogs.ConfirmDialog
 	cmdDialog        *dialogs.CommandDialog
 	messageDialog    *dialogs.MessageDialog
+	sortDialog       *dialogs.SortDialog
 	createDialog     *netdialogs.NetworkCreateDialog
 	connectDialog    *netdialogs.NetworkConnectDialog
 	disconnectDialog *netdialogs.NetworkDisconnectDialog
@@ -48,8 +50,10 @@ type Networks struct {
 }
 
 type networkListReport struct {
-	mu     sync.Mutex
-	report [][]string
+	mu        sync.Mutex
+	report    []types.Network
+	sortBy    string
+	ascending bool
 }
 
 // NewNetworks returns nets page view.
@@ -62,9 +66,11 @@ func NewNetworks() *Networks {
 		progressDialog:   dialogs.NewProgressDialog(),
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		messageDialog:    dialogs.NewMessageDialog(""),
+		sortDialog:       dialogs.NewSortDialog([]string{"name", "driver"}, 0),
 		createDialog:     netdialogs.NewNetworkCreateDialog(),
 		connectDialog:    netdialogs.NewNetworkConnectDialog(),
 		disconnectDialog: netdialogs.NewNetworkDisconnectDialog(),
+		networkList:      networkListReport{sortBy: "name", ascending: true},
 	}
 
 	nets.cmdDialog = dialogs.NewCommandDialog([][]string{
@@ -145,6 +151,10 @@ func NewNetworks() *Networks {
 	nets.disconnectDialog.SetCancelFunc(nets.disconnectDialog.Hide)
 	nets.disconnectDialog.SetDisconnectFunc(nets.disconnect)
 
+	// set sort dialog functions
+	nets.sortDialog.SetCancelFunc(nets.sortDialog.Hide)
+	nets.sortDialog.SetSelectFunc(nets.SortView)
+
 	return nets
 }
 
@@ -159,24 +169,14 @@ func (nets *Networks) GetTitle() string {
 }
 
 // HasFocus returns whether or not this primitive has focus.
-func (nets *Networks) HasFocus() bool { //nolint:cyclop
-	if nets.table.HasFocus() || nets.errorDialog.HasFocus() {
-		return true
+func (nets *Networks) HasFocus() bool {
+	for _, dialog := range nets.getInnerDialogs() {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
-	if nets.cmdDialog.HasFocus() || nets.messageDialog.IsDisplay() {
-		return true
-	}
-
-	if nets.progressDialog.HasFocus() || nets.confirmDialog.IsDisplay() {
-		return true
-	}
-
-	if nets.createDialog.HasFocus() || nets.connectDialog.HasFocus() {
-		return true
-	}
-
-	if nets.disconnectDialog.HasFocus() || nets.Box.HasFocus() {
+	if nets.table.HasFocus() || nets.Box.HasFocus() {
 		return true
 	}
 
@@ -185,20 +185,10 @@ func (nets *Networks) HasFocus() bool { //nolint:cyclop
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
 func (nets *Networks) SubDialogHasFocus() bool {
-	if nets.createDialog.HasFocus() || nets.errorDialog.HasFocus() {
-		return true
-	}
-
-	if nets.cmdDialog.HasFocus() || nets.messageDialog.IsDisplay() {
-		return true
-	}
-
-	if nets.progressDialog.HasFocus() || nets.confirmDialog.IsDisplay() {
-		return true
-	}
-
-	if nets.connectDialog.HasFocus() || nets.disconnectDialog.HasFocus() {
-		return true
+	for _, dialog := range nets.getInnerDialogs() {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
 	return false
@@ -206,53 +196,24 @@ func (nets *Networks) SubDialogHasFocus() bool {
 
 // Focus is called when this primitive receives focus.
 func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
-	// error dialog
 	if nets.errorDialog.IsDisplay() {
 		delegate(nets.errorDialog)
 
 		return
 	}
 
-	// command dialog
-	if nets.cmdDialog.IsDisplay() {
-		delegate(nets.cmdDialog)
-
-		return
-	}
-
-	// message dialog
-	if nets.messageDialog.IsDisplay() {
-		delegate(nets.messageDialog)
-
-		return
-	}
-
-	// confirm dialog
 	if nets.confirmDialog.IsDisplay() {
 		delegate(nets.confirmDialog)
 
 		return
 	}
 
-	// create dialog
-	if nets.createDialog.IsDisplay() {
-		delegate(nets.createDialog)
+	for _, dialog := range nets.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			delegate(dialog)
 
-		return
-	}
-
-	// connect dialog
-	if nets.connectDialog.IsDisplay() {
-		delegate(nets.connectDialog)
-
-		return
-	}
-
-	// disconnect dialog
-	if nets.disconnectDialog.IsDisplay() {
-		delegate(nets.disconnectDialog)
-
-		return
+			return
+		}
 	}
 
 	delegate(nets.table)
@@ -260,36 +221,10 @@ func (nets *Networks) Focus(delegate func(p tview.Primitive)) {
 
 // HideAllDialogs hides all sub dialogs.
 func (nets *Networks) HideAllDialogs() {
-	if nets.errorDialog.IsDisplay() {
-		nets.errorDialog.Hide()
-	}
-
-	if nets.progressDialog.IsDisplay() {
-		nets.progressDialog.Hide()
-	}
-
-	if nets.confirmDialog.IsDisplay() {
-		nets.confirmDialog.Hide()
-	}
-
-	if nets.cmdDialog.IsDisplay() {
-		nets.cmdDialog.Hide()
-	}
-
-	if nets.messageDialog.IsDisplay() {
-		nets.messageDialog.Hide()
-	}
-
-	if nets.createDialog.IsDisplay() {
-		nets.createDialog.Hide()
-	}
-
-	if nets.connectDialog.IsDisplay() {
-		nets.connectDialog.Hide()
-	}
-
-	if nets.disconnectDialog.IsDisplay() {
-		nets.disconnectDialog.Hide()
+	for _, dialog := range nets.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			dialog.Hide()
+		}
 	}
 }
 
@@ -303,4 +238,20 @@ func (nets *Networks) getSelectedItem() (string, string) {
 	netName := nets.table.GetCell(row, 1).Text
 
 	return netID, netName
+}
+
+func (nets *Networks) getInnerDialogs() []utils.UIDialog {
+	dialogs := []utils.UIDialog{
+		nets.errorDialog,
+		nets.progressDialog,
+		nets.confirmDialog,
+		nets.cmdDialog,
+		nets.messageDialog,
+		nets.connectDialog,
+		nets.createDialog,
+		nets.disconnectDialog,
+		nets.sortDialog,
+	}
+
+	return dialogs
 }

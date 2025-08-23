@@ -1211,8 +1211,8 @@ func (d *PodCreateDialog) initData() {
 	networkOptions := []string{""}
 	networkList, _ := networks.List()
 
-	for i := range networkList {
-		networkOptions = append(networkOptions, networkList[i][1])
+	for _, net := range networkList {
+		networkOptions = append(networkOptions, net.Name)
 	}
 
 	d.setActiveCategory(0)

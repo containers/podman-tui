@@ -75,7 +75,11 @@ func (vols *Volumes) HasFocus() bool {
 		return true
 	}
 
-	return vols.Box.HasFocus()
+	if vols.table.HasFocus() || vols.Box.HasFocus() {
+		return true
+	}
+
+	return false
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
