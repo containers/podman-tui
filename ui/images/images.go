@@ -55,6 +55,7 @@ type Images struct {
 	progressDialog  *dialogs.ProgressDialog
 	saveDialog      *imgdialogs.ImageSaveDialog
 	pushDialog      *imgdialogs.ImagePushDialog
+	sortDialog      *dialogs.SortDialog
 	imagesList      imageListReport
 	selectedID      string
 	selectedName    string
@@ -64,8 +65,10 @@ type Images struct {
 }
 
 type imageListReport struct {
-	mu     sync.Mutex
-	report []images.ImageListReporter
+	mu        sync.Mutex
+	report    []images.ImageListReporter
+	sortBy    string
+	ascending bool
 }
 
 // NewImages returns images page view.
@@ -85,7 +88,9 @@ func NewImages() *Images {
 		buildPrgDialog: imgdialogs.NewImageBuildProgressDialog(),
 		saveDialog:     imgdialogs.NewImageSaveDialog(),
 		pushDialog:     imgdialogs.NewImagePushDialog(),
+		sortDialog:     dialogs.NewSortDialog([]string{"repository", "created", "size"}, 1),
 		progressDialog: dialogs.NewProgressDialog(),
+		imagesList:     imageListReport{sortBy: "created", ascending: true},
 	}
 
 	images.cmdDialog = dialogs.NewCommandDialog([][]string{
@@ -207,6 +212,10 @@ func NewImages() *Images {
 	images.pushDialog.SetPushFunc(images.push)
 	images.pushDialog.SetCancelFunc(images.pushDialog.Hide)
 
+	// set sort dialog functions
+	images.sortDialog.SetSelectFunc(images.SortView)
+	images.sortDialog.SetCancelFunc(images.sortDialog.Hide)
+
 	return images
 }
 
@@ -221,32 +230,8 @@ func (img *Images) GetTitle() string {
 }
 
 // HasFocus returns whether or not this primitive has focus.
-func (img *Images) HasFocus() bool { //nolint:cyclop
-	if img.table.HasFocus() || img.messageDialog.HasFocus() {
-		return true
-	}
-
-	if img.cmdDialog.HasFocus() || img.cmdInputDialog.HasFocus() {
-		return true
-	}
-
-	if img.confirmDialog.HasFocus() || img.errorDialog.HasFocus() {
-		return true
-	}
-
-	if img.searchDialog.HasFocus() || img.progressDialog.HasFocus() {
-		return true
-	}
-
-	if img.historyDialog.HasFocus() || img.buildDialog.HasFocus() {
-		return true
-	}
-
-	if img.buildPrgDialog.HasFocus() || img.saveDialog.HasFocus() {
-		return true
-	}
-
-	if img.importDialog.HasFocus() || img.pushDialog.HasFocus() {
+func (img *Images) HasFocus() bool {
+	if img.SubDialogHasFocus() || img.table.HasFocus() {
 		return true
 	}
 
@@ -254,174 +239,68 @@ func (img *Images) HasFocus() bool { //nolint:cyclop
 }
 
 // SubDialogHasFocus returns whether or not sub dialog primitive has focus.
-func (img *Images) SubDialogHasFocus() bool { //nolint:cyclop
-	if img.historyDialog.HasFocus() || img.messageDialog.HasFocus() {
-		return true
+func (img *Images) SubDialogHasFocus() bool {
+	for _, dialog := range img.getInnerDialogs() {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
-	if img.cmdDialog.HasFocus() || img.cmdInputDialog.HasFocus() {
-		return true
+	for _, dialog := range img.getInnerTopDialogs() {
+		if dialog.HasFocus() {
+			return true
+		}
 	}
 
-	if img.confirmDialog.HasFocus() || img.errorDialog.HasFocus() {
-		return true
-	}
-
-	if img.searchDialog.HasFocus() || img.progressDialog.HasFocus() {
-		return true
-	}
-
-	if img.buildDialog.HasFocus() || img.buildPrgDialog.HasFocus() {
-		return true
-	}
-
-	if img.saveDialog.HasFocus() || img.importDialog.HasFocus() {
-		return true
-	}
-
-	return img.pushDialog.HasFocus()
+	return false
 }
 
 // Focus is called when this primitive receives focus.
-func (img *Images) Focus(delegate func(p tview.Primitive)) { //nolint:cyclop
-	// error dialog
+func (img *Images) Focus(delegate func(p tview.Primitive)) {
+	// since error and confirm dialog can get focus on top of other dialogs
 	if img.errorDialog.IsDisplay() {
 		delegate(img.errorDialog)
 
 		return
 	}
 
-	// command dialog
-	if img.cmdDialog.IsDisplay() {
-		delegate(img.cmdDialog)
-
-		return
-	}
-
-	// command input dialog
-	if img.cmdInputDialog.IsDisplay() {
-		delegate(img.cmdInputDialog)
-
-		return
-	}
-
-	// message dialog
-	if img.messageDialog.IsDisplay() {
-		delegate(img.messageDialog)
-
-		return
-	}
-
-	// confirm dialog
 	if img.confirmDialog.IsDisplay() {
 		delegate(img.confirmDialog)
 
 		return
 	}
 
-	// search dialog
-	if img.searchDialog.IsDisplay() {
-		delegate(img.searchDialog)
+	for _, dialog := range img.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			delegate(dialog)
 
-		return
+			return
+		}
 	}
 
-	// history dialog
-	if img.historyDialog.IsDisplay() {
-		delegate(img.historyDialog)
+	for _, dialog := range img.getInnerTopDialogs() {
+		if dialog.IsDisplay() {
+			delegate(dialog)
 
-		return
-	}
-
-	// build dialog
-	if img.buildDialog.IsDisplay() {
-		delegate(img.buildDialog)
-
-		return
-	}
-
-	// build progress dialog
-	if img.buildPrgDialog.IsDisplay() {
-		delegate(img.buildPrgDialog)
-
-		return
-	}
-
-	// save dialog
-	if img.saveDialog.IsDisplay() {
-		delegate(img.saveDialog)
-
-		return
-	}
-	// import dialog
-	if img.importDialog.IsDisplay() {
-		delegate(img.importDialog)
-
-		return
-	}
-
-	// push dialog
-	if img.pushDialog.IsDisplay() {
-		delegate(img.pushDialog)
-
-		return
+			return
+		}
 	}
 
 	delegate(img.table)
 }
 
 // HideAllDialogs hides all sub dialogs.
-func (img *Images) HideAllDialogs() { //nolint:cyclop
-	if img.errorDialog.IsDisplay() {
-		img.errorDialog.Hide()
+func (img *Images) HideAllDialogs() {
+	for _, dialog := range img.getInnerDialogs() {
+		if dialog.IsDisplay() {
+			dialog.Hide()
+		}
 	}
 
-	if img.progressDialog.IsDisplay() {
-		img.progressDialog.Hide()
-	}
-
-	if img.cmdDialog.IsDisplay() {
-		img.cmdDialog.Hide()
-	}
-
-	if img.cmdInputDialog.IsDisplay() {
-		img.cmdInputDialog.Hide()
-	}
-
-	if img.messageDialog.IsDisplay() {
-		img.messageDialog.Hide()
-	}
-
-	if img.searchDialog.IsDisplay() {
-		img.searchDialog.Hide()
-	}
-
-	if img.confirmDialog.IsDisplay() {
-		img.confirmDialog.Hide()
-	}
-
-	if img.historyDialog.IsDisplay() {
-		img.historyDialog.Hide()
-	}
-
-	if img.buildDialog.IsDisplay() {
-		img.buildDialog.Hide()
-	}
-
-	if img.buildPrgDialog.IsDisplay() {
-		img.buildPrgDialog.Hide()
-	}
-
-	if img.saveDialog.IsDisplay() {
-		img.saveDialog.Hide()
-	}
-
-	if img.importDialog.IsDisplay() {
-		img.importDialog.Hide()
-	}
-
-	if img.pushDialog.IsDisplay() {
-		img.pushDialog.Hide()
+	for _, dialog := range img.getInnerTopDialogs() {
+		if dialog.IsDisplay() {
+			dialog.Hide()
+		}
 	}
 }
 
@@ -442,4 +321,32 @@ func (img *Images) getSelectedItem() (string, string) {
 	imageID := img.table.GetCell(row, 2).Text //nolint:mnd
 
 	return imageID, imageName
+}
+
+func (img *Images) getInnerDialogs() []utils.UIDialog {
+	dialogs := []utils.UIDialog{
+		img.cmdDialog,
+		img.cmdInputDialog,
+		img.messageDialog,
+		img.searchDialog,
+		img.historyDialog,
+		img.importDialog,
+		img.buildDialog,
+		img.buildPrgDialog,
+		img.saveDialog,
+		img.pushDialog,
+		img.sortDialog,
+	}
+
+	return dialogs
+}
+
+func (img *Images) getInnerTopDialogs() []utils.UIDialog {
+	dialogs := []utils.UIDialog{
+		img.errorDialog,
+		img.progressDialog,
+		img.confirmDialog,
+	}
+
+	return dialogs
 }

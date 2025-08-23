@@ -2,11 +2,10 @@ package images
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v5/pkg/bindings/images"
-	"github.com/containers/podman/v5/pkg/domain/entities"
+	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/distribution/reference"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -30,7 +29,7 @@ func List() ([]ImageListReporter, error) {
 		return nil, err
 	}
 
-	imgs, err := sortImages(response)
+	imgs, err := imageListReporter(response)
 	if err != nil {
 		return nil, err
 	}
@@ -42,13 +41,13 @@ func List() ([]ImageListReporter, error) {
 
 // ImageListReporter image list report.
 type ImageListReporter struct {
-	entities.ImageSummary
+	types.ImageSummary
 
 	Repository string `json:"repository,omitempty"`
 	Tag        string `json:"tag,omitempty"`
 }
 
-func sortImages(imageS []*entities.ImageSummary) ([]ImageListReporter, error) {
+func imageListReporter(imageS []*types.ImageSummary) ([]ImageListReporter, error) {
 	imgs := make([]ImageListReporter, 0, len(imageS))
 
 	var err error
@@ -89,15 +88,7 @@ func sortImages(imageS []*entities.ImageSummary) ([]ImageListReporter, error) {
 		}
 	}
 
-	sort.Slice(imgs, sortFunc(imgs))
-
 	return imgs, err
-}
-
-func sortFunc(data []ImageListReporter) func(i, j int) bool {
-	return func(i, j int) bool {
-		return data[i].Repository < data[j].Repository
-	}
 }
 
 func tokenRepoTag(ref string) (string, string, error) {
