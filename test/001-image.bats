@@ -29,7 +29,6 @@ load helpers_tui
 
 @test "image save" {
     podman image pull docker.io/library/busybox || echo done
-    image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
     [ -f "${TEST_IMAGE_SAVE_PATH}" ] && /bin/rm -rf $TEST_IMAGE_SAVE_PATH
 
     # switch to images view
@@ -40,7 +39,7 @@ load helpers_tui
     # go to save button and press enter
 
     podman_tui_set_view "images"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 0
     podman_tui_select_image_cmd "save"
 
     podman_tui_send_inputs $TEST_IMAGE_SAVE_PATH "Tab"
@@ -104,14 +103,12 @@ load helpers_tui
 }
 
 @test "image diff" {
-    image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
-
     # switch to images view
     # select busybox image from list
     # select diff command from image commands dialog
     # close busybox image diff result message dialog
     podman_tui_set_view "images"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 2
     podman_tui_select_image_cmd "diff"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
@@ -121,14 +118,12 @@ load helpers_tui
 }
 
 @test "image history" {
-    image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
-    image_id=$(podman image ls --sort repository --filter "reference=docker.io/library/busybox" --format "{{ .ID }}")
     # switch to images view
     # select busybox image from list
     # select history command from image commands dialog
     # close busybox image history result message dialog
     podman_tui_set_view "images"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 2
     podman_tui_select_image_cmd "history"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Enter"
@@ -138,7 +133,6 @@ load helpers_tui
 }
 
 @test "image inspect" {
-    image_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
     image_id=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $4}')
 
     # switch to images view
@@ -146,7 +140,7 @@ load helpers_tui
     # select inspect command from image commands dialog
     # close busybox image inspect result message dialog
     podman_tui_set_view "images"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 2
     podman_tui_select_image_cmd "inspect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
@@ -156,13 +150,11 @@ load helpers_tui
 }
 
 @test "image tag" {
-    busybox_index=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $1}')
-
     # switch to images view
     # select busybox image from list
     # select tag command from image commands dialog
     podman_tui_set_view "images"
-    podman_tui_select_item $busyboxIndex
+    podman_tui_select_item 2
     podman_tui_select_image_cmd "tag"
     podman_tui_send_inputs "$TEST_IMAGE_TAG_NAME" "Tab" "Tab" "Enter"
     sleep $TEST_TIMEOUT_LOW
@@ -172,14 +164,12 @@ load helpers_tui
 }
 
 @test "image untag" {
-    busybox_tagindex=$(podman image ls --sort repository --noheading | nl -v 0 | grep "$TEST_IMAGE_TAG_NAME " | awk '{print $1}')
-
     # switch to images view
     # select busybox image from list
     # select untag command from image commands dialog
     # press "Tab" 2 times and "Enter" to untag busybox image
     podman_tui_set_view "images"
-    podman_tui_select_item $busybox_tagindex
+    podman_tui_select_item 2
     sleep $TEST_TIMEOUT_LOW
     podman_tui_select_image_cmd "untag"
     podman_tui_send_inputs "Tab" "Tab" "Enter"
@@ -193,7 +183,6 @@ load helpers_tui
 @test "image remove" {
     run_helper podman image ls  --format "'{{ .Repository }}'"
     before="$output"
-    untagged_image=$(podman image ls --sort repository --noheading | nl -v 0 | grep '<none> ' | awk '{print $1}')
 
     # switch to images view
     # select <none> image from list
@@ -202,7 +191,7 @@ load helpers_tui
     # wait for image removal operation
     # close image removal result message dialog
     podman_tui_set_view "images"
-    podman_tui_select_item $untagged_image
+    podman_tui_select_item 2
     podman_tui_select_image_cmd "remove"
     podman_tui_send_inputs "Enter"
     sleep $TEST_TIMEOUT_LOW

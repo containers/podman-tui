@@ -17,6 +17,7 @@ load helpers_tui
     # select connect button
 
     podman_tui_set_view "networks"
+    podman_tui_select_item 1
     podman_tui_select_network_cmd "connect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab"
@@ -38,6 +39,7 @@ load helpers_tui
     # select disconnect button
 
     podman_tui_set_view "networks"
+    podman_tui_select_item 1
     podman_tui_select_network_cmd "disconnect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Tab" "Tab" "Enter"
@@ -68,14 +70,12 @@ load helpers_tui
 }
 
 @test "network inspect" {
-    net_index=$(podman network ls -q | nl -v 0 | grep "$TEST_NETWORK_NAME" | awk '{print $1}')
-
     # switch to networks view
     # select test network from list
     # select inspect command from network commands dialog
     # close network inspect result message dialog
     podman_tui_set_view "networks"
-    podman_tui_select_item $net_index
+    podman_tui_select_item 1
     podman_tui_select_network_cmd "inspect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
@@ -86,13 +86,11 @@ load helpers_tui
 }
 
 @test "network remove" {
-    net_index=$(podman network ls -q | nl -v 0 | grep "$TEST_NETWORK_NAME" | awk '{print $1}')
-
     # switch to networks view
     # select test network from list
     # select remove command from network commands dialog
     podman_tui_set_view "networks"
-    podman_tui_select_item $net_index
+    podman_tui_select_item 1
     podman_tui_select_network_cmd "remove"
     podman_tui_send_inputs "Enter"
     sleep $TEST_TIMEOUT_LOW

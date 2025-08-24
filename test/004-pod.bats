@@ -43,7 +43,6 @@ load helpers_tui
     podman image pull pause:3.5 || echo done
     podman network create $TEST_POD_NETWORK_NAME || echo done
 
-    net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_POD_NETWORK_NAME" | awk '{print $1}')
     # switch to pods view
     # select create command from pod commands dialog
     # fillout name field
@@ -59,7 +58,7 @@ load helpers_tui
     podman_tui_send_inputs $TEST_POD_NAME "Tab" "Tab" $TEST_LABEL
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Down"
-    podman_tui_select_item $net_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Down" "Tab"
     podman_tui_send_inputs "disable"
@@ -77,13 +76,11 @@ load helpers_tui
 }
 
 @test "pod start" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select start command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "start"
     sleep $TEST_TIMEOUT_LOW
 
@@ -92,13 +89,11 @@ load helpers_tui
 }
 
 @test "pod pause" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select pause command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "pause"
     sleep $TEST_TIMEOUT_LOW
 
@@ -107,13 +102,11 @@ load helpers_tui
 }
 
 @test "pod unpause" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select unpause command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "unpause"
     sleep $TEST_TIMEOUT_LOW
 
@@ -122,13 +115,11 @@ load helpers_tui
 }
 
 @test "pod stop" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select stop command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "stop"
     sleep $TEST_TIMEOUT_LOW
 
@@ -137,13 +128,11 @@ load helpers_tui
 }
 
 @test "pod restart" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select restart command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "restart"
     sleep $TEST_TIMEOUT_LOW
 
@@ -152,13 +141,11 @@ load helpers_tui
 }
 
 @test "pod kill" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select kill command from pod commands dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "kill"
     sleep $TEST_TIMEOUT_LOW
 
@@ -167,14 +154,12 @@ load helpers_tui
 }
 
 @test "pod inspect" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select inspect command from pod commands dialog
     # close pod inspect result message dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "inspect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
@@ -184,14 +169,12 @@ load helpers_tui
 }
 
 @test "pod remove" {
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 0 | grep "$TEST_POD_NAME" | awk '{print $1}')
-
     # switch to pods view
     # select test pod from list
     # select remove command from pod commands dialog
     # confirm the operation on warnings dialog
     podman_tui_set_view "pods"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 0
     podman_tui_select_pod_cmd "remove"
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Enter"
