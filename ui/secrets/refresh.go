@@ -26,6 +26,7 @@ func (s *Secrets) refresh(_ int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := s.table.GetSelection()
 	rowIndex := 1
 	secResponse := s.getData()
 
@@ -69,5 +70,12 @@ func (s *Secrets) refresh(_ int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(secResponse) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			s.table.Select(currentSelectedRow, -1)
+		}
 	}
 }

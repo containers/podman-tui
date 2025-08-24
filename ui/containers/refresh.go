@@ -30,6 +30,7 @@ func (cnt *Containers) refresh(maxWidth int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := cnt.table.GetSelection()
 	rowIndex := 1
 	cntList := cnt.getData()
 
@@ -115,5 +116,12 @@ func (cnt *Containers) refresh(maxWidth int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(cntList) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			cnt.table.Select(currentSelectedRow, -1)
+		}
 	}
 }
