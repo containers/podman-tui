@@ -14,13 +14,11 @@ load helpers_tui
         podman image pull docker.io/library/busybox
     fi
 
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
-
     podman_tui_set_view "containers"
     podman_tui_select_container_cmd "run"
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "$TEST_CONTAINER_RUN_CMD" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Space"
     podman_tui_send_inputs "Tab" "Tab" "Space"
@@ -47,8 +45,6 @@ load helpers_tui
         podman image pull docker.io/library/busybox
     fi
 
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
-
     # switch to containers view
     # select create command from container commands dialog
     podman_tui_set_view "containers"
@@ -60,7 +56,7 @@ load helpers_tui
     # set timeout to 10
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Space" "Tab" "$TEST_CONTAINER_TIMEOUT"
     podman_tui_send_inputs "Tab" "Tab" "Tab"
@@ -78,15 +74,13 @@ load helpers_tui
     assert "$cnt_timeout" =~ "$TEST_CONTAINER_TIMEOUT" "expected container config timeout to match: $TEST_CONTAINER_TIMEOUT"
 }
 
-@test "container create (environment page)" {
+@test "container create (environment)" {
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
     if [ "${buysbox_image}" == "" ] ; then
         podman image pull docker.io/library/busybox
     fi
-
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
 
     # switch to containers view
     # select create command from container commands dialog
@@ -97,7 +91,7 @@ load helpers_tui
     # select image from dropdown widget
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
@@ -122,15 +116,13 @@ load helpers_tui
     assert "$cnt_vars" =~ "$TEST_CONTAINER_ENV2" "expected container env to match: $TEST_CONTAINER_ENV2"
 }
 
-@test "container create (resource page)" {
+@test "container create (resource)" {
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
     if [ "${buysbox_image}" == "" ] ; then
         podman image pull docker.io/library/busybox
     fi
-
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'busybox ' | awk '{print $1}')
 
     # switch to containers view
     # select create command from container commands dialog
@@ -141,7 +133,7 @@ load helpers_tui
     # select image from dropdown widget
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
@@ -198,12 +190,6 @@ load helpers_tui
     podman pod create --name $TEST_CONTAINER_POD_NAME --network $TEST_CONTAINER_NETWORK_NAME --publish $TEST_CONTAINER_PORT || echo done
     sleep $TEST_TIMEOUT_LOW
 
-    # get required pod, image, network and volume index for number of KeyDown stroke
-    pod_index=$(podman pod ls --sort name --format "{{ .Name }}" | nl -v 1 | grep "$TEST_CONTAINER_POD_NAME" | awk '{print $1}')
-    image_index=$(podman image ls --sort repository --noheading | nl -v 1 | grep 'httpd ' | awk '{print $1}')
-    net_index=$(podman network ls -q | nl -v 1 | grep "$TEST_CONTAINER_NETWORK_NAME" | awk '{print $1}')
-
-
     # switch to containers view
     # select create command from container commands dialog
     podman_tui_set_view "containers"
@@ -215,10 +201,10 @@ load helpers_tui
     # fillout label field
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $image_index
+    podman_tui_select_item 2
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item $pod_index
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
@@ -293,15 +279,13 @@ load helpers_tui
 }
 
 @test "container commit" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select container from the list
     # select commit command from container commands dialog
     # fillout image input field
     # go to commit button and press enter
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 0
     podman_tui_select_container_cmd "commit"
 
     podman_tui_send_inputs $TEST_CONTAINER_COMMIT_IMAGE_NAME
@@ -314,13 +298,11 @@ load helpers_tui
 }
 
 @test "container start" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select start command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 0
     podman_tui_select_container_cmd "start"
     sleep $TEST_TIMEOUT_LOW
 
@@ -332,9 +314,6 @@ load helpers_tui
 @test "container checkpoint" {
     podman container create --name ${TEST_CONTAINER_CHECKPOINT_NAME} docker.io/library/httpd
     podman container start ${TEST_CONTAINER_CHECKPOINT_NAME}
-
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_CHECKPOINT_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select checkpoint command from container commands dialog
@@ -342,7 +321,7 @@ load helpers_tui
     # go to checkpoint button and Enter
 
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 0
     podman_tui_select_container_cmd "checkpoint"
 
     podman_tui_send_inputs "Tab"
@@ -380,8 +359,6 @@ load helpers_tui
 }
 
 @test "container exec" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select exec command from container commands dialog
@@ -392,7 +369,7 @@ load helpers_tui
     # type "echo test > a.txt"
     # go to Close button and Enter
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "exec"
     podman_tui_send_inputs "/bin/bash"
     podman_tui_send_inputs "Tab" "Space" "Tab"
@@ -409,13 +386,11 @@ load helpers_tui
 }
 
 @test "container inspect" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select inspect command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "inspect"
     sleep $TEST_TIMEOUT_LOW
 
@@ -425,13 +400,11 @@ load helpers_tui
 }
 
 @test "container diff" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select diff command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "diff"
     sleep $TEST_TIMEOUT_MEDIUM
 
@@ -440,13 +413,11 @@ load helpers_tui
 }
 
 @test "container top" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select top command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "top"
     sleep $TEST_TIMEOUT_LOW
 
@@ -455,13 +426,11 @@ load helpers_tui
 }
 
 @test "container port" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select port command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "port"
     sleep $TEST_TIMEOUT_LOW
 
@@ -471,13 +440,11 @@ load helpers_tui
 }
 
 @test "container pause" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select pause command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "pause"
     sleep $TEST_TIMEOUT_LOW
 
@@ -486,13 +453,11 @@ load helpers_tui
 }
 
 @test "container unpause" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select unpause command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "unpause"
     sleep $TEST_TIMEOUT_LOW
 
@@ -501,13 +466,11 @@ load helpers_tui
 }
 
 @test "container stop" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select stop command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "stop"
     sleep $TEST_TIMEOUT_LOW
 
@@ -517,13 +480,11 @@ load helpers_tui
 
 @test "container kill" {
     podman container start $TEST_CONTAINER_NAME || echo done
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select kill command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "kill"
     sleep $TEST_TIMEOUT_LOW
 
@@ -532,13 +493,11 @@ load helpers_tui
 }
 
 @test "container remove" {
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
-
     # switch to containers view
     # select test container from list
     # select remove command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 2
     podman_tui_select_container_cmd "remove"
     podman_tui_send_inputs "Enter"
     sleep $TEST_TIMEOUT_LOW
@@ -548,15 +507,14 @@ load helpers_tui
 }
 
 @test "container rename" {
-
+    podman container rm $TEST_CONTAINER_NAME || echo done
     podman container create --name $TEST_CONTAINER_NAME httpd
-    container_index=$(podman container ls --all --format "{{ .Names }}" | sort | nl -v 0 | grep "$TEST_CONTAINER_NAME" | awk '{print $1}')
 
     # switch to containers view
     # select test container from list
     # select rename command from container commands dialog
     podman_tui_set_view "containers"
-    podman_tui_select_item $container_index
+    podman_tui_select_item 0
     podman_tui_select_container_cmd "rename"
     podman_tui_send_inputs ${TEST_CONTAINER_NAME}_renamed
     podman_tui_send_inputs "Tab" "Tab" "Enter"

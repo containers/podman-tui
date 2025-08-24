@@ -25,14 +25,12 @@ load helpers_tui
 }
 
 @test "volume inspect" {
-    vol_index=$(podman volume ls -q | nl -v 0 | grep "$TEST_VOLUME_NAME" | awk '{print $1}')
-
     # switch to volumes view
     # select test volume from list
     # select inspect command from volume commands dialog
     # close volume inspect result message dialog
     podman_tui_set_view "volumes"
-    podman_tui_select_item $vol_index
+    podman_tui_select_item 0
     podman_tui_select_volume_cmd "inspect"
     sleep $TEST_TIMEOUT_LOW
     podman_tui_send_inputs "Enter"
@@ -43,13 +41,11 @@ load helpers_tui
 }
 
 @test "volume remove" {
-    vol_index=$(podman volume ls -q | nl -v 0 | grep "$TEST_VOLUME_NAME" | awk '{print $1}')
-
     # switch to volumes view
     # select test volume from list
     # select remove command from volume commands dialog
     podman_tui_set_view "volumes"
-    podman_tui_select_item $vol_index
+    podman_tui_select_item 0
     podman_tui_select_volume_cmd "remove"
     podman_tui_send_inputs "Enter"
     sleep $TEST_TIMEOUT_LOW
