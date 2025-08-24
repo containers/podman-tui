@@ -26,6 +26,7 @@ func (img *Images) refresh(_ int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := img.table.GetSelection()
 	rowIndex := 1
 	images := img.getData()
 
@@ -75,5 +76,12 @@ func (img *Images) refresh(_ int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(images) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			img.table.Select(currentSelectedRow, -1)
+		}
 	}
 }

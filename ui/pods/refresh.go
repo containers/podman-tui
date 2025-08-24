@@ -28,6 +28,7 @@ func (pods *Pods) refresh(_ int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := pods.table.GetSelection()
 	rowIndex := 1
 	podList := pods.getData()
 
@@ -103,5 +104,12 @@ func (pods *Pods) refresh(_ int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(podList) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			pods.table.Select(currentSelectedRow, -1)
+		}
 	}
 }

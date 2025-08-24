@@ -33,6 +33,7 @@ func (vols *Volumes) refresh(_ int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := vols.table.GetSelection()
 	rowIndex := 1
 	volList := vols.getData()
 
@@ -69,5 +70,12 @@ func (vols *Volumes) refresh(_ int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(volList) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			vols.table.Select(currentSelectedRow, -1)
+		}
 	}
 }

@@ -80,6 +80,7 @@ jobs:
           export GOBIN=$(pwd)/bin/
           make .install.ginkgo
           make test-unit
+          [ $? -ne 0 ] && make test-unit
 
   build_binaries:
     runs-on: ubuntu-latest

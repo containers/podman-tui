@@ -90,6 +90,8 @@ var _ = Describe("container create", Ordered, func() {
 			createAction = createWants
 		}
 		createDialog.SetHandlerFunc(createFunc)
+		createDialog.Hide()
+		createDialog.Display()
 		createDialog.focusElement = createContainerFormFocus
 		createDialogApp.SetFocus(createDialog)
 		createDialogApp.Draw()
