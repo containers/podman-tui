@@ -24,6 +24,7 @@ func (nets *Networks) refresh(_ int) {
 													SetSelectable(false))
 	}
 
+	currentSelectedRow, _ := nets.table.GetSelection()
 	rowIndex := 1
 	netList := nets.getData()
 
@@ -49,5 +50,12 @@ func (nets *Networks) refresh(_ int) {
 				SetAlign(alignment))
 
 		rowIndex++
+	}
+
+	if currentSelectedRow > len(netList) {
+		currentSelectedRow--
+		if currentSelectedRow >= 0 {
+			nets.table.Select(currentSelectedRow, -1)
+		}
 	}
 }

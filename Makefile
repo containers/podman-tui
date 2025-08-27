@@ -112,6 +112,7 @@ test-unit: ## Run unit tests
 		--coverprofile coverprofile \
 		--output-dir ${COVERAGE_PATH} \
 		--succinct
+
 	$(GO) tool cover -html=${COVERAGE_PATH}/coverprofile -o ${COVERAGE_PATH}/coverage.html
 	$(GO) tool cover -func=${COVERAGE_PATH}/coverprofile > ${COVERAGE_PATH}/functions
 	cat ${COVERAGE_PATH}/functions | sed -n 's/\(total:\).*\([0-9][0-9].[0-9]\)/\1 \2/p'
