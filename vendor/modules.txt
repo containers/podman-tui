@@ -661,8 +661,8 @@ github.com/pkg/sftp/internal/encoding/ssh/filexfer/openssh
 # github.com/proglottis/gpgme v0.1.4
 ## explicit; go 1.17
 github.com/proglottis/gpgme
-# github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
-## explicit; go 1.12
+# github.com/rivo/tview v0.42.0
+## explicit; go 1.18
 github.com/rivo/tview
 # github.com/rivo/uniseg v0.4.7
 ## explicit; go 1.18
