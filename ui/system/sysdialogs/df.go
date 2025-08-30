@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	dfDialogMaxWidth = 60
+	dfDialogMaxWidth     = 60
+	dfDialogLabelPadding = 1
 )
 
 // DfDialog is a simple dialog with disk usage result table.
@@ -44,7 +45,7 @@ func NewDfDialog() *DfDialog {
 
 	dialog.serviceName.SetBackgroundColor(style.DialogBgColor)
 	dialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
-	dialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
+	dialog.serviceName.SetLabelWidth(len(serviceNameLabel))
 	dialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.serviceName.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -87,8 +88,10 @@ func NewDfDialog() *DfDialog {
 
 // SetServiceName sets event dialog service (connection) name.
 func (d *DfDialog) SetServiceName(name string) {
+	serviceName := utils.LabelWidthLeftPadding(name, dfDialogLabelPadding)
+
 	d.layout.SetTitle("SYSTEM DISK USAGE")
-	d.serviceName.SetText(name)
+	d.serviceName.SetText(serviceName)
 }
 
 // Display displays this primitive.

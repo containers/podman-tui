@@ -15,7 +15,7 @@ const (
 	siInputElement     = 1
 	siFormElement      = 2
 	siDescHeight       = 4
-	siDialogWidth      = 60
+	siDialogWidth      = 80
 	siDialogHeight     = 10
 	siDialogInputWidth = 57
 )
@@ -28,7 +28,6 @@ type SimpleInputDialog struct {
 	layout        *tview.Flex
 	textview      *tview.TextView
 	input         *tview.InputField
-	inputWidth    int
 	form          *tview.Form
 	focusElement  int
 	display       bool
@@ -46,7 +45,6 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 	}
 
 	bgColor := style.DialogBgColor
-	fgColor := style.DialogFgColor
 
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
@@ -69,9 +67,9 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 
 	dialog.input = tview.NewInputField()
 	dialog.SetInputText(text)
-	dialog.input.SetLabelColor(fgColor)
 	dialog.input.SetBackgroundColor(bgColor)
 	dialog.input.SetFieldBackgroundColor(style.InputFieldBgColor)
+	dialog.input.SetLabelStyle(style.InputLabelStyle)
 
 	dialog.setLayout(false)
 
@@ -147,14 +145,9 @@ func (d *SimpleInputDialog) SetInputText(text string) {
 
 // SetLabel sets input fields label message.
 func (d *SimpleInputDialog) SetLabel(text string) {
-	width := len(text) + 2 //nolint:mnd
-	d.inputWidth = siDialogInputWidth - width
+	label := fmt.Sprintf("%s:", text) //nolint:perfsprint
 
-	d.input.SetFieldWidth(d.inputWidth)
-
-	label := fmt.Sprintf("%s: ", text) //nolint:perfsprint
-
-	d.input.SetLabel(label)
+	d.input.SetLabel(utils.StringToInputLabel(label, len(label)+1))
 }
 
 // HasFocus returns whether or not this primitive has focus.

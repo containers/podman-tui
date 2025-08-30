@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	cntCommitDialogMaxWidth  = 90
-	cntCommitDialogMaxHeight = 15
+	cntCommitDialogMaxWidth     = 90
+	cntCommitDialogMaxHeight    = 15
+	cntCommitDialogLabelPadding = 1
 )
 
 const (
@@ -74,7 +75,6 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	// container info input field
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
-	dialog.cntInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -82,26 +82,21 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 
 	// image field
 	dialog.image.SetBackgroundColor(style.DialogBgColor)
-	dialog.image.SetLabelColor(style.DialogFgColor)
-	dialog.image.SetLabel("image:")
-	dialog.image.SetLabelWidth(labelWidth)
+	dialog.image.SetLabel(utils.StringToInputLabel("image:", labelWidth))
 	dialog.image.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.image.SetLabelStyle(style.InputLabelStyle)
 
 	// author field
-	authorLabel := "author:"
-
 	dialog.author.SetBackgroundColor(style.DialogBgColor)
-	dialog.author.SetLabelColor(style.DialogFgColor)
-	dialog.author.SetLabel(authorLabel)
-	dialog.author.SetLabelWidth(len(authorLabel) + 1)
+	dialog.author.SetLabel(utils.StringToInputLabel("author:", labelWidth))
 	dialog.author.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.author.SetLabelStyle(style.InputLabelStyle)
 
 	// change field
 	dialog.change.SetBackgroundColor(style.DialogBgColor)
-	dialog.change.SetLabelColor(style.DialogFgColor)
-	dialog.change.SetLabel("change:")
-	dialog.change.SetLabelWidth(labelWidth)
+	dialog.change.SetLabel(utils.StringToInputLabel("change:", labelWidth))
 	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.change.SetLabelStyle(style.InputLabelStyle)
 
 	// format options dropdown
 	dialog.format.SetLabel("format:")
@@ -114,15 +109,16 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 		define.DOCKER,
 	},
 		nil)
+
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.format.SetFocusedStyle(style.DropDownFocused)
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// commit message field
 	dialog.message.SetBackgroundColor(style.DialogBgColor)
-	dialog.message.SetLabelColor(style.DialogFgColor)
-	dialog.message.SetLabel("message:")
-	dialog.message.SetLabelWidth(labelWidth)
+	dialog.message.SetLabel(utils.StringToInputLabel("message:", labelWidth))
 	dialog.message.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.message.SetLabelStyle(style.InputLabelStyle)
 
 	// pause checkbox
 	pauseLabel := "pause container:"
@@ -419,6 +415,7 @@ func (d *ContainerCommitDialog) SetCancelFunc(handler func()) *ContainerCommitDi
 // SetContainerInfo sets selected container ID and name in commit dialog.
 func (d *ContainerCommitDialog) SetContainerInfo(id string, name string) {
 	containerInfo := fmt.Sprintf("%s (%s)", id, name)
+	containerInfo = utils.LabelWidthLeftPadding(containerInfo, cntCommitDialogLabelPadding)
 
 	d.cntInfo.SetText(containerInfo)
 }

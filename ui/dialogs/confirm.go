@@ -23,6 +23,7 @@ type ConfirmDialog struct {
 	height        int
 	message       string
 	display       bool
+	firstDisplay  bool
 	cancelHandler func()
 	selectHandler func()
 }
@@ -30,8 +31,9 @@ type ConfirmDialog struct {
 // NewConfirmDialog returns new confirm dialog primitive.
 func NewConfirmDialog() *ConfirmDialog {
 	dialog := &ConfirmDialog{
-		Box:     tview.NewBox(),
-		display: false,
+		Box:          tview.NewBox(),
+		display:      false,
+		firstDisplay: false,
 	}
 
 	dialog.textview = tview.NewTextView().
@@ -59,9 +61,8 @@ func NewConfirmDialog() *ConfirmDialog {
 
 // Display displays this primitive.
 func (d *ConfirmDialog) Display() {
-	d.form.SetFocus(1)
-
 	d.display = true
+	d.firstDisplay = true
 }
 
 // IsDisplay returns true if primitive is shown.
@@ -74,6 +75,7 @@ func (d *ConfirmDialog) Hide() {
 	d.textview.SetText("")
 	d.message = ""
 	d.display = false
+	d.firstDisplay = false
 }
 
 // SetTitle sets dialog title.
@@ -96,6 +98,15 @@ func (d *ConfirmDialog) SetText(message string) {
 
 // Focus is called when this primitive receives focus.
 func (d *ConfirmDialog) Focus(delegate func(p tview.Primitive)) {
+	if d.firstDisplay {
+		d.firstDisplay = false
+
+		d.form.SetFocus(1)
+		delegate(d.form)
+
+		return
+	}
+
 	delegate(d.form)
 }
 

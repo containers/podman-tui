@@ -7,17 +7,16 @@ func (s *Secrets) Draw(screen tcell.Screen) {
 	s.DrawForSubclass(screen, s)
 	s.SetBorder(false)
 
-	secretViewX, secretViewY, secretViewW, secretViewH := s.GetInnerRect()
+	x, y, w, h := s.GetInnerRect()
 
-	s.table.SetRect(secretViewX, secretViewY, secretViewW, secretViewH)
-	s.refresh(secretViewW)
+	s.table.SetRect(x, y, w, h)
+	s.refresh(w)
 	s.table.SetBorder(true)
 	s.table.Draw(screen)
 
-	x, y, width, height := s.table.GetInnerRect()
 	for _, dialog := range s.getInnerDialogs() {
 		if dialog.IsDisplay() {
-			dialog.SetRect(x, y, width, height)
+			dialog.SetRect(x, y, w, h)
 			dialog.Draw(screen)
 
 			return

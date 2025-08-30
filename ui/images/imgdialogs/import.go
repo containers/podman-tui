@@ -58,37 +58,32 @@ func NewImageImportDialog() *ImageImportDialog {
 	}
 
 	bgColor := style.DialogBgColor
-	fgColor := style.DialogFgColor
 	inputFieldBgColor := style.InputFieldBgColor
 	labelWidth := 11
 
 	// path field
 	dialog.path.SetBackgroundColor(bgColor)
-	dialog.path.SetLabelColor(fgColor)
-	dialog.path.SetLabel("source:")
-	dialog.path.SetLabelWidth(labelWidth)
+	dialog.path.SetLabel(utils.StringToInputLabel("source:", labelWidth))
 	dialog.path.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.path.SetLabelStyle(style.InputLabelStyle)
 
 	// change field
 	dialog.change.SetBackgroundColor(bgColor)
-	dialog.change.SetLabelColor(fgColor)
-	dialog.change.SetLabel("change:")
-	dialog.change.SetLabelWidth(labelWidth)
+	dialog.change.SetLabel(utils.StringToInputLabel("change:", labelWidth))
 	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.change.SetLabelStyle(style.InputLabelStyle)
 
 	// commit field
 	dialog.commitMessage.SetBackgroundColor(bgColor)
-	dialog.commitMessage.SetLabelColor(fgColor)
-	dialog.commitMessage.SetLabel("message:")
-	dialog.commitMessage.SetLabelWidth(labelWidth)
+	dialog.commitMessage.SetLabel(utils.StringToInputLabel("message:", labelWidth))
 	dialog.commitMessage.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.commitMessage.SetLabelStyle(style.InputLabelStyle)
 
 	// reference field
 	dialog.reference.SetBackgroundColor(bgColor)
-	dialog.reference.SetLabelColor(fgColor)
-	dialog.reference.SetLabel("reference:")
-	dialog.reference.SetLabelWidth(labelWidth)
+	dialog.reference.SetLabel(utils.StringToInputLabel("reference:", labelWidth))
 	dialog.reference.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.reference.SetLabelStyle(style.InputLabelStyle)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)

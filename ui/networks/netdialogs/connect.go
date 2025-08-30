@@ -18,6 +18,7 @@ const (
 	netConnectDialogMaxWidth  = 60
 	netConnectDialogMaxHeight = 17
 	labelWidth                = 13
+	connectLabelPadding       = 2
 )
 
 const (
@@ -71,7 +72,6 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	// network input field
 	dialog.network.SetBackgroundColor(style.DialogBgColor)
 	dialog.network.SetLabel("[::b]NETWORK ID:")
-	dialog.network.SetLabelWidth(labelWidth)
 	dialog.network.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.network.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -87,34 +87,31 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	dialog.container.SetCurrentOption(0)
 	dialog.container.SetFieldWidth(netConnectDialogMaxWidth)
 	dialog.container.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.container.SetFocusedStyle(style.DropDownFocused)
 
 	// aliases input field
 	dialog.aliases.SetBackgroundColor(bgColor)
-	dialog.aliases.SetLabelColor(fgColor)
-	dialog.aliases.SetLabel("alias:")
-	dialog.aliases.SetLabelWidth(labelWidth)
+	dialog.aliases.SetLabel(utils.StringToInputLabel("alias:", labelWidth))
 	dialog.aliases.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.aliases.SetLabelStyle(style.InputLabelStyle)
 
 	// ipv4 input field
 	dialog.ipv4.SetBackgroundColor(bgColor)
-	dialog.ipv4.SetLabelColor(fgColor)
-	dialog.ipv4.SetLabel("ipv4:")
-	dialog.ipv4.SetLabelWidth(labelWidth)
+	dialog.ipv4.SetLabel(utils.StringToInputLabel("ipv4:", labelWidth))
 	dialog.ipv4.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ipv4.SetLabelStyle(style.InputLabelStyle)
 
 	// ipv6 input field
 	dialog.ipv6.SetBackgroundColor(bgColor)
-	dialog.ipv6.SetLabelColor(fgColor)
-	dialog.ipv6.SetLabel("ipv6:")
-	dialog.ipv6.SetLabelWidth(labelWidth)
+	dialog.ipv6.SetLabel(utils.StringToInputLabel("ipv6:", labelWidth))
 	dialog.ipv6.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ipv6.SetLabelStyle(style.InputLabelStyle)
 
 	// mac address input field
 	dialog.macAddr.SetBackgroundColor(bgColor)
-	dialog.macAddr.SetLabelColor(fgColor)
-	dialog.macAddr.SetLabel("mac address:")
-	dialog.macAddr.SetLabelWidth(labelWidth)
+	dialog.macAddr.SetLabel(utils.StringToInputLabel("mac address:", labelWidth))
 	dialog.macAddr.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.macAddr.SetLabelStyle(style.InputLabelStyle)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)
@@ -355,6 +352,7 @@ func (d *NetworkConnectDialog) SetCancelFunc(handler func()) *NetworkConnectDial
 func (d *NetworkConnectDialog) SetNetworkInfo(id, name string) {
 	d.networkName = name
 	network := fmt.Sprintf("%12s (%s)", id, name)
+	network = utils.LabelWidthLeftPadding(network, connectLabelPadding)
 
 	d.network.SetText(network)
 }

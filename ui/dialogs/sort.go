@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	sortDialogMaxWidth  = 30
-	sortDialogMaxHeight = 8
+	sortDialogMaxWidth     = 30
+	sortDialogMaxHeight    = 8
+	sortDialogOptionsWidth = 15
 )
 
 const (
@@ -49,8 +50,9 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.sortOrder.SetBackgroundColor(style.DialogBgColor)
 	sd.sortOrder.SetOptions([]string{"ascending", "descending"}, nil)
 	sd.sortOrder.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
+	sd.sortOrder.SetFocusedStyle(style.DropDownFocused)
 	sd.sortOrder.SetFieldBackgroundColor(style.InputFieldBgColor)
-	sd.sortOrder.SetFieldWidth(0)
+	sd.sortOrder.SetFieldWidth(sortDialogOptionsWidth)
 	sd.sortOrder.SetCurrentOption(0)
 
 	sd.sortBy = tview.NewDropDown()
@@ -61,8 +63,9 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.sortBy.SetBackgroundColor(style.DialogBgColor)
 	sd.sortBy.SetOptions(options, nil)
 	sd.sortBy.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
+	sd.sortBy.SetFocusedStyle(style.DropDownFocused)
 	sd.sortBy.SetFieldBackgroundColor(style.InputFieldBgColor)
-	sd.sortBy.SetFieldWidth(0)
+	sd.sortBy.SetFieldWidth(sortDialogOptionsWidth)
 
 	if len(options) > 0 {
 		sd.sortBy.SetCurrentOption(defaultOption)
@@ -75,14 +78,25 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.form.SetBackgroundColor(style.DialogBgColor)
 	sd.form.SetButtonBackgroundColor(style.ButtonBgColor)
 
+	sortLayout := tview.NewFlex().SetDirection(tview.FlexRow)
+	sortLayout.SetBackgroundColor(style.DialogBgColor)
+	sortLayout.AddItem(sd.sortBy, 0, 1, true)
+	sortLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
+	sortLayout.AddItem(sd.sortOrder, 0, 1, true)
+
+	// sort Layout
+	layout := tview.NewFlex().SetDirection(tview.FlexColumn)
+	layout.SetBackgroundColor(style.DialogBgColor)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	layout.AddItem(sortLayout, 0, 1, true)
+	layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+
 	// main layout
 	sd.layout.SetDirection(tview.FlexRow)
 	sd.layout.SetBackgroundColor(style.DialogBgColor)
 	sd.layout.SetBorder(true)
 	sd.layout.SetBorderColor(style.DialogBorderColor)
-	sd.layout.AddItem(sd.sortBy, 0, 1, true)
-	sd.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)
-	sd.layout.AddItem(sd.sortOrder, 0, 1, true)
+	sd.layout.AddItem(layout, 0, 1, true)
 	sd.layout.AddItem(sd.form, DialogFormHeight, 0, true)
 
 	return &sd

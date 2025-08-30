@@ -126,6 +126,7 @@ func (d *MessageDialog) SetTitle(title string) {
 // SetText sets message dialog text messages.
 func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, message string) {
 	msgTypeLabel := ""
+	msgHeader := " " + headerMessage
 
 	switch headerType {
 	case MessageSystemInfo:
@@ -146,8 +147,7 @@ func (d *MessageDialog) SetText(headerType messageInfo, headerMessage string, me
 
 	if msgTypeLabel != "" {
 		d.infoType.SetLabel("[::b]" + msgTypeLabel)
-		d.infoType.SetLabelWidth(len(msgTypeLabel) + 1)
-		d.infoType.SetText(headerMessage)
+		d.infoType.SetText(msgHeader)
 	}
 
 	d.message = strings.TrimSpace(message)

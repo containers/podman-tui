@@ -14,6 +14,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const statDialogLabelPadding = 1
+
 // ContainerStatsDialog implements the containers stats dialog primitive.
 type ContainerStatsDialog struct {
 	*tview.Box
@@ -51,7 +53,6 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	// container info text view
 	statsDialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.containerInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
-	statsDialog.containerInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	statsDialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	statsDialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -209,9 +210,10 @@ func (d *ContainerStatsDialog) SetDoneFunc(handler func()) *ContainerStatsDialog
 
 // SetContainerInfo sets container ID and name.
 func (d *ContainerStatsDialog) SetContainerInfo(id string, name string) {
-	info := fmt.Sprintf("%s (%s)", id, name)
+	containerInfo := fmt.Sprintf("%s (%s)", id, name)
+	containerInfo = utils.LabelWidthLeftPadding(containerInfo, statDialogLabelPadding)
 
-	d.containerInfo.SetText(info)
+	d.containerInfo.SetText(containerInfo)
 }
 
 // SetStatsChannel sets stats result read channel.

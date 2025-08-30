@@ -16,6 +16,7 @@ import (
 const (
 	netDisconnectDialogMaxWidth  = 60
 	netDisconnectDialogMaxHeight = 9
+	netDisconnectLabelPadding    = 1
 )
 
 const (
@@ -57,7 +58,6 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	// network input field
 	dialog.network.SetBackgroundColor(style.DialogBgColor)
 	dialog.network.SetLabel("[::b]NETWORK ID:")
-	dialog.network.SetLabelWidth(labelWidth)
 	dialog.network.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.network.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -70,6 +70,7 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.container.SetLabelWidth(labelWidth)
 	dialog.container.SetOptions([]string{""}, nil)
 	dialog.container.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.container.SetFocusedStyle(style.DropDownFocused)
 	dialog.container.SetCurrentOption(0)
 	dialog.container.SetFieldWidth(netConnectDialogMaxWidth)
 	dialog.container.SetFieldBackgroundColor(inputFieldBgColor)
@@ -269,6 +270,7 @@ func (d *NetworkDisconnectDialog) SetContainers(cntList []entities.ListContainer
 func (d *NetworkDisconnectDialog) SetNetworkInfo(id string, name string) {
 	d.networkName = name
 	network := fmt.Sprintf("%12s (%s)", id, name)
+	network = utils.LabelWidthLeftPadding(network, netDisconnectLabelPadding)
 
 	d.network.SetText(network)
 }

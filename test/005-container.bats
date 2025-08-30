@@ -18,7 +18,7 @@ load helpers_tui
     podman_tui_select_container_cmd "run"
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "$TEST_CONTAINER_RUN_CMD" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 1
+    podman_tui_select_item 0
     podman_tui_send_inputs "Enter"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Space"
     podman_tui_send_inputs "Tab" "Tab" "Space"
@@ -56,7 +56,7 @@ load helpers_tui
     # set timeout to 10
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 1
+    podman_tui_select_item 0
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Space" "Tab" "$TEST_CONTAINER_TIMEOUT"
     podman_tui_send_inputs "Tab" "Tab" "Tab"
@@ -91,7 +91,7 @@ load helpers_tui
     # select image from dropdown widget
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 1
+    podman_tui_select_item 0
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
@@ -133,7 +133,7 @@ load helpers_tui
     # select image from dropdown widget
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 1
+    podman_tui_select_item 0
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
@@ -201,10 +201,10 @@ load helpers_tui
     # fillout label field
     podman_tui_send_inputs $TEST_CONTAINER_NAME "Tab" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 2
+    podman_tui_select_item 1
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs "Down"
-    podman_tui_select_item 1
+    podman_tui_select_item 0
     podman_tui_send_inputs "Enter" "Tab"
     podman_tui_send_inputs $TEST_LABEL "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
@@ -226,6 +226,7 @@ load helpers_tui
     podman_tui_send_inputs "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "Tab" "Tab" "Tab" "Tab" "Tab"
     podman_tui_send_inputs "Space" "Tab" "Tab" "Tab"
+    sleep $TEST_TIMEOUT_LOW
 
     # switch to "volumes settings" create view
     # select volume from dropdown widget
@@ -241,14 +242,13 @@ load helpers_tui
 
     # get created container information
     container_information=$(podman container ls --all --pod --filter "name=${TEST_CONTAINER_NAME}$" --format \
-    "{{ json .PodName }}|{{ json .Networks }}|{{ json .Mounts }}|{{ json .Image }}|{{ json .Ports }}|{{ json .Labels }}")
+    "{{ json .PodName }}|{{ json .Mounts }}|{{ json .Image }}|{{ json .Ports }}|{{ json .Labels }}")
 
     cnt_pod_name=$(echo $container_information | awk -F '|' '{print $1}')
-    cnt_networks=$(echo $container_information | awk -F '|' '{print $2}')
-    cnt_mounts=$(echo $container_information | awk -F '|' '{print $3}')
-    cnt_image_name=$(echo $container_information | awk -F '|' '{print $4}')
-    cnt_ports=$(echo $container_information | awk -F '|' '{print $5}')
-    cnt_labels=$(echo $container_information | awk -F '|' '{print $6}')
+    cnt_mounts=$(echo $container_information | awk -F '|' '{print $2}')
+    cnt_image_name=$(echo $container_information | awk -F '|' '{print $3}')
+    cnt_ports=$(echo $container_information | awk -F '|' '{print $4}')
+    cnt_labels=$(echo $container_information | awk -F '|' '{print $5}')
 
     host_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $1}')
     cnt_port=$(echo $TEST_CONTAINER_PORT | awk -F: '{print $2}')

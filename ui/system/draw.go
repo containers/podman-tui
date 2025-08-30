@@ -31,7 +31,7 @@ func (sys *System) Draw(screen tcell.Screen) {
 
 	for _, dialog := range sys.getInnerDialogs(true) {
 		if dialog.IsDisplay() {
-			dialog.SetRect(x, y, width, height)
+			dialog.SetRect(sysViewX, sysViewY, sysViewW, sysViewH)
 			dialog.Draw(screen)
 
 			return

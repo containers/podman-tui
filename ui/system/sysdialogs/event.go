@@ -9,6 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const eventDialogLabelPadding = 1
+
 const (
 	formFieldHasFocus = 0 + iota
 	textviewHasFocus
@@ -40,7 +42,7 @@ func NewEventDialog() *EventsDialog {
 
 	eventsDialog.serviceName.SetBackgroundColor(style.DialogBgColor)
 	eventsDialog.serviceName.SetLabel("[::b]" + serviceNameLabel)
-	eventsDialog.serviceName.SetLabelWidth(len(serviceNameLabel) + 1)
+	eventsDialog.serviceName.SetLabelWidth(len(serviceNameLabel))
 	eventsDialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
 	eventsDialog.serviceName.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -104,8 +106,11 @@ func (d *EventsDialog) Hide() {
 
 // SetServiceName sets event dialog service (connection) name.
 func (d *EventsDialog) SetServiceName(name string) {
+	serviceName := utils.LabelWidthLeftPadding(name, eventDialogLabelPadding)
+
 	d.layout.SetTitle("SYSTEM EVENTS")
-	d.serviceName.SetText(name)
+
+	d.serviceName.SetText(serviceName)
 }
 
 // SetText sets message dialog text messages.

@@ -30,6 +30,8 @@ const (
 	sessionModeExec
 )
 
+const vTermDialogLabelPadding = 1
+
 // VtermDialog implements virtual terminal that can be used during
 // exec, attach, run activity.
 type VtermDialog struct {
@@ -351,6 +353,7 @@ func (d *VtermDialog) SetContainerInfo(id string, name string) {
 
 	if name != "" {
 		containerInfo = fmt.Sprintf("%s (%s)", containerInfo, name)
+		containerInfo = utils.LabelWidthLeftPadding(containerInfo, vTermDialogLabelPadding)
 	}
 
 	d.containerInfo.SetText(containerInfo)
@@ -520,7 +523,6 @@ func (d *VtermDialog) initLayoutUI() {
 	// label
 	d.containerInfo.SetBackgroundColor(bgColor)
 	d.containerInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
-	d.containerInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	d.containerInfo.SetFieldBackgroundColor(bgColor)
 	d.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(borderColor).

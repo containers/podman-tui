@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	imagePushDialogMaxWidth  = 90
-	imagePushDialogMaxHeight = 15
+	imagePushDialogMaxWidth     = 90
+	imagePushDialogMaxHeight    = 15
+	imagePushDialogLabelPadding = 4
 )
 
 const (
@@ -75,7 +76,6 @@ func NewImagePushDialog() *ImagePushDialog {
 	// image info field
 	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabel("[::b]IMAGE ID:")
-	dialog.imageInfo.SetLabelWidth(labelWidth)
 	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -83,10 +83,9 @@ func NewImagePushDialog() *ImagePushDialog {
 
 	// destination input field
 	dialog.destination.SetBackgroundColor(bgColor)
-	dialog.destination.SetLabelColor(fgColor)
-	dialog.destination.SetLabel("destination:")
-	dialog.destination.SetLabelWidth(labelWidth)
+	dialog.destination.SetLabel(utils.StringToInputLabel("destination:", labelWidth))
 	dialog.destination.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.destination.SetLabelStyle(style.InputLabelStyle)
 
 	// compress checkbox
 	dialog.compress.SetBackgroundColor(bgColor)
@@ -109,6 +108,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	},
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.format.SetFocusedStyle(style.DropDownFocused)
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// skipTLSVerify checkbox
@@ -122,26 +122,23 @@ func NewImagePushDialog() *ImagePushDialog {
 
 	// authfile input field
 	dialog.authFile.SetBackgroundColor(bgColor)
-	dialog.authFile.SetLabelColor(fgColor)
-	dialog.authFile.SetLabel("authfile:")
-	dialog.authFile.SetLabelWidth(labelWidth)
+	dialog.authFile.SetLabel(utils.StringToInputLabel("authfile:", labelWidth))
 	dialog.authFile.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.authFile.SetLabelStyle(style.InputLabelStyle)
 
 	// username input field
 	dialog.username.SetBackgroundColor(bgColor)
-	dialog.username.SetLabelColor(fgColor)
-	dialog.username.SetLabel("username:")
-	dialog.username.SetLabelWidth(labelWidth)
+	dialog.username.SetLabel(utils.StringToInputLabel("username:", labelWidth))
 	dialog.username.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.username.SetLabelStyle(style.InputLabelStyle)
 
 	// password input field
 	passwordLabel := "password:"
 
 	dialog.password.SetBackgroundColor(bgColor)
-	dialog.password.SetLabelColor(fgColor)
-	dialog.password.SetLabel(passwordLabel)
-	dialog.password.SetLabelWidth(len(passwordLabel) + 1)
+	dialog.password.SetLabel(utils.StringToInputLabel(passwordLabel, len(passwordLabel)+1))
 	dialog.password.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.password.SetLabelStyle(style.InputLabelStyle)
 	dialog.password.SetMaskCharacter('*')
 
 	// form
@@ -414,6 +411,8 @@ func (d *ImagePushDialog) SetCancelFunc(handler func()) *ImagePushDialog {
 // SetImageInfo sets selected image ID and name in push dialog.
 func (d *ImagePushDialog) SetImageInfo(id string, name string) {
 	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
+	containerInfo = utils.LabelWidthLeftPadding(containerInfo, imagePushDialogLabelPadding)
+
 	d.imageInfo.SetText(containerInfo)
 }
 

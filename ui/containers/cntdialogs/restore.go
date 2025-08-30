@@ -106,6 +106,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.containers.SetBackgroundColor(bgColor)
 	dialog.containers.SetLabelColor(fgColor)
 	dialog.containers.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.containers.SetFocusedStyle(style.DropDownFocused)
 	dialog.containers.SetFieldBackgroundColor(inputFieldBgColor)
 	dialog.SetContainers(nil)
 	dialog.containers.SetCurrentOption(0)
@@ -118,34 +119,33 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.pods.SetLabelColor(fgColor)
 	dialog.pods.SetLabelColor(fgColor)
 	dialog.pods.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.pods.SetFocusedStyle(style.DropDownFocused)
 	dialog.pods.SetFieldBackgroundColor(inputFieldBgColor)
 	dialog.SetPods(nil)
 	dialog.pods.SetCurrentOption(0)
 
 	// name
-	dialog.name.SetLabel("name:")
-	dialog.name.SetLabelWidth(cntRestoreDialogLabelWidth)
-	dialog.name.SetBackgroundColor(bgColor)
-	dialog.name.SetLabelColor(fgColor)
+	dialog.name.SetBackgroundColor(style.DialogBgColor)
+	dialog.name.SetLabel(utils.StringToInputLabel("name:", cntRestoreDialogLabelWidth))
 	dialog.name.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.name.SetLabelStyle(style.InputLabelStyle)
 
 	// Publish ports
 	publishLabel := "publish:"
-	publishLabelWidth := len(publishLabel) + cntRestoreDialogPadding
+	publishLabelWidth := len(publishLabel) + cntRestoreDialogPadding + 1
 	publishPortsLabel := fmt.Sprintf("%*s ",
 		publishLabelWidth, publishLabel)
 
-	dialog.publishPorts.SetLabel(publishPortsLabel)
-	dialog.publishPorts.SetBackgroundColor(bgColor)
-	dialog.publishPorts.SetLabelColor(fgColor)
+	dialog.publishPorts.SetBackgroundColor(style.DialogBgColor)
+	dialog.publishPorts.SetLabel(utils.StringToInputLabel(publishPortsLabel, cntRestoreDialogLabelWidth))
 	dialog.publishPorts.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.publishPorts.SetLabelStyle(style.InputLabelStyle)
 
 	// Import
-	dialog.importArchive.SetBackgroundColor(bgColor)
-	dialog.importArchive.SetLabelColor(fgColor)
-	dialog.importArchive.SetLabel("import:")
-	dialog.importArchive.SetLabelWidth(cntRestoreDialogLabelWidth)
+	dialog.importArchive.SetBackgroundColor(style.DialogBgColor)
+	dialog.importArchive.SetLabel(utils.StringToInputLabel("import:", cntRestoreDialogLabelWidth))
 	dialog.importArchive.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.importArchive.SetLabelStyle(style.InputLabelStyle)
 
 	// keep
 	dialog.keep.SetLabel("keep:")

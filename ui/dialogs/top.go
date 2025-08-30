@@ -196,9 +196,11 @@ func (d *TopDialog) UpdateResults(infoType topInfo, id string, name string, data
 	}
 
 	d.info.SetLabel("[b::b]" + headerInfo)
-	d.info.SetLabelWidth(len(headerInfo) + 1)
+	d.info.SetLabelWidth(len(headerInfo))
 
 	infoMessage := fmt.Sprintf("%12s (%s)", id, name)
+	infoMessage = utils.LabelWidthLeftPadding(infoMessage, 1)
+
 	d.info.SetText(infoMessage)
 
 	d.results = data
