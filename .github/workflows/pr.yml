@@ -43,7 +43,7 @@ jobs:
   vendoring:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: '>=1.23'
       - uses: actions/checkout@v5
@@ -58,7 +58,7 @@ jobs:
     container:
       image: fedora:latest
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: '1.23'
       - uses: actions/checkout@v5
@@ -84,7 +84,7 @@ jobs:
   build_binaries:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version: '>=1.23'
       - uses: actions/checkout@v5
