@@ -50,7 +50,6 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 	labelWidth := 12
@@ -73,7 +72,7 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.container.SetFocusedStyle(style.DropDownFocused)
 	dialog.container.SetCurrentOption(0)
 	dialog.container.SetFieldWidth(netConnectDialogMaxWidth)
-	dialog.container.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.container.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// form
 	dialog.form.AddButton(" Cancel ", nil)

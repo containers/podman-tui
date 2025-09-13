@@ -180,7 +180,6 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 
@@ -197,13 +196,13 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	// context dir path field
 	buildDialog.contextDirectoryPath.SetBackgroundColor(bgColor)
 	buildDialog.contextDirectoryPath.SetLabel(utils.StringToInputLabel("context dir:", basicInfoPageLabelWidth))
-	buildDialog.contextDirectoryPath.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.contextDirectoryPath.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.contextDirectoryPath.SetLabelStyle(style.InputLabelStyle)
 
 	// Containerfile path field
 	buildDialog.containerFilePath.SetBackgroundColor(bgColor)
 	buildDialog.containerFilePath.SetLabel(utils.StringToInputLabel("container files:", basicInfoPageLabelWidth))
-	buildDialog.containerFilePath.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.containerFilePath.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.containerFilePath.SetLabelStyle(style.InputLabelStyle)
 
 	// pull policy dropdown
@@ -219,19 +218,19 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	},
 		nil)
 	buildDialog.pullPolicyField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	buildDialog.pullPolicyField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.pullPolicyField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	buildDialog.pullPolicyField.SetFocusedStyle(style.DropDownFocused)
 
 	// tag field
 	buildDialog.tagField.SetBackgroundColor(bgColor)
 	buildDialog.tagField.SetLabel(utils.StringToInputLabel("image tag:", basicInfoPageLabelWidth))
-	buildDialog.tagField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.tagField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.tagField.SetLabelStyle(style.InputLabelStyle)
 
 	// registry field
 	buildDialog.registryField.SetBackgroundColor(bgColor)
 	buildDialog.registryField.SetLabel(utils.StringToInputLabel("registry:", basicInfoPageLabelWidth))
-	buildDialog.registryField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.registryField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.registryField.SetLabelStyle(style.InputLabelStyle)
 
 	// build settings page
@@ -239,7 +238,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 
 	buildDialog.buildArgsField.SetBackgroundColor(bgColor)
 	buildDialog.buildArgsField.SetLabel(utils.StringToInputLabel("runtime args:", buildSettingFirstColWidth))
-	buildDialog.buildArgsField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.buildArgsField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.buildArgsField.SetLabelStyle(style.InputLabelStyle)
 
 	// format dropdown
@@ -256,7 +255,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	},
 		nil)
 	buildDialog.formatField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
-	buildDialog.formatField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.formatField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	buildDialog.formatField.SetFocusedStyle(style.DropDownFocused)
 
 	// squash
@@ -267,7 +266,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.SquashField.SetLabel(squashLabel)
 	buildDialog.SquashField.SetLabelColor(fgColor)
 	buildDialog.SquashField.SetLabelWidth(len(squashLabel) + 1)
-	buildDialog.SquashField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.SquashField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// layers
 	layersLabel := "layers:"
@@ -277,7 +276,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.layersField.SetLabel(layersLabel)
 	buildDialog.layersField.SetLabelColor(fgColor)
 	buildDialog.layersField.SetLabelWidth(len(layersLabel) + 1)
-	buildDialog.layersField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.layersField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// no-cache
 	noCacheLabel := "no cache:"
@@ -287,31 +286,31 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.noCacheField.SetLabel(noCacheLabel)
 	buildDialog.noCacheField.SetLabelColor(fgColor)
 	buildDialog.noCacheField.SetLabelWidth(len(noCacheLabel) + 1)
-	buildDialog.noCacheField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.noCacheField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// labels
 	buildDialog.labelsField.SetBackgroundColor(bgColor)
 	buildDialog.labelsField.SetLabel(utils.StringToInputLabel("labels:", buildSettingFirstColWidth))
-	buildDialog.labelsField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.labelsField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.labelsField.SetLabelStyle(style.InputLabelStyle)
 
 	// annotations
 	buildDialog.annotationsField.SetBackgroundColor(bgColor)
 	buildDialog.annotationsField.SetLabel(utils.StringToInputLabel("annotations:", buildSettingFirstColWidth))
-	buildDialog.annotationsField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.annotationsField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.annotationsField.SetLabelStyle(style.InputLabelStyle)
 
 	// force remove field
 	buildDialog.removeCntField.SetLabel("remove containers: ")
 	buildDialog.removeCntField.SetBackgroundColor(bgColor)
 	buildDialog.removeCntField.SetLabelColor(fgColor)
-	buildDialog.removeCntField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.removeCntField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	buildDialog.forceRemoveCntField.SetLabel("force remove: ")
 	buildDialog.forceRemoveCntField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.forceRemoveCntField.SetBackgroundColor(bgColor)
 	buildDialog.forceRemoveCntField.SetLabelColor(fgColor)
-	buildDialog.forceRemoveCntField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.forceRemoveCntField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// security options page
 	securityOptionsPAgeLabelWidth := 10
@@ -319,19 +318,19 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	// selinux Label
 	buildDialog.selinuxLabelField.SetBackgroundColor(bgColor)
 	buildDialog.selinuxLabelField.SetLabel(utils.StringToInputLabel("label:", securityOptionsPAgeLabelWidth))
-	buildDialog.selinuxLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.selinuxLabelField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.selinuxLabelField.SetLabelStyle(style.InputLabelStyle)
 
 	// apparmor profile
 	buildDialog.apparmorProfileField.SetBackgroundColor(bgColor)
 	buildDialog.apparmorProfileField.SetLabel(utils.StringToInputLabel("apparmor:", securityOptionsPAgeLabelWidth))
-	buildDialog.apparmorProfileField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.apparmorProfileField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.apparmorProfileField.SetLabelStyle(style.InputLabelStyle)
 
 	// seccomp profile
 	buildDialog.seccompProfilePathField.SetBackgroundColor(bgColor)
 	buildDialog.seccompProfilePathField.SetLabel(utils.StringToInputLabel("seccomp:", securityOptionsPAgeLabelWidth))
-	buildDialog.seccompProfilePathField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.seccompProfilePathField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.seccompProfilePathField.SetLabelStyle(style.InputLabelStyle)
 
 	// networking setup page
@@ -350,7 +349,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 		nil)
 	buildDialog.networkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	buildDialog.networkField.SetFocusedStyle(style.DropDownFocused)
-	buildDialog.networkField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.networkField.SetFieldStyle(style.InputFieldStyle)
 
 	// http proxy checkbox
 	buildDialog.httpProxyField.SetBackgroundColor(bgColor)
@@ -358,30 +357,30 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.httpProxyField.SetLabel("http proxy:")
 	buildDialog.httpProxyField.SetLabelColor(fgColor)
 	buildDialog.httpProxyField.SetLabelWidth(networkingPageLabelWidth)
-	buildDialog.httpProxyField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.httpProxyField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// Add host field
 	buildDialog.addHostField.SetBackgroundColor(bgColor)
 	buildDialog.addHostField.SetLabel(utils.StringToInputLabel("add host:", networkingPageLabelWidth))
-	buildDialog.addHostField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.addHostField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.addHostField.SetLabelStyle(style.InputLabelStyle)
 
 	// DNS servers field
 	buildDialog.dnsServersField.SetBackgroundColor(bgColor)
 	buildDialog.dnsServersField.SetLabel(utils.StringToInputLabel("dns servers:", networkingPageLabelWidth))
-	buildDialog.dnsServersField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.dnsServersField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.dnsServersField.SetLabelStyle(style.InputLabelStyle)
 
 	// DNS options field
 	buildDialog.dnsOptionsField.SetBackgroundColor(bgColor)
 	buildDialog.dnsOptionsField.SetLabel(utils.StringToInputLabel("dns options:", networkingPageLabelWidth))
-	buildDialog.dnsOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.dnsOptionsField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.dnsOptionsField.SetLabelStyle(style.InputLabelStyle)
 
 	// DNS search field
 	buildDialog.dnsSearchField.SetBackgroundColor(bgColor)
 	buildDialog.dnsSearchField.SetLabel(utils.StringToInputLabel("dns search:", networkingPageLabelWidth))
-	buildDialog.dnsSearchField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.dnsSearchField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.dnsSearchField.SetLabelStyle(style.InputLabelStyle)
 
 	// capability page
@@ -390,13 +389,13 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	// add capability field
 	buildDialog.addCapabilityField.SetBackgroundColor(bgColor)
 	buildDialog.addCapabilityField.SetLabel(utils.StringToInputLabel("add cap:", capabilityPageLabelWidth))
-	buildDialog.addCapabilityField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.addCapabilityField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.addCapabilityField.SetLabelStyle(style.InputLabelStyle)
 
 	// remove capability field
 	buildDialog.removeCapabilityField.SetBackgroundColor(bgColor)
 	buildDialog.removeCapabilityField.SetLabel(utils.StringToInputLabel("remove cap:", capabilityPageLabelWidth))
-	buildDialog.removeCapabilityField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.removeCapabilityField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.removeCapabilityField.SetLabelStyle(style.InputLabelStyle)
 
 	// cpu and memory page
@@ -406,49 +405,49 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	// cpu period field
 	buildDialog.cpuPeriodField.SetBackgroundColor(bgColor)
 	buildDialog.cpuPeriodField.SetLabel(utils.StringToInputLabel("cpu period:", cpuMemoryLabelWidth))
-	buildDialog.cpuPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.cpuPeriodField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.cpuPeriodField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.cpuPeriodField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// cpu quota field
 	buildDialog.cpuQuataField.SetBackgroundColor(bgColor)
 	buildDialog.cpuQuataField.SetLabel(utils.StringToInputLabel("cpu quota:", cpuMemoryLabelWidth))
-	buildDialog.cpuQuataField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.cpuQuataField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.cpuQuataField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.cpuQuataField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// cpu shares field
 	buildDialog.cpuSharesField.SetBackgroundColor(bgColor)
 	buildDialog.cpuSharesField.SetLabel(utils.StringToInputLabel("cpu shares:", cpuMemoryLabelWidth))
-	buildDialog.cpuSharesField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.cpuSharesField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.cpuSharesField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.cpuSharesField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// cpuset cpus field
 	buildDialog.cpuSetCpusField.SetBackgroundColor(bgColor)
 	buildDialog.cpuSetCpusField.SetLabel(utils.StringToInputLabel("cpu set cpus:", cpuMemoryLabelWidth))
-	buildDialog.cpuSetCpusField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.cpuSetCpusField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.cpuSetCpusField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.cpuSetCpusField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// cpuset mems field
 	buildDialog.cpuSetMemsField.SetBackgroundColor(bgColor)
 	buildDialog.cpuSetMemsField.SetLabel(utils.StringToInputLabel(" cpu set mems:", cpuMemoryLabelWidth+1))
-	buildDialog.cpuSetMemsField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.cpuSetMemsField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.cpuSetMemsField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.cpuSetMemsField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// memory field
 	buildDialog.memoryField.SetBackgroundColor(bgColor)
 	buildDialog.memoryField.SetLabel(utils.StringToInputLabel("memory:", cpuMemoryLabelWidth))
-	buildDialog.memoryField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.memoryField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.memoryField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.memoryField.SetFieldWidth(cpuMemoryFieldWidth)
 
 	// memory swap field
 	buildDialog.memorySwapField.SetBackgroundColor(bgColor)
 	buildDialog.memorySwapField.SetLabel(utils.StringToInputLabel(" memory swap:", cpuMemoryLabelWidth+1))
-	buildDialog.memorySwapField.SetFieldBackgroundColor(inputFieldBgColor)
+	buildDialog.memorySwapField.SetFieldStyle(style.InputFieldStyle)
 	buildDialog.memorySwapField.SetLabelStyle(style.InputLabelStyle)
 	buildDialog.memorySwapField.SetFieldWidth(cpuMemoryFieldWidth)
 

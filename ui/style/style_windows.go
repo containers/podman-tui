@@ -18,47 +18,47 @@ const (
 
 var (
 	// infobar.
-	InfoBarItemFgColor = tcell.ColorGray
+	InfoBarItemFgColor = tcell.ColorSilver
 	// main views.
-	FgColor              = tview.Styles.PrimaryTextColor
+	FgColor              = tcell.ColorFloralWhite
 	BgColor              = tview.Styles.PrimitiveBackgroundColor
-	BorderColor          = tcell.ColorPink
-	MenuBgColor          = tcell.ColorPink
-	HelpHeaderFgColor    = tcell.ColorPink
-	PageHeaderBgColor    = tcell.ColorPink
-	PageHeaderFgColor    = tview.Styles.PrimaryTextColor
-	RunningStatusFgColor = tcell.ColorLime
-	PausedStatusFgColor  = tcell.ColorYellow
-
+	BorderColor          = tcell.NewRGBColor(135, 135, 175) //nolint:mnd
+	HelpHeaderFgColor    = tcell.NewRGBColor(135, 135, 175) //nolint:mnd
+	MenuBgColor          = tcell.ColorMediumPurple
+	PageHeaderBgColor    = tcell.ColorMediumPurple
+	PageHeaderFgColor    = tcell.ColorFloralWhite
+	RunningStatusFgColor = tcell.NewRGBColor(95, 215, 0)  //nolint:mnd
+	PausedStatusFgColor  = tcell.NewRGBColor(255, 175, 0) //nolint:mnd
 	// dialogs.
-	DialogBgColor            = tview.Styles.PrimitiveBackgroundColor
-	DialogFgColor            = tview.Styles.PrimaryTextColor
-	DialogBorderColor        = tcell.ColorPink
-	DialogSubBoxBorderColor  = tcell.ColorGray
-	ErrorDialogBgColor       = tcell.ColorRed
-	ErrorDialogButtonBgColor = tcell.ColorPink
+	DialogBgColor            = tcell.NewRGBColor(38, 38, 38) //nolint:mnd
+	DialogBorderColor        = tcell.ColorMediumPurple
+	DialogFgColor            = tcell.ColorFloralWhite
+	DialogSubBoxBorderColor  = tcell.ColorDimGray
+	ErrorDialogBgColor       = tcell.NewRGBColor(215, 0, 0) //nolint:mnd
+	ErrorDialogButtonBgColor = tcell.ColorDarkRed
 	// terminal.
-	TerminalBgColor     = tview.Styles.PrimitiveBackgroundColor
-	TerminalFgColor     = tview.Styles.PrimaryTextColor
-	TerminalBorderColor = tview.Styles.PrimitiveBackgroundColor
+	TerminalFgColor     = tcell.ColorFloralWhite
+	TerminalBgColor     = tcell.NewRGBColor(5, 5, 5) //nolint:mnd
+	TerminalBorderColor = tcell.ColorDimGray
 	// table header.
-	TableHeaderBgColor = tcell.ColorPink
-	TableHeaderFgColor = tview.Styles.PrimaryTextColor
+	TableHeaderBgColor = tcell.ColorMediumPurple
+	TableHeaderFgColor = tcell.ColorFloralWhite
 	// progress bar.
-	PrgBgColor       = tview.Styles.PrimaryTextColor
-	PrgBarColor      = tcell.ColorFuchsia
+	PrgBgColor       = tcell.ColorDimGray
+	PrgBarColor      = tcell.ColorDarkOrange
 	PrgBarEmptyColor = tcell.ColorWhite
-	PrgBarOKColor    = tcell.ColorLime
-	PrgBarWarnColor  = tcell.ColorYellow
+	PrgBarOKColor    = tcell.ColorGreen
+	PrgBarWarnColor  = tcell.ColorOrange
 	PrgBarCritColor  = tcell.ColorRed
 	// dropdown.
-	DropDownUnselected = tcell.StyleDefault.Background(tcell.ColorGray).Foreground(tcell.ColorWhite)
-	DropDownSelected   = tcell.StyleDefault.Background(tcell.ColorPurple).Foreground(tview.Styles.PrimaryTextColor)
-	DropDownFocused    = tcell.StyleDefault.Background(tcell.ColorWhite).Foreground(tcell.ColorBlack)
+	DropDownUnselected = tcell.StyleDefault.Background(tcell.ColorWhiteSmoke).Foreground(tcell.ColorBlack)
+	DropDownSelected   = tcell.StyleDefault.Background(tcell.ColorLightSlateGray).Foreground(tcell.ColorWhite)
+	DropDownFocused    = tcell.StyleDefault.Background(tcell.ColorWhiteSmoke).Foreground(tcell.ColorBlack)
 	// other primitives.
-	InputLabelStyle   = tcell.StyleDefault.Background(DialogBgColor).Foreground(DialogFgColor)
-	InputFieldBgColor = tcell.ColorGray
-	ButtonBgColor     = tcell.ColorPink
+	InputLabelStyle      = tcell.StyleDefault.Background(DialogBgColor).Foreground(DialogFgColor)
+	InputFieldStyle      = tcell.StyleDefault.Background(tcell.ColorDarkGray).Foreground(tcell.ColorWhite)
+	FieldBackgroundColor = tcell.ColorDarkGray
+	ButtonBgColor        = tcell.ColorMediumPurple
 )
 
 // GetColorName returns convert tcell color to its name.

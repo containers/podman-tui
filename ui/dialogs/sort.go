@@ -51,7 +51,7 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.sortOrder.SetOptions([]string{"ascending", "descending"}, nil)
 	sd.sortOrder.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
 	sd.sortOrder.SetFocusedStyle(style.DropDownFocused)
-	sd.sortOrder.SetFieldBackgroundColor(style.InputFieldBgColor)
+	sd.sortOrder.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	sd.sortOrder.SetFieldWidth(sortDialogOptionsWidth)
 	sd.sortOrder.SetCurrentOption(0)
 
@@ -64,7 +64,7 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.sortBy.SetOptions(options, nil)
 	sd.sortBy.SetListStyles(style.DropDownUnselected, style.DropDownSelected)
 	sd.sortBy.SetFocusedStyle(style.DropDownFocused)
-	sd.sortBy.SetFieldBackgroundColor(style.InputFieldBgColor)
+	sd.sortBy.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	sd.sortBy.SetFieldWidth(sortDialogOptionsWidth)
 
 	if len(options) > 0 {

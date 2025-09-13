@@ -68,7 +68,7 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 	dialog.input = tview.NewInputField()
 	dialog.SetInputText(text)
 	dialog.input.SetBackgroundColor(bgColor)
-	dialog.input.SetFieldBackgroundColor(style.InputFieldBgColor)
+	dialog.input.SetFieldStyle(style.InputFieldStyle)
 	dialog.input.SetLabelStyle(style.InputLabelStyle)
 
 	dialog.setLayout(false)

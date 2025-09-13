@@ -95,7 +95,6 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	bgColor := style.DialogBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
-	inputFieldBgColor := style.InputFieldBgColor
 
 	// containers
 	containersLabel := fmt.Sprintf("[:#%x:b]CONTAINER ID:[:-:-]", style.DialogBorderColor.Hex())
@@ -107,7 +106,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.containers.SetLabelColor(fgColor)
 	dialog.containers.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.containers.SetFocusedStyle(style.DropDownFocused)
-	dialog.containers.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.containers.SetFieldStyle(style.InputFieldStyle)
 	dialog.SetContainers(nil)
 	dialog.containers.SetCurrentOption(0)
 
@@ -120,14 +119,14 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.pods.SetLabelColor(fgColor)
 	dialog.pods.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.pods.SetFocusedStyle(style.DropDownFocused)
-	dialog.pods.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.pods.SetFieldStyle(style.InputFieldStyle)
 	dialog.SetPods(nil)
 	dialog.pods.SetCurrentOption(0)
 
 	// name
 	dialog.name.SetBackgroundColor(style.DialogBgColor)
 	dialog.name.SetLabel(utils.StringToInputLabel("name:", cntRestoreDialogLabelWidth))
-	dialog.name.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.name.SetFieldStyle(style.InputFieldStyle)
 	dialog.name.SetLabelStyle(style.InputLabelStyle)
 
 	// Publish ports
@@ -138,13 +137,13 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 
 	dialog.publishPorts.SetBackgroundColor(style.DialogBgColor)
 	dialog.publishPorts.SetLabel(utils.StringToInputLabel(publishPortsLabel, cntRestoreDialogLabelWidth))
-	dialog.publishPorts.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.publishPorts.SetFieldStyle(style.InputFieldStyle)
 	dialog.publishPorts.SetLabelStyle(style.InputLabelStyle)
 
 	// Import
 	dialog.importArchive.SetBackgroundColor(style.DialogBgColor)
 	dialog.importArchive.SetLabel(utils.StringToInputLabel("import:", cntRestoreDialogLabelWidth))
-	dialog.importArchive.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.importArchive.SetFieldStyle(style.InputFieldStyle)
 	dialog.importArchive.SetLabelStyle(style.InputLabelStyle)
 
 	// keep
@@ -153,7 +152,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.keep.SetChecked(false)
 	dialog.keep.SetBackgroundColor(bgColor)
 	dialog.keep.SetLabelColor(fgColor)
-	dialog.keep.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.keep.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// ignoreStaticIP
 	ignoreStaticIPLabel := fmt.Sprintf("%*s ",
@@ -163,7 +162,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreStaticIP.SetChecked(false)
 	dialog.ignoreStaticIP.SetBackgroundColor(bgColor)
 	dialog.ignoreStaticIP.SetLabelColor(fgColor)
-	dialog.ignoreStaticIP.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ignoreStaticIP.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// ignoreStaticMAC
 	ignoreStaticMACLabel := fmt.Sprintf("%*s ",
@@ -173,7 +172,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreStaticMAC.SetChecked(false)
 	dialog.ignoreStaticMAC.SetBackgroundColor(bgColor)
 	dialog.ignoreStaticMAC.SetLabelColor(fgColor)
-	dialog.ignoreStaticMAC.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ignoreStaticMAC.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// fileLocks
 	fileLocksLabel := fmt.Sprintf("%*s ",
@@ -183,7 +182,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.fileLocks.SetChecked(false)
 	dialog.fileLocks.SetBackgroundColor(bgColor)
 	dialog.fileLocks.SetLabelColor(fgColor)
-	dialog.fileLocks.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.fileLocks.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// printStats
 	dialog.printStats.SetLabel("print Stats: ")
@@ -191,7 +190,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.printStats.SetChecked(false)
 	dialog.printStats.SetBackgroundColor(bgColor)
 	dialog.printStats.SetLabelColor(fgColor)
-	dialog.printStats.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.printStats.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ",
@@ -201,7 +200,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.tcpEstablished.SetChecked(false)
 	dialog.tcpEstablished.SetBackgroundColor(bgColor)
 	dialog.tcpEstablished.SetLabelColor(fgColor)
-	dialog.tcpEstablished.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.tcpEstablished.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// ignoreVolumes
 	ignoreVolumesLabel := fmt.Sprintf("%*s ",
@@ -211,7 +210,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreVolumes.SetChecked(false)
 	dialog.ignoreVolumes.SetBackgroundColor(bgColor)
 	dialog.ignoreVolumes.SetLabelColor(fgColor)
-	dialog.ignoreVolumes.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ignoreVolumes.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ",
@@ -221,7 +220,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreRootFS.SetChecked(false)
 	dialog.ignoreRootFS.SetBackgroundColor(bgColor)
 	dialog.ignoreRootFS.SetLabelColor(fgColor)
-	dialog.ignoreRootFS.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ignoreRootFS.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)

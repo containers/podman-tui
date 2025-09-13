@@ -68,7 +68,6 @@ func NewImagePushDialog() *ImagePushDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 	labelWidth := 13
@@ -84,7 +83,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	// destination input field
 	dialog.destination.SetBackgroundColor(bgColor)
 	dialog.destination.SetLabel(utils.StringToInputLabel("destination:", labelWidth))
-	dialog.destination.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.destination.SetFieldStyle(style.InputFieldStyle)
 	dialog.destination.SetLabelStyle(style.InputLabelStyle)
 
 	// compress checkbox
@@ -92,7 +91,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.compress.SetLabelColor(fgColor)
 	dialog.compress.SetLabel("compress:")
 	dialog.compress.SetLabelWidth(labelWidth)
-	dialog.compress.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.compress.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// format dropdown
 	formatLabel := "format:"
@@ -109,7 +108,7 @@ func NewImagePushDialog() *ImagePushDialog {
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.format.SetFocusedStyle(style.DropDownFocused)
-	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.format.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// skipTLSVerify checkbox
 	skipTLSVerifyLabel := "skip tls verify:"
@@ -118,18 +117,18 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.skipTLSVerify.SetLabelColor(fgColor)
 	dialog.skipTLSVerify.SetLabel(skipTLSVerifyLabel)
 	dialog.skipTLSVerify.SetLabelWidth(len(skipTLSVerifyLabel) + 1)
-	dialog.skipTLSVerify.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.skipTLSVerify.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// authfile input field
 	dialog.authFile.SetBackgroundColor(bgColor)
 	dialog.authFile.SetLabel(utils.StringToInputLabel("authfile:", labelWidth))
-	dialog.authFile.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.authFile.SetFieldStyle(style.InputFieldStyle)
 	dialog.authFile.SetLabelStyle(style.InputLabelStyle)
 
 	// username input field
 	dialog.username.SetBackgroundColor(bgColor)
 	dialog.username.SetLabel(utils.StringToInputLabel("username:", labelWidth))
-	dialog.username.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.username.SetFieldStyle(style.InputFieldStyle)
 	dialog.username.SetLabelStyle(style.InputLabelStyle)
 
 	// password input field
@@ -137,7 +136,7 @@ func NewImagePushDialog() *ImagePushDialog {
 
 	dialog.password.SetBackgroundColor(bgColor)
 	dialog.password.SetLabel(utils.StringToInputLabel(passwordLabel, len(passwordLabel)+1))
-	dialog.password.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.password.SetFieldStyle(style.InputFieldStyle)
 	dialog.password.SetLabelStyle(style.InputLabelStyle)
 	dialog.password.SetMaskCharacter('*')
 
