@@ -15,7 +15,7 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.8.0
+Version: 1.9.0
 Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
@@ -60,7 +60,30 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.0-dev-1
+* Sat Sep 13 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.9.0-dev-1
+
+* Sat Sep 13 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.0-1
+- Bump github.com/containers/podman/v5 from 5.5.2 to 5.6.1
+- Bump actions/setup-python from 5 to 6
+- Bump actions/stale from 9 to 10
+- Bump actions/setup-go from 5 to 6
+- Bump github.com/spf13/cobra from 1.9.1 to 1.10.1
+- Bump github.com/ulikunitz/xz from 0.5.12 to 0.5.14
+- Ui adoption to tview v0.42.0
+- Bump github.com/rivo/tview
+- Bugfix ui views - update selected row after last row removal
+- Bump github.com/gdamore/tcell/v2 from 2.8.1 to 2.9.0
+- Bats functionality tests update
+- System and secret view sort dialogs + code enhancement
+- Network view sort dialog
+- Image view sort dialog
+- Volumes view sort dialog
+- Pods view sort dialog
+- Containers view sort dialog
+- Golangci-lint update to v2.3.1
+- Bump actions/checkout from 4 to 5
+- Bump golang.org/x/crypto from 0.40.0 to 0.41.0
+- Enable packit EPEL10 build
 
 * Fri Jul 11 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.7.0-1
 - Bump golang.org/x/crypto from 0.39.0 to 0.40.0
