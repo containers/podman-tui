@@ -72,7 +72,6 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	}
 
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	buttonBgColor := style.ButtonBgColor
 
 	dialog.searchButton.SetStyle(tcell.StyleDefault.Background(buttonBgColor))
@@ -83,7 +82,7 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	dialog.input.SetBackgroundColor(bgColor)
 	dialog.input.SetLabel(utils.StringToInputLabel(searchLabel, len(searchLabel)+1))
 	dialog.input.SetLabelStyle(style.InputLabelStyle)
-	dialog.input.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.input.SetFieldStyle(style.InputFieldStyle)
 	dialog.input.SetFieldWidth(searchFieldMaxSize)
 
 	dialog.searchLayout = tview.NewFlex().SetDirection(tview.FlexColumn)

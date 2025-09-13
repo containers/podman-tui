@@ -56,32 +56,31 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 
 	bgColor := style.DialogBgColor
 	buttonBgColor := style.ButtonBgColor
-	inputFieldColor := style.InputFieldBgColor
 
 	// basic information setup page
 	basicInfoPageLabelWidth := 9
 	// name field
 	volDialog.volumeNameField.SetBackgroundColor(bgColor)
 	volDialog.volumeNameField.SetLabel(utils.StringToInputLabel("name:", basicInfoPageLabelWidth))
-	volDialog.volumeNameField.SetFieldBackgroundColor(inputFieldColor)
+	volDialog.volumeNameField.SetFieldStyle(style.InputFieldStyle)
 	volDialog.volumeNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// labels field
 	volDialog.volumeLabelField.SetBackgroundColor(bgColor)
 	volDialog.volumeLabelField.SetLabel(utils.StringToInputLabel("labels:", basicInfoPageLabelWidth))
-	volDialog.volumeLabelField.SetFieldBackgroundColor(inputFieldColor)
+	volDialog.volumeLabelField.SetFieldStyle(style.InputFieldStyle)
 	volDialog.volumeLabelField.SetLabelStyle(style.InputLabelStyle)
 
 	// drivers
 	volDialog.volumeDriverField.SetBackgroundColor(bgColor)
 	volDialog.volumeDriverField.SetLabel(utils.StringToInputLabel("drivers:", basicInfoPageLabelWidth))
-	volDialog.volumeDriverField.SetFieldBackgroundColor(inputFieldColor)
+	volDialog.volumeDriverField.SetFieldStyle(style.InputFieldStyle)
 	volDialog.volumeDriverField.SetLabelStyle(style.InputLabelStyle)
 
 	// drivers options
 	volDialog.volumeDriverOptionsField.SetBackgroundColor(bgColor)
 	volDialog.volumeDriverOptionsField.SetLabel(utils.StringToInputLabel("options:", basicInfoPageLabelWidth))
-	volDialog.volumeDriverOptionsField.SetFieldBackgroundColor(inputFieldColor)
+	volDialog.volumeDriverOptionsField.SetFieldStyle(style.InputFieldStyle)
 	volDialog.volumeDriverOptionsField.SetLabelStyle(style.InputLabelStyle)
 
 	// form

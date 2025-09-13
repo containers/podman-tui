@@ -76,7 +76,6 @@ func NewContainerExecDialog() *ContainerExecDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 
 	// label (container ID and Name)
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
@@ -89,7 +88,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	// command
 	dialog.command.SetBackgroundColor(style.DialogBgColor)
 	dialog.command.SetLabel(utils.StringToInputLabel("command:", execDialogLabelWidth))
-	dialog.command.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.command.SetFieldStyle(style.InputFieldStyle)
 	dialog.command.SetLabelStyle(style.InputLabelStyle)
 
 	// interactive
@@ -98,7 +97,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.interactive.SetLabel("interactive:")
 	dialog.interactive.SetLabelColor(fgColor)
 	dialog.interactive.SetLabelWidth(execDialogLabelWidth)
-	dialog.interactive.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.interactive.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// tty
 	tLabel := "tty:"
@@ -108,7 +107,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.tty.SetLabel(tLabel)
 	dialog.tty.SetLabelColor(fgColor)
 	dialog.tty.SetLabelWidth(len(tLabel) + 1)
-	dialog.tty.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.tty.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// privileged
 	pLabel := "privileged:"
@@ -118,7 +117,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.privileged.SetLabel(pLabel)
 	dialog.privileged.SetLabelColor(fgColor)
 	dialog.privileged.SetLabelWidth(len(pLabel) + 1)
-	dialog.privileged.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.privileged.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// detach
 	dLabel := "detach:"
@@ -128,30 +127,30 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.detach.SetLabel(dLabel)
 	dialog.detach.SetLabelColor(fgColor)
 	dialog.detach.SetLabelWidth(len(dLabel) + 1)
-	dialog.detach.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.detach.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// working dir
 	dialog.workingDir.SetBackgroundColor(style.DialogBgColor)
 	dialog.workingDir.SetLabel(utils.StringToInputLabel("working dir:", execDialogLabelWidth))
-	dialog.workingDir.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.workingDir.SetFieldStyle(style.InputFieldStyle)
 	dialog.workingDir.SetLabelStyle(style.InputLabelStyle)
 
 	// env variables
 	dialog.envVariables.SetBackgroundColor(style.DialogBgColor)
 	dialog.envVariables.SetLabel(utils.StringToInputLabel("env vars:", execDialogLabelWidth))
-	dialog.envVariables.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.envVariables.SetFieldStyle(style.InputFieldStyle)
 	dialog.envVariables.SetLabelStyle(style.InputLabelStyle)
 
 	// env file
 	dialog.envFile.SetBackgroundColor(style.DialogBgColor)
 	dialog.envFile.SetLabel(utils.StringToInputLabel("env file:", execDialogLabelWidth))
-	dialog.envFile.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.envFile.SetFieldStyle(style.InputFieldStyle)
 	dialog.envFile.SetLabelStyle(style.InputLabelStyle)
 
 	// user
 	dialog.user.SetBackgroundColor(style.DialogBgColor)
 	dialog.user.SetLabel(utils.StringToInputLabel("user:", execDialogLabelWidth))
-	dialog.user.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.user.SetFieldStyle(style.InputFieldStyle)
 	dialog.user.SetLabelStyle(style.InputLabelStyle)
 
 	// form fields

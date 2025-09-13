@@ -51,21 +51,20 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 	connDialog.connNameField = tview.NewInputField()
 	connDialog.connNameField.SetBackgroundColor(style.DialogBgColor)
 	connDialog.connNameField.SetLabel(utils.StringToInputLabel("Name:", labelWidth))
-	connDialog.connNameField.SetFieldBackgroundColor(style.InputFieldBgColor)
+	connDialog.connNameField.SetFieldStyle(style.InputFieldStyle)
 	connDialog.connNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// connection URI
 	connDialog.connURIField = tview.NewInputField()
-	connDialog.connURIField.SetBackgroundColor(style.DialogBgColor)
 	connDialog.connURIField.SetLabel(utils.StringToInputLabel("URI:", labelWidth))
-	connDialog.connURIField.SetFieldBackgroundColor(style.InputFieldBgColor)
+	connDialog.connURIField.SetFieldStyle(style.InputFieldStyle)
 	connDialog.connURIField.SetLabelStyle(style.InputLabelStyle)
 
 	// identity
 	connDialog.identityField = tview.NewInputField()
 	connDialog.identityField.SetBackgroundColor(style.DialogBgColor)
 	connDialog.identityField.SetLabel(utils.StringToInputLabel("Identity:", labelWidth))
-	connDialog.identityField.SetFieldBackgroundColor(style.InputFieldBgColor)
+	connDialog.identityField.SetFieldStyle(style.InputFieldStyle)
 	connDialog.identityField.SetLabelStyle(style.InputLabelStyle)
 
 	// form

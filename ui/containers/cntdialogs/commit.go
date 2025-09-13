@@ -67,7 +67,6 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 		form:    tview.NewForm(),
 	}
 
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 	labelWidth := 9
@@ -83,19 +82,19 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	// image field
 	dialog.image.SetBackgroundColor(style.DialogBgColor)
 	dialog.image.SetLabel(utils.StringToInputLabel("image:", labelWidth))
-	dialog.image.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.image.SetFieldStyle(style.InputFieldStyle)
 	dialog.image.SetLabelStyle(style.InputLabelStyle)
 
 	// author field
 	dialog.author.SetBackgroundColor(style.DialogBgColor)
 	dialog.author.SetLabel(utils.StringToInputLabel("author:", labelWidth))
-	dialog.author.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.author.SetFieldStyle(style.InputFieldStyle)
 	dialog.author.SetLabelStyle(style.InputLabelStyle)
 
 	// change field
 	dialog.change.SetBackgroundColor(style.DialogBgColor)
 	dialog.change.SetLabel(utils.StringToInputLabel("change:", labelWidth))
-	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.change.SetFieldStyle(style.InputFieldStyle)
 	dialog.change.SetLabelStyle(style.InputLabelStyle)
 
 	// format options dropdown
@@ -112,12 +111,12 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.format.SetFocusedStyle(style.DropDownFocused)
-	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.format.SetFieldStyle(style.InputFieldStyle)
 
 	// commit message field
 	dialog.message.SetBackgroundColor(style.DialogBgColor)
 	dialog.message.SetLabel(utils.StringToInputLabel("message:", labelWidth))
-	dialog.message.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.message.SetFieldStyle(style.InputFieldStyle)
 	dialog.message.SetLabelStyle(style.InputLabelStyle)
 
 	// pause checkbox
@@ -127,7 +126,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.pause.SetLabelColor(style.DialogFgColor)
 	dialog.pause.SetLabel(pauseLabel)
 	dialog.pause.SetLabelWidth(len(pauseLabel) + 1)
-	dialog.pause.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.pause.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// squash checkbox
 	squashLabel := "squash layers:"
@@ -136,7 +135,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.squash.SetLabelColor(style.DialogFgColor)
 	dialog.squash.SetLabel(squashLabel)
 	dialog.squash.SetLabelWidth(len(squashLabel) + 1)
-	dialog.squash.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.squash.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)

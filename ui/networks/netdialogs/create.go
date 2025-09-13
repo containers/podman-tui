@@ -94,7 +94,6 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	buttonBgColor := style.ButtonBgColor
 
 	netDialog.categories.SetDynamicColors(true).
@@ -110,13 +109,13 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	// name field
 	netDialog.networkNameField.SetBackgroundColor(bgColor)
 	netDialog.networkNameField.SetLabel(utils.StringToInputLabel("name:", basicInfoPageLabelWidth))
-	netDialog.networkNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkNameField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// labels field
 	netDialog.networkLabelsField.SetBackgroundColor(bgColor)
 	netDialog.networkLabelsField.SetLabel(utils.StringToInputLabel("labels:", basicInfoPageLabelWidth))
-	netDialog.networkLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkLabelsField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkLabelsField.SetLabelStyle(style.InputLabelStyle)
 
 	// internal check box
@@ -125,18 +124,18 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkInternalCheckBox.SetChecked(false)
 	netDialog.networkInternalCheckBox.SetBackgroundColor(bgColor)
 	netDialog.networkInternalCheckBox.SetLabelColor(fgColor)
-	netDialog.networkInternalCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkInternalCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// drivers
 	netDialog.networkDriverField.SetBackgroundColor(bgColor)
 	netDialog.networkDriverField.SetLabel(utils.StringToInputLabel("drivers:", basicInfoPageLabelWidth))
-	netDialog.networkDriverField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkDriverField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkDriverField.SetLabelStyle(style.InputLabelStyle)
 
 	// drivers options
 	netDialog.networkDriverOptionsField.SetBackgroundColor(bgColor)
 	netDialog.networkDriverOptionsField.SetLabel(utils.StringToInputLabel("options:", basicInfoPageLabelWidth))
-	netDialog.networkDriverOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkDriverOptionsField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkDriverOptionsField.SetLabelStyle(style.InputLabelStyle)
 
 	// ip settings page
@@ -147,24 +146,24 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkIpv6CheckBox.SetChecked(false)
 	netDialog.networkIpv6CheckBox.SetBackgroundColor(bgColor)
 	netDialog.networkIpv6CheckBox.SetLabelColor(tcell.ColorWhite)
-	netDialog.networkIpv6CheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkIpv6CheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// gateway
 	netDialog.networkGatewayField.SetBackgroundColor(bgColor)
 	netDialog.networkGatewayField.SetLabel(utils.StringToInputLabel("gateway:", basicInfoPageLabelWidth))
-	netDialog.networkGatewayField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkGatewayField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkGatewayField.SetLabelStyle(style.InputLabelStyle)
 
 	// ip range
 	netDialog.networkIPRangeField.SetBackgroundColor(bgColor)
 	netDialog.networkIPRangeField.SetLabel(utils.StringToInputLabel("ip range:", basicInfoPageLabelWidth))
-	netDialog.networkIPRangeField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkIPRangeField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkIPRangeField.SetLabelStyle(style.InputLabelStyle)
 
 	// subnet
 	netDialog.networkSubnetField.SetBackgroundColor(bgColor)
 	netDialog.networkSubnetField.SetLabel(utils.StringToInputLabel("subnet:", basicInfoPageLabelWidth))
-	netDialog.networkSubnetField.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkSubnetField.SetFieldStyle(style.InputFieldStyle)
 	netDialog.networkSubnetField.SetLabelStyle(style.InputLabelStyle)
 
 	// dns check box
@@ -173,7 +172,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkDisableDNSCheckBox.SetChecked(false)
 	netDialog.networkDisableDNSCheckBox.SetBackgroundColor(bgColor)
 	netDialog.networkDisableDNSCheckBox.SetLabelColor(tcell.ColorWhite)
-	netDialog.networkDisableDNSCheckBox.SetFieldBackgroundColor(inputFieldBgColor)
+	netDialog.networkDisableDNSCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// category pages
 	netDialog.categoryPages.SetBackgroundColor(bgColor)

@@ -83,7 +83,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog.podDropDown.SetLabelColor(style.DialogFgColor)
 	statsDialog.podDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	statsDialog.podDropDown.SetFocusedStyle(style.DropDownFocused)
-	statsDialog.podDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
+	statsDialog.podDropDown.SetFieldStyle(style.InputFieldStyle)
 
 	// pod sortby dropdown
 	pddSortByLabel := "SORT BY:"
@@ -100,7 +100,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 		"cpu %",
 		"mem %",
 	}, statsDialog.setStatsQuerySortBy)
-	statsDialog.podSortByDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
+	statsDialog.podSortByDropDown.SetFieldStyle(style.InputFieldStyle)
 
 	// table
 	statsDialog.table = tview.NewTable()

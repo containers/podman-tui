@@ -67,32 +67,31 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 
 	// secret name field
 	createDialog.secretName.SetBackgroundColor(bgColor)
 	createDialog.secretName.SetLabel(utils.StringToInputLabel("name:", labelWidth))
-	createDialog.secretName.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretName.SetFieldStyle(style.InputFieldStyle)
 	createDialog.secretName.SetLabelStyle(style.InputLabelStyle)
 
 	// secret file field
 	createDialog.secretFile.SetBackgroundColor(bgColor)
 	createDialog.secretFile.SetLabel(utils.StringToInputLabel("secret file:", labelWidth))
-	createDialog.secretFile.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretFile.SetFieldStyle(style.InputFieldStyle)
 	createDialog.secretFile.SetLabelStyle(style.InputLabelStyle)
 
 	// secret text field
 	createDialog.secretText.SetBackgroundColor(bgColor)
 	createDialog.secretText.SetLabel(utils.StringToInputLabel("secret text:", labelWidth))
-	createDialog.secretText.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretText.SetFieldStyle(style.InputFieldStyle)
 	createDialog.secretText.SetLabelStyle(style.InputLabelStyle)
 
 	// secret labels field
 	createDialog.secretLabels.SetBackgroundColor(bgColor)
 	createDialog.secretLabels.SetLabel(utils.StringToInputLabel("labels:", labelWidth))
-	createDialog.secretLabels.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretLabels.SetFieldStyle(style.InputFieldStyle)
 	createDialog.secretLabels.SetLabelStyle(style.InputLabelStyle)
 
 	// secret replace
@@ -101,7 +100,7 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 	createDialog.secretReplace.SetChecked(false)
 	createDialog.secretReplace.SetBackgroundColor(bgColor)
 	createDialog.secretReplace.SetLabelColor(fgColor)
-	createDialog.secretReplace.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretReplace.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// secret driver
 	createDialog.secretDriver.SetBackgroundColor(bgColor)
@@ -112,12 +111,12 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 	createDialog.secretDriver.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	createDialog.secretDriver.SetFocusedStyle(style.DropDownFocused)
 	createDialog.secretDriver.SetCurrentOption(0)
-	createDialog.secretDriver.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretDriver.SetFieldStyle(style.InputFieldStyle)
 
 	// secret driver options field
 	createDialog.secretDriverOptions.SetBackgroundColor(bgColor)
 	createDialog.secretDriverOptions.SetLabel("driver options: ")
-	createDialog.secretDriverOptions.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretDriverOptions.SetFieldStyle(style.InputFieldStyle)
 	createDialog.secretDriverOptions.SetLabelStyle(style.InputLabelStyle)
 
 	// form
