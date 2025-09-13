@@ -17,8 +17,6 @@ func (vols *Volumes) Draw(screen tcell.Screen) {
 
 	vols.table.Draw(screen)
 
-	x, y, width, height = vols.table.GetInnerRect()
-
 	for _, dialog := range vols.getInnerDialogs() {
 		if dialog.IsDisplay() {
 			dialog.SetRect(x, y, width, height)

@@ -82,6 +82,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog.podDropDown.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.podDropDown.SetLabelColor(style.DialogFgColor)
 	statsDialog.podDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	statsDialog.podDropDown.SetFocusedStyle(style.DropDownFocused)
 	statsDialog.podDropDown.SetFieldBackgroundColor(style.InputFieldBgColor)
 
 	// pod sortby dropdown
@@ -92,6 +93,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 	statsDialog.podSortByDropDown.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.podSortByDropDown.SetLabelColor(style.DialogFgColor)
 	statsDialog.podSortByDropDown.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	statsDialog.podSortByDropDown.SetFocusedStyle(style.DropDownFocused)
 	statsDialog.podSortByDropDown.SetOptions([]string{
 		"pod ID",
 		"container name",

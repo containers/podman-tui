@@ -39,6 +39,37 @@ func GetIDWithLimit(id string) string {
 	return id
 }
 
+// LabelWidthLeftPadding adds left space padding.
+func LabelWidthLeftPadding(input string, padding int) string {
+	label := input
+	for range padding {
+		label = " " + label
+	}
+
+	return label
+}
+
+// StringToInputLabel create string with max width required for input fields.
+func StringToInputLabel(input string, maxWidth int) string {
+	label := ""
+	labelIndex := 0
+
+	for index, char := range input {
+		if index >= maxWidth {
+			break
+		}
+
+		label += string(char)
+		labelIndex++
+	}
+
+	for index := labelIndex; index < maxWidth; index++ {
+		label += " "
+	}
+
+	return label
+}
+
 // AlignStringListWidth returns max string len in the list.
 func AlignStringListWidth(list []string) ([]string, int) {
 	var (

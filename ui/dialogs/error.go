@@ -29,6 +29,9 @@ func NewErrorDialog() *ErrorDialog {
 	}
 
 	dialog.modal.SetButtonBackgroundColor(style.ErrorDialogButtonBgColor)
+	dialog.modal.SetBorderStyle(tcell.StyleDefault.
+		Background(bgColor).
+		Foreground(style.DialogFgColor))
 
 	dialog.modal.SetDoneFunc(func(buttonIndex int, buttonLabel string) {
 		dialog.Hide()

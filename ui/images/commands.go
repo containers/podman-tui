@@ -177,6 +177,12 @@ func (img *Images) imageImport() {
 		img.messageDialog.SetText(dialogs.MessageImageInfo, newImageID, "")
 		img.messageDialog.Display()
 		img.appFocusHandler()
+
+		// podman event doesn't generate event if the imported image
+		// is tagged as none:none, therefore its required to refresh
+		if importOpts.Reference == "" {
+			img.UpdateData()
+		}
 	}
 
 	go importFunc()

@@ -15,9 +15,10 @@ import (
 
 const (
 	// maxheight = button height + total input widgets row + 11.
-	execDialogMaxHeight  = dialogs.DialogFormHeight + 7 + 9
-	execDialogMaxWidth   = 80
-	execDialogLabelWidth = 14
+	execDialogMaxHeight    = dialogs.DialogFormHeight + 7 + 9
+	execDialogMaxWidth     = 80
+	execDialogLabelWidth   = 14
+	execDialogLabelPadding = 1
 )
 
 const (
@@ -80,19 +81,16 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	// label (container ID and Name)
 	dialog.cntInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
-	dialog.cntInfo.SetLabelWidth(len(utils.ContainerIDLabel) + 1)
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
 		Foreground(style.DialogFgColor))
 
 	// command
-	dialog.command.SetBackgroundColor(bgColor)
-	dialog.command.SetBorder(false)
-	dialog.command.SetLabel("command:")
-	dialog.command.SetLabelColor(fgColor)
-	dialog.command.SetLabelWidth(execDialogLabelWidth)
+	dialog.command.SetBackgroundColor(style.DialogBgColor)
+	dialog.command.SetLabel(utils.StringToInputLabel("command:", execDialogLabelWidth))
 	dialog.command.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.command.SetLabelStyle(style.InputLabelStyle)
 
 	// interactive
 	dialog.interactive.SetBackgroundColor(bgColor)
@@ -133,36 +131,28 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.detach.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// working dir
-	dialog.workingDir.SetBackgroundColor(bgColor)
-	dialog.workingDir.SetBorder(false)
-	dialog.workingDir.SetLabel("working dir:")
-	dialog.workingDir.SetLabelColor(fgColor)
-	dialog.workingDir.SetLabelWidth(execDialogLabelWidth)
+	dialog.workingDir.SetBackgroundColor(style.DialogBgColor)
+	dialog.workingDir.SetLabel(utils.StringToInputLabel("working dir:", execDialogLabelWidth))
 	dialog.workingDir.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.workingDir.SetLabelStyle(style.InputLabelStyle)
 
 	// env variables
-	dialog.envVariables.SetBackgroundColor(bgColor)
-	dialog.envVariables.SetBorder(false)
-	dialog.envVariables.SetLabel("env vars:")
-	dialog.envVariables.SetLabelColor(fgColor)
-	dialog.envVariables.SetLabelWidth(execDialogLabelWidth)
+	dialog.envVariables.SetBackgroundColor(style.DialogBgColor)
+	dialog.envVariables.SetLabel(utils.StringToInputLabel("env vars:", execDialogLabelWidth))
 	dialog.envVariables.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.envVariables.SetLabelStyle(style.InputLabelStyle)
 
 	// env file
-	dialog.envFile.SetBackgroundColor(bgColor)
-	dialog.envFile.SetBorder(false)
-	dialog.envFile.SetLabel("env file:")
-	dialog.envFile.SetLabelColor(fgColor)
-	dialog.envFile.SetLabelWidth(execDialogLabelWidth)
+	dialog.envFile.SetBackgroundColor(style.DialogBgColor)
+	dialog.envFile.SetLabel(utils.StringToInputLabel("env file:", execDialogLabelWidth))
 	dialog.envFile.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.envFile.SetLabelStyle(style.InputLabelStyle)
 
 	// user
-	dialog.user.SetBackgroundColor(bgColor)
-	dialog.user.SetBorder(false)
-	dialog.user.SetLabel("user: ")
-	dialog.user.SetLabelColor(fgColor)
-	dialog.user.SetLabelWidth(execDialogLabelWidth)
+	dialog.user.SetBackgroundColor(style.DialogBgColor)
+	dialog.user.SetLabel(utils.StringToInputLabel("user:", execDialogLabelWidth))
 	dialog.user.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.user.SetLabelStyle(style.InputLabelStyle)
 
 	// form fields
 	dialog.form = tview.NewForm().
@@ -638,6 +628,7 @@ func (d *ContainerExecDialog) SetExecFunc(handler func()) *ContainerExecDialog {
 func (d *ContainerExecDialog) SetContainerID(id string, name string) {
 	d.containerID = id
 	containerInfo := fmt.Sprintf("%s (%s)", id, name)
+	containerInfo = utils.LabelWidthLeftPadding(containerInfo, execDialogLabelPadding)
 
 	d.cntInfo.SetText(containerInfo)
 }

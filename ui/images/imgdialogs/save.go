@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	imageSaveDialogMaxWidth  = 70
-	imageSaveDialogMaxHeight = 13
+	imageSaveDialogMaxWidth     = 70
+	imageSaveDialogMaxHeight    = 13
+	imageSaveDialogLabelPadding = 1
 )
 
 var errSaveEmptyOuputName = errors.New("empty output name")
@@ -72,7 +73,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 
 	dialog.imageInfo.SetBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabel("[::b]" + imageInfoLabel)
-	dialog.imageInfo.SetLabelWidth(len(imageInfoLabel) + 1)
+	dialog.imageInfo.SetLabelWidth(len(imageInfoLabel))
 	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -80,10 +81,9 @@ func NewImageSaveDialog() *ImageSaveDialog {
 
 	// output
 	dialog.output.SetBackgroundColor(bgColor)
-	dialog.output.SetLabelColor(fgColor)
-	dialog.output.SetLabel("output:")
-	dialog.output.SetLabelWidth(labelWidth)
+	dialog.output.SetLabel(utils.StringToInputLabel("output:", labelWidth))
 	dialog.output.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.output.SetLabelStyle(style.InputLabelStyle)
 
 	// compress
 	dialog.compress.SetBackgroundColor(bgColor)
@@ -105,6 +105,7 @@ func NewImageSaveDialog() *ImageSaveDialog {
 	},
 		nil)
 	dialog.format.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	dialog.format.SetFocusedStyle(style.DropDownFocused)
 	dialog.format.SetCurrentOption(0)
 	dialog.format.SetFieldBackgroundColor(inputFieldBgColor)
 
@@ -343,7 +344,8 @@ func (d *ImageSaveDialog) SetImageInfo(id string, name string) {
 		name = nameSplited[l-1]
 	}
 
-	imageInfo := fmt.Sprintf("Image ID: %s (%s)", id, name)
+	imageInfo := fmt.Sprintf("%s (%s)", id, name)
+	imageInfo = utils.LabelWidthLeftPadding(imageInfo, imageSaveDialogLabelPadding)
 
 	d.imageInfo.SetText(imageInfo)
 }

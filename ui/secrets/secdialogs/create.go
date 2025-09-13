@@ -73,35 +73,27 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 
 	// secret name field
 	createDialog.secretName.SetBackgroundColor(bgColor)
-	createDialog.secretName.SetLabel("name:")
-	createDialog.secretName.SetLabelWidth(labelWidth)
-	createDialog.secretName.SetLabelColor(fgColor)
-	createDialog.secretName.SetFieldBackgroundColor(bgColor)
+	createDialog.secretName.SetLabel(utils.StringToInputLabel("name:", labelWidth))
 	createDialog.secretName.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretName.SetLabelStyle(style.InputLabelStyle)
 
 	// secret file field
 	createDialog.secretFile.SetBackgroundColor(bgColor)
-	createDialog.secretFile.SetLabel("secret file:")
-	createDialog.secretFile.SetLabelWidth(labelWidth)
-	createDialog.secretFile.SetLabelColor(fgColor)
-	createDialog.secretFile.SetFieldBackgroundColor(bgColor)
+	createDialog.secretFile.SetLabel(utils.StringToInputLabel("secret file:", labelWidth))
 	createDialog.secretFile.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretFile.SetLabelStyle(style.InputLabelStyle)
 
 	// secret text field
 	createDialog.secretText.SetBackgroundColor(bgColor)
-	createDialog.secretText.SetLabel("secret text:")
-	createDialog.secretText.SetLabelWidth(labelWidth)
-	createDialog.secretText.SetLabelColor(fgColor)
-	createDialog.secretText.SetFieldBackgroundColor(bgColor)
+	createDialog.secretText.SetLabel(utils.StringToInputLabel("secret text:", labelWidth))
 	createDialog.secretText.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretText.SetLabelStyle(style.InputLabelStyle)
 
 	// secret labels field
 	createDialog.secretLabels.SetBackgroundColor(bgColor)
-	createDialog.secretLabels.SetLabel("labels:")
-	createDialog.secretLabels.SetLabelWidth(labelWidth)
-	createDialog.secretLabels.SetLabelColor(fgColor)
-	createDialog.secretLabels.SetFieldBackgroundColor(bgColor)
+	createDialog.secretLabels.SetLabel(utils.StringToInputLabel("labels:", labelWidth))
 	createDialog.secretLabels.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretLabels.SetLabelStyle(style.InputLabelStyle)
 
 	// secret replace
 	replaceLabel := "replace "
@@ -118,15 +110,15 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 	createDialog.secretDriver.SetLabelWidth(labelWidth)
 	createDialog.secretDriver.SetOptions([]string{"file", "pass", "shell"}, nil)
 	createDialog.secretDriver.SetListStyles(ddUnselectedStyle, ddselectedStyle)
+	createDialog.secretDriver.SetFocusedStyle(style.DropDownFocused)
 	createDialog.secretDriver.SetCurrentOption(0)
 	createDialog.secretDriver.SetFieldBackgroundColor(inputFieldBgColor)
 
 	// secret driver options field
 	createDialog.secretDriverOptions.SetBackgroundColor(bgColor)
-	createDialog.secretDriverOptions.SetLabel("driver options:")
-	createDialog.secretDriverOptions.SetLabelColor(fgColor)
-	createDialog.secretDriverOptions.SetFieldBackgroundColor(bgColor)
+	createDialog.secretDriverOptions.SetLabel("driver options: ")
 	createDialog.secretDriverOptions.SetFieldBackgroundColor(inputFieldBgColor)
+	createDialog.secretDriverOptions.SetLabelStyle(style.InputLabelStyle)
 
 	// form
 	createDialog.form.AddButton("Cancel", nil)

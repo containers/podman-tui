@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	cntCheckpointDialogMaxWidth  = 73
-	cntCheckpointDialogMaxHeight = 15
+	cntCheckpointDialogMaxWidth     = 73
+	cntCheckpointDialogMaxHeight    = 15
+	cntCheckpointDialogLabelPadding = 1
 )
 
 const (
@@ -83,8 +84,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// containerInfo
 	dialog.containerInfo.SetBackgroundColor(style.DialogBgColor)
-	dialog.containerInfo.SetLabel(fmt.Sprintf("[::b]%s:", utils.ContainerIDLabel))
-	dialog.containerInfo.SetLabelWidth(labelWidth)
+	dialog.containerInfo.SetLabel("[::b]" + utils.ContainerIDLabel)
 	dialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
@@ -92,17 +92,15 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 
 	// createImage
 	dialog.createImage.SetBackgroundColor(style.DialogBgColor)
-	dialog.createImage.SetLabelColor(style.DialogFgColor)
-	dialog.createImage.SetLabel("create image:")
-	dialog.createImage.SetLabelWidth(labelWidth)
+	dialog.createImage.SetLabel(utils.StringToInputLabel("create image:", labelWidth))
 	dialog.createImage.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.createImage.SetLabelStyle(style.InputLabelStyle)
 
 	// export
 	dialog.export.SetBackgroundColor(style.DialogBgColor)
-	dialog.export.SetLabelColor(style.DialogFgColor)
-	dialog.export.SetLabel("export:")
-	dialog.export.SetLabelWidth(labelWidth)
+	dialog.export.SetLabel(utils.StringToInputLabel("export:", labelWidth))
 	dialog.export.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.export.SetLabelStyle(style.InputLabelStyle)
 
 	// printStats
 	dialog.printStats.SetLabel("print stats:")
@@ -486,6 +484,7 @@ func (d *ContainerCheckpointDialog) SetCancelFunc(handler func()) *ContainerChec
 func (d *ContainerCheckpointDialog) SetContainerInfo(id string, name string) {
 	d.containerID = id
 	containerInfo := fmt.Sprintf("%12s (%s)", id, name)
+	containerInfo = utils.LabelWidthLeftPadding(containerInfo, cntCheckpointDialogLabelPadding)
 
 	d.containerInfo.SetText(containerInfo)
 }

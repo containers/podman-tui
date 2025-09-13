@@ -9,18 +9,17 @@ func (img *Images) Draw(screen tcell.Screen) {
 	img.DrawForSubclass(screen, img)
 	img.SetBorder(false)
 
-	imagewViewX, imagewViewY, imagewViewW, imagewViewH := img.GetInnerRect()
+	x, y, w, h := img.GetInnerRect()
 
-	img.refresh(imagewViewW)
-	img.table.SetRect(imagewViewX, imagewViewY, imagewViewW, imagewViewH)
+	img.refresh(w)
+	img.table.SetRect(x, y, w, h)
 	img.table.SetBorder(true)
 
 	img.table.Draw(screen)
-	x, y, width, height := img.table.GetInnerRect()
 
 	for _, dialog := range img.getInnerDialogs() {
 		if dialog.IsDisplay() {
-			dialog.SetRect(x, y, width, height)
+			dialog.SetRect(x, y, w, h)
 			dialog.Draw(screen)
 
 			break
@@ -29,7 +28,7 @@ func (img *Images) Draw(screen tcell.Screen) {
 
 	for _, dialog := range img.getInnerTopDialogs() {
 		if dialog.IsDisplay() {
-			dialog.SetRect(x, y, width, height)
+			dialog.SetRect(x, y, w, h)
 			dialog.Draw(screen)
 
 			break
