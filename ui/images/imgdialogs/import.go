@@ -58,31 +58,30 @@ func NewImageImportDialog() *ImageImportDialog {
 	}
 
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	labelWidth := 11
 
 	// path field
 	dialog.path.SetBackgroundColor(bgColor)
 	dialog.path.SetLabel(utils.StringToInputLabel("source:", labelWidth))
-	dialog.path.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.path.SetFieldStyle(style.InputFieldStyle)
 	dialog.path.SetLabelStyle(style.InputLabelStyle)
 
 	// change field
 	dialog.change.SetBackgroundColor(bgColor)
 	dialog.change.SetLabel(utils.StringToInputLabel("change:", labelWidth))
-	dialog.change.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.change.SetFieldStyle(style.InputFieldStyle)
 	dialog.change.SetLabelStyle(style.InputLabelStyle)
 
 	// commit field
 	dialog.commitMessage.SetBackgroundColor(bgColor)
 	dialog.commitMessage.SetLabel(utils.StringToInputLabel("message:", labelWidth))
-	dialog.commitMessage.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.commitMessage.SetFieldStyle(style.InputFieldStyle)
 	dialog.commitMessage.SetLabelStyle(style.InputLabelStyle)
 
 	// reference field
 	dialog.reference.SetBackgroundColor(bgColor)
 	dialog.reference.SetLabel(utils.StringToInputLabel("reference:", labelWidth))
-	dialog.reference.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.reference.SetFieldStyle(style.InputFieldStyle)
 	dialog.reference.SetLabelStyle(style.InputLabelStyle)
 
 	// form

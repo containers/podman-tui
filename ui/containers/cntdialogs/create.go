@@ -1131,19 +1131,18 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	bgColor := style.DialogBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
-	inputFieldBgColor := style.InputFieldBgColor
 	cntInfoPageLabelWidth := 12
 
 	// name field
 	d.containerNameField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNameField.SetLabel(utils.StringToInputLabel("name:", cntInfoPageLabelWidth))
-	d.containerNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNameField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// command field
 	d.containerCommandField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCommandField.SetLabel(utils.StringToInputLabel("command:", cntInfoPageLabelWidth))
-	d.containerCommandField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCommandField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCommandField.SetLabelStyle(style.InputLabelStyle)
 
 	// image field
@@ -1153,7 +1152,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerImageField.SetLabelColor(style.DialogFgColor)
 	d.containerImageField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerImageField.SetFocusedStyle(style.DropDownFocused)
-	d.containerImageField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerImageField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// pod field
 	d.containerPodField.SetLabel("pod:")
@@ -1162,12 +1161,12 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerPodField.SetLabelColor(style.DialogFgColor)
 	d.containerPodField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerPodField.SetFocusedStyle(style.DropDownFocused)
-	d.containerPodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerPodField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// labels field
 	d.containerLabelsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerLabelsField.SetLabel(utils.StringToInputLabel("labels:", cntInfoPageLabelWidth))
-	d.containerLabelsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerLabelsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerLabelsField.SetLabelStyle(style.InputLabelStyle)
 
 	// privileged
@@ -1175,14 +1174,14 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerPrivilegedField.SetLabelWidth(cntInfoPageLabelWidth)
 	d.containerPrivilegedField.SetBackgroundColor(bgColor)
 	d.containerPrivilegedField.SetLabelColor(style.DialogFgColor)
-	d.containerPrivilegedField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerPrivilegedField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// timeout field
 	timeoutLabel := "timeout:"
 
 	d.containerTimeoutField.SetBackgroundColor(style.DialogBgColor)
 	d.containerTimeoutField.SetLabel(utils.StringToInputLabel(timeoutLabel, len(timeoutLabel)+1))
-	d.containerTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerTimeoutField.SetFieldStyle(style.InputFieldStyle)
 	d.containerTimeoutField.SetLabelStyle(style.InputLabelStyle)
 
 	// interactive
@@ -1191,14 +1190,14 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerInteractiveField.SetLabelWidth(len(interactiveLabel) + 1)
 	d.containerInteractiveField.SetBackgroundColor(bgColor)
 	d.containerInteractiveField.SetLabelColor(style.DialogFgColor)
-	d.containerInteractiveField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerInteractiveField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// detach
 	d.containerDetachField.SetLabel("detach:")
 	d.containerDetachField.SetLabelWidth(cntInfoPageLabelWidth)
 	d.containerDetachField.SetBackgroundColor(bgColor)
 	d.containerDetachField.SetLabelColor(style.DialogFgColor)
-	d.containerDetachField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerDetachField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// tty
 	ttyLabel := fmt.Sprintf("%7s:", "tty")
@@ -1206,7 +1205,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerTtyField.SetLabelWidth(len(timeoutLabel) + 1)
 	d.containerTtyField.SetBackgroundColor(bgColor)
 	d.containerTtyField.SetLabelColor(style.DialogFgColor)
-	d.containerTtyField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerTtyField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// remove field
 	removeLabel := fmt.Sprintf("%11s:", "remove")
@@ -1214,12 +1213,12 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerRemoveField.SetLabelWidth(len(interactiveLabel) + 1)
 	d.containerRemoveField.SetBackgroundColor(bgColor)
 	d.containerRemoveField.SetLabelColor(style.DialogFgColor)
-	d.containerRemoveField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerRemoveField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// secrets
 	d.containerSecretField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSecretField.SetLabel(utils.StringToInputLabel("secret:", cntInfoPageLabelWidth))
-	d.containerSecretField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecretField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSecretField.SetLabelStyle(style.InputLabelStyle)
 
 	// layout
@@ -1265,13 +1264,12 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 
 func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	envPageLabelWidth := 12
 
 	// environment host
 	d.containerEnvHostField.SetBackgroundColor(style.DialogBgColor)
 	d.containerEnvHostField.SetLabel(utils.StringToInputLabel("env host:", envPageLabelWidth))
-	d.containerEnvHostField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerEnvHostField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	d.containerEnvHostField.SetLabelStyle(style.InputLabelStyle)
 
 	// unset all
@@ -1280,36 +1278,36 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 	d.containerUnsetEnvAllField.SetLabelWidth(len(unsetEnvAllLabel) + 1)
 	d.containerUnsetEnvAllField.SetBackgroundColor(bgColor)
 	d.containerUnsetEnvAllField.SetLabelColor(style.DialogFgColor)
-	d.containerUnsetEnvAllField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerUnsetEnvAllField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// environment variables
 	d.containerEnvVarsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerEnvVarsField.SetLabel(utils.StringToInputLabel("env vars:", envPageLabelWidth))
-	d.containerEnvVarsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerEnvVarsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerEnvVarsField.SetLabelStyle(style.InputLabelStyle)
 
 	// environment variables file
 	d.containerEnvFileField.SetBackgroundColor(style.DialogBgColor)
 	d.containerEnvFileField.SetLabel(utils.StringToInputLabel("env file:", envPageLabelWidth))
-	d.containerEnvFileField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerEnvFileField.SetFieldStyle(style.InputFieldStyle)
 	d.containerEnvFileField.SetLabelStyle(style.InputLabelStyle)
 
 	// environment merge
 	d.containerEnvMergeField.SetBackgroundColor(style.DialogBgColor)
 	d.containerEnvMergeField.SetLabel(utils.StringToInputLabel("env merge:", envPageLabelWidth))
-	d.containerEnvMergeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerEnvMergeField.SetFieldStyle(style.InputFieldStyle)
 	d.containerEnvMergeField.SetLabelStyle(style.InputLabelStyle)
 
 	// environment unset variables
 	d.containerUnsetEnvField.SetBackgroundColor(style.DialogBgColor)
 	d.containerUnsetEnvField.SetLabel(utils.StringToInputLabel("unset env:", envPageLabelWidth))
-	d.containerUnsetEnvField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerUnsetEnvField.SetFieldStyle(style.InputFieldStyle)
 	d.containerUnsetEnvField.SetLabelStyle(style.InputLabelStyle)
 
 	// working directory
 	d.containerWorkDirField.SetBackgroundColor(style.DialogBgColor)
 	d.containerWorkDirField.SetLabel(utils.StringToInputLabel("work dir:", envPageLabelWidth))
-	d.containerWorkDirField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerWorkDirField.SetFieldStyle(style.InputFieldStyle)
 	d.containerWorkDirField.SetLabelStyle(style.InputLabelStyle)
 
 	// umask
@@ -1317,7 +1315,7 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 
 	d.containerUmaskField.SetBackgroundColor(style.DialogBgColor)
 	d.containerUmaskField.SetLabel(utils.StringToInputLabel(umaskLabel, len(umaskLabel)+1))
-	d.containerUmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerUmaskField.SetFieldStyle(style.InputFieldStyle)
 	d.containerUmaskField.SetLabelStyle(style.InputLabelStyle)
 
 	// layout
@@ -1347,33 +1345,32 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 
 func (d *ContainerCreateDialog) setupUserGroupsPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	userGroupLabelWidth := 14
 	userFieldWidth := 30
 
 	// user
 	d.containerUserField.SetBackgroundColor(style.DialogBgColor)
 	d.containerUserField.SetLabel(utils.StringToInputLabel("user:", userGroupLabelWidth))
-	d.containerUserField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerUserField.SetFieldStyle(style.InputFieldStyle)
 	d.containerUserField.SetLabelStyle(style.InputLabelStyle)
 	d.containerUserField.SetFieldWidth(userFieldWidth)
 
 	// host users
 	d.containerHostUsersField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHostUsersField.SetLabel(utils.StringToInputLabel("host user:", userGroupLabelWidth))
-	d.containerHostUsersField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHostUsersField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHostUsersField.SetLabelStyle(style.InputLabelStyle)
 
 	// passwd entry
 	d.containerPasswdEntryField.SetBackgroundColor(style.DialogBgColor)
 	d.containerPasswdEntryField.SetLabel(utils.StringToInputLabel("passwd entry:", userGroupLabelWidth))
-	d.containerPasswdEntryField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerPasswdEntryField.SetFieldStyle(style.InputFieldStyle)
 	d.containerPasswdEntryField.SetLabelStyle(style.InputLabelStyle)
 
 	// group entry
 	d.containerGroupEntryField.SetBackgroundColor(style.DialogBgColor)
 	d.containerGroupEntryField.SetLabel(utils.StringToInputLabel("group entry:", userGroupLabelWidth))
-	d.containerGroupEntryField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerGroupEntryField.SetFieldStyle(style.InputFieldStyle)
 	d.containerGroupEntryField.SetLabelStyle(style.InputLabelStyle)
 
 	d.userGroupsPage.SetDirection(tview.FlexRow)
@@ -1389,25 +1386,24 @@ func (d *ContainerCreateDialog) setupUserGroupsPageUI() {
 
 func (d *ContainerCreateDialog) setupDNSPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	dnsPageLabelWidth := 13
 
 	// hostname field
 	d.containerDNSServersField.SetBackgroundColor(style.DialogBgColor)
 	d.containerDNSServersField.SetLabel(utils.StringToInputLabel("dns servers:", dnsPageLabelWidth))
-	d.containerDNSServersField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerDNSServersField.SetFieldStyle(style.InputFieldStyle)
 	d.containerDNSServersField.SetLabelStyle(style.InputLabelStyle)
 
 	// IP field
 	d.containerDNSOptionsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerDNSOptionsField.SetLabel(utils.StringToInputLabel("dns options:", dnsPageLabelWidth))
-	d.containerDNSOptionsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerDNSOptionsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerDNSOptionsField.SetLabelStyle(style.InputLabelStyle)
 
 	// mac field
 	d.containerDNSSearchField.SetBackgroundColor(style.DialogBgColor)
 	d.containerDNSSearchField.SetLabel(utils.StringToInputLabel("dns search:", dnsPageLabelWidth))
-	d.containerDNSSearchField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerDNSSearchField.SetFieldStyle(style.InputFieldStyle)
 	d.containerDNSSearchField.SetLabelStyle(style.InputLabelStyle)
 
 	d.dnsPage.SetDirection(tview.FlexRow)
@@ -1421,7 +1417,6 @@ func (d *ContainerCreateDialog) setupDNSPageUI() {
 
 func (d *ContainerCreateDialog) setupHealthPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 	healthPageLabelWidth := 14
@@ -1431,33 +1426,33 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	// health cmd
 	d.containerHealthCmdField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthCmdField.SetLabel(utils.StringToInputLabel("command:", healthPageLabelWidth))
-	d.containerHealthCmdField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthCmdField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthCmdField.SetLabelStyle(style.InputLabelStyle)
 
 	// startup cmd
 	d.containerHealthStartupCmdField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthStartupCmdField.SetLabel(utils.StringToInputLabel("startup cmd:", healthPageLabelWidth))
-	d.containerHealthStartupCmdField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupCmdField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartupCmdField.SetLabelStyle(style.InputLabelStyle)
 
 	// log dest
 	d.containerHealthLogDestField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthLogDestField.SetLabel(utils.StringToInputLabel("log dest:", healthPageLabelWidth))
-	d.containerHealthLogDestField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthLogDestField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthLogDestField.SetLabelStyle(style.InputLabelStyle)
 
 	// multi primitive row01
 	// max log size
 	d.containerHealthMaxLogSizeField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthMaxLogSizeField.SetLabel(utils.StringToInputLabel("max log size:", healthPageLabelWidth))
-	d.containerHealthMaxLogSizeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthMaxLogSizeField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthMaxLogSizeField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthMaxLogSizeField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
 	// max log count
 	d.containerHealthMaxLogCountField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthMaxLogCountField.SetLabel(utils.StringToInputLabel("max log count:", healthPageSecColLabelWidth))
-	d.containerHealthMaxLogCountField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthMaxLogCountField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthMaxLogCountField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthMaxLogCountField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1470,7 +1465,7 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	d.containerHealthOnFailureField.SetLabelColor(style.DialogFgColor)
 	d.containerHealthOnFailureField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerHealthOnFailureField.SetFocusedStyle(style.DropDownFocused)
-	d.containerHealthOnFailureField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthOnFailureField.SetFieldStyle(style.InputFieldStyle)
 
 	multiItemRow01 := tview.NewFlex().SetDirection(tview.FlexColumn)
 	multiItemRow01.AddItem(d.containerHealthMaxLogSizeField, 0, 1, true)
@@ -1482,7 +1477,7 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	// interval
 	d.containerHealthIntervalField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthIntervalField.SetLabel(utils.StringToInputLabel("interval:", healthPageLabelWidth))
-	d.containerHealthIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthIntervalField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthIntervalField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1492,7 +1487,7 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 		"startup interval:",
 		healthPageSecColLabelWidth,
 	))
-	d.containerHealthStartupIntervalField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupIntervalField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartupIntervalField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthStartupIntervalField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1501,7 +1496,7 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 
 	d.containerHealthStartPeriodField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthStartPeriodField.SetLabel(utils.StringToInputLabel(startPeroidLabel, len(startPeroidLabel)))
-	d.containerHealthStartPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartPeriodField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartPeriodField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthStartPeriodField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1515,14 +1510,14 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	// retires
 	d.containerHealthRetriesField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthRetriesField.SetLabel(utils.StringToInputLabel("retries:", healthPageLabelWidth))
-	d.containerHealthRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthRetriesField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthRetriesField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
 	// startup retries
 	d.containerHealthStartupRetriesField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthStartupRetriesField.SetLabel(utils.StringToInputLabel("startup retries:", healthPageSecColLabelWidth))
-	d.containerHealthStartupRetriesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupRetriesField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartupRetriesField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthStartupRetriesField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1531,7 +1526,7 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 
 	d.containerHealthStartupSuccessField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthStartupSuccessField.SetLabel(utils.StringToInputLabel(startupSuccessLabel, len(startupSuccessLabel)))
-	d.containerHealthStartupSuccessField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupSuccessField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartupSuccessField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthStartupSuccessField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1545,14 +1540,14 @@ func (d *ContainerCreateDialog) setupHealthPageUI() {
 	// timeout
 	d.containerHealthTimeoutField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthTimeoutField.SetLabel(utils.StringToInputLabel("timeout:", healthPageLabelWidth))
-	d.containerHealthTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthTimeoutField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthTimeoutField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
 	// startup timeout
 	d.containerHealthStartupTimeoutField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHealthStartupTimeoutField.SetLabel(utils.StringToInputLabel("startup timeout:", healthPageSecColLabelWidth))
-	d.containerHealthStartupTimeoutField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHealthStartupTimeoutField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHealthStartupTimeoutField.SetLabelStyle(style.InputLabelStyle)
 	d.containerHealthStartupTimeoutField.SetFieldWidth(healthPageMultiRowFieldWidth)
 
@@ -1584,25 +1579,24 @@ func (d *ContainerCreateDialog) setupNetworkPageUI() {
 	bgColor := style.DialogBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
-	inputFieldBgColor := style.InputFieldBgColor
 	networkingPageLabelWidth := 13
 
 	// hostname field
 	d.containerHostnameField.SetBackgroundColor(style.DialogBgColor)
 	d.containerHostnameField.SetLabel(utils.StringToInputLabel("hostname:", networkingPageLabelWidth))
-	d.containerHostnameField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerHostnameField.SetFieldStyle(style.InputFieldStyle)
 	d.containerHostnameField.SetLabelStyle(style.InputLabelStyle)
 
 	// IP field
 	d.containerIPAddrField.SetBackgroundColor(style.DialogBgColor)
 	d.containerIPAddrField.SetLabel(utils.StringToInputLabel("ip address:", networkingPageLabelWidth))
-	d.containerIPAddrField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerIPAddrField.SetFieldStyle(style.InputFieldStyle)
 	d.containerIPAddrField.SetLabelStyle(style.InputLabelStyle)
 
 	// mac field
 	d.containerMacAddrField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMacAddrField.SetLabel(utils.StringToInputLabel("mac address:", networkingPageLabelWidth))
-	d.containerMacAddrField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMacAddrField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMacAddrField.SetLabelStyle(style.InputLabelStyle)
 
 	// network field
@@ -1612,7 +1606,7 @@ func (d *ContainerCreateDialog) setupNetworkPageUI() {
 	d.containerNetworkField.SetLabelColor(style.DialogFgColor)
 	d.containerNetworkField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerNetworkField.SetFocusedStyle(style.DropDownFocused)
-	d.containerNetworkField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNetworkField.SetFieldStyle(style.InputFieldStyle)
 
 	// network settings page
 	d.networkingPage.SetDirection(tview.FlexRow)
@@ -1628,7 +1622,6 @@ func (d *ContainerCreateDialog) setupNetworkPageUI() {
 
 func (d *ContainerCreateDialog) setupPortsPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	portPageLabelWidth := 15
 
 	inputFieldItems := []struct {
@@ -1642,7 +1635,7 @@ func (d *ContainerCreateDialog) setupPortsPageUI() {
 	for _, inputField := range inputFieldItems {
 		inputField.widget.SetBackgroundColor(style.DialogBgColor)
 		inputField.widget.SetLabel(utils.StringToInputLabel(inputField.label, portPageLabelWidth))
-		inputField.widget.SetFieldBackgroundColor(inputFieldBgColor)
+		inputField.widget.SetFieldStyle(style.InputFieldStyle)
 		inputField.widget.SetLabelStyle(style.InputLabelStyle)
 	}
 
@@ -1651,7 +1644,7 @@ func (d *ContainerCreateDialog) setupPortsPageUI() {
 	d.ContainerPortPublishAllField.SetLabelWidth(portPageLabelWidth)
 	d.ContainerPortPublishAllField.SetBackgroundColor(bgColor)
 	d.ContainerPortPublishAllField.SetLabelColor(style.DialogFgColor)
-	d.ContainerPortPublishAllField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.ContainerPortPublishAllField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	d.portPage.SetDirection(tview.FlexRow)
 	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
@@ -1664,37 +1657,36 @@ func (d *ContainerCreateDialog) setupPortsPageUI() {
 
 func (d *ContainerCreateDialog) setupSecurityPageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	securityOptsLabelWidth := 10
 
 	// selinux label
 	d.containerSecLabelField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSecLabelField.SetLabel(utils.StringToInputLabel("label:", securityOptsLabelWidth))
-	d.containerSecLabelField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecLabelField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSecLabelField.SetLabelStyle(style.InputLabelStyle)
 
 	// apparmor
 	d.containerSecApparmorField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSecApparmorField.SetLabel(utils.StringToInputLabel("apparmor:", securityOptsLabelWidth))
-	d.containerSecApparmorField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecApparmorField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSecApparmorField.SetLabelStyle(style.InputLabelStyle)
 
 	// seccomp
 	d.containerSeccompField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSeccompField.SetLabel(utils.StringToInputLabel("seccomp:", securityOptsLabelWidth))
-	d.containerSeccompField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSeccompField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSeccompField.SetLabelStyle(style.InputLabelStyle)
 
 	// mask
 	d.containerSecMaskField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSecMaskField.SetLabel(utils.StringToInputLabel("mask:", securityOptsLabelWidth))
-	d.containerSecMaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecMaskField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSecMaskField.SetLabelStyle(style.InputLabelStyle)
 
 	// unmask
 	d.containerSecUnmaskField.SetBackgroundColor(style.DialogBgColor)
 	d.containerSecUnmaskField.SetLabel(utils.StringToInputLabel("unmask:", securityOptsLabelWidth))
-	d.containerSecUnmaskField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecUnmaskField.SetFieldStyle(style.InputFieldStyle)
 	d.containerSecUnmaskField.SetLabelStyle(style.InputLabelStyle)
 
 	// no-new-privileges
@@ -1703,7 +1695,7 @@ func (d *ContainerCreateDialog) setupSecurityPageUI() {
 	d.containerSecNoNewPrivField.SetLabelColor(style.DialogFgColor)
 	d.containerSecNoNewPrivField.SetBackgroundColor(bgColor)
 	d.containerSecNoNewPrivField.SetLabelColor(style.DialogFgColor)
-	d.containerSecNoNewPrivField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerSecNoNewPrivField.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
@@ -1724,13 +1716,12 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 	bgColor := style.DialogBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
-	inputFieldBgColor := style.InputFieldBgColor
 	volumePageLabelWidth := 14
 
 	// volume
 	d.containerVolumeField.SetBackgroundColor(style.DialogBgColor)
 	d.containerVolumeField.SetLabel(utils.StringToInputLabel("volume:", volumePageLabelWidth))
-	d.containerVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerVolumeField.SetFieldStyle(style.InputFieldStyle)
 	d.containerVolumeField.SetLabelStyle(style.InputLabelStyle)
 
 	// image volume
@@ -1740,12 +1731,12 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 	d.containerImageVolumeField.SetLabelColor(style.DialogFgColor)
 	d.containerImageVolumeField.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	d.containerImageVolumeField.SetFocusedStyle(style.DropDownFocused)
-	d.containerImageVolumeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerImageVolumeField.SetFieldStyle(style.InputFieldStyle)
 
 	// mounts
 	d.containerMountField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMountField.SetLabel(utils.StringToInputLabel("mount:", volumePageLabelWidth))
-	d.containerMountField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMountField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMountField.SetLabelStyle(style.InputLabelStyle)
 
 	// volume settings page
@@ -1760,7 +1751,6 @@ func (d *ContainerCreateDialog) setupVolumePageUI() {
 
 func (d *ContainerCreateDialog) setupResourcePageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	resourcePageLabelWidth := 13
 	inputFieldWidth := 18
 
@@ -1771,7 +1761,7 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// memory
 	d.containerMemoryField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMemoryField.SetLabel(utils.StringToInputLabel("memory:", resourcePageLabelWidth))
-	d.containerMemoryField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMemoryField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMemoryField.SetLabelStyle(style.InputLabelStyle)
 	d.containerMemoryField.SetFieldWidth(inputFieldWidth)
 
@@ -1780,20 +1770,20 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 
 	d.containerMemoryReservationField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMemoryReservationField.SetLabel(utils.StringToInputLabel(memResLabel, len(memResLabel)+1))
-	d.containerMemoryReservationField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMemoryReservationField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMemoryReservationField.SetLabelStyle(style.InputLabelStyle)
 
 	// memory swap
 	d.containerMemorySwapField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMemorySwapField.SetLabel(utils.StringToInputLabel("memory swap:", resourcePageLabelWidth))
-	d.containerMemorySwapField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMemorySwapField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMemorySwapField.SetLabelStyle(style.InputLabelStyle)
 	d.containerMemorySwapField.SetFieldWidth(inputFieldWidth)
 
 	// memory swappiness
 	d.containerMemorySwappinessField.SetBackgroundColor(style.DialogBgColor)
 	d.containerMemorySwappinessField.SetLabel(utils.StringToInputLabel(" memory swappiness:", len(memResLabel)+1))
-	d.containerMemorySwappinessField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerMemorySwappinessField.SetFieldStyle(style.InputFieldStyle)
 	d.containerMemorySwappinessField.SetLabelStyle(style.InputLabelStyle)
 
 	// memRow1
@@ -1813,14 +1803,14 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// cpus
 	d.containerCPUsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUsField.SetLabel(utils.StringToInputLabel("cpus:", resourcePageLabelWidth))
-	d.containerCPUsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUsField.SetLabelStyle(style.InputLabelStyle)
 	d.containerCPUsField.SetFieldWidth(inputFieldWidth)
 
 	// cpu shares
 	d.containerCPUSharesField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUSharesField.SetLabel(utils.StringToInputLabel(getSecondColLabel("cpu shares"), len(memResLabel)+1))
-	d.containerCPUSharesField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUSharesField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUSharesField.SetLabelStyle(style.InputLabelStyle)
 
 	// cpuRow1
@@ -1833,14 +1823,14 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// cpus period
 	d.containerCPUPeriodField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUPeriodField.SetLabel(utils.StringToInputLabel("cpu period:", resourcePageLabelWidth))
-	d.containerCPUPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUPeriodField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUPeriodField.SetLabelStyle(style.InputLabelStyle)
 	d.containerCPUPeriodField.SetFieldWidth(inputFieldWidth)
 
 	// cpu rt period
 	d.containerCPURtPeriodField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPURtPeriodField.SetLabel(utils.StringToInputLabel(getSecondColLabel("cpu rt period"), len(memResLabel)+1))
-	d.containerCPURtPeriodField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPURtPeriodField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPURtPeriodField.SetLabelStyle(style.InputLabelStyle)
 
 	// cpuRow2
@@ -1853,7 +1843,7 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// cpus quota
 	d.containerCPUQuotaField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUQuotaField.SetLabel(utils.StringToInputLabel("cpu quota:", resourcePageLabelWidth))
-	d.containerCPUQuotaField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUQuotaField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUQuotaField.SetLabelStyle(style.InputLabelStyle)
 	d.containerCPUQuotaField.SetFieldWidth(inputFieldWidth)
 
@@ -1863,7 +1853,7 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 		utils.StringToInputLabel(getSecondColLabel("cpu rt runtime"),
 			len(memResLabel)+1,
 		))
-	d.containerCPURtRuntimeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPURtRuntimeField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPURtRuntimeField.SetLabelStyle(style.InputLabelStyle)
 
 	// cpuRow3
@@ -1876,14 +1866,14 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// cpuset cpus
 	d.containerCPUSetCPUsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUSetCPUsField.SetLabel(utils.StringToInputLabel("cpuset cpus:", resourcePageLabelWidth))
-	d.containerCPUSetCPUsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUSetCPUsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUSetCPUsField.SetLabelStyle(style.InputLabelStyle)
 	d.containerCPUSetCPUsField.SetFieldWidth(inputFieldWidth)
 
 	// cpuset mems
 	d.containerCPUSetMemsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerCPUSetMemsField.SetLabel(utils.StringToInputLabel(getSecondColLabel("cpuset mems"), len(memResLabel)+1))
-	d.containerCPUSetMemsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerCPUSetMemsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerCPUSetMemsField.SetLabelStyle(style.InputLabelStyle)
 
 	// cpuRow4
@@ -1896,7 +1886,7 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 	// shm size
 	d.containerShmSizeField.SetBackgroundColor(style.DialogBgColor)
 	d.containerShmSizeField.SetLabel(utils.StringToInputLabel("shm size:", resourcePageLabelWidth))
-	d.containerShmSizeField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerShmSizeField.SetFieldStyle(style.InputFieldStyle)
 	d.containerShmSizeField.SetLabelStyle(style.InputLabelStyle)
 	d.containerShmSizeField.SetFieldWidth(inputFieldWidth)
 
@@ -1906,7 +1896,7 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 		utils.StringToInputLabel(getSecondColLabel("shm size systemd"),
 			len(memResLabel)+1,
 		))
-	d.containerShmSizeSystemdField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerShmSizeSystemdField.SetFieldStyle(style.InputFieldStyle)
 	d.containerShmSizeSystemdField.SetLabelStyle(style.InputLabelStyle)
 
 	// shmRow1
@@ -1936,43 +1926,42 @@ func (d *ContainerCreateDialog) setupResourcePageUI() {
 
 func (d *ContainerCreateDialog) setupNamespacePageUI() {
 	bgColor := style.DialogBgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	namespacePageLabelWidth := 10
 
 	// cgroupns
 	d.containerNamespaceCgroupField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceCgroupField.SetLabel(utils.StringToInputLabel("cgroupns:", namespacePageLabelWidth))
-	d.containerNamespaceCgroupField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceCgroupField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceCgroupField.SetLabelStyle(style.InputLabelStyle)
 
 	// ipc
 	d.containerNamespaceIpcField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceIpcField.SetLabel(utils.StringToInputLabel("ipc:", namespacePageLabelWidth))
-	d.containerNamespaceIpcField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceIpcField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceIpcField.SetLabelStyle(style.InputLabelStyle)
 
 	// pid
 	d.containerNamespacePidField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespacePidField.SetLabel(utils.StringToInputLabel("pid:", namespacePageLabelWidth))
-	d.containerNamespacePidField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespacePidField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespacePidField.SetLabelStyle(style.InputLabelStyle)
 
 	// userns
 	d.containerNamespaceUserField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceUserField.SetLabel(utils.StringToInputLabel("userns:", namespacePageLabelWidth))
-	d.containerNamespaceUserField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceUserField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceUserField.SetLabelStyle(style.InputLabelStyle)
 
 	// uts
 	d.containerNamespaceUtsField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceUtsField.SetLabel(utils.StringToInputLabel("uts:", namespacePageLabelWidth))
-	d.containerNamespaceUtsField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceUtsField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceUtsField.SetLabelStyle(style.InputLabelStyle)
 
 	// uidmap
 	d.containerNamespaceUidmapField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceUidmapField.SetLabel(utils.StringToInputLabel("uidmap:", namespacePageLabelWidth))
-	d.containerNamespaceUidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceUidmapField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceUidmapField.SetLabelStyle(style.InputLabelStyle)
 
 	// subuidname
@@ -1980,13 +1969,13 @@ func (d *ContainerCreateDialog) setupNamespacePageUI() {
 
 	d.containerNamespaceSubuidNameField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceSubuidNameField.SetLabel(utils.StringToInputLabel(subuidnameLabel, len(subuidnameLabel)+1))
-	d.containerNamespaceSubuidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceSubuidNameField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceSubuidNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// gidmap
 	d.containerNamespaceGidmapField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceGidmapField.SetLabel(utils.StringToInputLabel("gidmap:", namespacePageLabelWidth))
-	d.containerNamespaceGidmapField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceGidmapField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceGidmapField.SetLabelStyle(style.InputLabelStyle)
 
 	// subgidname
@@ -1994,7 +1983,7 @@ func (d *ContainerCreateDialog) setupNamespacePageUI() {
 
 	d.containerNamespaceSubgidNameField.SetBackgroundColor(style.DialogBgColor)
 	d.containerNamespaceSubgidNameField.SetLabel(utils.StringToInputLabel(subgidnameLabel, len(subgidnameLabel)+1))
-	d.containerNamespaceSubgidNameField.SetFieldBackgroundColor(inputFieldBgColor)
+	d.containerNamespaceSubgidNameField.SetFieldStyle(style.InputFieldStyle)
 	d.containerNamespaceSubgidNameField.SetLabelStyle(style.InputLabelStyle)
 
 	// mapRow01Layout

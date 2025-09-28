@@ -65,7 +65,6 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 
 	bgColor := style.DialogBgColor
 	fgColor := style.DialogFgColor
-	inputFieldBgColor := style.InputFieldBgColor
 	ddUnselectedStyle := style.DropDownUnselected
 	ddselectedStyle := style.DropDownSelected
 
@@ -86,31 +85,31 @@ func NewNetworkConnectDialog() *NetworkConnectDialog {
 	dialog.container.SetListStyles(ddUnselectedStyle, ddselectedStyle)
 	dialog.container.SetCurrentOption(0)
 	dialog.container.SetFieldWidth(netConnectDialogMaxWidth)
-	dialog.container.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.container.SetFieldBackgroundColor(style.FieldBackgroundColor)
 	dialog.container.SetFocusedStyle(style.DropDownFocused)
 
 	// aliases input field
 	dialog.aliases.SetBackgroundColor(bgColor)
 	dialog.aliases.SetLabel(utils.StringToInputLabel("alias:", labelWidth))
-	dialog.aliases.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.aliases.SetFieldStyle(style.InputFieldStyle)
 	dialog.aliases.SetLabelStyle(style.InputLabelStyle)
 
 	// ipv4 input field
 	dialog.ipv4.SetBackgroundColor(bgColor)
 	dialog.ipv4.SetLabel(utils.StringToInputLabel("ipv4:", labelWidth))
-	dialog.ipv4.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ipv4.SetFieldStyle(style.InputFieldStyle)
 	dialog.ipv4.SetLabelStyle(style.InputLabelStyle)
 
 	// ipv6 input field
 	dialog.ipv6.SetBackgroundColor(bgColor)
 	dialog.ipv6.SetLabel(utils.StringToInputLabel("ipv6:", labelWidth))
-	dialog.ipv6.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ipv6.SetFieldStyle(style.InputFieldStyle)
 	dialog.ipv6.SetLabelStyle(style.InputLabelStyle)
 
 	// mac address input field
 	dialog.macAddr.SetBackgroundColor(bgColor)
 	dialog.macAddr.SetLabel(utils.StringToInputLabel("mac address:", labelWidth))
-	dialog.macAddr.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.macAddr.SetFieldStyle(style.InputFieldStyle)
 	dialog.macAddr.SetLabelStyle(style.InputLabelStyle)
 
 	// form

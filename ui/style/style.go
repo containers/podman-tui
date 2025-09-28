@@ -58,9 +58,10 @@ var (
 	DropDownSelected   = tcell.StyleDefault.Background(tcell.ColorLightSlateGray).Foreground(tcell.ColorWhite)
 	DropDownFocused    = tcell.StyleDefault.Background(tcell.ColorWhiteSmoke).Foreground(tcell.ColorBlack)
 	// other primitives.
-	InputLabelStyle   = tcell.StyleDefault.Background(DialogBgColor).Foreground(DialogFgColor)
-	InputFieldBgColor = tcell.ColorGray
-	ButtonBgColor     = tcell.ColorMediumPurple
+	InputLabelStyle      = tcell.StyleDefault.Background(DialogBgColor).Foreground(DialogFgColor)
+	InputFieldStyle      = tcell.StyleDefault.Background(tcell.ColorGray).Foreground(DialogFgColor)
+	FieldBackgroundColor = tcell.ColorGray
+	ButtonBgColor        = tcell.ColorMediumPurple
 )
 
 // GetColorName returns convert tcell color to its name.

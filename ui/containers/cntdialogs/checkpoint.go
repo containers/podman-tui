@@ -76,7 +76,6 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 		form:           tview.NewForm(),
 	}
 
-	inputFieldBgColor := style.InputFieldBgColor
 	labelWidth := 14
 	chkGroupFirstColLabelWidth := 14
 	chkGroupSecondColLabelWidth := 16
@@ -93,13 +92,13 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	// createImage
 	dialog.createImage.SetBackgroundColor(style.DialogBgColor)
 	dialog.createImage.SetLabel(utils.StringToInputLabel("create image:", labelWidth))
-	dialog.createImage.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.createImage.SetFieldStyle(style.InputFieldStyle)
 	dialog.createImage.SetLabelStyle(style.InputLabelStyle)
 
 	// export
 	dialog.export.SetBackgroundColor(style.DialogBgColor)
 	dialog.export.SetLabel(utils.StringToInputLabel("export:", labelWidth))
-	dialog.export.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.export.SetFieldStyle(style.InputFieldStyle)
 	dialog.export.SetLabelStyle(style.InputLabelStyle)
 
 	// printStats
@@ -108,7 +107,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.printStats.SetChecked(false)
 	dialog.printStats.SetBackgroundColor(style.DialogBgColor)
 	dialog.printStats.SetLabelColor(style.DialogFgColor)
-	dialog.printStats.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.printStats.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// fileLock
 	dialog.fileLock.SetLabel("file lock:")
@@ -116,7 +115,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.fileLock.SetChecked(false)
 	dialog.fileLock.SetBackgroundColor(style.DialogBgColor)
 	dialog.fileLock.SetLabelColor(style.DialogFgColor)
-	dialog.fileLock.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.fileLock.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "ignore rootFS:")
@@ -125,7 +124,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.ignoreRootFS.SetChecked(false)
 	dialog.ignoreRootFS.SetBackgroundColor(style.DialogBgColor)
 	dialog.ignoreRootFS.SetLabelColor(style.DialogFgColor)
-	dialog.ignoreRootFS.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.ignoreRootFS.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// keep
 	keepLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "keep:")
@@ -134,7 +133,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.keep.SetChecked(false)
 	dialog.keep.SetBackgroundColor(style.DialogBgColor)
 	dialog.keep.SetLabelColor(style.DialogFgColor)
-	dialog.keep.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.keep.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "tcp established:")
@@ -143,7 +142,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.tcpEstablished.SetChecked(false)
 	dialog.tcpEstablished.SetBackgroundColor(style.DialogBgColor)
 	dialog.tcpEstablished.SetLabelColor(style.DialogFgColor)
-	dialog.tcpEstablished.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.tcpEstablished.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// leaveRunning
 	leaveRunningLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "leave running:")
@@ -152,7 +151,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.leaveRunning.SetChecked(false)
 	dialog.leaveRunning.SetBackgroundColor(style.DialogBgColor)
 	dialog.leaveRunning.SetLabelColor(style.DialogFgColor)
-	dialog.leaveRunning.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.leaveRunning.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// preCheckpoint
 	preCheckPointLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "pre checkpoint:")
@@ -161,7 +160,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.preCheckpoint.SetChecked(false)
 	dialog.preCheckpoint.SetBackgroundColor(style.DialogBgColor)
 	dialog.preCheckpoint.SetLabelColor(style.DialogFgColor)
-	dialog.preCheckpoint.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.preCheckpoint.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// withPrevious
 	withPreviousLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "with previous:")
@@ -170,7 +169,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.withPrevious.SetChecked(false)
 	dialog.withPrevious.SetBackgroundColor(style.DialogBgColor)
 	dialog.withPrevious.SetLabelColor(style.DialogFgColor)
-	dialog.withPrevious.SetFieldBackgroundColor(inputFieldBgColor)
+	dialog.withPrevious.SetFieldBackgroundColor(style.FieldBackgroundColor)
 
 	// form
 	dialog.form.AddButton(" Cancel ", nil)
