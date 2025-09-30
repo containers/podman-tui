@@ -10,6 +10,7 @@
   - [**Gentoo**](#gentoo)
   - [**RHEL**](#rhel)
 - [**Installing on Mac**](#installing-on-mac)
+- [**Installing on Windows**](#installing-on-windows)
 - [**Container Image**](#container-image)
 - [**Configuration Files**](#configurations-files)
 
@@ -80,6 +81,16 @@ podman-tui can be obtained through Homebrew package manager.
 
 ```shell
 $ brew install podman-tui
+```
+
+# Installing on Windows
+
+podman-tui can be obtained through WinGet Windows package manager.
+
+`NOTE:` podman-tui is only supported on Windows PowerShell.
+
+```shell
+winget install Containers.PodmanTUI
 ```
 
 ## Container image

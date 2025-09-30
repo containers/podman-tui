@@ -60,6 +60,7 @@ podman-tui uses following keyboard keys for different actions:
 | Action                           | Key        |
 | -------------------------------- | ---------- |
 | Display command menu             | m          |
+| Display sort menu                | s          |
 | Switch to next screen            | l          |
 | Switch to previous screen        | h          |
 | Move up                          | k          |
