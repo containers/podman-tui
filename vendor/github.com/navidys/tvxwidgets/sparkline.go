@@ -1,13 +1,14 @@
 package tvxwidgets
 
 import (
+	"math"
 	"sync"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
-// Spartline represents a sparkline widgets.
+// Sparkline represents a sparkline widgets.
 type Sparkline struct {
 	*tview.Box
 
@@ -18,7 +19,7 @@ type Sparkline struct {
 	mu             sync.Mutex
 }
 
-// NewSparkline returns a a new sparkline widget.
+// NewSparkline returns a new sparkline widget.
 func NewSparkline() *Sparkline {
 	return &Sparkline{
 		Box: tview.NewBox(),
@@ -27,32 +28,38 @@ func NewSparkline() *Sparkline {
 
 // Draw draws this primitive onto the screen.
 func (sl *Sparkline) Draw(screen tcell.Screen) {
-	sl.Box.DrawForSubclass(screen, sl)
+	sl.DrawForSubclass(screen, sl)
 
-	x, y, width, height := sl.Box.GetInnerRect()
+	x, y, width, height := sl.GetInnerRect()
 	barHeight := height
 
 	// print label
 	if sl.dataTitle != "" {
 		tview.Print(screen, sl.dataTitle, x, y, width, tview.AlignLeft, sl.dataTitlecolor)
+
 		barHeight--
 	}
 
 	maxVal := getMaxFloat64FromSlice(sl.data)
-	if maxVal == 0 {
+	if maxVal < 0 {
 		return
 	}
 
 	// print lines
 	for i := 0; i < len(sl.data) && i+x < x+width; i++ {
 		data := sl.data[i]
+
+		if math.IsNaN(data) {
+			continue
+		}
+
 		dHeight := int((data / maxVal) * float64(barHeight))
 
 		sparkChar := barsRune[len(barsRune)-1]
 
 		style := tcell.StyleDefault.Background(sl.GetBackgroundColor()).Foreground(sl.lineColor)
 
-		for j := 0; j < dHeight; j++ {
+		for j := range dHeight {
 			tview.PrintJoinedSemigraphics(screen, i+x, y-1+height-j, sparkChar, style)
 		}
 

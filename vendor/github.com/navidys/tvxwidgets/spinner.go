@@ -15,6 +15,7 @@ type Spinner struct {
 	styles map[SpinnerStyle][]rune
 }
 
+// SpinnerStyle spinner style.
 type SpinnerStyle int
 
 const (
@@ -63,8 +64,8 @@ func NewSpinner() *Spinner {
 
 // Draw draws this primitive onto the screen.
 func (s *Spinner) Draw(screen tcell.Screen) {
-	s.Box.DrawForSubclass(screen, s)
-	x, y, width, _ := s.Box.GetInnerRect()
+	s.DrawForSubclass(screen, s)
+	x, y, width, _ := s.GetInnerRect()
 	tview.Print(screen, s.getCurrentFrame(), x, y, width, tview.AlignLeft, tcell.ColorDefault)
 }
 
@@ -85,6 +86,14 @@ func (s *Spinner) SetStyle(style SpinnerStyle) *Spinner {
 	return s
 }
 
+// SetCustomStyle sets a list of runes as custom frames to show as the spinner.
+func (s *Spinner) SetCustomStyle(frames []rune) *Spinner {
+	s.styles[spinnerCustom] = frames
+	s.currentStyle = spinnerCustom
+
+	return s
+}
+
 func (s *Spinner) getCurrentFrame() string {
 	frames := s.styles[s.currentStyle]
 	if len(frames) == 0 {
@@ -92,12 +101,4 @@ func (s *Spinner) getCurrentFrame() string {
 	}
 
 	return string(frames[s.counter%len(frames)])
-}
-
-// SetCustomStyle sets a list of runes as custom frames to show as the spinner.
-func (s *Spinner) SetCustomStyle(frames []rune) *Spinner {
-	s.styles[spinnerCustom] = frames
-	s.currentStyle = spinnerCustom
-
-	return s
 }

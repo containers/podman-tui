@@ -1,7 +1,7 @@
 package tvxwidgets
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -23,6 +23,7 @@ type BarChartItem struct {
 // BarChart represents bar chart primitive.
 type BarChart struct {
 	*tview.Box
+
 	// bar items
 	bars []BarChartItem
 	// maximum value of bars
@@ -61,14 +62,14 @@ func (c *BarChart) HasFocus() bool {
 }
 
 // Draw draws this primitive onto the screen.
-func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
-	c.Box.DrawForSubclass(screen, c)
+func (c *BarChart) Draw(screen tcell.Screen) { //nolint:funlen,cyclop
+	c.DrawForSubclass(screen, c)
 
-	x, y, width, height := c.Box.GetInnerRect()
+	x, y, width, height := c.GetInnerRect()
 
 	maxValY := y + 1
-	xAxisStartY := y + height - 2 // nolint:gomnd
-	barStartY := y + height - 3   // nolint:gomnd
+	xAxisStartY := y + height - 2 //nolint:mnd
+	barStartY := y + height - 3   //nolint:mnd
 	borderPadding := 0
 
 	if c.hasBorder {
@@ -76,7 +77,7 @@ func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 	}
 	// set max value if not set
 	c.initMaxValue()
-	maxValueSr := fmt.Sprintf("%d", c.maxVal)
+	maxValueSr := strconv.Itoa(c.maxVal)
 	maxValLenght := len(maxValueSr) + 1
 
 	if maxValLenght < barChartYAxisLabelWidth {
@@ -108,7 +109,7 @@ func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 	tview.PrintJoinedSemigraphics(screen, x+maxValLenght-1, xAxisStartY, '0', axesLabelStyle)
 
 	mxValRune := []rune(maxValueSr)
-	for i := 0; i < len(mxValRune); i++ {
+	for i := range mxValRune {
 		tview.PrintJoinedSemigraphics(screen, x+borderPadding+i, maxValY, mxValRune[i], axesLabelStyle)
 	}
 
@@ -123,23 +124,23 @@ func (c *BarChart) Draw(screen tcell.Screen) { // nolint:funlen,cyclop
 		}
 		// set labels
 		r := []rune(item.label)
-		for j := 0; j < len(r); j++ {
+		for j := range r {
 			tview.PrintJoinedSemigraphics(screen, startX+j, labelY, r[j], axesLabelStyle)
 		}
 		// bar style
 		bStyle := tcell.StyleDefault.Background(c.GetBackgroundColor()).Foreground(item.color)
 		barHeight := c.getHeight(valueMaxHeight, item.value)
 
-		for k := 0; k < barHeight; k++ {
-			for l := 0; l < c.barWidth; l++ {
+		for k := range barHeight {
+			for l := range c.barWidth {
 				tview.PrintJoinedSemigraphics(screen, startX+l, barStartY-k, fullBlockRune, bStyle)
 			}
 		}
 		// bar value
-		vSt := fmt.Sprintf("%d", item.value)
+		vSt := strconv.Itoa(item.value)
 		vRune := []rune(vSt)
 
-		for i := 0; i < len(vRune); i++ {
+		for i := range vRune {
 			tview.PrintJoinedSemigraphics(screen, startX+i, barStartY-barHeight, vRune[i], bStyle)
 		}
 
@@ -170,8 +171,8 @@ func (c *BarChart) SetRect(x, y, width, height int) {
 }
 
 // SetMaxValue sets maximum value of bars.
-func (c *BarChart) SetMaxValue(max int) {
-	c.maxVal = max
+func (c *BarChart) SetMaxValue(maxValue int) {
+	c.maxVal = maxValue
 }
 
 // SetAxesColor sets axes x and y lines color.
@@ -193,9 +194,22 @@ func (c *BarChart) AddBar(label string, value int, color tcell.Color) {
 	})
 }
 
+// RemoveBar removes a bar item from the bar chart.
+func (c *BarChart) RemoveBar(label string) {
+	bars := c.bars[:0]
+
+	for _, barItem := range c.bars {
+		if barItem.label != label {
+			bars = append(bars, barItem)
+		}
+	}
+
+	c.bars = bars
+}
+
 // SetBarValue sets bar values.
 func (c *BarChart) SetBarValue(name string, value int) {
-	for i := 0; i < len(c.bars); i++ {
+	for i := range c.bars {
 		if c.bars[i].label == name {
 			c.bars[i].value = value
 		}

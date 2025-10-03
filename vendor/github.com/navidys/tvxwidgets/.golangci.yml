@@ -1,21 +1,36 @@
+version: "2"
 run:
-  deadline: 5m
-  skip-dirs:
-    - demos
+  modules-download-mode: readonly
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: disable
+
 linters:
-  enable-all: true
+  default: all
   disable:
-    - exhaustruct
     - varnamelen
-    # deprecated
-    - golint
-    - maligned
-    - interfacer
-    - scopelint
-    - exhaustivestruct
-linters-settings:
-  errcheck:
-    check-blank: false
-    ignore: fmt:.*
-  nolintlint:
-    require-specific: true
+    - exhaustruct
+    - depguard
+    - wsl
+  settings:
+    errcheck:
+      check-blank: false
+      exclude-functions:
+        - fmt:.*
+    nolintlint:
+      require-specific: true
+    revive:
+      rules:
+        - name: package-comments
+          disabled: true
+  exclusions:
+    paths:
+      - demos
+      - ".*_test.go"
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
