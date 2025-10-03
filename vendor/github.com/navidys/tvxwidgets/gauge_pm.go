@@ -10,6 +10,7 @@ import (
 // PercentageModeGauge represents percentage mode gauge permitive.
 type PercentageModeGauge struct {
 	*tview.Box
+
 	// maxValue value
 	maxValue int
 	// value is current value
@@ -31,13 +32,13 @@ func NewPercentageModeGauge() *PercentageModeGauge {
 
 // Draw draws this primitive onto the screen.
 func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
-	g.Box.DrawForSubclass(screen, g)
+	g.DrawForSubclass(screen, g)
 
 	if g.maxValue == 0 {
 		return
 	}
 
-	x, y, width, height := g.Box.GetInnerRect()
+	x, y, width, height := g.GetInnerRect()
 	pcWidth := 3
 	pc := g.value * gaugeMaxPc / g.maxValue
 	pcString := fmt.Sprintf("%d%%", pc)
@@ -47,8 +48,8 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 	prgBlock := g.progressBlock(width)
 	style := tcell.StyleDefault.Background(g.pgBgColor).Foreground(tview.Styles.PrimaryTextColor)
 
-	for i := 0; i < height; i++ {
-		for j := 0; j < prgBlock; j++ {
+	for i := range height {
+		for j := range prgBlock {
 			screen.SetContent(x+j, y+i, ' ', nil, style)
 		}
 	}
@@ -56,22 +57,18 @@ func (g *PercentageModeGauge) Draw(screen tcell.Screen) {
 	// print percentage in middle of box
 
 	pcRune := []rune(pcString)
-	for j := 0; j < len(pcRune); j++ {
+	for j := range pcRune {
 		style = tcell.StyleDefault.Background(tview.Styles.PrimitiveBackgroundColor).Foreground(tview.Styles.PrimaryTextColor)
 		if x+prgBlock >= tX+j {
 			style = tcell.StyleDefault.Background(g.pgBgColor).Foreground(tview.Styles.PrimaryTextColor)
 		}
 
-		for i := 0; i < height; i++ {
+		for i := range height {
 			screen.SetContent(tX+j, y+i, ' ', nil, style)
 		}
+
 		screen.SetContent(tX+j, tY, pcRune[j], nil, style)
 	}
-}
-
-// SetTitle sets title for this primitive.
-func (g *PercentageModeGauge) SetTitle(title string) {
-	g.Box.SetTitle(title)
 }
 
 // Focus is called when this primitive receives focus.
@@ -127,13 +124,13 @@ func (g *PercentageModeGauge) Reset() {
 	g.value = 0
 }
 
-func (g *PercentageModeGauge) progressBlock(max int) int {
+func (g *PercentageModeGauge) progressBlock(maxValue int) int {
 	if g.maxValue == 0 {
 		return g.maxValue
 	}
 
 	pc := g.value * gaugeMaxPc / g.maxValue
-	value := pc * max / gaugeMaxPc
+	value := pc * maxValue / gaugeMaxPc
 
 	return value
 }

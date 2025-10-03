@@ -10,6 +10,7 @@ import (
 // ActivityModeGauge represents activity mode gauge permitive.
 type ActivityModeGauge struct {
 	*tview.Box
+
 	// counter value
 	counter int
 
@@ -30,18 +31,13 @@ func NewActivityModeGauge() *ActivityModeGauge {
 
 // Draw draws this primitive onto the screen.
 func (g *ActivityModeGauge) Draw(screen tcell.Screen) {
-	g.Box.DrawForSubclass(screen, g)
-	x, y, width, height := g.Box.GetInnerRect()
+	g.DrawForSubclass(screen, g)
+	x, y, width, height := g.GetInnerRect()
 	tickStr := g.tickStr(width)
 
-	for i := 0; i < height; i++ {
+	for i := range height {
 		tview.Print(screen, tickStr, x, y+i, width, tview.AlignLeft, g.pgBgColor)
 	}
-}
-
-// SetTitle sets title for this primitive.
-func (g *ActivityModeGauge) SetTitle(title string) {
-	g.Box.SetTitle(title)
 }
 
 // Focus is called when this primitive receives focus.
@@ -78,27 +74,27 @@ func (g *ActivityModeGauge) Reset() {
 	g.counter = 0
 }
 
-func (g *ActivityModeGauge) tickStr(max int) string {
+func (g *ActivityModeGauge) tickStr(maxCount int) string {
 	var (
 		prgHeadStr string
 		prgEndStr  string
 		prgStr     string
 	)
 
-	if g.counter >= max-4 {
+	if g.counter >= maxCount-4 {
 		g.counter = 0
 	}
 
 	hWidth := 0
 
-	for i := 0; i < g.counter; i++ {
+	for range g.counter {
 		prgHeadStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
 		hWidth++
 	}
 
 	prgStr = prgCell + prgCell + prgCell + prgCell
 
-	for i := 0; i < max+hWidth+4; i++ {
+	for range maxCount + hWidth + 4 {
 		prgEndStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
 	}
 

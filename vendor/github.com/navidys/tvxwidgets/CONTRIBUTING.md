@@ -1,6 +1,6 @@
 # Contributing To Tvxwidgets
 
-We'd love your contribtion on the project!
+We'd love your contribution on the project!
 
 ## Developer Certificate of Origin
 
