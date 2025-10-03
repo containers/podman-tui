@@ -24,7 +24,7 @@ VCS: {{{ git_dir_vcs }}}
 Source0: {{{ git_dir_pack }}}
 
 BuildRequires: gcc
-BuildRequires: golang >= 1.18.2
+BuildRequires: golang
 BuildRequires: glib2-devel
 BuildRequires: glibc-devel
 BuildRequires: glibc-static

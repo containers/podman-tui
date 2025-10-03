@@ -1,6 +1,6 @@
 module github.com/containers/podman-tui
 
-go 1.24.0
+go 1.24.7
 
 require (
 	github.com/containers/buildah v1.41.5
