@@ -1,19 +1,28 @@
 TARGET := $(shell basename `pwd`)
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+GO := go
 BIN := ./bin
 PRE_COMMIT = $(shell command -v bin/venv/bin/pre-commit ~/.local/bin/pre-commit pre-commit | head -n1)
 PKG_MANAGER ?= $(shell command -v dnf yum|head -n1)
+GINKO_CLI_VERSION = $(shell grep 'ginkgo/v2' go.mod | grep -o ' v.*' | sed 's/ //g' | sed 's|//indirect||g')
+COVERAGE_PATH ?= .coverage
 
 #=================================================
 # Required tools installation tartgets
 #=================================================
 
 .PHONY: install.tools
-install.tools: .install.pre-commit .install.codespell .install.golangci-lint ## Install needed tools
+install.tools: .install.pre-commit .install.codespell .install.golangci-lint .install.ginkgo ## Install needed tools
 
 .PHONY: .install.codespell
 .install.codespell:
 	sudo ${PKG_MANAGER} -y install codespell
+
+.PHONY: .install.ginkgo
+.install.ginkgo:
+	if [ ! -x "$(GOBIN)/ginkgo" ]; then \
+		$(GO) install -mod=mod github.com/onsi/ginkgo/v2/ginkgo@$(GINKO_CLI_VERSION) ; \
+	fi
 
 .PHONY: .install.pre-commit
 .install.pre-commit:
@@ -23,7 +32,29 @@ install.tools: .install.pre-commit .install.codespell .install.golangci-lint ## 
 
 .PHONY: .install.golangci-lint
 .install.golangci-lint:
-	VERSION=1.46.2 ./hack/install_golangci.sh
+	VERSION=2.3.1 ./hack/install_golangci.sh
+
+#=================================================
+# Testing (units, functionality, ...) targets
+#=================================================
+
+.PHONY: test
+test: test-unit
+
+.PHONY: test-unit
+test-unit: ## Run unit tests
+	rm -rf ${COVERAGE_PATH} && mkdir -p ${COVERAGE_PATH}
+	$(GOBIN)/ginkgo \
+		-r \
+		--skip-package test/ \
+		--cover \
+		--covermode atomic \
+		--coverprofile coverprofile \
+		--output-dir ${COVERAGE_PATH} \
+		--succinct
+	$(GO) tool cover -html=${COVERAGE_PATH}/coverprofile -o ${COVERAGE_PATH}/coverage.html
+	$(GO) tool cover -func=${COVERAGE_PATH}/coverprofile > ${COVERAGE_PATH}/functions
+	cat ${COVERAGE_PATH}/functions | sed -n 's/\(total:\).*\([0-9][0-9].[0-9]\)/\1 \2/p'
 
 #=================================================
 # Linting/Formatting/Code Validation targets
@@ -58,7 +89,7 @@ govet:   ## Run govet
 .PHONY: codespell
 codespell: ## Run codespell
 	@echo "running codespell"
-	@codespell -S ./vendor,go.mod,go.sum,./.git
+	@codespell -S ./vendor,go.mod,go.sum,./.git,*_test.go
 
 #=================================================
 # Help menu

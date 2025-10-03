@@ -6,7 +6,7 @@
 *.dylib
 .vscode/*
 bin/*
-
+.coverage
 # Test binary, built with `go test -c`
 *.test
 

@@ -1,6 +1,7 @@
 package tvxwidgets
 
 import (
+	"math"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -37,14 +38,14 @@ const (
 )
 
 var (
-	brailleRune = [4][2]rune{ // nolint:gochecknoglobals
+	brailleRune = [4][2]rune{ //nolint:gochecknoglobals
 		{'\u0001', '\u0008'},
 		{'\u0002', '\u0010'},
 		{'\u0004', '\u0020'},
 		{'\u0040', '\u0080'},
 	}
 
-	barsRune = [...]rune{' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'} // nolint:gochecknoglobals
+	barsRune = [...]rune{' ', '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'} //nolint:gochecknoglobals
 )
 
 // getColorName returns convert tcell color to its name.
@@ -76,17 +77,63 @@ func getMaxFloat64From2dSlice(slices [][]float64) float64 {
 		return 0
 	}
 
-	var max float64
+	var (
+		maxValue  float64
+		maxIsInit bool
+	)
 
 	for _, slice := range slices {
 		for _, val := range slice {
-			if val > max {
-				max = val
+			if math.IsNaN(val) {
+				continue
+			}
+
+			if !maxIsInit {
+				maxIsInit = true
+				maxValue = val
+
+				continue
+			}
+
+			if val > maxValue {
+				maxValue = val
 			}
 		}
 	}
 
-	return max
+	return maxValue
+}
+
+func getMinFloat64From2dSlice(slices [][]float64) float64 {
+	if len(slices) == 0 {
+		return 0
+	}
+
+	var (
+		minValue  float64
+		minIsInit bool
+	)
+
+	for _, slice := range slices {
+		for _, val := range slice {
+			if math.IsNaN(val) {
+				continue
+			}
+
+			if !minIsInit {
+				minIsInit = true
+				minValue = val
+
+				continue
+			}
+
+			if val < minValue {
+				minValue = val
+			}
+		}
+	}
+
+	return minValue
 }
 
 // returns max values in float64 slices.
@@ -95,15 +142,19 @@ func getMaxFloat64FromSlice(slice []float64) float64 {
 		return 0
 	}
 
-	var max float64
+	maxValue := -1.0
 
-	for _, val := range slice {
-		if val > max {
-			max = val
+	for i := range slice {
+		if math.IsNaN(slice[i]) {
+			continue
+		}
+
+		if slice[i] > maxValue {
+			maxValue = slice[i]
 		}
 	}
 
-	return max
+	return maxValue
 }
 
 func absInt(x int) int {
@@ -114,14 +165,15 @@ func absInt(x int) int {
 	return -x
 }
 
-func drawLine(screen tcell.Screen, x int, y int, length int, mode drawLineMode, style tcell.Style) {
-	if mode == horizontalLine {
-		for i := 0; i < length; i++ {
-			tview.PrintJoinedSemigraphics(screen, x+i, y, tview.BoxDrawingsLightTripleDashHorizontal, style)
+func drawLine(screen tcell.Screen, startX int, startY int, length int, mode drawLineMode, style tcell.Style) {
+	switch mode {
+	case horizontalLine:
+		for i := range length {
+			tview.PrintJoinedSemigraphics(screen, startX+i, startY, tview.BoxDrawingsLightTripleDashHorizontal, style)
 		}
-	} else if mode == verticalLine {
-		for i := 0; i < length; i++ {
-			tview.PrintJoinedSemigraphics(screen, x, y+i, tview.BoxDrawingsLightTripleDashVertical, style)
+	case verticalLine:
+		for i := range length {
+			tview.PrintJoinedSemigraphics(screen, startX, startY+i, tview.BoxDrawingsLightTripleDashVertical, style)
 		}
 	}
 }

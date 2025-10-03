@@ -16,6 +16,7 @@ const (
 // MessageDialog represents message dialog primitive.
 type MessageDialog struct {
 	*tview.Box
+
 	// layout message dialog layout
 	layout *tview.Flex
 	// message view
@@ -37,7 +38,7 @@ type MessageDialog struct {
 	bgColor tcell.Color
 	// message dialog text message to display.
 	message string
-	// callback for whwen user clicked on the the button or presses "enter" or "esc"
+	// callback for when user clicked on the button or presses "enter" or "esc"
 	doneHandler func()
 }
 
@@ -68,18 +69,15 @@ func NewMessageDialog(dtype int) *MessageDialog {
 	return dialog
 }
 
-// SetBorder sets dialogs border - no effect always true.
-func (d *MessageDialog) SetBorder(status bool) {}
-
 // SetType sets dialog type to info or error.
 func (d *MessageDialog) SetType(dtype int) {
-	if dtype >= 0 && dtype <= 2 {
+	if dtype >= 0 && dtype <= 1 {
 		d.messageType = dtype
 		d.setColor()
 	}
 }
 
-// SetTitle sets title for this primitive.
+// SetTitle sets dialog title.
 func (d *MessageDialog) SetTitle(title string) {
 	d.layout.SetTitle(title)
 }
@@ -125,8 +123,8 @@ func (d *MessageDialog) SetTextColor(color tcell.Color) {
 
 // Draw draws this primitive onto the screen.
 func (d *MessageDialog) Draw(screen tcell.Screen) {
-	d.Box.DrawForSubclass(screen, d)
-	x, y, width, height := d.Box.GetInnerRect()
+	d.DrawForSubclass(screen, d)
+	x, y, width, height := d.GetInnerRect()
 	d.layout.SetRect(x, y, width, height)
 	d.layout.Draw(screen)
 }
@@ -134,13 +132,14 @@ func (d *MessageDialog) Draw(screen tcell.Screen) {
 // InputHandler returns input handler function for this primitive.
 func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
 	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { // nolint:lll
+		if event.Key() == tcell.KeyDown || event.Key() == tcell.KeyUp || event.Key() == tcell.KeyPgDn || event.Key() == tcell.KeyPgUp { //nolint:lll
 			if textHandler := d.textview.InputHandler(); textHandler != nil {
 				textHandler(event, setFocus)
 
 				return
 			}
 		}
+
 		if formHandler := d.form.InputHandler(); formHandler != nil {
 			formHandler(event, setFocus)
 
@@ -150,12 +149,13 @@ func (d *MessageDialog) InputHandler() func(event *tcell.EventKey, setFocus func
 }
 
 // MouseHandler returns the mouse handler for this primitive.
-func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { // nolint:lll
-	return d.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { // nolint:lll,nonamedreturns
+func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { //nolint:lll
+	return d.WrapMouseHandler(func(action tview.MouseAction, event *tcell.EventMouse, setFocus func(p tview.Primitive)) (consumed bool, capture tview.Primitive) { //nolint:lll,nonamedreturns
 		// Pass mouse events on to the form.
 		consumed, capture = d.form.MouseHandler()(action, event, setFocus)
 		if !consumed && action == tview.MouseLeftClick && d.InRect(event.Position()) {
 			setFocus(d)
+
 			consumed = true
 		}
 
@@ -164,13 +164,18 @@ func (d *MessageDialog) MouseHandler() func(action tview.MouseAction, event *tce
 }
 
 // SetDoneFunc sets callback function for when user clicked on
-// the the button or presses "enter" or "esc".
+// the button or presses "enter" or "esc".
 func (d *MessageDialog) SetDoneFunc(handler func()) *MessageDialog {
 	d.doneHandler = handler
 	enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
 	enterButton.SetSelectedFunc(handler)
 
 	return d
+}
+
+// GetBackgroundColor returns dialog background color.
+func (d *MessageDialog) GetBackgroundColor() tcell.Color {
+	return d.bgColor
 }
 
 func (d *MessageDialog) setColor() {
@@ -186,11 +191,13 @@ func (d *MessageDialog) setColor() {
 	d.form.SetBackgroundColor(bgColor)
 	d.textview.SetBackgroundColor(bgColor)
 	d.layout.SetBackgroundColor(bgColor)
+
+	d.bgColor = bgColor
 }
 
 func (d *MessageDialog) setRect() {
 	maxHeight := d.height
-	maxWidth := d.width // nolint:ifshort
+	maxWidth := d.width
 	messageHeight := len(strings.Split(d.message, "\n"))
 	messageWidth := getMessageWidth(d.message)
 
