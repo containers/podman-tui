@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 1.9.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,7 +60,14 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sat Sep 13 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.9.0-dev-1
+* Sat Oct 04 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.9.0-1
+- Bump github.com/navidys/tvxwidgets from 0.4.1 to 0.12.1
+- Bump golang to 1.24.7 - CVE-2025-47910 and CVE-2025-47906
+- Bump github.com/containers/podman/v5 from 5.6.1 to 5.6.2
+- Doc update - Adding Windows installation via WinGet package manager
+
+* Sun Sep 28 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.1-1
+- Windows use default style colors
 
 * Sat Sep 13 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.8.0-1
 - Bump github.com/containers/podman/v5 from 5.5.2 to 5.6.1
