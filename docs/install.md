@@ -8,6 +8,7 @@
   - [**CentOS Stream**](#centos-stream)
   - [**Fedora**](#fedora)
   - [**Gentoo**](#gentoo)
+  - [**Nix**](#nix)
   - [**RHEL**](#rhel)
 - [**Installing on Mac**](#installing-on-mac)
 - [**Installing on Windows**](#installing-on-windows)
@@ -67,6 +68,12 @@ $ sudo dnf -y install podman-tui
 $ sudo emerge app-containers/podman-tui
 ```
 
+### Nix
+
+```shell
+$ nix-shell -p podman-tui
+```
+
 ### RHEL
 
 Enable [EPEL repository](https://docs.fedoraproject.org/en-US/epel/) and then run:
@@ -77,7 +84,7 @@ $ sudo dnf -y install podman-tui
 
 ## Installing on Mac
 
-podman-tui can be obtained through Homebrew package manager.
+podman-tui can be obtained through Homebrew package manager or Nix package manager.
 
 ```shell
 $ brew install podman-tui
