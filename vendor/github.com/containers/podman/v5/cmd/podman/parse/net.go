@@ -10,8 +10,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/containers/common/libnetwork/etchosts"
-	"github.com/containers/storage/pkg/regexp"
+	"go.podman.io/common/libnetwork/etchosts"
+	"go.podman.io/storage/pkg/regexp"
 )
 
 const (
@@ -39,8 +39,7 @@ func ValidateExtraHost(val string) (string, error) {
 	}
 
 	// Split the hostnames by semicolon and validate each one
-	nameList := strings.Split(names, ";")
-	for _, name := range nameList {
+	for name := range strings.SplitSeq(names, ";") {
 		if len(name) == 0 {
 			return "", fmt.Errorf("hostname in add-host %q is empty", val)
 		}
