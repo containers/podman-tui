@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/containers/image/v5/types"
-	"github.com/containers/storage/pkg/fileutils"
 	"github.com/docker/docker/pkg/homedir"
+	"go.podman.io/image/v5/types"
+	"go.podman.io/storage/pkg/fileutils"
 	"sigs.k8s.io/yaml"
 )
 
@@ -112,7 +112,7 @@ func registriesDConfigurationForScope(registryConfigs *registryConfiguration, sc
 				return &val
 			}
 		}
-		for range strings.Split(scope, "/") {
+		for range strings.SplitSeq(scope, "/") {
 			val, exists := registryConfigs.Docker[searchScope]
 			if exists {
 				return &val
