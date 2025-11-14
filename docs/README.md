@@ -45,6 +45,16 @@ Building from source (Linux, Windows and MacOS) or installing packaged versions 
 
     See [start podman system service](https://podman.io/blogs/2020/08/10/podman-go-bindings.html) for more details.
 
+* `podman.socket` for non systemd and rootless mode.
+    For non-systemd distributions, the socket can be created using the below command.
+    Add this command to your distro or window manager’s autostart to start the service automatically.
+
+    ```shell
+    $ podman system service
+    ```
+
+    Note: This command creates the socket only for the user who runs it. To create the socket for the root user, run the command with `sudo`.
+
 * If the SSH key has a passphrase, then you need to set and export `CONTAINER_PASSPHRASE=<password>` variable.
     ```shell
     $ export CONTAINER_PASSPHRASE=keypass
