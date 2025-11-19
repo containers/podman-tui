@@ -1,4 +1,4 @@
-// Copyright 2024 The TCell Authors
+// Copyright 2025 The TCell Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use file except in compliance with the License.
@@ -253,9 +253,9 @@ const (
 	ModifiersXTerm = 1
 )
 
-type stack []interface{}
+type stack []any
 
-func (st stack) Push(v interface{}) stack {
+func (st stack) Push(v any) stack {
 	if b, ok := v.(bool); ok {
 		if b {
 			return append(st, 1)
@@ -337,12 +337,12 @@ func (pb *paramsBuffer) PutString(s string) {
 // TParm takes a terminfo parameterized string, such as setaf or cup, and
 // evaluates the string, and returns the result with the parameter
 // applied.
-func (t *Terminfo) TParm(s string, p ...interface{}) string {
+func (t *Terminfo) TParm(s string, p ...any) string {
 	var stk stack
 	var a string
 	var ai, bi int
 	var dvars [26]string
-	var params [9]interface{}
+	var params [9]any
 	var pb = &paramsBuffer{}
 
 	pb.Start(s)
@@ -682,6 +682,20 @@ var (
 // AddTerminfo can be called to register a new Terminfo entry.
 func AddTerminfo(t *Terminfo) {
 	dblock.Lock()
+
+	// We intrinisically handle Backspace as either \b or \x7F
+	// We'll probably remove these terminfo definitions in the future
+	// as they just lead to extra pain.
+	if t.KeyBackspace == "\b" || t.KeyBackspace == "\x7F" {
+		t.KeyBackspace = ""
+	}
+
+	// sun mistakenly calls this delete, but it is really
+	// a backspace, not a forward delete.
+	if t.KeyDelete == "\x7F" || t.KeyDelete == "\b" {
+		t.KeyDelete = ""
+	}
+
 	terminfos[t.Name] = t
 	for _, x := range t.Aliases {
 		terminfos[x] = t
@@ -778,4 +792,12 @@ func LookupTerminfo(name string) (*Terminfo, error) {
 		t.ResetFgBg = "\x1b[39;49m"
 	}
 	return t, nil
+}
+
+func TerminfoNames() []string {
+	res := make([]string, 0, len(terminfos))
+	for m := range terminfos {
+		res = append(res, m)
+	}
+	return res
 }

@@ -24,6 +24,7 @@ package dynamic
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -126,7 +127,7 @@ func (tc *termcap) setupterm(name string) error {
 	tc.nums = make(map[string]int)
 
 	if err := cmd.Run(); err != nil {
-		return err
+		return fmt.Errorf("couldn't open terminfo ($TERM) file for %s: %w", name, err)
 	}
 
 	// Now parse the output.
@@ -144,9 +145,7 @@ func (tc *termcap) setupterm(name string) error {
 		lines = lines[:len(lines)-1]
 	}
 	header := lines[0]
-	if strings.HasSuffix(header, ",") {
-		header = header[:len(header)-1]
-	}
+	header = strings.TrimSuffix(header, ",")
 	names := strings.Split(header, "|")
 	tc.name = names[0]
 	names = names[1:]
