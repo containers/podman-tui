@@ -4,11 +4,11 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/containers/common/pkg/config"
-	"github.com/containers/image/v5/signature/signer"
-	"github.com/containers/image/v5/types"
 	encconfig "github.com/containers/ocicrypt/config"
 	entitiesTypes "github.com/containers/podman/v5/pkg/domain/entities/types"
+	"go.podman.io/common/pkg/config"
+	"go.podman.io/image/v5/signature/signer"
+	"go.podman.io/image/v5/types"
 )
 
 type ImageSummary = entitiesTypes.ImageSummary
@@ -17,7 +17,7 @@ type ImageSummary = entitiesTypes.ImageSummary
 type ImageRemoveOptions struct {
 	// All will remove all images.
 	All bool
-	// Foce will force image removal including containers using the images.
+	// Force will force image removal including containers using the images.
 	Force bool
 	// Ignore if a specified image does not exist and do not throw an error.
 	Ignore bool
