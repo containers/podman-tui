@@ -9,17 +9,17 @@ import (
 	"net/url"
 	"strconv"
 
-	imageTypes "github.com/containers/image/v5/types"
 	handlersTypes "github.com/containers/podman/v5/pkg/api/handlers/types"
 	"github.com/containers/podman/v5/pkg/auth"
 	"github.com/containers/podman/v5/pkg/bindings"
 	"github.com/containers/podman/v5/pkg/domain/entities/reports"
 	"github.com/containers/podman/v5/pkg/domain/entities/types"
+	imageTypes "go.podman.io/image/v5/types"
 )
 
 // Exists a lightweight way to determine if an image exists in local storage.  It returns a
 // boolean response.
-func Exists(ctx context.Context, nameOrID string, options *ExistsOptions) (bool, error) {
+func Exists(ctx context.Context, nameOrID string, _ *ExistsOptions) (bool, error) {
 	conn, err := bindings.GetClient(ctx)
 	if err != nil {
 		return false, err
@@ -131,6 +131,25 @@ func Load(ctx context.Context, r io.Reader) (*types.ImageLoadReport, error) {
 		return nil, err
 	}
 	response, err := conn.DoRequest(ctx, r, http.MethodPost, "/images/load", nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	return &report, response.Process(&report)
+}
+
+func LoadLocal(ctx context.Context, path string) (*types.ImageLoadReport, error) {
+	var report types.ImageLoadReport
+	conn, err := bindings.GetClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	params := url.Values{}
+	params.Set("path", path)
+
+	response, err := conn.DoRequest(ctx, nil, http.MethodPost, "/local/images/load", params, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +326,7 @@ func Search(ctx context.Context, term string, options *SearchOptions) ([]types.I
 	return results, nil
 }
 
-func Scp(ctx context.Context, source, destination *string, options ScpOptions) (reports.ScpReport, error) {
+func Scp(ctx context.Context, source, _ *string, options ScpOptions) (reports.ScpReport, error) {
 	rep := reports.ScpReport{}
 
 	conn, err := bindings.GetClient(ctx)

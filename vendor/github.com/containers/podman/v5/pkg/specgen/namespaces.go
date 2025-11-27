@@ -7,18 +7,18 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/containers/common/libnetwork/types"
-	"github.com/containers/common/pkg/cgroups"
-	"github.com/containers/common/pkg/config"
 	"github.com/containers/podman/v5/libpod/define"
 	"github.com/containers/podman/v5/pkg/namespaces"
 	"github.com/containers/podman/v5/pkg/rootless"
 	"github.com/containers/podman/v5/pkg/util"
-	"github.com/containers/storage/pkg/fileutils"
-	"github.com/containers/storage/pkg/unshare"
-	storageTypes "github.com/containers/storage/types"
 	spec "github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/opencontainers/runtime-tools/generate"
+	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/common/pkg/cgroups"
+	"go.podman.io/common/pkg/config"
+	"go.podman.io/storage/pkg/fileutils"
+	"go.podman.io/storage/pkg/unshare"
+	storageTypes "go.podman.io/storage/types"
 )
 
 type NamespaceMode string
@@ -408,8 +408,8 @@ func ParseNetworkFlag(networks []string) (Namespace, map[string]types.PerNetwork
 			podmanNetworks[name] = netOpts
 		} else {
 			// Assume we have been given a comma separated list of networks for backwards compat.
-			networkList := strings.Split(ns, ",")
-			for _, net := range networkList {
+			networkList := strings.SplitSeq(ns, ",")
+			for net := range networkList {
 				podmanNetworks[net] = types.PerNetworkOptions{}
 			}
 		}
@@ -452,8 +452,8 @@ func parseBridgeNetworkOptions(opts string) (types.PerNetworkOptions, error) {
 	if len(opts) == 0 {
 		return netOpts, nil
 	}
-	allopts := strings.Split(opts, ",")
-	for _, opt := range allopts {
+	allopts := strings.SplitSeq(opts, ",")
+	for opt := range allopts {
 		name, value, _ := strings.Cut(opt, "=")
 		switch name {
 		case "ip", "ip6":
@@ -503,9 +503,6 @@ func SetupUserNS(idmappings *storageTypes.IDMappingOptions, userns Namespace, g 
 		if err := g.AddOrReplaceLinuxNamespace(string(spec.UserNamespace), userns.Value); err != nil {
 			return user, err
 		}
-		// runc complains if no mapping is specified, even if we join another ns.  So provide a dummy mapping
-		g.AddLinuxUIDMapping(uint32(0), uint32(0), uint32(1))
-		g.AddLinuxGIDMapping(uint32(0), uint32(0), uint32(1))
 	case Host:
 		if err := g.RemoveLinuxNamespace(string(spec.UserNamespace)); err != nil {
 			return user, err
