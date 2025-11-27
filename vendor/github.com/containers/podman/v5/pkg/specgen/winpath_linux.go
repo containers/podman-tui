@@ -1,8 +1,8 @@
 package specgen
 
 import (
-	"github.com/containers/common/pkg/machine"
-	"github.com/containers/storage/pkg/fileutils"
+	"go.podman.io/common/pkg/machine"
+	"go.podman.io/storage/pkg/fileutils"
 )
 
 func shouldResolveWinPaths() bool {
@@ -17,6 +17,6 @@ func resolveRelativeOnWindows(path string) string {
 	return path
 }
 
-func winPathExists(path string) bool {
+func winPathExists(_ string) bool {
 	return false
 }

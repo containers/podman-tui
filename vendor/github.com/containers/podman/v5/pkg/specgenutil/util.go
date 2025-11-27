@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/containers/common/libnetwork/types"
-	"github.com/containers/common/pkg/config"
-	storageTypes "github.com/containers/storage/types"
 	"github.com/sirupsen/logrus"
+	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/common/pkg/config"
+	storageTypes "go.podman.io/storage/types"
 )
 
 // ReadPodIDFile reads the specified file and returns its content (i.e., first
@@ -62,7 +62,7 @@ func CreateExpose(expose []string) (map[uint16]string, error) {
 		}
 
 		var index uint16
-		for index = 0; index < len; index++ {
+		for index = range len {
 			portNum := start + index
 			protocols, ok := toReturn[portNum]
 			if !ok {

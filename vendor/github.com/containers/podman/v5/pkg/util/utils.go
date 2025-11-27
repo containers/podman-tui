@@ -16,20 +16,20 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/containers/image/v5/types"
 	"github.com/containers/podman/v5/libpod/define"
 	"github.com/containers/podman/v5/pkg/namespaces"
 	"github.com/containers/podman/v5/pkg/rootless"
 	"github.com/containers/podman/v5/pkg/signal"
-	"github.com/containers/storage/pkg/directory"
-	"github.com/containers/storage/pkg/fileutils"
-	"github.com/containers/storage/pkg/idtools"
-	"github.com/containers/storage/pkg/unshare"
-	stypes "github.com/containers/storage/types"
 	securejoin "github.com/cyphar/filepath-securejoin"
 	ruser "github.com/moby/sys/user"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sirupsen/logrus"
+	"go.podman.io/image/v5/types"
+	"go.podman.io/storage/pkg/directory"
+	"go.podman.io/storage/pkg/fileutils"
+	"go.podman.io/storage/pkg/idtools"
+	"go.podman.io/storage/pkg/unshare"
+	stypes "go.podman.io/storage/types"
 	"golang.org/x/term"
 )
 
@@ -392,7 +392,7 @@ func parseTriple(spec []string, parentMapping []ruser.IDMap, mapSetting string) 
 
 	if hidIsParent {
 		if (mapSetting == "UID" && flags.UserMap) || (mapSetting == "GID" && flags.GroupMap) {
-			for i := uint64(0); i < sz; i++ {
+			for i := range sz {
 				cids = append(cids, cid+i)
 				mappedID, err := mapIDwithMapping(hid+i, parentMapping, mapSetting)
 				if err != nil {
@@ -844,7 +844,7 @@ func parseAutoTriple(spec []string, parentMapping []ruser.IDMap, mapSetting stri
 	}
 
 	if hidIsParent {
-		for i := uint64(0); i < sz; i++ {
+		for i := range sz {
 			cids = append(cids, cid+i)
 			mappedID, err := mapIDwithMapping(hid+i, parentMapping, mapSetting)
 			if err != nil {
@@ -920,7 +920,7 @@ func GetAutoOptions(n namespaces.UsernsMode) (*stypes.AutoUserNsOptions, error) 
 		}
 	}
 
-	for _, o := range strings.Split(opts, ",") {
+	for o := range strings.SplitSeq(opts, ",") {
 		key, val, hasVal := strings.Cut(o, "=")
 		if !hasVal {
 			return nil, fmt.Errorf("invalid option specified: %q", o)
