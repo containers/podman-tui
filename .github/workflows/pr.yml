@@ -6,7 +6,7 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
       - uses: pre-commit/action@v3.0.1
 
@@ -34,7 +34,7 @@ jobs:
   codespell:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: codespell-project/actions-codespell@master
         with:
           check_filenames: true
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '1.24.7'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           go mod tidy
           go mod vendor
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '1.24.7'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           bash hack/install_dep.sh
           make .install.golangci-lint
@@ -72,7 +72,7 @@ jobs:
     container:
       image: fedora:latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           # Preparing and running unit tests #
           dnf -y install git-core golang glibc-static git-core wget gcc make
@@ -87,7 +87,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '1.24.7'
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: |
           make all
 
