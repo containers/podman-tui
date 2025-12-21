@@ -15,8 +15,8 @@
 %global git0 https://%{import_path}
 
 Name: podman-tui
-Version: 1.10.0
-Release: 1%{?dist}
+Version: 1.11.0
+Release: dev.1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,6 +60,8 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
+* Mon Dec 22 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.11.0-dev-1
+
 * Mon Dec 22 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.10.0-1
 - Bugfix for exec terminal del and delete key input
 - Bugfix for exec terminal enter key input
