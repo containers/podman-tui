@@ -7,6 +7,8 @@ load helpers
 load helpers_tui
 
 @test "container run" {
+    check_skip "container_run"
+
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
@@ -38,6 +40,8 @@ load helpers_tui
 }
 
 @test "container create (privileged, timeout, remove)" {
+    check_skip "container_create_remove"
+
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
@@ -75,6 +79,8 @@ load helpers_tui
 }
 
 @test "container create (environment)" {
+    check_skip "container_create_environment"
+
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
@@ -117,6 +123,8 @@ load helpers_tui
 }
 
 @test "container create (resource)" {
+    check_skip "container_create_resource"
+
     podman container rm -f $TEST_CONTAINER_NAME || echo done
 
     buysbox_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/busybox")
@@ -172,6 +180,8 @@ load helpers_tui
 }
 
 @test "container create (pod, network, volume, security options, health)" {
+    check_skip "container_create_health"
+
     httpd_image=$(podman image ls --sort repository --format "{{ .Repository }}" --filter "reference=docker.io/library/httpd")
     if [ "${httpd_image}" == "" ] ; then
         podman image pull docker.io/library/httpd
@@ -279,6 +289,8 @@ load helpers_tui
 }
 
 @test "container commit" {
+    check_skip "container_commit"
+
     # switch to containers view
     # select container from the list
     # select commit command from container commands dialog
@@ -298,6 +310,8 @@ load helpers_tui
 }
 
 @test "container start" {
+    check_skip "container_start"
+
     # switch to containers view
     # select test container from list
     # select start command from container commands dialog
@@ -312,6 +326,8 @@ load helpers_tui
 }
 
 @test "container checkpoint" {
+    check_skip "container_checkpoint"
+
     podman container create --name ${TEST_CONTAINER_CHECKPOINT_NAME} docker.io/library/httpd
     podman container start ${TEST_CONTAINER_CHECKPOINT_NAME}
     # switch to containers view
@@ -338,6 +354,8 @@ load helpers_tui
 }
 
 @test "containre restore" {
+    check_skip "container_restore"
+
     # switch to containers view
     # selec restore command from container commands dialog
     # filleout information
@@ -359,6 +377,8 @@ load helpers_tui
 }
 
 @test "container exec" {
+    check_skip "container_exec"
+
     # switch to containers view
     # select test container from list
     # select exec command from container commands dialog
@@ -386,6 +406,8 @@ load helpers_tui
 }
 
 @test "container inspect" {
+    check_skip "container_inspect"
+
     # switch to containers view
     # select test container from list
     # select inspect command from container commands dialog
@@ -400,6 +422,8 @@ load helpers_tui
 }
 
 @test "container diff" {
+    check_skip "container_diff"
+
     # switch to containers view
     # select test container from list
     # select diff command from container commands dialog
@@ -413,6 +437,8 @@ load helpers_tui
 }
 
 @test "container top" {
+    check_skip "container_top"
+
     # switch to containers view
     # select test container from list
     # select top command from container commands dialog
@@ -426,6 +452,8 @@ load helpers_tui
 }
 
 @test "container port" {
+    check_skip "container_port"
+
     # switch to containers view
     # select test container from list
     # select port command from container commands dialog
@@ -440,6 +468,8 @@ load helpers_tui
 }
 
 @test "container pause" {
+    check_skip "container_pause"
+
     # switch to containers view
     # select test container from list
     # select pause command from container commands dialog
@@ -453,6 +483,8 @@ load helpers_tui
 }
 
 @test "container unpause" {
+    check_skip "container_unpause"
+
     # switch to containers view
     # select test container from list
     # select unpause command from container commands dialog
@@ -466,6 +498,8 @@ load helpers_tui
 }
 
 @test "container stop" {
+    check_skip "container_stop"
+
     # switch to containers view
     # select test container from list
     # select stop command from container commands dialog
@@ -479,6 +513,8 @@ load helpers_tui
 }
 
 @test "container kill" {
+    check_skip "container_kill"
+
     podman container start $TEST_CONTAINER_NAME || echo done
     # switch to containers view
     # select test container from list
@@ -493,6 +529,8 @@ load helpers_tui
 }
 
 @test "container remove" {
+    check_skip "container_remove"
+
     # switch to containers view
     # select test container from list
     # select remove command from container commands dialog
@@ -507,6 +545,8 @@ load helpers_tui
 }
 
 @test "container rename" {
+    check_skip "container_rename"
+
     podman container rm $TEST_CONTAINER_NAME || echo done
     podman container create --name $TEST_CONTAINER_NAME httpd
 
@@ -525,6 +565,8 @@ load helpers_tui
 }
 
 @test "container prune" {
+    check_skip "container_prune"
+
     podman container create --name $TEST_CONTAINER_NAME docker.io/library/httpd || echo done
     podman container start $TEST_CONTAINER_NAME || echo done
     podman container stop $TEST_CONTAINER_NAME || echo done

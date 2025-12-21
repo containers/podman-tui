@@ -8,6 +8,8 @@ load helpers_tui
 
 
 @test "image search and pull" {
+    check_skip "image_search"
+
     podman image rm busybox || echo done
 
     # switch to images view
@@ -28,6 +30,8 @@ load helpers_tui
 }
 
 @test "image save" {
+    check_skip "image_save"
+
     podman image pull docker.io/library/busybox || echo done
     [ -f "${TEST_IMAGE_SAVE_PATH}" ] && /bin/rm -rf $TEST_IMAGE_SAVE_PATH
 
@@ -52,6 +56,8 @@ load helpers_tui
 }
 
 @test "image import" {
+    check_skip "image_import"
+
     /bin/rm -rf ${TEST_IMAGE_SAVE_PATH} || echo done
     podman image save -o ${TEST_IMAGE_SAVE_PATH} busybox:latest || echo done
     # switch to images view
@@ -76,6 +82,8 @@ load helpers_tui
 }
 
 @test "image build" {
+    check_skip "image_build"
+
     podman image pull docker.io/library/busybox || echo done
     podman image rm ${TEST_IMAGE_BUILD_REPOSITORY}/${TEST_IMAGE_BUILD_CONTEXT_DIR} || echo done
 
@@ -103,6 +111,8 @@ load helpers_tui
 }
 
 @test "image diff" {
+    check_skip "image_diff"
+
     # switch to images view
     # select busybox image from list
     # select diff command from image commands dialog
@@ -118,6 +128,8 @@ load helpers_tui
 }
 
 @test "image history" {
+    check_skip "image_history"
+
     # switch to images view
     # select busybox image from list
     # select history command from image commands dialog
@@ -133,6 +145,8 @@ load helpers_tui
 }
 
 @test "image inspect" {
+    check_skip "image_inspect"
+
     image_id=$(podman image ls --sort repository --noheading | nl -v 0 | grep 'busybox ' | awk '{print $4}')
 
     # switch to images view
@@ -150,6 +164,8 @@ load helpers_tui
 }
 
 @test "image tag" {
+    check_skip "image_tag"
+
     # switch to images view
     # select busybox image from list
     # select tag command from image commands dialog
@@ -164,6 +180,8 @@ load helpers_tui
 }
 
 @test "image untag" {
+    check_skip "image_tag"
+
     # switch to images view
     # select busybox image from list
     # select untag command from image commands dialog
@@ -181,6 +199,8 @@ load helpers_tui
 }
 
 @test "image remove" {
+    check_skip "image_remove"
+
     run_helper podman image ls  --format "'{{ .Repository }}'"
     before="$output"
 
@@ -203,6 +223,8 @@ load helpers_tui
 }
 
 @test "image prune" {
+    check_skip "image_prune"
+
     podman image pull busybox
 
     # switch to images view

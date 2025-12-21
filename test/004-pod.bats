@@ -7,6 +7,8 @@ load helpers
 load helpers_tui
 
 @test "pod create (resource)" {
+    check_skip "pod_create_resource"
+
     podman pod rm -f $TEST_POD_NAME || echo done
     podman image pull pause:3.5 || echo done
 
@@ -38,6 +40,8 @@ load helpers_tui
 }
 
 @test "pod create (networking, security)" {
+    check_skip "pod_create_networking"
+
     podman pod rm -f $TEST_POD_NAME || echo done
     podman network rm $TEST_POD_NETWORK_NAME || echo done
     podman image pull pause:3.5 || echo done
@@ -76,6 +80,8 @@ load helpers_tui
 }
 
 @test "pod start" {
+    check_skip "pod_start"
+
     # switch to pods view
     # select test pod from list
     # select start command from pod commands dialog
@@ -89,6 +95,8 @@ load helpers_tui
 }
 
 @test "pod pause" {
+    check_skip "pod_pause"
+
     # switch to pods view
     # select test pod from list
     # select pause command from pod commands dialog
@@ -102,6 +110,8 @@ load helpers_tui
 }
 
 @test "pod unpause" {
+    check_skip "pod_unpause"
+
     # switch to pods view
     # select test pod from list
     # select unpause command from pod commands dialog
@@ -115,6 +125,8 @@ load helpers_tui
 }
 
 @test "pod stop" {
+    check_skip "pod_stop"
+
     # switch to pods view
     # select test pod from list
     # select stop command from pod commands dialog
@@ -128,6 +140,8 @@ load helpers_tui
 }
 
 @test "pod restart" {
+    check_skip "pod_restart"
+
     # switch to pods view
     # select test pod from list
     # select restart command from pod commands dialog
@@ -141,6 +155,8 @@ load helpers_tui
 }
 
 @test "pod kill" {
+    check_skip "pod_kill"
+
     # switch to pods view
     # select test pod from list
     # select kill command from pod commands dialog
@@ -154,6 +170,8 @@ load helpers_tui
 }
 
 @test "pod inspect" {
+    check_skip "pod_inspect"
+
     # switch to pods view
     # select test pod from list
     # select inspect command from pod commands dialog
@@ -169,6 +187,8 @@ load helpers_tui
 }
 
 @test "pod remove" {
+    check_skip "pod_remove"
+
     # switch to pods view
     # select test pod from list
     # select remove command from pod commands dialog
@@ -185,6 +205,8 @@ load helpers_tui
 }
 
 @test "pod prune" {
+    check_skip "pod_prune"
+
     podman pod create --name $TEST_POD_NAME --label $TEST_LABEL || echo done
     podman pod start $TEST_POD_NAME || echo done
     podman pod stop $TEST_POD_NAME || echo done
