@@ -3,8 +3,8 @@ package entities
 import (
 	"net"
 
-	"github.com/containers/image/v5/types"
 	entitiesTypes "github.com/containers/podman/v5/pkg/domain/entities/types"
+	"go.podman.io/image/v5/types"
 )
 
 // PlayKubeOptions controls playing kube YAML files.
@@ -81,6 +81,8 @@ type PlayKubeOptions struct {
 	Wait bool
 	// SystemContext - used when building the image
 	SystemContext *types.SystemContext
+	// Do not prefix container name with pod name
+	NoPodPrefix bool
 }
 
 // PlayKubePod represents a single pod and associated containers created by play kube

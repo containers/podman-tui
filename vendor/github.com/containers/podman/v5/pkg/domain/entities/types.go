@@ -3,12 +3,12 @@ package entities
 import (
 	"net"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman/v5/libpod/define"
 	"github.com/containers/podman/v5/libpod/events"
 	entitiesTypes "github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/containers/podman/v5/pkg/specgen"
-	"github.com/containers/storage/pkg/archive"
+	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/storage/pkg/archive"
 )
 
 type Report struct {
@@ -48,7 +48,7 @@ type NetOptions struct {
 	DNSSearch          []string                           `json:"dns_search,omitempty"`
 	DNSServers         []net.IP                           `json:"dns_server,omitempty"`
 	HostsFile          string                             `json:"hosts_file,omitempty"`
-	Network            specgen.Namespace                  `json:"netns,omitempty"`
+	Network            specgen.Namespace                  `json:"netns"`
 	NoHostname         bool                               `json:"no_manage_hostname,omitempty"`
 	NoHosts            bool                               `json:"no_manage_hosts,omitempty"`
 	PublishPorts       []types.PortMapping                `json:"portmappings,omitempty"`

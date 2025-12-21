@@ -3,11 +3,11 @@ package pconfig
 import (
 	"slices"
 
-	cconfig "github.com/containers/common/pkg/config"
 	"github.com/containers/podman-tui/config/utils"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rs/zerolog/log"
+	cconfig "go.podman.io/common/pkg/config"
 )
 
 type Config struct {

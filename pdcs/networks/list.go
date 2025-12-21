@@ -1,10 +1,10 @@
 package networks
 
 import (
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman/v5/pkg/bindings/network"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/common/libnetwork/types"
 )
 
 // List returns list of podman networks.

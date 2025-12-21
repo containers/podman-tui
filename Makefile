@@ -108,6 +108,7 @@ test-unit: ## Run unit tests
 		-r \
 		--skip-package test/ \
 		--cover \
+		--ldflags='-extldflags "-Wl,--allow-multiple-definition"' \
 		--covermode atomic \
 		--coverprofile coverprofile \
 		--output-dir ${COVERAGE_PATH} \

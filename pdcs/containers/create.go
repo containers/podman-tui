@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman/v5/libpod/define"
@@ -16,6 +15,7 @@ import (
 	"github.com/containers/podman/v5/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/common/libnetwork/types"
 )
 
 var ErrInvalidCreateTimeout = errors.New("invalid container create timeout value")

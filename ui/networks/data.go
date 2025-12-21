@@ -5,11 +5,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/pdcs/networks"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/common/libnetwork/types"
 )
 
 // SortView sorts data view called from sort dialog.

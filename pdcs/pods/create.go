@@ -5,7 +5,6 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/common/pkg/config"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
@@ -16,6 +15,7 @@ import (
 	"github.com/containers/podman/v5/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/common/libnetwork/types"
 )
 
 // CreateOptions implements pods create spec options.
