@@ -16,7 +16,7 @@
 
 Name: podman-tui
 Version: 1.10.0
-Release: dev.1%{?dist}
+Release: 1%{?dist}
 Summary: Podman Terminal User Interface
 License: ASL 2.0
 URL: %{git0}
@@ -60,7 +60,20 @@ install -p ./bin/%{name} %{buildroot}%{_bindir}
 %{_bindir}/%{name}
 
 %changelog
-* Sat Oct 04 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.10.0-dev-1
+* Mon Dec 22 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.10.0-1
+- Bugfix for exec terminal del and delete key input
+- Bugfix for exec terminal enter key input
+- Bats skip tests feature
+- Update README.md to include docs on running the socket on non systemd distros
+- Update install.md to include Nix installation
+- Bump podman to v5.7.1
+- Bump golang.org/x/crypto from 0.43.0 to 0.46.0
+- Bump golang.org/x/crypto from 0.42.0 to 0.43.0
+- Bump github.com/spf13/cobra from 1.10.1 to 1.10.2
+- Bump github.com/gdamore/tcell/v2 from 2.12.1 to 2.13.4
+- Bump github.com/gdamore/tcell/v2 from 2.10.0 to 2.12.1
+- Bump github.com/gdamore/tcell/v2 from 2.9.0 to 2.10.0
+- Bump actions/checkout from 5 to 6
 
 * Sat Oct 04 2025 Navid Yaghoobi <navidys@fedoraproject.org> 1.9.0-1
 - Bump github.com/navidys/tvxwidgets from 0.4.1 to 0.12.1
