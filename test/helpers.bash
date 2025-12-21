@@ -7,6 +7,7 @@ PODMAN_TUI_LOG="podman-tui.log"
 PODMAN_TUI_CONFIG_DIR="/root/.config/podman-tui"
 PODMAN_TUI_CONFIG_FILE="${PODMAN_TUI_CONFIG_DIR}/podman-tui.json"
 TMUX_SESSION="podman_tui_test"
+PODMAN_TUI_BAT_TEST=${PODMAN_TUI_BAT_TEST:-'all'}
 
 
 function setup() {
@@ -120,6 +121,18 @@ function die() {
     echo "#| FAIL: $*" >&2
     echo "#\\^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" >&2
     false
+}
+
+#########
+#  check_skip  #  skip test if its not part of all or tag
+#########
+function check_skip() {
+    if [[ "${PODMAN_TUI_BAT_TEST}" != 'all' ]] ; then
+        included=$(echo "$PODMAN_TUI_BAT_TEST" | grep -w "$1" || echo "")
+        if [ "$included" == "" ] ; then
+            skip "$1 not selected in [$PODMAN_TUI_BAT_TEST]"
+        fi
+    fi
 }
 
 ############

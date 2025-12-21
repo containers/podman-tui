@@ -7,6 +7,8 @@ load helpers
 load helpers_tui
 
 @test "network connect" {
+    check_skip "network_connect"
+
     podman network rm $TEST_NETWORK_CONNECT || echo done
     podman container rm -f $TEST_CONTAINER_NAME || echo done
     podman container create --name $TEST_CONTAINER_NAME docker.io/library/busybox || echo done
@@ -33,6 +35,8 @@ load helpers_tui
 }
 
 @test "network disconnect" {
+    check_skip "network_disconnect"
+
     # switch to networks view
     # select disconnect command from network commands dialog
     # select container
@@ -50,6 +54,8 @@ load helpers_tui
 }
 
 @test "network create" {
+    check_skip "network_create"
+
     podman network rm $TEST_NETWORK_NAME || echo done
 
     # switch to networks view
@@ -70,6 +76,8 @@ load helpers_tui
 }
 
 @test "network inspect" {
+    check_skip "network_inspect"
+
     # switch to networks view
     # select test network from list
     # select inspect command from network commands dialog
@@ -86,6 +94,8 @@ load helpers_tui
 }
 
 @test "network remove" {
+    check_skip "network_remove"
+
     # switch to networks view
     # select test network from list
     # select remove command from network commands dialog
@@ -101,6 +111,8 @@ load helpers_tui
 }
 
 @test "network prune" {
+    check_skip "network_prune"
+
     run_helper podman network create $TEST_NETWORK_NAME
 
     # switch to networks view

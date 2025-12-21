@@ -7,6 +7,8 @@ load helpers
 load helpers_tui
 
 @test "volume create" {
+    check_skip "volume_create"
+
     podman volume rm $TEST_VOLUME_NAME || echo done
 
     # switch to volumes view
@@ -25,6 +27,8 @@ load helpers_tui
 }
 
 @test "volume inspect" {
+    check_skip "volume_inspect"
+
     # switch to volumes view
     # select test volume from list
     # select inspect command from volume commands dialog
@@ -41,6 +45,8 @@ load helpers_tui
 }
 
 @test "volume remove" {
+    check_skip "volume_remove"
+
     # switch to volumes view
     # select test volume from list
     # select remove command from volume commands dialog
@@ -56,6 +62,8 @@ load helpers_tui
 }
 
 @test "volume prune" {
+    check_skip "volume_prune"
+
     run_helper podman volume create $TEST_VOLUME_NAME
 
     # switch to volumes view

@@ -7,6 +7,8 @@ load helpers
 load helpers_tui
 
 @test "system add" {
+    check_skip "system_add"
+
     # switch to system view
     # select add connection
     # fillout name field
@@ -25,6 +27,8 @@ load helpers_tui
 }
 
 @test "system set default" {
+    check_skip "system_default"
+
     # switch to system view
     # select localhost_test connection name
     # select "set default" command
@@ -41,6 +45,8 @@ load helpers_tui
 }
 
 @test "system remove" {
+    check_skip "system_remove"
+
     # switch to system view
     # select localhost_test connection name
     # select "remove connection" command
@@ -56,6 +62,8 @@ load helpers_tui
 }
 
 @test "system disconnect" {
+    check_skip "system_disconnect"
+
     # switch to system view
     # select "disconnect" command
     podman_tui_set_view "system"
@@ -70,6 +78,8 @@ load helpers_tui
 }
 
 @test "system connect" {
+    check_skip "system_connect"
+
     # switch to system view
     # select "disconnect" command
     podman_tui_set_view "system"
