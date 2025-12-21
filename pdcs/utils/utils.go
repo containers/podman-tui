@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/docker/go-units"
+	"go.podman.io/common/libnetwork/types"
 )
 
 // SizeToStr converts size to human readable format.

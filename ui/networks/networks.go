@@ -6,12 +6,12 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/containers/common/libnetwork/types"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/networks/netdialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/rivo/tview"
+	"go.podman.io/common/libnetwork/types"
 )
 
 const (

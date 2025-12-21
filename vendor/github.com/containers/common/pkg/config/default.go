@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"sync"
 
 	"github.com/containers/common/internal/attributedstring"
 	nettypes "github.com/containers/common/libnetwork/types"
@@ -37,8 +36,8 @@ const (
 	defaultInitName = "catatonit"
 )
 
-func getMaskedPaths() ([]string, error) {
-	maskedPaths := []string{
+var (
+	DefaultMaskedPaths = []string{
 		"/proc/acpi",
 		"/proc/kcore",
 		"/proc/keys",
@@ -50,34 +49,8 @@ func getMaskedPaths() ([]string, error) {
 		"/sys/devices/virtual/powercap",
 		"/sys/firmware",
 		"/sys/fs/selinux",
-		"/proc/interrupts",
-	}
-	maskedPathsToGlob := []string{
-		"/sys/devices/system/cpu/cpu*/thermal_throttle",
 	}
 
-	for _, p := range maskedPathsToGlob {
-		matches, err := filepath.Glob(p)
-		if err != nil {
-			return nil, err
-		}
-		maskedPaths = append(maskedPaths, matches...)
-	}
-	return maskedPaths, nil
-}
-
-var DefaultMaskedPaths = sync.OnceValue(func() []string {
-	maskedPaths, err := getMaskedPaths()
-	// this should never happen, the only error possible
-	// is ErrBadPattern and the patterns that were added must be valid
-	if err != nil {
-		panic(err)
-	}
-
-	return maskedPaths
-})
-
-var (
 	DefaultReadOnlyPaths = []string{
 		"/proc/asound",
 		"/proc/bus",
@@ -102,7 +75,7 @@ var (
 	// DefaultHooksDirs defines the default hooks directory.
 	DefaultHooksDirs = []string{"/usr/share/containers/oci/hooks.d"}
 	// DefaultCdiSpecDirs defines the default cdi spec directories.
-	DefaultCdiSpecDirs = []string{"/etc/cdi", "/var/run/cdi"}
+	DefaultCdiSpecDirs = []string{"/etc/cdi"}
 	// DefaultCapabilities is the default for the default_capabilities option in the containers.conf file.
 	DefaultCapabilities = []string{
 		"CAP_CHOWN",
@@ -361,6 +334,11 @@ func defaultEngineConfig() (*EngineConfig, error) {
 	c.ComposeProviders.Set(getDefaultComposeProviders()) // may vary across supported platforms
 	c.ComposeWarningLogs = true
 
+	if path, ok := os.LookupEnv("CONTAINERS_STORAGE_CONF"); ok {
+		if err := types.SetDefaultConfigFilePath(path); err != nil {
+			return nil, err
+		}
+	}
 	storeOpts, err := types.DefaultStoreOptions()
 	if err != nil {
 		return nil, err
@@ -561,7 +539,7 @@ func (c *Config) NetNS() string {
 	return c.Containers.NetNS
 }
 
-func (c *EngineConfig) EventsLogMaxSize() uint64 {
+func (c EngineConfig) EventsLogMaxSize() uint64 {
 	return uint64(c.EventsLogFileMaxSize)
 }
 

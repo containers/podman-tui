@@ -3,9 +3,10 @@ package entities
 import (
 	"io"
 
-	"github.com/containers/image/v5/types"
 	encconfig "github.com/containers/ocicrypt/config"
 	entitiesTypes "github.com/containers/podman/v5/pkg/domain/entities/types"
+	libartifactTypes "go.podman.io/common/pkg/libartifact/types"
+	"go.podman.io/image/v5/types"
 )
 
 type ArtifactAddOptions struct {
@@ -13,6 +14,7 @@ type ArtifactAddOptions struct {
 	ArtifactMIMEType string
 	Append           bool
 	FileMIMEType     string
+	Replace          bool
 }
 
 type ArtifactAddReport = entitiesTypes.ArtifactAddReport
@@ -30,7 +32,7 @@ type ArtifactExtractOptions struct {
 	ExcludeTitle bool
 }
 
-type ArtifactBlob = entitiesTypes.ArtifactBlob
+type ArtifactBlob = libartifactTypes.ArtifactBlob
 
 type ArtifactInspectOptions struct {
 	// Note: Remote is not currently implemented but will be used for
@@ -84,13 +86,9 @@ type ArtifactPullReport = entitiesTypes.ArtifactPullReport
 
 type ArtifactPushOptions struct {
 	ImagePushOptions
-	CredentialsCLI             string
-	DigestFile                 string
-	EncryptLayers              []int
-	EncryptionKeys             []string
-	SignBySigstoreParamFileCLI string
-	SignPassphraseFileCLI      string
-	TLSVerifyCLI               bool // CLI only
+	DigestFile     string
+	EncryptLayers  []int
+	EncryptionKeys []string
 }
 
 type ArtifactPushReport = entitiesTypes.ArtifactPushReport
@@ -98,6 +96,10 @@ type ArtifactPushReport = entitiesTypes.ArtifactPushReport
 type ArtifactRemoveOptions struct {
 	// Remove all artifacts
 	All bool
+	// Artifacts is a list of Artifact IDs or names to remove
+	Artifacts []string
+	// Ignore if a specified artifact does not exist and do not throw any error.
+	Ignore bool
 }
 
 type ArtifactRemoveReport = entitiesTypes.ArtifactRemoveReport

@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/containers/common/pkg/config"
-	"github.com/containers/image/v5/manifest"
 	"github.com/containers/podman/v5/cmd/podman/parse"
 	"github.com/containers/podman/v5/libpod/define"
 	"github.com/containers/podman/v5/pkg/domain/entities"
@@ -22,6 +20,8 @@ import (
 	"github.com/docker/go-units"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/opencontainers/selinux/go-selinux"
+	"go.podman.io/common/pkg/config"
+	"go.podman.io/image/v5/manifest"
 )
 
 const (
@@ -849,6 +849,10 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		return err
 	}
 
+	if rtc.Containers.LogPath != "" {
+		s.LogConfiguration.Path = rtc.Containers.LogPath
+	}
+
 	logOpts := make(map[string]string)
 	for _, o := range c.LogOptions {
 		key, val, hasVal := strings.Cut(o, "=")
@@ -870,6 +874,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 			logOpts[key] = val
 		}
 	}
+
 	if len(s.LogConfiguration.Options) == 0 || len(c.LogOptions) != 0 {
 		s.LogConfiguration.Options = logOpts
 	}
@@ -1258,7 +1263,7 @@ func parseLinuxResourcesDeviceAccess(device string) (specs.LinuxDeviceCgroup, er
 		minor = &m
 	}
 	access = value[2]
-	for _, c := range strings.Split(access, "") {
+	for c := range strings.SplitSeq(access, "") {
 		if !cgroupDeviceAccess[c] {
 			return specs.LinuxDeviceCgroup{}, fmt.Errorf("invalid device access in device-access-add: %s", c)
 		}

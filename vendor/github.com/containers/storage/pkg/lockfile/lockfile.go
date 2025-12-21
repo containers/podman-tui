@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
-
-	"github.com/containers/storage/internal/rawfilelock"
 )
 
 // A Locker represents a file lock where the file is used to cache an
@@ -57,6 +55,13 @@ type Locker interface {
 	AssertLockedForWriting()
 }
 
+type lockType byte
+
+const (
+	readLock lockType = iota
+	writeLock
+)
+
 // LockFile represents a file lock where the file is used to cache an
 // identifier of the last party that made changes to whatever's being protected
 // by the lock.
@@ -74,12 +79,12 @@ type LockFile struct {
 	stateMutex *sync.Mutex
 	counter    int64
 	lw         LastWrite // A global value valid as of the last .Touch() or .Modified()
-	lockType   rawfilelock.LockType
+	lockType   lockType
 	locked     bool
 	// The following fields are only modified on transitions between counter == 0 / counter != 0.
 	// Thus, they can be safely accessed by users _that currently hold the LockFile_ without locking.
 	// In other cases, they need to be protected using stateMutex.
-	fd rawfilelock.FileHandle
+	fd fileHandle
 }
 
 var (
@@ -124,12 +129,12 @@ func (l *LockFile) Lock() {
 	if l.ro {
 		panic("can't take write lock on read-only lock file")
 	}
-	l.lock(rawfilelock.WriteLock)
+	l.lock(writeLock)
 }
 
 // RLock locks the lockfile as a reader.
 func (l *LockFile) RLock() {
-	l.lock(rawfilelock.ReadLock)
+	l.lock(readLock)
 }
 
 // TryLock attempts to lock the lockfile as a writer.  Panic if the lock is a read-only one.
@@ -137,12 +142,12 @@ func (l *LockFile) TryLock() error {
 	if l.ro {
 		panic("can't take write lock on read-only lock file")
 	}
-	return l.tryLock(rawfilelock.WriteLock)
+	return l.tryLock(writeLock)
 }
 
 // TryRLock attempts to lock the lockfile as a reader.
 func (l *LockFile) TryRLock() error {
-	return l.tryLock(rawfilelock.ReadLock)
+	return l.tryLock(readLock)
 }
 
 // Unlock unlocks the lockfile.
@@ -167,9 +172,9 @@ func (l *LockFile) Unlock() {
 		l.locked = false
 		// Close the file descriptor on the last unlock, releasing the
 		// file lock.
-		rawfilelock.UnlockAndCloseHandle(l.fd)
+		unlockAndCloseHandle(l.fd)
 	}
-	if l.lockType == rawfilelock.ReadLock {
+	if l.lockType == readLock {
 		l.rwMutex.RUnlock()
 	} else {
 		l.rwMutex.Unlock()
@@ -201,7 +206,7 @@ func (l *LockFile) AssertLockedForWriting() {
 
 	l.AssertLocked()
 	// Like AssertLocked, don’t even bother with l.stateMutex.
-	if l.lockType == rawfilelock.ReadLock {
+	if l.lockType == readLock {
 		panic("internal error: lock is not held for writing")
 	}
 }
@@ -268,7 +273,7 @@ func (l *LockFile) Touch() error {
 		return err
 	}
 	l.stateMutex.Lock()
-	if !l.locked || (l.lockType == rawfilelock.ReadLock) {
+	if !l.locked || (l.lockType == readLock) {
 		panic("attempted to update last-writer in lockfile without the write lock")
 	}
 	defer l.stateMutex.Unlock()
@@ -319,24 +324,6 @@ func getLockfile(path string, ro bool) (*LockFile, error) {
 	return lockFile, nil
 }
 
-// openLock opens a lock file at the specified path, creating the parent directory if it does not exist.
-func openLock(path string, readOnly bool) (rawfilelock.FileHandle, error) {
-	fd, err := rawfilelock.OpenLock(path, readOnly)
-	if err == nil {
-		return fd, nil
-	}
-
-	// the directory of the lockfile seems to be removed, try to create it
-	if os.IsNotExist(err) {
-		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
-			return fd, fmt.Errorf("creating lock file directory: %w", err)
-		}
-
-		return openLock(path, readOnly)
-	}
-	return fd, &os.PathError{Op: "open", Path: path, Err: err}
-}
-
 // createLockFileForPath returns new *LockFile object, possibly (depending on the platform)
 // working inter-process and associated with the specified path.
 //
@@ -356,11 +343,11 @@ func createLockFileForPath(path string, ro bool) (*LockFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	rawfilelock.UnlockAndCloseHandle(fd)
+	unlockAndCloseHandle(fd)
 
-	lType := rawfilelock.WriteLock
+	lType := writeLock
 	if ro {
-		lType = rawfilelock.ReadLock
+		lType = readLock
 	}
 
 	return &LockFile{
@@ -375,10 +362,40 @@ func createLockFileForPath(path string, ro bool) (*LockFile, error) {
 	}, nil
 }
 
+// openLock opens the file at path and returns the corresponding file
+// descriptor. The path is opened either read-only or read-write,
+// depending on the value of ro argument.
+//
+// openLock will create the file and its parent directories,
+// if necessary.
+func openLock(path string, ro bool) (fd fileHandle, err error) {
+	flags := os.O_CREATE
+	if ro {
+		flags |= os.O_RDONLY
+	} else {
+		flags |= os.O_RDWR
+	}
+	fd, err = openHandle(path, flags)
+	if err == nil {
+		return fd, nil
+	}
+
+	// the directory of the lockfile seems to be removed, try to create it
+	if os.IsNotExist(err) {
+		if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+			return fd, fmt.Errorf("creating lock file directory: %w", err)
+		}
+
+		return openLock(path, ro)
+	}
+
+	return fd, &os.PathError{Op: "open", Path: path, Err: err}
+}
+
 // lock locks the lockfile via syscall based on the specified type and
 // command.
-func (l *LockFile) lock(lType rawfilelock.LockType) {
-	if lType == rawfilelock.ReadLock {
+func (l *LockFile) lock(lType lockType) {
+	if lType == readLock {
 		l.rwMutex.RLock()
 	} else {
 		l.rwMutex.Lock()
@@ -396,7 +413,7 @@ func (l *LockFile) lock(lType rawfilelock.LockType) {
 		// Optimization: only use the (expensive) syscall when
 		// the counter is 0.  In this case, we're either the first
 		// reader lock or a writer lock.
-		if err := rawfilelock.LockFile(l.fd, lType); err != nil {
+		if err := lockHandle(l.fd, lType, false); err != nil {
 			panic(err)
 		}
 	}
@@ -407,10 +424,10 @@ func (l *LockFile) lock(lType rawfilelock.LockType) {
 
 // lock locks the lockfile via syscall based on the specified type and
 // command.
-func (l *LockFile) tryLock(lType rawfilelock.LockType) error {
+func (l *LockFile) tryLock(lType lockType) error {
 	var success bool
 	var rwMutexUnlocker func()
-	if lType == rawfilelock.ReadLock {
+	if lType == readLock {
 		success = l.rwMutex.TryRLock()
 		rwMutexUnlocker = l.rwMutex.RUnlock
 	} else {
@@ -434,8 +451,8 @@ func (l *LockFile) tryLock(lType rawfilelock.LockType) error {
 		// Optimization: only use the (expensive) syscall when
 		// the counter is 0.  In this case, we're either the first
 		// reader lock or a writer lock.
-		if err = rawfilelock.TryLockFile(l.fd, lType); err != nil {
-			rawfilelock.CloseHandle(fd)
+		if err = lockHandle(l.fd, lType, true); err != nil {
+			closeHandle(fd)
 			rwMutexUnlocker()
 			return err
 		}

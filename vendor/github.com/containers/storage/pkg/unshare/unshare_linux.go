@@ -32,9 +32,9 @@ type Cmd struct {
 	*exec.Cmd
 	UnshareFlags               int
 	UseNewuidmap               bool
-	UidMappings                []specs.LinuxIDMapping //nolint: revive
+	UidMappings                []specs.LinuxIDMapping // nolint: revive,golint
 	UseNewgidmap               bool
-	GidMappings                []specs.LinuxIDMapping //nolint: revive
+	GidMappings                []specs.LinuxIDMapping // nolint: revive,golint
 	GidMappingsEnableSetgroups bool
 	Setsid                     bool
 	Setpgrp                    bool
@@ -98,7 +98,7 @@ func IsSetID(path string, modeid os.FileMode, capid capability.Cap) (bool, error
 	return cap.Get(capability.EFFECTIVE, capid), nil
 }
 
-func (c *Cmd) Start() (retErr error) {
+func (c *Cmd) Start() error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -166,15 +166,6 @@ func (c *Cmd) Start() (retErr error) {
 	if err != nil {
 		return err
 	}
-
-	// If the function fails from here, we need to make sure the
-	// child process is killed and properly cleaned up.
-	defer func() {
-		if retErr != nil {
-			_ = c.Cmd.Process.Kill()
-			_ = c.Cmd.Wait()
-		}
-	}()
 
 	// Close the ends of the pipes that the parent doesn't need.
 	continueRead.Close()
@@ -249,7 +240,7 @@ func (c *Cmd) Start() (retErr error) {
 				if err != nil {
 					return fmt.Errorf("finding newgidmap: %w", err)
 				}
-				cmd := exec.Command(path, append([]string{pidString}, strings.Fields(g.String())...)...)
+				cmd := exec.Command(path, append([]string{pidString}, strings.Fields(strings.Replace(g.String(), "\n", " ", -1))...)...)
 				g.Reset()
 				cmd.Stdout = g
 				cmd.Stderr = g
@@ -267,7 +258,7 @@ func (c *Cmd) Start() (retErr error) {
 					}
 					logrus.Warnf("Falling back to single mapping")
 					g.Reset()
-					fmt.Fprintf(g, "0 %d 1\n", os.Getegid())
+					g.Write([]byte(fmt.Sprintf("0 %d 1\n", os.Getegid())))
 				}
 			}
 			if !gidmapSet {
@@ -309,7 +300,7 @@ func (c *Cmd) Start() (retErr error) {
 				if err != nil {
 					return fmt.Errorf("finding newuidmap: %w", err)
 				}
-				cmd := exec.Command(path, append([]string{pidString}, strings.Fields(u.String())...)...)
+				cmd := exec.Command(path, append([]string{pidString}, strings.Fields(strings.Replace(u.String(), "\n", " ", -1))...)...)
 				u.Reset()
 				cmd.Stdout = u
 				cmd.Stderr = u
@@ -328,7 +319,7 @@ func (c *Cmd) Start() (retErr error) {
 
 					logrus.Warnf("Falling back to single mapping")
 					u.Reset()
-					fmt.Fprintf(u, "0 %d 1\n", os.Geteuid())
+					u.Write([]byte(fmt.Sprintf("0 %d 1\n", os.Geteuid())))
 				}
 			}
 			if !uidmapSet {
@@ -468,7 +459,7 @@ type Runnable interface {
 	Run() error
 }
 
-func bailOnError(err error, format string, a ...any) { //nolint:revive,goprintffuncname
+func bailOnError(err error, format string, a ...interface{}) { // nolint: revive,goprintffuncname
 	if err != nil {
 		if format != "" {
 			logrus.Errorf("%s: %v", fmt.Sprintf(format, a...), err)
