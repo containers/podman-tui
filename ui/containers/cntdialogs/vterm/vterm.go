@@ -385,24 +385,33 @@ func (d *VtermDialog) SetFastRefreshHandler(handler func()) {
 func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
 	switch event.Key() { //nolint:exhaustive
 	case tcell.KeyUp:
+		log.Debug().Msgf("write to session KeyUP")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(65)) //nolint:mnd
 	case tcell.KeyDown:
+		log.Error().Msgf("write to session KeyDown")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(66)) //nolint:mnd
 	case tcell.KeyRight:
+		log.Debug().Msgf("write to session KeyRight")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(67)) //nolint:mnd
 	case tcell.KeyLeft:
+		log.Debug().Msgf("write to session KeyLeft")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(91)) //nolint:mnd
 		d.writeToStdinSessionWriter(rune(68)) //nolint:mnd
+	case tcell.KeyEnter:
+		log.Debug().Msgf("write to session KeyEnter")
+		d.writeToStdinSessionWriter(rune(tcell.KeyEnter))
 	case tcell.KeyEsc:
+		log.Debug().Msgf("write to session KeyEsc")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
 	default:
+		log.Debug().Msgf("write to session: rune=%d key=%d", event.Rune(), event.Key())
 		d.writeToStdinSessionWriter(event.Rune())
 	}
 
@@ -599,5 +608,10 @@ func (d *VtermDialog) writeToStdinSessionWriter(val rune) {
 	_, err := d.sessionStdinWriter.WriteRune(val)
 	if err != nil {
 		log.Error().Msgf("failed to write value %d to vterm session writer rune: %s", val, err.Error())
+	}
+
+	err = d.sessionStdinWriter.Flush()
+	if err != nil {
+		log.Error().Msgf("failed to flush vterm stdin writer session: %s", err.Error())
 	}
 }
