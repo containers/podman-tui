@@ -407,6 +407,15 @@ func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
 	case tcell.KeyEnter:
 		log.Debug().Msgf("write to session KeyEnter")
 		d.writeToStdinSessionWriter(rune(tcell.KeyEnter))
+	case tcell.KeyBackspace:
+		log.Debug().Msgf("write to session KeyBackspace")
+		d.writeToStdinSessionWriter(rune(tcell.KeyBackspace))
+	case tcell.KeyDelete:
+		log.Debug().Msgf("write to session KeyDelete")
+		d.writeToStdinSessionWriter(rune(tcell.KeyDelete))
+	case tcell.KeyDEL:
+		log.Debug().Msgf("write to session KeyDEL")
+		d.writeToStdinSessionWriter(rune(tcell.KeyDEL))
 	case tcell.KeyEsc:
 		log.Debug().Msgf("write to session KeyEsc")
 		d.writeToStdinSessionWriter(rune(27)) //nolint:mnd
