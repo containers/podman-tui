@@ -382,7 +382,7 @@ func (d *VtermDialog) SetFastRefreshHandler(handler func()) {
 	d.fastRefreshHandler = handler
 }
 
-func (d *VtermDialog) writeToSession(event *tcell.EventKey) {
+func (d *VtermDialog) writeToSession(event *tcell.EventKey) { //nolint:cyclop
 	switch event.Key() { //nolint:exhaustive
 	case tcell.KeyUp:
 		log.Debug().Msgf("write to session KeyUP")

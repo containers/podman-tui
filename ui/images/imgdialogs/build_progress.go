@@ -151,7 +151,7 @@ func (d *ImageBuildProgressDialog) Draw(screen tcell.Screen) {
 }
 
 // LogWriter returns output log writer.
-func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser { //nolint:ireturn
+func (d *ImageBuildProgressDialog) LogWriter() channel.WriteCloser { //nolint:ireturn,nolintlint
 	return channel.NewWriter(d.writerChan)
 }
 
