@@ -9,7 +9,6 @@ import (
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -18,11 +17,11 @@ const (
 )
 
 const (
-	formFocus = 0 + iota
-	volumeNameFieldFocus
-	volumeLabelsFieldFocus
-	volumeDriverNameFocus
-	volumeDriverOptionsFocus
+	volumeCreateFormFocus = 0 + iota
+	volumeCreateNameFieldFocus
+	volumeCreateLabelsFieldFocus
+	volumeCreateDriverNameFocus
+	volumeCreateDriverOptionsFocus
 )
 
 // VolumeCreateDialog implements volume create dialog.
@@ -102,7 +101,7 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 // Display displays this primitive.
 func (d *VolumeCreateDialog) Display() {
 	d.display = true
-	d.focusElement = volumeNameFieldFocus
+	d.focusElement = volumeCreateNameFieldFocus
 	d.initData()
 }
 
@@ -131,11 +130,11 @@ func (d *VolumeCreateDialog) HasFocus() bool {
 func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 	switch d.focusElement {
 	// form has focus
-	case formFocus:
+	case volumeCreateFormFocus:
 		button := d.form.GetButton(d.form.GetButtonCount() - 1)
 		button.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if event.Key() == tcell.KeyTab {
-				d.focusElement = volumeNameFieldFocus // category text view
+				d.focusElement = volumeCreateNameFieldFocus // category text view
 				d.Focus(delegate)
 				d.form.SetFocus(0)
 
@@ -150,60 +149,28 @@ func (d *VolumeCreateDialog) Focus(delegate func(p tview.Primitive)) {
 		})
 		delegate(d.form)
 	// basic info page
-	case volumeNameFieldFocus:
+	case volumeCreateNameFieldFocus:
 		delegate(d.volumeNameField)
-	case volumeLabelsFieldFocus:
+	case volumeCreateLabelsFieldFocus:
 		delegate(d.volumeLabelField)
-	case volumeDriverNameFocus:
+	case volumeCreateDriverNameFocus:
 		delegate(d.volumeDriverField)
-	case volumeDriverOptionsFocus:
+	case volumeCreateDriverOptionsFocus:
 		delegate(d.volumeDriverOptionsField)
 	}
 }
 
 // InputHandler returns input handler function for this primitive.
 func (d *VolumeCreateDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-	return d.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
-		log.Debug().Msgf("volume create dialog: event %v received", event)
-
-		if event.Key() == tcell.KeyEsc {
-			d.cancelHandler()
-
-			return
-		}
-
-		if d.form.HasFocus() { //nolint:nestif
-			if formHandler := d.form.InputHandler(); formHandler != nil {
-				if event.Key() == tcell.KeyEnter {
-					enterButton := d.form.GetButton(d.form.GetButtonCount() - 1)
-					if enterButton.HasFocus() {
-						d.createHandler()
-					}
-				}
-
-				formHandler(event, setFocus)
-
-				return
-			}
-		}
-
-		if event.Key() == tcell.KeyTab {
-			d.nextFocus()
-			d.Focus(setFocus)
-
-			return
-		}
-
-		for _, item := range d.getInnerPrimitives() {
-			if item.HasFocus() {
-				if handler := item.InputHandler(); handler != nil {
-					handler(event, setFocus)
-
-					return
-				}
-			}
-		}
-	})
+	return volumeDialogInputHandler(
+		"create",
+		d.Box,
+		d.form,
+		d.getInnerPrimitives(),
+		d.nextFocus,
+		d.cancelHandler,
+		d.createHandler,
+	)
 }
 
 // SetRect set rects for this primitive.
@@ -316,14 +283,14 @@ func (d *VolumeCreateDialog) getInnerPrimitives() []tview.Primitive {
 
 func (d *VolumeCreateDialog) nextFocus() {
 	switch d.focusElement {
-	case volumeNameFieldFocus:
-		d.focusElement = volumeLabelsFieldFocus
-	case volumeLabelsFieldFocus:
-		d.focusElement = volumeDriverNameFocus
-	case volumeDriverNameFocus:
-		d.focusElement = volumeDriverOptionsFocus
-	case volumeDriverOptionsFocus:
-		d.focusElement = formFocus
+	case volumeCreateNameFieldFocus:
+		d.focusElement = volumeCreateLabelsFieldFocus
+	case volumeCreateLabelsFieldFocus:
+		d.focusElement = volumeCreateDriverNameFocus
+	case volumeCreateDriverNameFocus:
+		d.focusElement = volumeCreateDriverOptionsFocus
+	case volumeCreateDriverOptionsFocus:
+		d.focusElement = volumeCreateFormFocus
 	}
 }
 

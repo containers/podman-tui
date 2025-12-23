@@ -24,6 +24,8 @@ func (vols *Volumes) runCommand(cmd string) {
 		vols.prunePrep()
 	case "rm":
 		vols.removePrep()
+	case "export":
+		vols.exportDialog.Display()
 	}
 }
 
@@ -47,6 +49,34 @@ func (vols *Volumes) create() {
 	vols.messageDialog.SetTitle("podman volume create")
 	vols.messageDialog.SetText(dialogs.MessageVolumeInfo, createOpts.Name, report)
 	vols.messageDialog.Display()
+}
+
+func (vols *Volumes) export() {
+	volID := vols.getSelectedItem()
+	if volID == "" {
+		vols.displayError("", errNoVolume)
+
+		return
+	}
+
+	volOutput := vols.exportDialog.VolumeExportOutput()
+
+	vols.exportDialog.Hide()
+	vols.progressDialog.SetTitle("VOLUME export in progress")
+	vols.progressDialog.Display()
+
+	go func() {
+		err := volumes.Export(volID, volOutput)
+
+		vols.progressDialog.Hide()
+
+		if err != nil {
+			title := fmt.Sprintf("volume (%s) export error", volID)
+			vols.displayError(title, err)
+		}
+
+		vols.appFocusHandler()
+	}()
 }
 
 func (vols *Volumes) inspect() {

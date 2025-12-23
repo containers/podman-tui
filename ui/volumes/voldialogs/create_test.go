@@ -37,7 +37,7 @@ var _ = Describe("volume create", Ordered, func() {
 	It("display", func() {
 		volCreateDialog.Display()
 		Expect(volCreateDialog.IsDisplay()).To(Equal(true))
-		Expect(volCreateDialog.focusElement).To(Equal(volumeNameFieldFocus))
+		Expect(volCreateDialog.focusElement).To(Equal(volumeCreateNameFieldFocus))
 	})
 
 	It("initdata", func() {
@@ -64,7 +64,7 @@ var _ = Describe("volume create", Ordered, func() {
 			cancelAction = cancelWants
 		}
 		volCreateDialog.SetCancelFunc(cancelFunc)
-		volCreateDialog.focusElement = formFocus
+		volCreateDialog.focusElement = volumeCreateFormFocus
 		volCreateDialogApp.SetFocus(volCreateDialog)
 		volCreateDialogApp.Draw()
 		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
@@ -75,15 +75,17 @@ var _ = Describe("volume create", Ordered, func() {
 	It("create button selected", func() {
 		createWants := "create selected"
 		createAction := "create init"
-		cancelFunc := func() {
+		createFunc := func() {
 			createAction = createWants
 		}
-		volCreateDialog.SetCreateFunc(cancelFunc)
+
+		volCreateDialog.SetCreateFunc(createFunc)
 		volCreateDialogApp.SetFocus(volCreateDialog.form)
 		volCreateDialogApp.Draw()
 		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyTab, 0, tcell.ModNone))
 		volCreateDialogApp.QueueEvent(tcell.NewEventKey(tcell.KeyEnter, 0, tcell.ModNone))
 		volCreateDialogApp.Draw()
+
 		Expect(createAction).To(Equal(createWants))
 	})
 

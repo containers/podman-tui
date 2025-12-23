@@ -147,12 +147,14 @@ function podman_tui_select_volume_cmd() {
   case $1 in
   "create")
     menu_index=0;;
-  "inspect")
+  "export")
     menu_index=1;;
-  "prune")
+  "inspect")
     menu_index=2;;
-  "remove")
+  "prune")
     menu_index=3;;
+  "remove")
+    menu_index=4;;
   esac
 
   podman_tui_select_menu $menu_index
