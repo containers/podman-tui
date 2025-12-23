@@ -10,6 +10,7 @@ import (
 const (
 	// DefaultContainerDetachKeys container's default attach keys string.
 	DefaultContainerDetachKeys = "ctrl-p,ctrl-q"
+	DefaultPermission          = 0600
 )
 
 var (

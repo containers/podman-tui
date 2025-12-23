@@ -26,6 +26,28 @@ load helpers_tui
     assert "$output" == "$TEST_VOLUME_NAME" "expected $TEST_VOLUME_NAME to be in the list"
 }
 
+@test "volume export" {
+    check_skip "volume_export"
+
+    podman volume rm $TEST_VOLUME_NAME || echo done
+    podman volume create $TEST_VOLUME_NAME --label "$TEST_LABEL" || echo done
+    /bin/rm -rf /tmp/${TEST_VOLUME_NAME}.tar || echo done
+
+    # switch to volumes view
+    # select export command from volume commands dialog
+    # fillout export dialog fields and press enter
+    # close volume export result message dialog
+    podman_tui_set_view "volumes"
+    podman_tui_select_volume_cmd "export"
+    podman_tui_send_inputs "/tmp/${TEST_VOLUME_NAME}.tar" "Tab"
+    sleep $TEST_TIMEOUT_LOW
+    podman_tui_send_inputs "Tab" "Enter"
+    sleep $TEST_TIMEOUT_LOW
+
+    run_helper ls /tmp/${TEST_VOLUME_NAME}.tar
+    assert "$output" == "/tmp/${TEST_VOLUME_NAME}.tar" "expected /tmp/${TEST_VOLUME_NAME}.tar to exist"
+}
+
 @test "volume inspect" {
     check_skip "volume_inspect"
 
