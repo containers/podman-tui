@@ -14,10 +14,12 @@ type CreateOptions struct {
 	Labels        map[string]string
 	Driver        string
 	DriverOptions map[string]string
+	UID           *int
+	GID           *int
 }
 
 // Create creates a new volume.
-func Create(opts CreateOptions) (string, error) {
+func Create(opts *CreateOptions) (string, error) {
 	log.Debug().Msgf("pdcs: podman volume create %v", opts)
 
 	var report string
@@ -27,6 +29,8 @@ func Create(opts CreateOptions) (string, error) {
 		Label:   opts.Labels,
 		Driver:  opts.Driver,
 		Options: opts.DriverOptions,
+		UID:     opts.UID,
+		GID:     opts.GID,
 	}
 
 	conn, err := registry.GetConnection()

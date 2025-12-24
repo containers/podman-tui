@@ -17,13 +17,22 @@ load helpers_tui
     # close volume create result message dialog
     podman_tui_set_view "volumes"
     podman_tui_select_volume_cmd "create"
-    podman_tui_send_inputs "$TEST_VOLUME_NAME" "Tab" "$TEST_LABEL" "Tab" "Tab" "Tab" "Tab" "Enter"
+    podman_tui_send_inputs "$TEST_VOLUME_NAME" "Tab"
+    podman_tui_send_inputs "$TEST_LABEL" "Tab"
+    podman_tui_send_inputs "Tab" "Tab"
+    podman_tui_send_inputs "$TEST_VOLUME_UID" "Tab" "$TEST_VOLUME_GID"
     sleep $TEST_TIMEOUT_LOW
-    podman_tui_send_inputs "Tab" "Enter"
+    podman_tui_send_inputs "Tab" "Tab" "Enter"
     sleep $TEST_TIMEOUT_LOW
 
     run_helper podman volume ls --format "{{ .Name }}" --filter "name=${TEST_VOLUME_NAME}"
     assert "$output" == "$TEST_VOLUME_NAME" "expected $TEST_VOLUME_NAME to be in the list"
+
+    run_helper podman volume inspect ${TEST_VOLUME_NAME} -f "{{ .UID }}"
+    assert "$output" == "$TEST_VOLUME_UID" "expected UID to be $TEST_VOLUME_UID"
+
+    run_helper podman volume inspect ${TEST_VOLUME_NAME} -f "{{ .GID }}"
+    assert "$output" == "$TEST_VOLUME_GID" "expected GID to be $TEST_VOLUME_GID"
 }
 
 @test "volume export" {
@@ -55,6 +64,7 @@ load helpers_tui
     podman volume create $TEST_VOLUME_NAME --label "$TEST_LABEL" || echo done
     /bin/rm -rf /tmp/${TEST_VOLUME_NAME}.tar || echo done
 
+    [ -d "/tmp/${TEST_VOLUME_NAME}/" ] && /bin/rm -rf /tmp/${TEST_VOLUME_NAME}/
     mkdir /tmp/${TEST_VOLUME_NAME}/
     touch /tmp/${TEST_VOLUME_NAME}/a_import.txt
     tar -cvf /tmp/${TEST_VOLUME_NAME}.tar /tmp/${TEST_VOLUME_NAME}/*.txt

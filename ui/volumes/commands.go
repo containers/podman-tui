@@ -39,7 +39,12 @@ func (vols *Volumes) displayError(title string, err error) {
 }
 
 func (vols *Volumes) create() {
-	createOpts := vols.createDialog.VolumeCreateOptions()
+	createOpts, err := vols.createDialog.VolumeCreateOptions()
+	if err != nil {
+		vols.displayError("volume create error", err)
+
+		return
+	}
 
 	report, err := volumes.Create(createOpts)
 	if err != nil {
