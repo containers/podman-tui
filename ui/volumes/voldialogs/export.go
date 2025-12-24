@@ -119,8 +119,8 @@ func (d *VolumeExportDialog) Focus(delegate func(p tview.Primitive)) {
 
 			return event
 		})
+
 		delegate(d.form)
-		// basic info page
 	}
 }
 

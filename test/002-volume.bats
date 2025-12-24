@@ -48,6 +48,34 @@ load helpers_tui
     assert "$output" == "/tmp/${TEST_VOLUME_NAME}.tar" "expected /tmp/${TEST_VOLUME_NAME}.tar to exist"
 }
 
+@test "volume import" {
+    check_skip "volume_import"
+
+    podman volume rm $TEST_VOLUME_NAME || echo done
+    podman volume create $TEST_VOLUME_NAME --label "$TEST_LABEL" || echo done
+    /bin/rm -rf /tmp/${TEST_VOLUME_NAME}.tar || echo done
+
+    mkdir /tmp/${TEST_VOLUME_NAME}/
+    touch /tmp/${TEST_VOLUME_NAME}/a_import.txt
+    tar -cvf /tmp/${TEST_VOLUME_NAME}.tar /tmp/${TEST_VOLUME_NAME}/*.txt
+
+    # switch to volumes view
+    # select import command from volume commands dialog
+    # fillout import dialog fields and press enter
+    # close volume import result message dialog
+    podman_tui_set_view "volumes"
+    podman_tui_select_volume_cmd "import"
+    podman_tui_send_inputs "/tmp/${TEST_VOLUME_NAME}.tar" "Tab"
+    sleep $TEST_TIMEOUT_LOW
+    podman_tui_send_inputs "Tab" "Enter"
+    sleep $TEST_TIMEOUT_LOW
+
+    mount_point=$(podman volume inspect ${TEST_VOLUME_NAME} -f "{{ .Mountpoint }}")
+    run_helper ls ${mount_point}/tmp/${TEST_VOLUME_NAME}/a_import.txt
+
+    assert "$output" == "${mount_point}/tmp/${TEST_VOLUME_NAME}/a_import.txt" "expected a_import.txt to exist"
+}
+
 @test "volume inspect" {
     check_skip "volume_inspect"
 
