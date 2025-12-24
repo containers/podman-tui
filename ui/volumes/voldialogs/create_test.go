@@ -45,11 +45,17 @@ var _ = Describe("volume create", Ordered, func() {
 		volCreateDialog.volumeLabelField.SetText("sample")
 		volCreateDialog.volumeDriverField.SetText("sample")
 		volCreateDialog.volumeDriverOptionsField.SetText("sample")
+		volCreateDialog.volumeUIDField.SetText("sample")
+		volCreateDialog.volumeGIDField.SetText("sample")
+
 		volCreateDialog.initData()
+
 		Expect(volCreateDialog.volumeNameField.GetText()).To(Equal(""))
 		Expect(volCreateDialog.volumeLabelField.GetText()).To(Equal(""))
 		Expect(volCreateDialog.volumeDriverField.GetText()).To(Equal(""))
 		Expect(volCreateDialog.volumeDriverOptionsField.GetText()).To(Equal(""))
+		Expect(volCreateDialog.volumeUIDField.GetText()).To(Equal(""))
+		Expect(volCreateDialog.volumeGIDField.GetText()).To(Equal(""))
 	})
 
 	It("set focus", func() {
@@ -98,35 +104,54 @@ var _ = Describe("volume create", Ordered, func() {
 		volCreateDialog.Hide()
 		volCreateDialogApp.Draw()
 		volCreateDialog.Display()
+
 		volCreateDialogApp.SetFocus(volCreateDialog)
 		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeNameField.HasFocus()).To(Equal(true))
+
 		volCreateDialog.nextFocus()
 		volCreateDialogApp.SetFocus(volCreateDialog)
 		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeLabelField.HasFocus()).To(Equal(true))
+
 		volCreateDialog.nextFocus()
 		volCreateDialogApp.SetFocus(volCreateDialog)
 		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeDriverField.HasFocus()).To(Equal(true))
+
 		volCreateDialog.nextFocus()
 		volCreateDialogApp.SetFocus(volCreateDialog)
 		volCreateDialogApp.Draw()
 		Expect(volCreateDialog.volumeDriverOptionsField.HasFocus()).To(Equal(true))
+
+		volCreateDialog.nextFocus()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
+		Expect(volCreateDialog.volumeUIDField.HasFocus()).To(Equal(true))
+
+		volCreateDialog.nextFocus()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
+		Expect(volCreateDialog.volumeGIDField.HasFocus()).To(Equal(true))
 	})
 
 	It("create options", func() {
 		volName := "testvol"
+		volUID := "1000"
+		volGID := "1000"
+
 		volLabel := struct {
 			key   string
 			value string
 		}{key: "labelkey", value: "labelvalue"}
+
 		volLabelStr := fmt.Sprintf("%s=%s", volLabel.key, volLabel.value)
 		volDriver := "testdriver"
 		volOption := struct {
 			key   string
 			value string
 		}{key: "optionkey", value: "optionvalue"}
+
 		volOptionStr := fmt.Sprintf("%s=%s", volOption.key, volOption.value)
 
 		volCreateDialog.Hide()
@@ -174,7 +199,30 @@ var _ = Describe("volume create", Ordered, func() {
 			volCreateDialogApp.Draw()
 		}
 
-		volCreateOptions := volCreateDialog.VolumeCreateOptions()
+		// enter volume uid
+		volCreateDialog.nextFocus()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
+		volUIDEvent := utils.StringToEventKey(volUID)
+		for i := 0; i < len(volUIDEvent); i++ {
+			volCreateDialogApp.QueueEvent(volUIDEvent[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
+		}
+
+		// enter volume gid
+		volCreateDialog.nextFocus()
+		volCreateDialogApp.SetFocus(volCreateDialog)
+		volCreateDialogApp.Draw()
+		volGIDEvent := utils.StringToEventKey(volGID)
+		for i := 0; i < len(volGIDEvent); i++ {
+			volCreateDialogApp.QueueEvent(volGIDEvent[i])
+			volCreateDialogApp.SetFocus(volCreateDialog)
+			volCreateDialogApp.Draw()
+		}
+
+		volCreateOptions, err := volCreateDialog.VolumeCreateOptions()
+		Expect(err).To(BeNil())
 		Expect(volCreateOptions.Name).To(Equal(volName))
 		volLabelValue := volCreateOptions.Labels[volLabel.key]
 		Expect(volLabelValue).To(Equal(volLabel.value))
