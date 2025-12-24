@@ -28,6 +28,7 @@ type Volumes struct {
 	sortDialog      *dialogs.SortDialog
 	createDialog    *voldialogs.VolumeCreateDialog
 	exportDialog    *voldialogs.VolumeExportDialog
+	importDialog    *voldialogs.VolumeImportDialog
 	volumeList      volListReport
 	confirmData     string
 	appFocusHandler func()
@@ -53,6 +54,7 @@ func NewVolumes() *Volumes {
 		sortDialog:     dialogs.NewSortDialog([]string{"driver", "name", "created", "mount point"}, 2), //nolint:mnd
 		createDialog:   voldialogs.NewVolumeCreateDialog(),
 		exportDialog:   voldialogs.NewVolumeExportDialog(),
+		importDialog:   voldialogs.NewVolumeImportDialog(),
 		volumeList:     volListReport{sortBy: "created", ascending: true},
 	}
 
@@ -127,6 +129,7 @@ func (vols *Volumes) getInnerDialogs() []utils.UIDialog {
 		vols.createDialog,
 		vols.sortDialog,
 		vols.exportDialog,
+		vols.importDialog,
 	}
 
 	return dialogs
@@ -147,6 +150,7 @@ func (vols *Volumes) initUI() {
 	vols.cmdDialog = dialogs.NewCommandDialog([][]string{
 		{"create", "create a new volume"},
 		{"export", "export a volume"},
+		{"import", "import contents into a volume from a tarball source"},
 		{"inspect", "display detailed volume's information"},
 		{"prune", "remove all unused volumes"},
 		{"rm", "remove the selected volume"},
@@ -221,6 +225,15 @@ func (vols *Volumes) initUI() {
 
 	vols.exportDialog.SetExportFunc(func() {
 		vols.export()
+	})
+
+	// import dialog handlers
+	vols.importDialog.SetCancelFunc(func() {
+		vols.importDialog.Hide()
+	})
+
+	vols.importDialog.SetImportFunc(func() {
+		vols.importVol()
 	})
 
 	// set sort dialog functions

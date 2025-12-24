@@ -26,6 +26,8 @@ func (vols *Volumes) runCommand(cmd string) {
 		vols.removePrep()
 	case "export":
 		vols.exportDialog.Display()
+	case "import":
+		vols.importPrep()
 	}
 }
 
@@ -72,6 +74,46 @@ func (vols *Volumes) export() {
 
 		if err != nil {
 			title := fmt.Sprintf("volume (%s) export error", volID)
+			vols.displayError(title, err)
+		}
+
+		vols.appFocusHandler()
+	}()
+}
+
+func (vols *Volumes) importPrep() {
+	volID := vols.getSelectedItem()
+	if volID == "" {
+		vols.displayError("", errNoVolume)
+
+		return
+	}
+
+	vols.importDialog.Display()
+	vols.importDialog.SetVolumeInfo(volID)
+}
+
+func (vols *Volumes) importVol() {
+	volID := vols.getSelectedItem()
+	if volID == "" {
+		vols.displayError("", errNoVolume)
+
+		return
+	}
+
+	volSource := vols.importDialog.VolumeImportSource()
+
+	vols.importDialog.Hide()
+	vols.progressDialog.SetTitle("VOLUME import in progress")
+	vols.progressDialog.Display()
+
+	go func() {
+		err := volumes.Import(volID, volSource)
+
+		vols.progressDialog.Hide()
+
+		if err != nil {
+			title := fmt.Sprintf("volume (%s) import error", volID)
 			vols.displayError(title, err)
 		}
 
