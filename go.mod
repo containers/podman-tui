@@ -20,7 +20,7 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
-	go.podman.io/common v0.66.1
+	go.podman.io/common v0.67.0
 	golang.org/x/crypto v0.48.0
 )
 
@@ -122,8 +122,8 @@ require (
 	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
-	go.podman.io/image/v5 v5.38.0 // indirect
-	go.podman.io/storage v1.61.0 // indirect
+	go.podman.io/image/v5 v5.39.1 // indirect
+	go.podman.io/storage v1.62.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
