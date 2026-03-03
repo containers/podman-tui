@@ -3,9 +3,9 @@ module github.com/containers/podman-tui
 go 1.24.7
 
 require (
-	github.com/containers/buildah v1.42.2
+	github.com/containers/buildah v1.43.0
 	github.com/containers/common v0.62.2
-	github.com/containers/podman/v5 v5.7.1
+	github.com/containers/podman/v5 v5.8.0
 	github.com/containers/storage v1.57.2
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
@@ -13,14 +13,14 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hinshun/vt10x v0.0.0-20220301184237-5011da428d02
 	github.com/navidys/tvxwidgets v0.12.1
-	github.com/onsi/ginkgo/v2 v2.26.0
-	github.com/onsi/gomega v1.38.2
+	github.com/onsi/ginkgo/v2 v2.28.0
+	github.com/onsi/gomega v1.39.1
 	github.com/pkg/errors v0.9.1
 	github.com/rivo/tview v0.42.0
 	github.com/rs/zerolog v1.34.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
-	go.podman.io/common v0.66.1
+	go.podman.io/common v0.67.0
 	golang.org/x/crypto v0.48.0
 )
 
@@ -62,7 +62,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-containerregistry v0.20.6 // indirect
 	github.com/google/go-intervals v0.0.2 // indirect
-	github.com/google/pprof v0.0.0-20250820193118-f64d9cf942d6 // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/gorilla/schema v1.4.1 // indirect
@@ -122,9 +122,8 @@ require (
 	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
-	go.podman.io/image/v5 v5.38.0 // indirect
-	go.podman.io/storage v1.61.0 // indirect
-	go.uber.org/automaxprocs v1.6.0 // indirect
+	go.podman.io/image/v5 v5.39.1 // indirect
+	go.podman.io/storage v1.62.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20250103183323-7d7fa50e5329 // indirect
