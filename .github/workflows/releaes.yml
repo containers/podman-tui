@@ -1,0 +1,41 @@
+---
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Setup environment
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.7'
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Build binaries (Linux, Darwin and Windows)
+        run: |
+          sh hack/build_release.sh "${{ github.ref_name }}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          name: ${{ github.ref_name }}
+          files: |
+            ./dist/podman-tui-release-linux_amd64.zip
+            ./dist/podman-tui-release-darwin_amd64.zip
+            ./dist/podman-tui-release-windows_amd64.zip
+            ./dist/sha256sum
+
+          draft: true
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

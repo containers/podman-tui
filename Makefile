@@ -9,6 +9,7 @@ BUILDTAGS := "exclude_graphdriver_btrfs containers_image_openpgp remote"
 COVERAGE_PATH ?= .coverage
 TARGET = podman-tui
 BIN = ./bin
+DIST = ./dist
 DESTDIR = /usr/bin
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 SELINUXOPT ?= $(shell test -x /usr/sbin/selinuxenabled && selinuxenabled && echo -Z)
@@ -54,6 +55,7 @@ binary-darwin: ## Build podman-tui for darwin
 .PHONY: clean
 clean:
 	@rm -rf $(BIN)
+	@rm -rf $(DIST)
 
 .PHONY: install
 install:    ## Install podman-tui binary

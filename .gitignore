@@ -1,4 +1,6 @@
 bin/
+dist/
+*.zip
 .vagrant/
 .vscode/
 .idea/
