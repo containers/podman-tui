@@ -101,7 +101,7 @@ load helpers_tui
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
-    # switch to environmen page
+    # switch to environment page
     podman_tui_send_inputs "Down" "Tab"
     podman_tui_send_inputs "$TEST_CONTAINER_WORKDIR" "Tab"
     podman_tui_send_inputs "$TEST_CONTAINER_ENV1" "Space" "$TEST_CONTAINER_ENV2"
@@ -145,7 +145,7 @@ load helpers_tui
     podman_tui_send_inputs "Enter" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab" "Tab"
     sleep $TEST_TIMEOUT_LOW
 
-    # switch to environmen page
+    # switch to environment page
     podman_tui_send_inputs "Down" "Down" "Down" "Down" "Down" "Down" "Down" "Down" "Down" "Tab"
     podman_tui_send_inputs "$TEST_CONTAINER_MEMORY" "Tab" "$TEST_CONTAINER_MEMORY_RESERV" "Tab"
     podman_tui_send_inputs "$TEST_CONTAINER_MEMORY_SWAP" "Tab" "$TEST_CONTAINER_MEMORY_SWAPPINESS"

@@ -196,7 +196,7 @@ func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
 		}
 	}
 
-	// add xterm number of LINES (rows) and COLUMES (cols)
+	// add xterm number of LINES (rows) and COLUMNS (cols)
 	varLines := fmt.Sprintf("LINES=%d", opts.TtyHeight)
 	varCols := fmt.Sprintf("COLUMNS=%d", opts.TtyWidth)
 
