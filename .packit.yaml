@@ -1,32 +1,79 @@
 # See the documentation for more information:
 # https://packit.dev/docs/configuration/
 
-specfile_path: podman-tui.spec
+downstream_package_name: podman-tui
+upstream_tag_template: v{version}
+
+srpm_build_deps:
+  - git-archive-all
+
+packages:
+  podman-tui-fedora:
+    pkg_tool: fedpkg
+    specfile_path: rpm/podman-tui.spec
+
+  podman-tui-epel:
+    pkg_tool: fedpkg
+    specfile_path: rpm/podman-tui.spec
+
+  podman-tui-centos:
+    pkg_tool: centpkg
+    specfile_path: rpm/podman-tui.spec
+
+actions:
+  fix-spec-file:
+    - "bash rpm/packit-copr-rpm.sh"
 
 jobs:
   - job: copr_build
     trigger: pull_request
     enable_net: true
-    srpm_build_deps:
-      - make
-      - openssl-devel
-      - rpkg
+    packages: [podman-tui-fedora]
     targets:
       - fedora-all-x86_64
       - fedora-all-aarch64
-# golang-1.24.7 not released yet
-#      - epel-9-x86_64
-#      - epel-9-aarch64
+
+  - job: copr_build
+    trigger: pull_request
+    enable_net: true
+    packages: [podman-tui-epel]
+    targets:
+      - epel-9-x86_64
+      - epel-9-aarch64
       - epel-10-x86_64
       - epel-10-aarch64
+
+  - job: copr_build
+    trigger: pull_request
+    enable_net: true
+    packages: [podman-tui-centos]
+    targets:
       - centos-stream-9-x86_64
       - centos-stream-9-aarch64
       - centos-stream-10-x86_64
       - centos-stream-10-aarch64
 
-    actions:
-      post-upstream-clone:
-        - "rpkg spec --outdir ./"
+  - job: propose_downstream
+    trigger: release
+    update_release: false
+    packages:
+      - podman-tui-fedora
+      - podman-tui-epel
+    dist_git_branches: &build_targets
+      - fedora-all
+      - epel-9
+      - epel-10
 
-      fix-spec-file:
-        "bash .packit.sh"
+  - job: koji_build
+    trigger: commit
+    packages:
+      - podman-tui-fedora
+      - podman-tui-epel
+    dist_git_branches: *build_targets
+
+  - job: bodhi_update
+    trigger: koji_build
+    packages:
+      - podman-tui-fedora
+      - podman-tui-epel
+    dist_git_branches: *build_targets
