@@ -45,7 +45,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v6
         with:
-          go-version: '>=1.24.7'
+          go-version: '1.24.7'
       - uses: actions/checkout@v6
       - run: |
           go mod tidy
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v6
         with:
-          go-version: '>=1.24.7'
+          go-version: '1.24.7'
       - uses: actions/checkout@v6
       - run: |
           make all
