@@ -1,6 +1,10 @@
 bin/
 dist/
 *.zip
+vendor-*.tar.gz
+podman-tui-*.tar.gz
+*.tar
+prepare_sources_result/
 .vagrant/
 .vscode/
 .idea/
@@ -8,3 +12,4 @@ dist/
 *.log
 *.out
 .gopathok
+*.rpm

@@ -23,35 +23,18 @@ write_go_version()
 write_spec_version()
 {
 	LOCAL_VERSION="$1"
-	LOCAL_RELEASE="1%{?dist}"
 	if [[ "${LOCAL_VERSION}" == *-dev ]]; then
 		LOCAL_VERSION=$(echo ${LOCAL_VERSION} | sed "s/-dev//")
-		LOCAL_RELEASE="dev.1%{?dist}"
 	fi
-	sed -i "s/^\(Version: *\).*/\1${LOCAL_VERSION}/" podman-tui.spec.rpkg
-	sed -i "s/^\(Release: *\).*/\1${LOCAL_RELEASE}/" podman-tui.spec.rpkg
+
+	sed -i "s/^Version:.*/Version: ${LOCAL_VERSION}/" rpm/podman-tui.spec
 }
 
-write_spec_changelog()
-{
-	sed '/\*.*-dev/d' -i podman-tui.spec.rpkg
-	VERSION=$1
-	date=$(date "+%a %b %d %Y")
-	echo "* ${date} $(git config user.name) <$(git config user.email)> ${VERSION}-1" >.changelog.txt
-	if [[ "${VERSION}" != *-dev ]]; then
-	   git log --no-merges --format='- %s' "${LAST_TAG}..HEAD" >>.changelog.txt
-	else
-	    echo "" >>.changelog.txt
-	fi
-	sed '/^%changelog.*/r .changelog.txt' -i podman-tui.spec.rpkg
-	rm -f .changelog.txt
-}
 
 release_commit()
 {
 	write_go_version "${VERSION}" &&
 	write_spec_version "${VERSION}" &&
-	write_spec_changelog "${VERSION}" &&
 	git commit -asm "Bump to v${VERSION}"
 }
 
@@ -59,7 +42,6 @@ dev_version_commit()
 {
 	write_go_version "${NEXT_VERSION}-dev" &&
 	write_spec_version "${NEXT_VERSION}-dev" &&
-	write_spec_changelog "${NEXT_VERSION}-dev" &&
 	git commit -asm "Bump to v${NEXT_VERSION}-dev"
 }
 
