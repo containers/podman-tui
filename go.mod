@@ -5,7 +5,7 @@ go 1.24.7
 require (
 	github.com/containers/buildah v1.43.0
 	github.com/containers/common v0.62.2
-	github.com/containers/podman/v5 v5.8.0
+	github.com/containers/podman/v5 v5.8.1
 	github.com/containers/storage v1.57.2
 	github.com/distribution/reference v0.6.0
 	github.com/docker/go-units v0.5.0
