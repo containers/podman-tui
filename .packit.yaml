@@ -12,17 +12,33 @@ packages:
     pkg_tool: fedpkg
     specfile_path: rpm/podman-tui.spec
 
-  podman-tui-epel:
-    pkg_tool: fedpkg
-    specfile_path: rpm/podman-tui.spec
-
   podman-tui-centos:
     pkg_tool: centpkg
     specfile_path: rpm/podman-tui.spec
 
+merge_pr_in_ci: false
+
+files_to_sync:
+  - src:
+      - ".packit.yaml"
+      - "rpm/podman-tui.spec"
+      - "rpm/vendor-*.tar.gz"
+    dest: .
+
 actions:
   fix-spec-file:
     - "bash rpm/packit-copr-rpm.sh"
+  post-modifications:
+    - |
+      bash -xc '
+      export CURRENT_DIR=$(pwd)
+      export BASE_DIR=${PACKIT_UPSTREAM_REPO}/
+      if [ -n "${PACKIT_DOWNSTREAM_REPO}" ] ; then
+        VERSION=$(grep -E "[[:space:]]+appVersion\s*=" ${BASE_DIR}/cmd/version.go  | cut -d\" -f2 | sed 's/-//')
+        tar -C ${BASE_DIR} -czf "vendor-${VERSION}.tar.gz" vendor/
+        cp vendor-${VERSION}.tar.gz ${PACKIT_DOWNSTREAM_REPO}
+      fi
+      '
 
 jobs:
   - job: copr_build
@@ -36,7 +52,7 @@ jobs:
   - job: copr_build
     trigger: pull_request
     enable_net: true
-    packages: [podman-tui-epel]
+    packages: [podman-tui-fedora]
     targets:
       - epel-9-x86_64
       - epel-9-aarch64
@@ -58,7 +74,6 @@ jobs:
     update_release: false
     packages:
       - podman-tui-fedora
-      - podman-tui-epel
     dist_git_branches: &build_targets
       - fedora-all
       - epel-9
@@ -68,12 +83,10 @@ jobs:
     trigger: commit
     packages:
       - podman-tui-fedora
-      - podman-tui-epel
     dist_git_branches: *build_targets
 
   - job: bodhi_update
     trigger: koji_build
     packages:
       - podman-tui-fedora
-      - podman-tui-epel
     dist_git_branches: *build_targets
