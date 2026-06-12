@@ -63,7 +63,7 @@ func ResolveHostPath(path string) (*FileInfo, error) {
 
 	statInfo, err := os.Stat(resolvedHostPath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return nil, ErrENOENT
 		}
 		return nil, err

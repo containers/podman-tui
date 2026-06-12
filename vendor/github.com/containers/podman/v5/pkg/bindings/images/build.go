@@ -590,7 +590,7 @@ func prepareContainerFiles(containerFiles []string, contextDir string, stdinDest
 		} else {
 			// If Containerfile does not exist, assume it is in context directory and do Not add to tarfile
 			if err := fileutils.Lexists(containerfile); err != nil {
-				if !os.IsNotExist(err) {
+				if !errors.Is(err, os.ErrNotExist) {
 					return nil, err
 				}
 				containerfile = c

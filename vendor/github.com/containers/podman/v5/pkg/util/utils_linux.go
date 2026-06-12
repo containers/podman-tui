@@ -182,7 +182,7 @@ func AddPrivilegedDevices(g *generate.Generator, systemdMode bool) error {
 func getDevices(path string) ([]spec.LinuxDevice, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
-		if rootless.IsRootless() && os.IsPermission(err) {
+		if rootless.IsRootless() && errors.Is(err, os.ErrPermission) {
 			return nil, nil
 		}
 		return nil, err

@@ -1,6 +1,7 @@
 package trust
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -58,7 +59,7 @@ func loadAndMergeConfig(dirPath string) (*registryConfiguration, error) {
 
 	dir, err := os.Open(dirPath)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if errors.Is(err, os.ErrNotExist) {
 			return &mergedConfig, nil
 		}
 		return nil, err
