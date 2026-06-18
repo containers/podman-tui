@@ -34,6 +34,7 @@ type CommandDialog struct {
 	selectedStyle tcell.Style
 	cancelHandler func()
 	selectHandler func()
+	shortcuts     []rune
 }
 
 // NewCommandDialog returns a command list primitive.
@@ -43,6 +44,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	// command table items
 	col1Width := 0
 	col2Width := 0
+	shortcutWidth := 9 // "SHORTCUT" header width
 
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
@@ -64,6 +66,14 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetSelectable(false))
 
 	cmdsTable.SetCell(0, 1,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]SHORTCUT", style.GetColorHex(style.TableHeaderFgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(style.TableHeaderBgColor).
+			SetTextColor(style.TableHeaderFgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	cmdsTable.SetCell(0, 2,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(style.TableHeaderBgColor).
@@ -71,12 +81,62 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
+	shortcuts := make([]rune, len(options))
+
+	candidates := make([][]rune, len(options))
+	for i := range options {
+		cmd := options[i][0]
+		seen := map[rune]bool{}
+		for _, c := range cmd {
+			if isPrintableASCII(c) && !seen[c] {
+				candidates[i] = append(candidates[i], c)
+			}
+			seen[c] = true
+		}
+	}
+
+	used := map[rune]bool{}
+	for i := range options {
+		if len(candidates[i]) > 0 && !used[candidates[i][0]] {
+			shortcuts[i] = candidates[i][0]
+			used[candidates[i][0]] = true
+		}
+	}
+	for i := range options {
+		if shortcuts[i] != 0 {
+			continue
+		}
+		for _, c := range candidates[i] {
+			if !used[c] {
+				shortcuts[i] = c
+				used[c] = true
+				break
+			}
+		}
+		if shortcuts[i] == 0 {
+			for c := 'a'; c <= 'z'; c++ {
+				if !used[c] {
+					shortcuts[i] = c
+					used[c] = true
+					break
+				}
+			}
+		}
+	}
+
 	for i := range options {
 		cmdsTable.SetCell(i+1, 0,
 			tview.NewTableCell(options[i][0]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
+
+		shortcut := shortcuts[i]
+
 		cmdsTable.SetCell(i+1, 1,
+			tview.NewTableCell(string(shortcut)).
+				SetAlign(tview.AlignCenter).
+				SetSelectable(true).SetTextColor(style.DialogFgColor))
+		cmdsTable.SetCell(i+1, 2,
 			tview.NewTableCell(options[i][1]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
@@ -90,7 +150,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		}
 	}
 
-	cmdWidth = col1Width + col2Width + 2 //nolint:mnd
+	cmdWidth = col1Width + shortcutWidth + col2Width + 4 //nolint:mnd
 
 	cmdsTable.SetFixed(1, 1)
 	cmdsTable.SetSelectable(true, false)
@@ -120,9 +180,10 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 		selectedStyle: tcell.StyleDefault.
 			Background(style.DialogFgColor).
 			Foreground(style.DialogBgColor),
-		options: options,
-		width:   cmdWidth + cmdWidthOffset,
-		height:  len(options) + TableHeightOffset + DialogFormHeight,
+		options:   options,
+		width:     cmdWidth + cmdWidthOffset,
+		height:    len(options) + TableHeightOffset + DialogFormHeight,
+		shortcuts: shortcuts,
 	}
 }
 
@@ -212,6 +273,24 @@ func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 			cmd.setFocusElement()
 		}
 
+		// Handle shortcut key presses
+		if cmd.table.HasFocus() {
+			if event.Key() == tcell.KeyEnter {
+				cmd.selectHandler()
+
+				return
+			}
+
+			for row, shortcut := range cmd.shortcuts {
+				if event.Rune() == shortcut {
+					cmd.table.Select(row+1, 0)
+					cmd.selectHandler()
+
+					return
+				}
+			}
+		}
+
 		if cmd.form.HasFocus() {
 			if formHandler := cmd.form.InputHandler(); formHandler != nil {
 				formHandler(event, setFocus)
@@ -222,12 +301,6 @@ func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 
 		// command table handler
 		if cmd.table.HasFocus() {
-			if event.Key() == tcell.KeyEnter {
-				cmd.selectHandler()
-
-				return
-			}
-
 			if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
 				tableHandler(event, setFocus)
 
@@ -300,4 +373,9 @@ func (cmd *CommandDialog) setFocusElement() {
 		cmd.focusElement = cmdTableFocus
 		cmd.table.SetSelectedStyle(cmd.selectedStyle)
 	}
+}
+
+// isPrintableASCII checks if the rune is a printable ASCII character.
+func isPrintableASCII(r rune) bool {
+	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9'
 }
