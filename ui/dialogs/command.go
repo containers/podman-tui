@@ -44,7 +44,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	// command table items
 	col1Width := 0
 	col2Width := 0
-	shortcutWidth := 9 // "SHORTCUT" header width
+	shortcutWidth := 10 // "SHORTCUT" header width
 
 	form := tview.NewForm().
 		AddButton("Cancel", nil).
