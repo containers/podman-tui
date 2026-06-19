@@ -12,6 +12,10 @@ import (
 
 const (
 	cmdWidthOffset = 6
+
+	colCommand  = 0
+	colShortcut = 1
+	colDesc     = 2
 )
 
 const (
@@ -57,7 +61,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
 	// command table header
-	cmdsTable.SetCell(0, 0,
+	cmdsTable.SetCell(0, colCommand,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(style.TableHeaderBgColor).
@@ -73,7 +77,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
-	cmdsTable.SetCell(0, 2,
+	cmdsTable.SetCell(0, colDesc,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(style.TableHeaderBgColor).
@@ -81,62 +85,21 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetAlign(tview.AlignCenter).
 			SetSelectable(false))
 
-	shortcuts := make([]rune, len(options))
-
-	candidates := make([][]rune, len(options))
-	for i := range options {
-		cmd := options[i][0]
-		seen := map[rune]bool{}
-		for _, c := range cmd {
-			if isPrintableASCII(c) && !seen[c] {
-				candidates[i] = append(candidates[i], c)
-			}
-			seen[c] = true
-		}
-	}
-
-	used := map[rune]bool{}
-	for i := range options {
-		if len(candidates[i]) > 0 && !used[candidates[i][0]] {
-			shortcuts[i] = candidates[i][0]
-			used[candidates[i][0]] = true
-		}
-	}
-	for i := range options {
-		if shortcuts[i] != 0 {
-			continue
-		}
-		for _, c := range candidates[i] {
-			if !used[c] {
-				shortcuts[i] = c
-				used[c] = true
-				break
-			}
-		}
-		if shortcuts[i] == 0 {
-			for c := 'a'; c <= 'z'; c++ {
-				if !used[c] {
-					shortcuts[i] = c
-					used[c] = true
-					break
-				}
-			}
-		}
-	}
+	shortcuts := makeShortcuts(options)
 
 	for i := range options {
-		cmdsTable.SetCell(i+1, 0,
+		cmdsTable.SetCell(i+1, colCommand,
 			tview.NewTableCell(options[i][0]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
 
 		shortcut := shortcuts[i]
 
-		cmdsTable.SetCell(i+1, 1,
+		cmdsTable.SetCell(i+1, colShortcut,
 			tview.NewTableCell(string(shortcut)).
 				SetAlign(tview.AlignCenter).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
-		cmdsTable.SetCell(i+1, 2,
+		cmdsTable.SetCell(i+1, colDesc,
 			tview.NewTableCell(options[i][1]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
@@ -301,11 +264,9 @@ func (cmd *CommandDialog) InputHandler() func(event *tcell.EventKey, setFocus fu
 
 		// command table handler
 		if cmd.table.HasFocus() {
-			if tableHandler := cmd.table.InputHandler(); tableHandler != nil {
-				tableHandler(event, setFocus)
+			cmd.handleTableInput(event, setFocus)
 
-				return
-			}
+			return
 		}
 	})
 }
@@ -363,6 +324,13 @@ func (cmd *CommandDialog) Draw(screen tcell.Screen) {
 	cmd.layout.Draw(screen)
 }
 
+func (cmd *CommandDialog) handleTableInput(event *tcell.EventKey, setFocus func(p tview.Primitive)) {
+	tableHandler := cmd.table.InputHandler()
+	if tableHandler != nil {
+		tableHandler(event, setFocus)
+	}
+}
+
 func (cmd *CommandDialog) setFocusElement() {
 	if cmd.focusElement == cmdTableFocus {
 		cmd.focusElement = cmdFormFocus
@@ -378,4 +346,71 @@ func (cmd *CommandDialog) setFocusElement() {
 // isPrintableASCII checks if the rune is a printable ASCII character.
 func isPrintableASCII(r rune) bool {
 	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9'
+}
+
+func makeShortcuts(options [][]string) []rune {
+	candidates := buildCandidates(options)
+	shortcuts := make([]rune, len(options))
+	used := map[rune]bool{}
+
+	for i, cands := range candidates {
+		if len(cands) > 0 && !used[cands[0]] {
+			shortcuts[i] = cands[0]
+			used[cands[0]] = true
+		}
+	}
+
+	for i, cands := range candidates {
+		if shortcuts[i] != 0 {
+			continue
+		}
+
+		if assigned := findUnused(cands, used); assigned != 0 {
+			shortcuts[i] = assigned
+
+			continue
+		}
+
+		shortcuts[i] = findAlphaFallback(used)
+	}
+
+	return shortcuts
+}
+
+func buildCandidates(options [][]string) [][]rune {
+	candidates := make([][]rune, len(options))
+	for i, opt := range options {
+		cmd := opt[0]
+
+		seen := map[rune]bool{}
+		for _, c := range cmd {
+			if isPrintableASCII(c) && !seen[c] {
+				candidates[i] = append(candidates[i], c)
+			}
+
+			seen[c] = true
+		}
+	}
+
+	return candidates
+}
+
+func findUnused(cands []rune, used map[rune]bool) rune {
+	for _, c := range cands {
+		if !used[c] {
+			return c
+		}
+	}
+
+	return 0
+}
+
+func findAlphaFallback(used map[rune]bool) rune {
+	for c := 'a'; c <= 'z'; c++ {
+		if !used[c] {
+			return c
+		}
+	}
+
+	return 0
 }
