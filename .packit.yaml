@@ -12,10 +12,6 @@ packages:
     pkg_tool: fedpkg
     specfile_path: rpm/podman-tui.spec
 
-  podman-tui-centos:
-    pkg_tool: centpkg
-    specfile_path: rpm/podman-tui.spec
-
 merge_pr_in_ci: false
 
 files_to_sync:
@@ -58,16 +54,6 @@ jobs:
       - epel-9-aarch64
       - epel-10-x86_64
       - epel-10-aarch64
-
-  - job: copr_build
-    trigger: pull_request
-    enable_net: true
-    packages: [podman-tui-centos]
-    targets:
-      - centos-stream-9-x86_64
-      - centos-stream-9-aarch64
-      - centos-stream-10-x86_64
-      - centos-stream-10-aarch64
 
   - job: propose_downstream
     trigger: release
