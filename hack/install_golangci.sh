@@ -8,7 +8,7 @@ BIN="./bin/golangci-lint"
 
 function install() {
     echo "Installing golangci-lint v$VERSION into $BIN"
-    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v$VERSION
+    curl -sSfL --retry 5 https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- "v$VERSION"
 }
 
 if [ ! -x "$BIN" ]; then

@@ -27,7 +27,6 @@ type MessageDialog struct {
 type messageInfo int
 
 const (
-	// top dialog header label.
 	MessageSystemInfo messageInfo = 0 + iota
 	MessagePodInfo
 	MessageContainerInfo
