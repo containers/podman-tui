@@ -54,10 +54,10 @@ type Auth interface {
 func (conn *Conn) Auth(methods []Auth) error {
 	if methods == nil {
 		uid := strconv.Itoa(os.Geteuid())
-		methods = []Auth{AuthExternal(uid), AuthCookieSha1(uid, getHomeDir())}
+		methods = getDefaultAuthMethods(uid)
 	}
 	in := bufio.NewReader(conn.transport)
-	err := conn.transport.SendNullByte()
+	err := conn.SendNullByte()
 	if err != nil {
 		return err
 	}
