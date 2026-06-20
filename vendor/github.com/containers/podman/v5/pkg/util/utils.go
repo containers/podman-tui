@@ -103,7 +103,7 @@ func ParseDockerignore(containerfiles []string, root string) ([]string, string, 
 				}
 			}
 		}
-		if dockerIgnoreErr != nil && !os.IsNotExist(dockerIgnoreErr) {
+		if dockerIgnoreErr != nil && !errors.Is(dockerIgnoreErr, os.ErrNotExist) {
 			return nil, ignoreFile, err
 		}
 	}
