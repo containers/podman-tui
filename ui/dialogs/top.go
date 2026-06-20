@@ -39,7 +39,6 @@ type TopDialog struct {
 type topInfo int
 
 const (
-	// top dialog header label.
 	TopPodInfo topInfo = 0 + iota
 	TopContainerInfo
 )
