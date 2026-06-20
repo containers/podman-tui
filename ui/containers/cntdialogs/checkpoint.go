@@ -488,7 +488,7 @@ func (d *ContainerCheckpointDialog) SetContainerInfo(id string, name string) {
 	d.containerInfo.SetText(containerInfo)
 }
 
-// GetOptions returns checkpoint options.
+// GetCheckpointOptions returns checkpoint options.
 func (d *ContainerCheckpointDialog) GetCheckpointOptions() containers.CntCheckPointOptions {
 	var opts containers.CntCheckPointOptions
 

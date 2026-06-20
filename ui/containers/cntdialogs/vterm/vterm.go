@@ -89,7 +89,7 @@ func NewVtermDialog() *VtermDialog {
 	return dialog
 }
 
-// InitChannels will init buffers and channels for attach.
+// InitAttachChannels will init buffers and channels for attach.
 func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 	log.Debug().Msg("view: container terminal dialog init channels (attach)")
 
@@ -105,7 +105,7 @@ func (d *VtermDialog) InitAttachChannels() (io.Reader, io.Writer) {
 	return d.sessionStdin, d.sessionStdout
 }
 
-// InitChannels will init buffers and channels for exec.
+// InitExecChannels will init buffers and channels for exec.
 func (d *VtermDialog) InitExecChannels() (*bufio.Reader, channel.WriteCloser) { //nolint:ireturn
 	log.Debug().Msg("view: container terminal dialog init channels (exec)")
 
