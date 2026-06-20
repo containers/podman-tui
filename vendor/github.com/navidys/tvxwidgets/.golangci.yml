@@ -1,0 +1,36 @@
+version: "2"
+run:
+  modules-download-mode: readonly
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    generated: disable
+
+linters:
+  default: all
+  disable:
+    - varnamelen
+    - exhaustruct
+    - depguard
+    - wsl
+  settings:
+    errcheck:
+      check-blank: false
+      exclude-functions:
+        - fmt:.*
+    nolintlint:
+      require-specific: true
+    revive:
+      rules:
+        - name: package-comments
+          disabled: true
+  exclusions:
+    paths:
+      - demos
+      - ".*_test.go"
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
