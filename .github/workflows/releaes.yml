@@ -18,7 +18,7 @@ jobs:
           go-version: '1.25.0'
 
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build binaries (Linux, Darwin and Windows)
         run: |
