@@ -19,7 +19,9 @@ linters:
     - funlen
     - depguard
     - wrapcheck
+    # deprecated
     - wsl
+    - gomodguard
   settings:
     errcheck:
       check-blank: false

@@ -95,7 +95,7 @@ install.tools: .install.ginkgo .install.bats .install.pre-commit .install.codesp
 
 .PHONY: .install.golangci-lint
 .install.golangci-lint:
-	VERSION=2.5.0 ./hack/install_golangci.sh
+	VERSION=2.12.2 ./hack/install_golangci.sh
 
 .PHONY: .install.codespell
 .install.codespell:
