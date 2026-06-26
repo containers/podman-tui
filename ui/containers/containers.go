@@ -11,8 +11,8 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 const (
@@ -46,6 +46,8 @@ var (
 	errNoContainerTop          = errors.New("there is no container to display top")
 	errEmptyContainerImageName = errors.New("empty container image name")
 )
+
+var UIViewHeaders = []string{"container id", "image", "pod", "created", "status", "names", "ports"}
 
 // Containers implements the containers page primitive.
 type Containers struct {
@@ -87,17 +89,24 @@ type containerListReport struct {
 
 // NewContainers returns containers page view.
 func NewContainers() *Containers {
+	sortHeaderItems := []string{
+		UIViewHeaders[viewContainersNamesColIndex],
+		UIViewHeaders[viewContainersPodColIndex],
+		UIViewHeaders[viewContainersImageColIndex],
+		UIViewHeaders[viewContainersCreatedAtColIndex],
+		UIViewHeaders[viewContainersStatusColIndex],
+	}
 	containers := &Containers{
 		Box:              tview.NewBox(),
 		title:            "containers",
-		headers:          []string{"container id", "image", "pod", "created", "status", "names", "ports"},
+		headers:          UIViewHeaders,
 		errorDialog:      dialogs.NewErrorDialog(),
 		cmdInputDialog:   dialogs.NewSimpleInputDialog(""),
 		messageDialog:    dialogs.NewMessageDialog(""),
 		progressDialog:   dialogs.NewProgressDialog(),
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		topDialog:        dialogs.NewTopDialog(),
-		sortDialog:       dialogs.NewSortDialog([]string{"name", "pod", "image", "created", "status"}, 3), //nolint:mnd
+		sortDialog:       dialogs.NewSortDialog(sortHeaderItems, 3), //nolint:mnd
 		createDialog:     cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateOnlyDialogMode),
 		runDialog:        cntdialogs.NewContainerCreateDialog(cntdialogs.ContainerCreateAndRunDialogMode),
 		execDialog:       cntdialogs.NewContainerExecDialog(),
@@ -106,7 +115,7 @@ func NewContainers() *Containers {
 		checkpointDialog: cntdialogs.NewContainerCheckpointDialog(),
 		restoreDialog:    cntdialogs.NewContainerRestoreDialog(),
 		terminalDialog:   vterm.NewVtermDialog(),
-		containersList:   containerListReport{sortBy: "created", ascending: true},
+		containersList:   containerListReport{sortBy: UIViewHeaders[viewContainersCreatedAtColIndex], ascending: true},
 	}
 
 	containers.topDialog.SetTitle("podman container top")

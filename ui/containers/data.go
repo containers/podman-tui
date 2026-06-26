@@ -9,10 +9,10 @@ import (
 	"github.com/containers/podman-tui/pdcs/containers"
 	putils "github.com/containers/podman-tui/pdcs/utils"
 	"github.com/containers/podman-tui/ui/style"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/docker/go-units"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 // SortView sorts data view called from sort dialog.

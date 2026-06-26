@@ -1,9 +1,8 @@
 //go:build !windows
-// +build !windows
 
 package utils
 
-import "github.com/containers/storage/pkg/unshare"
+import "go.podman.io/storage/pkg/unshare"
 
 // UserHomeDir returns user's home directory.
 func UserHomeDir() (string, error) {

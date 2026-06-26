@@ -9,9 +9,18 @@ import (
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
 	"github.com/containers/podman-tui/ui/volumes/voldialogs"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
+
+const (
+	volsTableDriverColIndex = 0 + iota
+	volsTableNameColIndex
+	volsTableCreatedAtColIndex
+	volsTableMountPointColIndex
+)
+
+var UIViewHeaders = []string{"driver", "volume name", "created at", "mount point"}
 
 // Volumes implemnents the volumes page primitive.
 type Volumes struct {
@@ -43,19 +52,26 @@ type volListReport struct {
 
 // NewVolumes returns new vols page view.
 func NewVolumes() *Volumes {
+	sortHeaderItems := []string{
+		UIViewHeaders[volsTableDriverColIndex],
+		UIViewHeaders[volsTableNameColIndex],
+		UIViewHeaders[volsTableCreatedAtColIndex],
+		UIViewHeaders[volsTableMountPointColIndex],
+	}
+
 	vols := &Volumes{
 		Box:            tview.NewBox(),
 		title:          "volumes",
-		headers:        []string{"driver", "volume name", "created at", "mount point"},
+		headers:        UIViewHeaders,
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
-		sortDialog:     dialogs.NewSortDialog([]string{"driver", "name", "created", "mount point"}, 2), //nolint:mnd
+		sortDialog:     dialogs.NewSortDialog(sortHeaderItems, 2), //nolint:mnd
 		createDialog:   voldialogs.NewVolumeCreateDialog(),
 		exportDialog:   voldialogs.NewVolumeExportDialog(),
 		importDialog:   voldialogs.NewVolumeImportDialog(),
-		volumeList:     volListReport{sortBy: "created", ascending: true},
+		volumeList:     volListReport{sortBy: UIViewHeaders[volsTableCreatedAtColIndex], ascending: true},
 	}
 
 	vols.initUI()

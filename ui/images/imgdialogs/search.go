@@ -258,10 +258,7 @@ func (d *ImageSearchDialog) SetRect(x, y, width, height int) {
 	dHeight := height - (2 * paddingY) //nolint:mnd
 
 	// set search input field size
-	iwidth := dWidth - searchInpuLabelWidth - searchButtonWidth - 5 //nolint:mnd
-	if iwidth > searchFieldMaxSize {
-		iwidth = searchFieldMaxSize
-	}
+	iwidth := min(searchFieldMaxSize, dWidth-searchInpuLabelWidth-searchButtonWidth-5) //nolint:mnd
 
 	d.input.SetFieldWidth(iwidth)
 	d.searchLayout.ResizeItem(d.input, iwidth+searchInpuLabelWidth, 0)

@@ -10,13 +10,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-const (
-	volsTableDriverColIndex = 0 + iota
-	volsTableNameColIndex
-	volsTableCreatedAtColIndex
-	volsTableMountPointColIndex
-)
-
 func (vols *Volumes) refresh(_ int) {
 	vols.table.Clear()
 

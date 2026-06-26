@@ -19,6 +19,7 @@ linters:
     - funlen
     - depguard
     - wrapcheck
+    - prealloc
     # deprecated
     - wsl
     - gomodguard

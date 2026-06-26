@@ -21,12 +21,13 @@ Terminal user interface for Podman environment.
 ## Overview
 
 podman-tui is a terminal user interface for podman environment.
-It is using [podman go bindings](https://github.com/containers/podman/tree/main/pkg/bindings) to communicate with local or remote podman machine (through SSH).
+It is using [podman go bindings](https://github.com/podman-container-tools/podman/blob/v6.0.0/pkg/bindings/README.md) to communicate with local or remote podman machine (through SSH).
 
 ## Compatibility matrix
 
 | Terminal User Interface  | Podman |
 | ----------- | ------ |
+| release-2.x | v6.x.y |
 | release-1.x | v5.x.y |
 | release-0.x | v4.x.y |
 
@@ -93,7 +94,7 @@ podman-tui uses following keyboard keys for different actions:
 
 ## Code of Conduct
 
-This project is using the [Containers Community Code of Conduct](https://github.com/containers/common/blob/main/CODE-OF-CONDUCT.md)
+This project is using the [Containers Community Code of Conduct](https://github.com/podman-container-tools/container-libs/blob/main/CODE-OF-CONDUCT.md)
 
 ## License
 

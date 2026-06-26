@@ -9,10 +9,10 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/libpod/define"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/libpod/define"
 )
 
 const (

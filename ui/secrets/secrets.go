@@ -10,8 +10,8 @@ import (
 	"github.com/containers/podman-tui/ui/secrets/secdialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rivo/tview"
+	"go.podman.io/podman/v6/pkg/domain/entities/types"
 )
 
 const (
@@ -28,6 +28,8 @@ var (
 	errSecretFileAndText     = errors.New("cannot select secret file and secret text together")
 	errEmptySecretFileOrText = errors.New("secret content not provided")
 )
+
+var UIViewHeaders = []string{"id", "name", "driver", "created", "updated"}
 
 // Secrets implements the secrets page primitive.
 type Secrets struct {
@@ -56,17 +58,25 @@ type secretListReport struct {
 
 // NewSecrets returns secrets page view.
 func NewSecrets() *Secrets {
+	sortHeaderItems := []string{
+		UIViewHeaders[viewSecretsNameColIndex],
+		UIViewHeaders[viewSecretsDriverColIndex],
+		UIViewHeaders[viewSecretsCreatedColIndex],
+		UIViewHeaders[viewSecretsUpdatedColIndex],
+	}
+
 	secrets := &Secrets{
 		Box:            tview.NewBox(),
 		title:          "secrets",
-		headers:        []string{"id", "name", "driver", "created", "updated"},
+		headers:        UIViewHeaders,
 		table:          tview.NewTable(),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
-		sortDialog:     dialogs.NewSortDialog([]string{"name", "driver", "created", "updated"}, 2), //nolint:mnd
+		sortDialog:     dialogs.NewSortDialog(sortHeaderItems, 2), //nolint:mnd
 		createDialog:   secdialogs.NewSecretCreateDialog(),
+		secretList:     secretListReport{sortBy: UIViewHeaders[viewSecretsNameColIndex], ascending: true},
 	}
 
 	secrets.cmdDialog = dialogs.NewCommandDialog([][]string{

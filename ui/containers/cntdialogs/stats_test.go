@@ -1,12 +1,12 @@
 package cntdialogs
 
 import (
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 var _ = Describe("container stat", Ordered, func() {

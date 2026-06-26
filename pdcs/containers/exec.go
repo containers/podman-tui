@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/api/handlers"
-	"github.com/containers/podman/v5/pkg/bindings/containers"
-	"github.com/containers/podman/v5/pkg/env"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/api/handlers"
+	"go.podman.io/podman/v6/pkg/bindings/containers"
+	"go.podman.io/podman/v6/pkg/env"
 )
 
 // ExecOption container exec options.
@@ -146,22 +146,34 @@ func Exec(sessionID string, opts ExecOption) { //nolint:cyclop
 
 	log.Debug().Msgf("pdcs: podman session (%s) exec finished successfully", sessionID)
 
-	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("session_id ...... : %s\r\n", sessionID))) //nolint:staticcheck
+	sessionIDMessage := []byte("session_id ...... :")
+	sessionIDMessage = fmt.Appendf(sessionIDMessage, " %s\r\n", sessionID)
+
+	execModeMessage := []byte("exec_mode  ...... :")
+	execModeMessage = fmt.Appendf(execModeMessage, " %s\r\n", "detached")
+
+	execCommandMessage := []byte("exec_command .... :")
+	execCommandMessage = fmt.Appendf(execCommandMessage, " %s\r\n", strings.Join(opts.Cmd, " "))
+
+	execStatusMessage := []byte("exec_status ..... :")
+	execStatusMessage = fmt.Appendf(execStatusMessage, " %s\r\n", "OK")
+
+	_, err = opts.OutputStream.Write(sessionIDMessage)
 	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_mode  ...... : %s\r\n", "detached"))) //nolint:staticcheck
+	_, err = opts.OutputStream.Write(execModeMessage)
 	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_command .... : %s\r\n", strings.Join(opts.Cmd, " ")))) //nolint:staticcheck,lll
+	_, err = opts.OutputStream.Write(execCommandMessage)
 	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
 
-	_, err = opts.OutputStream.Write([]byte(fmt.Sprintf("exec_status ..... : %s\r\n", "OK"))) //nolint:staticcheck
+	_, err = opts.OutputStream.Write(execStatusMessage)
 	if err != nil {
 		log.Error().Msgf("%v", err)
 	}
@@ -173,7 +185,14 @@ func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
 	createCfg := &handlers.ExecCreateConfig{}
 	createCfg.Cmd = opts.Cmd
 	createCfg.Tty = opts.Tty
-	createCfg.Detach = opts.Detach //nolint:staticcheck,nolintlint
+	createCfg.AttachStdout = !opts.Detach
+	createCfg.AttachStderr = !opts.Detach
+	createCfg.DetachKeys = opts.DetachKeys
+
+	if !opts.Detach {
+		createCfg.AttachStdin = opts.Interactive
+	}
+
 	createCfg.WorkingDir = opts.WorkDir
 	createCfg.User = opts.User
 
@@ -203,15 +222,6 @@ func genExecCreateConfig(opts ExecOption) (*handlers.ExecCreateConfig, error) {
 	variables = append(variables, varLines)
 	variables = append(variables, varCols)
 	createCfg.Env = variables
-
-	createCfg.AttachStderr = !opts.Detach
-	createCfg.AttachStdout = !opts.Detach
-
-	createCfg.DetachKeys = opts.DetachKeys
-
-	if !opts.Detach {
-		createCfg.AttachStdin = opts.Interactive
-	}
 
 	return createCfg, nil
 }

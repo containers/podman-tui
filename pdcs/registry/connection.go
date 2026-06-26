@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/containers/podman/v5/pkg/bindings"
+	"go.podman.io/podman/v6/pkg/bindings"
 )
 
 // ErrConnectionNotSelected implements connection is not selected error.

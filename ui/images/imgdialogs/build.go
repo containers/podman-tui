@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/containers/buildah/define"
 	"github.com/containers/podman-tui/pdcs/images"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/buildah/define"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 const (
@@ -840,7 +840,7 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 
 	// basic info page
 	// Containerfiles
-	for _, cntFile := range strings.Split(strings.TrimSpace(d.containerFilePath.GetText()), " ") {
+	for cntFile := range strings.SplitSeq(strings.TrimSpace(d.containerFilePath.GetText()), " ") {
 		if cntFile != "" {
 			cFile, err := utils.ResolveHomeDir(cntFile)
 			if err != nil {
@@ -995,26 +995,26 @@ func (d *ImageBuildDialog) ImageBuildOptions() (images.ImageBuildOptions, error)
 
 	// dns page
 	dnsServersList := strings.TrimSpace(d.dnsServersField.GetText())
-	for _, dns := range strings.Split(dnsServersList, " ") {
+	for dns := range strings.SplitSeq(dnsServersList, " ") {
 		if dns != "" {
 			dnsServers = append(dnsServers, dns)
 		}
 	}
 
-	for _, do := range strings.Split(d.dnsOptionsField.GetText(), " ") {
+	for do := range strings.SplitSeq(d.dnsOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
 
-	for _, ds := range strings.Split(d.dnsSearchField.GetText(), " ") {
+	for ds := range strings.SplitSeq(d.dnsSearchField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
 		}
 	}
 
 	// security options page
-	for _, selinuxLabel := range strings.Split(d.selinuxLabelField.GetText(), " ") {
+	for selinuxLabel := range strings.SplitSeq(d.selinuxLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
 			labelOpts = append(labelOpts, selinuxLabel)
 		}

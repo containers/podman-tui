@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/bindings/volumes"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/bindings/volumes"
 )
 
 // Prune removes all unused volumes.

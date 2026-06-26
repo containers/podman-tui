@@ -3,8 +3,8 @@ package sysinfo
 import (
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman/v5/pkg/bindings/system"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/bindings/system"
 )
 
 // Prune removes all unused pod, container, image and volume data.

@@ -91,25 +91,25 @@ type ConnectionListSorted struct {
 
 func (a ConnectionListSorted) Less(i, j int) bool { //nolint:cyclop
 	switch a.option {
-	case "default":
+	case UIViewHeaders[viewSystemDefaultColIndex]:
 		if a.ascending {
 			return a.lprSort[i].Default || a.lprSort[j].Default
 		}
 
 		return !a.lprSort[i].Default && a.lprSort[j].Default
-	case "status":
+	case UIViewHeaders[viewSystemStatusColIndex]:
 		if a.ascending {
 			return a.lprSort[i].Status.String() < a.lprSort[j].Status.String()
 		}
 
 		return a.lprSort[i].Status.String() > a.lprSort[j].Status.String()
-	case "uri":
+	case UIViewHeaders[viewSystemUriColIndex]:
 		if a.ascending {
 			return a.lprSort[i].URI < a.lprSort[j].URI
 		}
 
 		return a.lprSort[i].URI > a.lprSort[j].URI
-	case "identity":
+	case UIViewHeaders[viewSystemIdentityColIndex]:
 		if a.ascending {
 			return a.lprSort[i].Identity < a.lprSort[j].Identity
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/pkg/errors"
 	"github.com/rivo/tview"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -51,23 +52,31 @@ func LabelWidthLeftPadding(input string, padding int) string {
 
 // StringToInputLabel create string with max width required for input fields.
 func StringToInputLabel(input string, maxWidth int) string {
-	label := ""
-	labelIndex := 0
+	var labelBuilder strings.Builder
 
 	for index, char := range input {
 		if index >= maxWidth {
 			break
 		}
 
-		label += string(char)
-		labelIndex++
+		_, err := labelBuilder.WriteRune(char)
+		if err != nil {
+			log.Error().Msgf("ui utils - align string list width: %v with input %s", err, string(char))
+
+			continue
+		}
 	}
 
-	for index := labelIndex; index < maxWidth; index++ {
-		label += " "
+	for index := labelBuilder.Len(); index < maxWidth; index++ {
+		_, err := labelBuilder.WriteString(" ")
+		if err != nil {
+			log.Error().Msgf("ui utils - align string list width: %v with input space", err)
+
+			continue
+		}
 	}
 
-	return label
+	return labelBuilder.String()
 }
 
 // AlignStringListWidth returns max string len in the list.
@@ -84,14 +93,28 @@ func AlignStringListWidth(list []string) ([]string, int) {
 	}
 
 	for _, item := range list {
+		var listItemBuilder strings.Builder
+
+		_, err := listItemBuilder.WriteString(item)
+		if err != nil {
+			log.Error().Msgf("ui utils - align string list width: %v with input :%s", err, item)
+
+			continue
+		}
+
 		if len(item) < maxAlignment {
 			need := maxAlignment - len(item)
 			for range need {
-				item += " "
+				_, err := listItemBuilder.WriteString(" ")
+				if err != nil {
+					log.Error().Msgf("ui utils - align string list width: %v with input <space>", err)
+
+					continue
+				}
 			}
 		}
 
-		alignedList = append(alignedList, item)
+		alignedList = append(alignedList, listItemBuilder.String())
 	}
 
 	return alignedList, maxAlignment
@@ -126,8 +149,6 @@ func ResolveHomeDir(path string) (string, error) {
 	// replace the first "~" (start of path) with the HomeDir to resolve "~"
 	return strings.Replace(path, "~", home, 1), nil
 }
-
-// Following codes are from https://github.com/containers/podman/blob/main/cmd/podman/parse/net.go
 
 // ValidateFileName returns an error if filename contains ":"
 // as it is currently not supported.

@@ -12,10 +12,10 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 const (
@@ -863,7 +863,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 		secret           []string
 	)
 
-	for _, label := range strings.Split(d.containerLabelsField.GetText(), " ") {
+	for label := range strings.SplitSeq(d.containerLabelsField.GetText(), " ") {
 		if label != "" {
 			labels = append(labels, label)
 		}
@@ -880,32 +880,32 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	}
 
 	// ports
-	for _, p := range strings.Split(d.containerPortPublishField.GetText(), " ") {
+	for p := range strings.SplitSeq(d.containerPortPublishField.GetText(), " ") {
 		if p != "" {
 			publish = append(publish, p)
 		}
 	}
 
-	for _, e := range strings.Split(d.containerPortExposeField.GetText(), " ") {
+	for e := range strings.SplitSeq(d.containerPortExposeField.GetText(), " ") {
 		if e != "" {
 			expose = append(expose, e)
 		}
 	}
 
 	// DNS setting
-	for _, dns := range strings.Split(d.containerDNSServersField.GetText(), " ") {
+	for dns := range strings.SplitSeq(d.containerDNSServersField.GetText(), " ") {
 		if dns != "" {
 			dnsServers = append(dnsServers, dns)
 		}
 	}
 
-	for _, do := range strings.Split(d.containerDNSOptionsField.GetText(), " ") {
+	for do := range strings.SplitSeq(d.containerDNSOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
 
-	for _, ds := range strings.Split(d.containerDNSSearchField.GetText(), " ") {
+	for ds := range strings.SplitSeq(d.containerDNSSearchField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
 		}
@@ -914,7 +914,7 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	_, imageVolume = d.containerImageVolumeField.GetCurrentOption()
 
 	// security options
-	for _, selinuxLabel := range strings.Split(d.containerSecLabelField.GetText(), " ") {
+	for selinuxLabel := range strings.SplitSeq(d.containerSecLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
 			selinuxOpts = append(selinuxOpts, selinuxLabel)
 		}
@@ -924,42 +924,42 @@ func (d *ContainerCreateDialog) ContainerCreateOptions() containers.CreateOption
 	_, healthOnFailure := d.containerHealthOnFailureField.GetCurrentOption()
 
 	// env vars
-	for _, evar := range strings.Split(d.containerEnvVarsField.GetText(), " ") {
+	for evar := range strings.SplitSeq(d.containerEnvVarsField.GetText(), " ") {
 		if evar != "" {
 			envVars = append(envVars, evar)
 		}
 	}
 
 	// env file
-	for _, efile := range strings.Split(d.containerEnvFileField.GetText(), " ") {
+	for efile := range strings.SplitSeq(d.containerEnvFileField.GetText(), " ") {
 		if efile != "" {
 			envFile = append(envFile, efile)
 		}
 	}
 
 	// env merge
-	for _, emerge := range strings.Split(d.containerEnvMergeField.GetText(), " ") {
+	for emerge := range strings.SplitSeq(d.containerEnvMergeField.GetText(), " ") {
 		if emerge != "" {
 			envMerge = append(envMerge, emerge)
 		}
 	}
 
 	// unset env
-	for _, eunset := range strings.Split(d.containerUnsetEnvField.GetText(), " ") {
+	for eunset := range strings.SplitSeq(d.containerUnsetEnvField.GetText(), " ") {
 		if eunset != "" {
 			unsetEnv = append(unsetEnv, eunset)
 		}
 	}
 
 	// host users
-	for _, huser := range strings.Split(d.containerHostUsersField.GetText(), " ") {
+	for huser := range strings.SplitSeq(d.containerHostUsersField.GetText(), " ") {
 		if huser != "" {
 			hostUsers = append(hostUsers, huser)
 		}
 	}
 
 	// secret
-	for _, sec := range strings.Split(d.containerSecretField.GetText(), " ") {
+	for sec := range strings.SplitSeq(d.containerSecretField.GetText(), " ") {
 		if sec != "" {
 			secret = append(secret, sec)
 		}

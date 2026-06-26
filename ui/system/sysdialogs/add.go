@@ -262,21 +262,14 @@ func (addDialog *AddConnectionDialog) SetCancelFunc(handler func()) *AddConnecti
 
 // SetRect set rects for this primitive.
 func (addDialog *AddConnectionDialog) SetRect(x, y, width, height int) {
-	dWidth := width
-	if width > connCreateDialogMaxWidth {
-		dWidth = connCreateDialogMaxWidth
-	}
-
+	dWidth := min(width, connCreateDialogMaxWidth)
 	dBWidth := dWidth - (2 * dialogs.DialogPadding) //nolint:mnd
 
 	widthEmptySpace := (width - dWidth) / 2 //nolint:mnd
 
 	x = x + widthEmptySpace + dialogs.DialogPadding
 
-	dHeight := height
-	if height > connCreateDialogMaxHeight {
-		dHeight = connCreateDialogMaxHeight
-	}
+	dHeight := min(height, connCreateDialogMaxHeight)
 
 	heightEmptySpace := (height - dHeight) / 2 //nolint:mnd
 	y += heightEmptySpace

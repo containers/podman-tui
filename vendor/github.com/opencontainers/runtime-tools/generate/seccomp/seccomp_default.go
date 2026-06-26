@@ -3,7 +3,6 @@ package seccomp
 import (
 	"runtime"
 
-	"github.com/opencontainers/runtime-spec/specs-go"
 	rspec "github.com/opencontainers/runtime-spec/specs-go"
 )
 
@@ -23,6 +22,8 @@ func arches() []rspec.Arch {
 		return []rspec.Arch{rspec.ArchMIPSEL, rspec.ArchMIPSEL64, rspec.ArchMIPSEL64N32}
 	case "mipsel64n32":
 		return []rspec.Arch{rspec.ArchMIPSEL, rspec.ArchMIPSEL64, rspec.ArchMIPSEL64N32}
+	case "riscv64":
+		return []rspec.Arch{rspec.ArchRISCV64}
 	case "s390x":
 		return []rspec.Arch{rspec.ArchS390, rspec.ArchS390X}
 	default:
@@ -31,7 +32,7 @@ func arches() []rspec.Arch {
 }
 
 // DefaultProfile defines the whitelist for the default seccomp profile.
-func DefaultProfile(rs *specs.Spec) *rspec.LinuxSeccomp {
+func DefaultProfile(rs *rspec.Spec) *rspec.LinuxSeccomp {
 	syscalls := []rspec.LinuxSyscall{
 		{
 			Names: []string{
