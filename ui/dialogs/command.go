@@ -367,11 +367,15 @@ func makeShortcuts(options [][]string) []rune {
 
 		if assigned := findUnused(cands, used); assigned != 0 {
 			shortcuts[i] = assigned
+			used[assigned] = true
 
 			continue
 		}
 
-		shortcuts[i] = findAlphaFallback(used)
+		if fallback := findAlphaFallback(used); fallback != 0 {
+			shortcuts[i] = fallback
+			used[fallback] = true
+		}
 	}
 
 	return shortcuts

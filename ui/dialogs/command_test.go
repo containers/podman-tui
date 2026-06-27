@@ -112,3 +112,23 @@ var _ = Describe("command dialog", Ordered, func() {
 		cmdDialogApp.Stop()
 	})
 })
+
+var _ = Describe("command dialog shortcuts", func() {
+	It("never assigns duplicate shortcut keys", func() {
+		options := [][]string{
+			{"attach", ""}, {"checkpoint", ""}, {"commit", ""}, {"create", ""},
+			{"diff", ""}, {"exec", ""}, {"healthcheck", ""}, {"inspect", ""},
+			{"kill", ""}, {"logs", ""}, {"pause", ""}, {"port", ""},
+			{"prune", ""}, {"rename", ""}, {"restore", ""}, {"rm", ""},
+			{"run", ""}, {"start", ""}, {"stats", ""}, {"stop", ""},
+			{"top", ""}, {"unpause", ""},
+		}
+		dialog := NewCommandDialog(options)
+		seen := map[rune]bool{}
+		for _, s := range dialog.shortcuts {
+			Expect(s).NotTo(Equal(rune(0)), "every command should get a shortcut")
+			Expect(seen[s]).To(BeFalse(), "duplicate shortcut key: %c", s)
+			seen[s] = true
+		}
+	})
+})
