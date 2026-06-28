@@ -12,10 +12,12 @@ import (
 
 const (
 	cmdWidthOffset = 6
+)
 
-	colCommand  = 0
-	colShortcut = 1
-	colDesc     = 2
+const (
+	colKeyIndex = 0 + iota
+	colCommandIndex
+	colDescIndex
 )
 
 const (
@@ -61,7 +63,15 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
 	// command table header
-	cmdsTable.SetCell(0, colCommand,
+	cmdsTable.SetCell(0, colKeyIndex,
+		tview.NewTableCell(fmt.Sprintf("[%s::b]KEY", style.GetColorHex(style.TableHeaderFgColor))).
+			SetExpansion(1).
+			SetBackgroundColor(style.TableHeaderBgColor).
+			SetTextColor(style.TableHeaderFgColor).
+			SetAlign(tview.AlignCenter).
+			SetSelectable(false))
+
+	cmdsTable.SetCell(0, colCommandIndex,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]COMMAND", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(style.TableHeaderBgColor).
@@ -69,15 +79,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 			SetAlign(tview.AlignLeft).
 			SetSelectable(false))
 
-	cmdsTable.SetCell(0, 1,
-		tview.NewTableCell(fmt.Sprintf("[%s::b]SHORTCUT", style.GetColorHex(style.TableHeaderFgColor))).
-			SetExpansion(1).
-			SetBackgroundColor(style.TableHeaderBgColor).
-			SetTextColor(style.TableHeaderFgColor).
-			SetAlign(tview.AlignCenter).
-			SetSelectable(false))
-
-	cmdsTable.SetCell(0, colDesc,
+	cmdsTable.SetCell(0, colDescIndex,
 		tview.NewTableCell(fmt.Sprintf("[%s::b]DESCRIPTION", style.GetColorHex(style.TableHeaderFgColor))).
 			SetExpansion(1).
 			SetBackgroundColor(style.TableHeaderBgColor).
@@ -88,18 +90,18 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 	shortcuts := makeShortcuts(options)
 
 	for i := range options {
-		cmdsTable.SetCell(i+1, colCommand,
+		cmdsTable.SetCell(i+1, colCommandIndex,
 			tview.NewTableCell(options[i][0]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
 
 		shortcut := shortcuts[i]
 
-		cmdsTable.SetCell(i+1, colShortcut,
+		cmdsTable.SetCell(i+1, colKeyIndex,
 			tview.NewTableCell(string(shortcut)).
 				SetAlign(tview.AlignCenter).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
-		cmdsTable.SetCell(i+1, colDesc,
+		cmdsTable.SetCell(i+1, colDescIndex,
 			tview.NewTableCell(options[i][1]).
 				SetAlign(tview.AlignLeft).
 				SetSelectable(true).SetTextColor(style.DialogFgColor))
@@ -388,7 +390,7 @@ func buildCandidates(options [][]string) [][]rune {
 
 		seen := map[rune]bool{}
 		for _, c := range cmd {
-			if isPrintableASCII(c) && !seen[c] {
+			if isPrintableASCII(c) && !seen[c] && !isMovementKey(c) {
 				candidates[i] = append(candidates[i], c)
 			}
 
@@ -417,4 +419,19 @@ func findAlphaFallback(used map[rune]bool) rune {
 	}
 
 	return 0
+}
+
+func isMovementKey(c rune) bool {
+	switch c {
+	case utils.MoveDownKey.KeyRune:
+		return true
+	case utils.MoveUpKey.KeyRune:
+		return true
+	case utils.NextScreenKey.KeyRune:
+		return true
+	case utils.PreviousScreenKey.KeyRune:
+		return true
+	}
+
+	return false
 }
