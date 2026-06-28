@@ -4,9 +4,9 @@ import (
 	"net"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/bindings/network"
 	"github.com/rs/zerolog/log"
 	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/podman/v6/pkg/bindings/network"
 )
 
 // NetworkConnect networks connect options.

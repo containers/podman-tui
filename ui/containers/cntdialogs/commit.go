@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/containers/buildah/define"
 	"github.com/containers/podman-tui/pdcs/containers"
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
@@ -12,6 +11,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/buildah/define"
 )
 
 const (

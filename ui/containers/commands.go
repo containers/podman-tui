@@ -9,8 +9,8 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	bcontainers "github.com/containers/podman/v5/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
+	bcontainers "go.podman.io/podman/v6/pkg/bindings/containers"
 )
 
 func (cnt *Containers) runCommand(cmd string) { //nolint:cyclop

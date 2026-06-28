@@ -19,7 +19,10 @@ linters:
     - funlen
     - depguard
     - wrapcheck
+    - prealloc
+    # deprecated
     - wsl
+    - gomodguard
   settings:
     errcheck:
       check-blank: false

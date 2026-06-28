@@ -21,7 +21,7 @@ const (
 func getMessageWidth(message string) int {
 	var messageWidth int
 
-	for _, msg := range strings.Split(message, "\n") {
+	for msg := range strings.SplitSeq(message, "\n") {
 		if len(msg) > messageWidth {
 			messageWidth = len(msg)
 		}

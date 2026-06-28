@@ -5,17 +5,17 @@ import (
 	"net"
 	"strconv"
 
-	"github.com/containers/common/pkg/config"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman/v5/pkg/bindings/pods"
-	"github.com/containers/podman/v5/pkg/domain/entities"
-	"github.com/containers/podman/v5/pkg/errorhandling"
-	"github.com/containers/podman/v5/pkg/specgen"
-	"github.com/containers/podman/v5/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/common/pkg/config"
+	"go.podman.io/podman/v6/pkg/bindings/pods"
+	"go.podman.io/podman/v6/pkg/domain/entities"
+	"go.podman.io/podman/v6/pkg/errorhandling"
+	"go.podman.io/podman/v6/pkg/specgen"
+	"go.podman.io/podman/v6/pkg/specgenutil"
 )
 
 // CreateOptions implements pods create spec options.

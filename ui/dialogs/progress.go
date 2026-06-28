@@ -120,7 +120,7 @@ func (d *ProgressDialog) tickStr(maxCount int) string {
 	}
 
 	for range d.counterValue {
-		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint
+		prgHeadStr += fmt.Sprintf("[black::]%s", prgCell) //nolint:perfsprint,modernize
 		hWidth++
 	}
 

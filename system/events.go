@@ -8,8 +8,8 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/sysinfo"
-	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/domain/entities/types"
 )
 
 var eventChannelSize = 20
@@ -169,7 +169,7 @@ func (engine *Engine) convertEventToHumanReadable(event types.Event) string {
 		// check if the container has labels and add it to the output
 		if len(event.Actor.Attributes) > 0 {
 			for k, v := range event.Actor.Attributes {
-				humanFormat += fmt.Sprintf(", %s=%s", k, v)
+				humanFormat += fmt.Sprintf(", %s=%s", k, v) //nolint:perfsprint
 			}
 		}
 

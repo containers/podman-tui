@@ -6,7 +6,7 @@ import (
 )
 
 // GetJSONOutput converts interface to json output.
-func GetJSONOutput(v interface{}) (string, error) {
+func GetJSONOutput(v any) (string, error) {
 	result := ""
 
 	output, err := json.Marshal(v)

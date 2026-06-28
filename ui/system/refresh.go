@@ -19,7 +19,7 @@ func (sys *System) refresh(_ int) {
 
 	for i := range sys.connTableHeaders {
 		headerAlignment := alignment
-		if sys.connTableHeaders[i] == "default" {
+		if sys.connTableHeaders[i] == UIViewHeaders[viewSystemDefaultColIndex] {
 			headerAlignment = defaultAlignment
 		}
 
@@ -45,31 +45,31 @@ func (sys *System) refresh(_ int) {
 		}
 
 		// name column
-		sys.connTable.SetCell(rowIndex, 0,
+		sys.connTable.SetCell(rowIndex, viewSystemNameColIndex,
 			tview.NewTableCell(conn.Name).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// default column
-		sys.connTable.SetCell(rowIndex, 1,
+		sys.connTable.SetCell(rowIndex, viewSystemDefaultColIndex,
 			tview.NewTableCell(isDefault).
 				SetExpansion(expand).
 				SetAlign(defaultAlignment))
 
 		// status column
-		sys.connTable.SetCell(rowIndex, 2, //nolint:mnd
+		sys.connTable.SetCell(rowIndex, viewSystemStatusColIndex,
 			tview.NewTableCell(status).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// uri column
-		sys.connTable.SetCell(rowIndex, 3, //nolint:mnd
+		sys.connTable.SetCell(rowIndex, viewSystemUriColIndex,
 			tview.NewTableCell(conn.URI).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
 		// identity column
-		sys.connTable.SetCell(rowIndex, 4, //nolint:mnd
+		sys.connTable.SetCell(rowIndex, viewSystemIdentityColIndex,
 			tview.NewTableCell(conn.Identity).
 				SetExpansion(expand).
 				SetAlign(alignment))

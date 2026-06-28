@@ -10,8 +10,8 @@ import (
 	"github.com/containers/podman-tui/ui/pods/poddialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rivo/tview"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 const (
@@ -37,6 +37,8 @@ var (
 	errPodRemove    = errors.New("remove error")
 	errPodPrune     = errors.New("prune error")
 )
+
+var UIViewHeaders = []string{"pod id", "name", "status", "created", "infra id", "# of containers"}
 
 // Pods implemnents the pods page primitive.
 type Pods struct {
@@ -69,19 +71,26 @@ type podsListReport struct {
 
 // NewPods returns pods page view.
 func NewPods() *Pods {
+	sortHeaderItems := []string{
+		UIViewHeaders[viewPodNameColIndex],
+		UIViewHeaders[viewPodCreatedColIndex],
+		UIViewHeaders[viewPodStatusColIndex],
+		UIViewHeaders[viewPodContainersColIndex],
+	}
+
 	pods := &Pods{
 		Box:            tview.NewBox(),
 		title:          "pods",
-		headers:        []string{"pod id", "name", "status", "created", "infra id", "# of containers"},
+		headers:        UIViewHeaders,
 		errorDialog:    dialogs.NewErrorDialog(),
 		confirmDialog:  dialogs.NewConfirmDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		topDialog:      dialogs.NewTopDialog(),
-		sortDialog:     dialogs.NewSortDialog([]string{"name", "created", "status", "# of containers"}, 1),
+		sortDialog:     dialogs.NewSortDialog(sortHeaderItems, 1),
 		createDialog:   poddialogs.NewPodCreateDialog(),
 		statsDialog:    poddialogs.NewPodStatsDialog(),
-		podsList:       podsListReport{sortBy: "created", ascending: true},
+		podsList:       podsListReport{sortBy: UIViewHeaders[viewPodNameColIndex], ascending: true},
 	}
 
 	pods.topDialog.SetTitle("podman pod top")

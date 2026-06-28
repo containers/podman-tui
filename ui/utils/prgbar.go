@@ -19,7 +19,7 @@ func ProgressUsageString(percentage float64) string {
 
 	for index := range prgWidth {
 		if index < value {
-			progressCell += getBarColor(index)
+			progressCell += getBarColor(index) //nolint:perfsprint,modernize
 		} else {
 			progressCell += style.ProgressBarCell
 		}

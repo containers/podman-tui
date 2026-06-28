@@ -5,9 +5,9 @@ import (
 
 	"github.com/containers/podman-tui/config/utils"
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/domain/entities"
 	"github.com/rs/zerolog/log"
 	cconfig "go.podman.io/common/pkg/config"
+	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
 type Config struct {

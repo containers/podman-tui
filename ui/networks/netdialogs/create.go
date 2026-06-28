@@ -422,7 +422,7 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //
 		ipranges []string
 	)
 
-	for _, label := range strings.Split(d.networkLabelsField.GetText(), " ") {
+	for label := range strings.SplitSeq(d.networkLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
 			if len(split) == 2 { //nolint:mnd
@@ -436,7 +436,7 @@ func (d *NetworkCreateDialog) NetworkCreateOptions() networks.CreateOptions { //
 		}
 	}
 
-	for _, option := range strings.Split(d.networkDriverOptionsField.GetText(), " ") {
+	for option := range strings.SplitSeq(d.networkDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
 			if len(split) == 2 { //nolint:mnd

@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	viewNetworkNameColIndex = 0 + iota
-	viewNetworkVersionColIndex
-	viewNetworkPluginColIndex
+	viewNetworkIDColIndex = 0 + iota
+	viewNetworkNameColIndex
+	viewNetworkDriverColIndex
 )
 
 var (
@@ -26,6 +26,8 @@ var (
 	errNoNetworkDisconnect = errors.New("there is no network to disconnect")
 	errNoNetworkConnect    = errors.New("there is no network to connect")
 )
+
+var UIViewHeaders = []string{"id", "name", "driver"}
 
 // Networks implemnents the Networks page primitive.
 type Networks struct {
@@ -58,19 +60,24 @@ type networkListReport struct {
 
 // NewNetworks returns nets page view.
 func NewNetworks() *Networks {
+	sortHeaderItems := []string{
+		UIViewHeaders[viewNetworkNameColIndex],
+		UIViewHeaders[viewNetworkDriverColIndex],
+	}
+
 	nets := &Networks{
 		Box:              tview.NewBox(),
 		title:            "networks",
-		headers:          []string{"id", "name", "driver"},
+		headers:          UIViewHeaders,
 		errorDialog:      dialogs.NewErrorDialog(),
 		progressDialog:   dialogs.NewProgressDialog(),
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		messageDialog:    dialogs.NewMessageDialog(""),
-		sortDialog:       dialogs.NewSortDialog([]string{"name", "driver"}, 0),
+		sortDialog:       dialogs.NewSortDialog(sortHeaderItems, 0),
 		createDialog:     netdialogs.NewNetworkCreateDialog(),
 		connectDialog:    netdialogs.NewNetworkConnectDialog(),
 		disconnectDialog: netdialogs.NewNetworkDisconnectDialog(),
-		networkList:      networkListReport{sortBy: "name", ascending: true},
+		networkList:      networkListReport{sortBy: UIViewHeaders[viewNetworkNameColIndex], ascending: true},
 	}
 
 	nets.cmdDialog = dialogs.NewCommandDialog([][]string{

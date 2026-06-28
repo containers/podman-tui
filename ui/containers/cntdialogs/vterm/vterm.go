@@ -12,11 +12,11 @@ import (
 	"github.com/containers/podman-tui/ui/dialogs"
 	"github.com/containers/podman-tui/ui/style"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/pkg/channel"
 	"github.com/gdamore/tcell/v2"
 	"github.com/hinshun/vt10x"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/channel"
 )
 
 const (

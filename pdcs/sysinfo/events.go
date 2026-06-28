@@ -2,8 +2,8 @@ package sysinfo
 
 import (
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/bindings/system"
-	"github.com/containers/podman/v5/pkg/domain/entities/types"
+	"go.podman.io/podman/v6/pkg/bindings/system"
+	"go.podman.io/podman/v6/pkg/domain/entities/types"
 )
 
 // Events returns libpod events.

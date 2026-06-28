@@ -31,20 +31,20 @@ func (nets *Networks) refresh(_ int) {
 	nets.table.SetTitle(fmt.Sprintf("[::b]%s[%d]", strings.ToUpper(nets.title), len(netList)))
 
 	for _, net := range netList {
-		// name column
-		nets.table.SetCell(rowIndex, viewNetworkNameColIndex,
+		// ID column
+		nets.table.SetCell(rowIndex, viewNetworkIDColIndex,
 			tview.NewTableCell(net.ID[:12]).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
-		// version column
-		nets.table.SetCell(rowIndex, viewNetworkVersionColIndex,
+		// name column
+		nets.table.SetCell(rowIndex, viewNetworkNameColIndex,
 			tview.NewTableCell(net.Name).
 				SetExpansion(expand).
 				SetAlign(alignment))
 
-		// plugins at column
-		nets.table.SetCell(rowIndex, viewNetworkPluginColIndex,
+		// driver at column
+		nets.table.SetCell(rowIndex, viewNetworkDriverColIndex,
 			tview.NewTableCell(net.Driver).
 				SetExpansion(expand).
 				SetAlign(alignment))

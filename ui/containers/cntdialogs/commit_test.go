@@ -3,12 +3,12 @@ package cntdialogs
 import (
 	"fmt"
 
-	"github.com/containers/buildah/define"
 	"github.com/gdamore/tcell/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/rivo/tview"
 	"github.com/rs/zerolog"
+	"go.podman.io/buildah/define"
 )
 
 var _ = Describe("container commit", Ordered, func() {

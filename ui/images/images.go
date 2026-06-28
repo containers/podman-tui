@@ -35,6 +35,8 @@ var (
 	errNoBuildDirOrCntFile = errors.New("both context directory path and container files fields are empty")
 )
 
+var UIViewHeaders = []string{"repository", "tag", "image id", "created at", "size"} //nolint:goconst
+
 // Images implements the images primitive.
 type Images struct {
 	*tview.Box
@@ -73,16 +75,22 @@ type imageListReport struct {
 
 // NewImages returns images page view.
 func NewImages() *Images {
+	sortHeaderItems := []string{
+		UIViewHeaders[viewImageRepoNameColIndex],
+		UIViewHeaders[viewImageCreatedAtColIndex],
+		UIViewHeaders[viewImageSizeColIndex],
+	}
+
 	images := &Images{
 		Box:            tview.NewBox(),
 		title:          "images",
-		headers:        []string{"repository", "tag", "image id", "created at", "size"},
+		headers:        UIViewHeaders,
 		errorDialog:    dialogs.NewErrorDialog(),
 		progressDialog: dialogs.NewProgressDialog(),
 		cmdInputDialog: dialogs.NewSimpleInputDialog(""),
 		messageDialog:  dialogs.NewMessageDialog(""),
 		confirmDialog:  dialogs.NewConfirmDialog(),
-		sortDialog:     dialogs.NewSortDialog([]string{"repository", "created", "size"}, 1),
+		sortDialog:     dialogs.NewSortDialog(sortHeaderItems, 1),
 		searchDialog:   imgdialogs.NewImageSearchDialog(),
 		historyDialog:  imgdialogs.NewImageHistoryDialog(),
 		importDialog:   imgdialogs.NewImageImportDialog(),
@@ -90,7 +98,7 @@ func NewImages() *Images {
 		buildPrgDialog: imgdialogs.NewImageBuildProgressDialog(),
 		saveDialog:     imgdialogs.NewImageSaveDialog(),
 		pushDialog:     imgdialogs.NewImagePushDialog(),
-		imagesList:     imageListReport{sortBy: "created", ascending: true},
+		imagesList:     imageListReport{sortBy: UIViewHeaders[viewImageCreatedAtColIndex], ascending: true},
 	}
 
 	images.cmdDialog = dialogs.NewCommandDialog([][]string{

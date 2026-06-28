@@ -287,11 +287,7 @@ func (d *ImageHistoryDialog) getCreatedByWidth() int {
 	usedWidth := idWidth + createdWidth + sizeWidth + commentWidth
 	createdByWidth = width - usedWidth*2 + 8 //nolint:mnd
 
-	if createdByWidth <= 0 {
-		createdByWidth = 0
-	}
-
-	return createdByWidth
+	return max(0, createdByWidth)
 }
 
 func (d *ImageHistoryDialog) initTable() {

@@ -14,7 +14,17 @@ import (
 	"github.com/rivo/tview"
 )
 
+const (
+	viewSystemNameColIndex = 0 + iota
+	viewSystemDefaultColIndex
+	viewSystemStatusColIndex
+	viewSystemUriColIndex
+	viewSystemIdentityColIndex
+)
+
 var ErrConnectionInprogres = errors.New("connection is in progress, need to disconnect")
+
+var UIViewHeaders = []string{"name", "default", "status", "uri", "identity"}
 
 // System implemnents the system information page primitive.
 type System struct {
@@ -60,17 +70,16 @@ type sysSelectedItem struct {
 
 // NewSystem returns new system page view.
 func NewSystem() *System {
-	headers := []string{"name", "default", "status", "uri", "identity"}
 	sys := &System{
 		Box:              tview.NewBox(),
 		title:            "system",
 		connTable:        tview.NewTable(),
-		connTableHeaders: headers,
+		connTableHeaders: UIViewHeaders,
 		confirmDialog:    dialogs.NewConfirmDialog(),
 		progressDialog:   dialogs.NewProgressDialog(),
 		errorDialog:      dialogs.NewErrorDialog(),
 		messageDialog:    dialogs.NewMessageDialog(""),
-		sortDialog:       dialogs.NewSortDialog(headers, 0),
+		sortDialog:       dialogs.NewSortDialog(UIViewHeaders, 0),
 		eventDialog:      sysdialogs.NewEventDialog(),
 		dfDialog:         sysdialogs.NewDfDialog(),
 		connPrgDialog:    sysdialogs.NewConnectDialog(),

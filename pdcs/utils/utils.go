@@ -23,7 +23,7 @@ func CreatedToStr(duration int64) string {
 }
 
 // PrintJSON convert data interface to json string.
-func PrintJSON(data []interface{}) (string, error) {
+func PrintJSON(data any) (string, error) {
 	buf, err := json.MarshalIndent(data, "", "    ")
 	if err != nil {
 		return "", err
@@ -31,8 +31,6 @@ func PrintJSON(data []interface{}) (string, error) {
 
 	return string(buf), nil
 }
-
-// Following code are from https://github.com/containers/podman/blob/main/cmd/podman/containers/ps.go
 
 // PortsToString converts the ports used to a string of the from "port1, port2"
 // and also groups a continuous list of ports into a readable format.
@@ -50,9 +48,9 @@ func PortsToString(ports []types.PortMapping) string {
 			hostIP = "0.0.0.0"
 		}
 
-		protocols := strings.Split(port.Protocol, ",")
+		protocols := strings.SplitSeq(port.Protocol, ",")
 
-		for _, protocol := range protocols {
+		for protocol := range protocols {
 			if port.Range > 1 {
 				fmt.Fprintf(sb, "%s:%d-%d->%d-%d/%s, ",
 					hostIP, port.HostPort, port.HostPort+port.Range-1,

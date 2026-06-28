@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/containers/podman-tui/pdcs/registry"
-	"github.com/containers/podman/v5/pkg/bindings/images"
-	"github.com/containers/podman/v5/pkg/domain/entities/types"
 	"github.com/distribution/reference"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/bindings/images"
+	"go.podman.io/podman/v6/pkg/domain/entities/types"
 )
 
 const (

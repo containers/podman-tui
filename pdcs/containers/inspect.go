@@ -3,8 +3,8 @@ package containers
 import (
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman/v5/pkg/bindings/containers"
 	"github.com/rs/zerolog/log"
+	"go.podman.io/podman/v6/pkg/bindings/containers"
 )
 
 // Inspect returns inspect results of the specific container.

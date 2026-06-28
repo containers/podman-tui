@@ -566,13 +566,13 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 		namespaceShare   []string
 	)
 
-	for _, nsshare := range strings.Split(d.podNamespaceShareField.GetText(), " ") {
+	for nsshare := range strings.SplitSeq(d.podNamespaceShareField.GetText(), " ") {
 		if nsshare != "" {
 			namespaceShare = append(namespaceShare, nsshare)
 		}
 	}
 
-	for _, label := range strings.Split(d.podLabelsField.GetText(), " ") {
+	for label := range strings.SplitSeq(d.podLabelsField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
 			if len(split) == 2 { //nolint:mnd
@@ -586,25 +586,25 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 		}
 	}
 
-	for _, dns := range strings.Split(d.podDNSServerField.GetText(), " ") {
+	for dns := range strings.SplitSeq(d.podDNSServerField.GetText(), " ") {
 		if dns != "" {
 			dnsServers = append(dnsServers, dns)
 		}
 	}
 
-	for _, do := range strings.Split(d.podDNSOptionsField.GetText(), " ") {
+	for do := range strings.SplitSeq(d.podDNSOptionsField.GetText(), " ") {
 		if do != "" {
 			dnsOptions = append(dnsOptions, do)
 		}
 	}
 
-	for _, ds := range strings.Split(d.podDNSSearchDomaindField.GetText(), " ") {
+	for ds := range strings.SplitSeq(d.podDNSSearchDomaindField.GetText(), " ") {
 		if ds != "" {
 			dnsSearchDomains = append(dnsSearchDomains, ds)
 		}
 	}
 
-	for _, hadd := range strings.Split(d.podAddHostField.GetText(), " ") {
+	for hadd := range strings.SplitSeq(d.podAddHostField.GetText(), " ") {
 		if hadd != "" {
 			addHost = append(addHost, hadd)
 		}
@@ -615,7 +615,7 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 		network = netName
 	}
 
-	for _, p := range strings.Split(d.podPublishField.GetText(), " ") {
+	for p := range strings.SplitSeq(d.podPublishField.GetText(), " ") {
 		if p != "" {
 			publish = append(publish, p)
 		}
@@ -636,7 +636,7 @@ func (d *PodCreateDialog) GetPodSpec() pods.CreateOptions { //nolint:gocognit,cy
 		securityOpts = append(securityOpts, fmt.Sprintf("seccomp=%s", seccomp)) //nolint:perfsprint
 	}
 
-	for _, selinuxLabel := range strings.Split(d.podSelinuxLabelField.GetText(), " ") {
+	for selinuxLabel := range strings.SplitSeq(d.podSelinuxLabelField.GetText(), " ") {
 		if selinuxLabel != "" {
 			securityOpts = append(securityOpts, fmt.Sprintf("label=%s", selinuxLabel)) //nolint:perfsprint
 		}

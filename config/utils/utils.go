@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"time"
 
-	cntssh "github.com/containers/common/pkg/ssh"
 	"github.com/containers/podman-tui/ui/utils"
-	"github.com/containers/podman/v5/libpod/define"
 	"github.com/rs/zerolog/log"
+	cntssh "go.podman.io/common/pkg/ssh"
+	"go.podman.io/podman/v6/libpod/define"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 )
@@ -90,7 +90,6 @@ func getUserInfo(uri *url.URL) (*url.Userinfo, error) {
 	return url.User(usr.Username), nil
 }
 
-// most of the codes are from https://github.com/containers/podman/blob/main/cmd/podman/system/connection/add.go.
 func getUDS(uri *url.URL, iden string) (string, error) { //nolint:cyclop
 	cfg, err := validateAndConfigure(uri, iden)
 	if err != nil {

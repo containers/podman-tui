@@ -270,7 +270,7 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() (*volumes.CreateOptions, erro
 	)
 
 	// volume label field
-	for _, label := range strings.Split(d.volumeLabelField.GetText(), " ") {
+	for label := range strings.SplitSeq(d.volumeLabelField.GetText(), " ") {
 		if label != "" {
 			split := strings.Split(label, "=")
 			if len(split) == 2 { //nolint:mnd
@@ -285,7 +285,7 @@ func (d *VolumeCreateDialog) VolumeCreateOptions() (*volumes.CreateOptions, erro
 	}
 
 	// driver options
-	for _, option := range strings.Split(d.volumeDriverOptionsField.GetText(), " ") {
+	for option := range strings.SplitSeq(d.volumeDriverOptionsField.GetText(), " ") {
 		if option != "" {
 			split := strings.Split(option, "=")
 			if len(split) == 2 { //nolint:mnd

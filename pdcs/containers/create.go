@@ -8,14 +8,14 @@ import (
 
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/containers/podman-tui/pdcs/utils"
-	"github.com/containers/podman/v5/libpod/define"
-	"github.com/containers/podman/v5/pkg/bindings/containers"
-	"github.com/containers/podman/v5/pkg/domain/entities"
-	"github.com/containers/podman/v5/pkg/specgen"
-	"github.com/containers/podman/v5/pkg/specgenutil"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"go.podman.io/common/libnetwork/types"
+	"go.podman.io/podman/v6/libpod/define"
+	"go.podman.io/podman/v6/pkg/bindings/containers"
+	"go.podman.io/podman/v6/pkg/domain/entities"
+	"go.podman.io/podman/v6/pkg/specgen"
+	"go.podman.io/podman/v6/pkg/specgenutil"
 )
 
 var ErrInvalidCreateTimeout = errors.New("invalid container create timeout value")
@@ -134,7 +134,7 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 			return warningResponse, containerID, fmt.Errorf("%w: %s", ErrInvalidCreateTimeout, opts.Timeout)
 		}
 
-		createOptions.Timeout = uint(timeout) //nolint:gosec
+		createOptions.Timeout = uint(timeout)
 	}
 
 	createOptions.Hostname = opts.Hostname
@@ -162,7 +162,7 @@ func Create(opts CreateOptions, run bool) ([]string, string, error) { //nolint:c
 	}
 
 	if opts.Mount != "" {
-		for _, mopts := range strings.Split(opts.Mount, " ") {
+		for mopts := range strings.SplitSeq(opts.Mount, " ") {
 			if mopts != "" {
 				createOptions.Mount = append(createOptions.Mount, mopts)
 			}

@@ -143,14 +143,9 @@ func (d *TopDialog) InputHandler() func(event *tcell.EventKey, setFocus func(p t
 // SetRect set rects for this primitive.
 func (d *TopDialog) SetRect(x, y, width, height int) {
 	dX := x + DialogPadding
-	dWidth := width - (2 * DialogPadding)            //nolint:mnd
-	dHeight := len(d.results) + DialogFormHeight + 6 //nolint:mnd
-
-	if dHeight > height {
-		dHeight = height
-	}
-
-	tableHeight := dHeight - DialogFormHeight - 2 //nolint:mnd
+	dWidth := width - (2 * DialogPadding)                     //nolint:mnd
+	dHeight := min(height, len(d.results)+DialogFormHeight+6) //nolint:mnd
+	tableHeight := dHeight - DialogFormHeight - 2             //nolint:mnd
 
 	hs := ((height - dHeight) / 2) //nolint:mnd
 	dY := y + hs
@@ -325,9 +320,6 @@ func (d *TopDialog) getCommandWidth() int {
 	}
 
 	commandWidth = width - usedWidth*2 + 8 //nolint:mnd
-	if commandWidth <= 0 {
-		commandWidth = 0
-	}
 
-	return commandWidth
+	return max(0, commandWidth)
 }

@@ -33,7 +33,7 @@ func (img *Images) runCommand(cmd string) { //nolint:cyclop
 		img.csave()
 	case "search/pull":
 		img.searchDialog.Display()
-	case "tag":
+	case "tag": //nolint:goconst
 		img.ctag()
 	case "tree":
 		img.tree()
