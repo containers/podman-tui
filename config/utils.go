@@ -1,4 +1,4 @@
-package utils
+package config
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"os"
 	"os/user"
-	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/containers/podman-tui/ui/utils"
@@ -29,40 +29,6 @@ const (
 )
 
 var ErrRemotePodmanUDSReport = errors.New("remote podman failed to report its UDS socket")
-
-func ConfigPath() (string, error) {
-	if configHome := os.Getenv("XDG_CONFIG_HOME"); configHome != "" {
-		return filepath.Join(configHome, _configPath), nil
-	}
-
-	home, err := utils.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(home, UserAppConfig), nil
-}
-
-// LocalNodeUnixSocket return local node unix socket file.
-func LocalNodeUnixSocket() string {
-	var (
-		sockDir string
-		socket  string
-	)
-
-	currentUser := os.Getenv("USER")
-	uid := os.Getenv("UID")
-
-	if currentUser == "root" || uid == "0" {
-		sockDir = "/run/"
-	} else {
-		sockDir = os.Getenv("XDG_RUNTIME_DIR")
-	}
-
-	socket = "unix:/" + sockDir + "/podman/podman.sock"
-
-	return socket
-}
 
 func getUserInfo(uri *url.URL) (*url.Userinfo, error) {
 	var (
@@ -265,4 +231,83 @@ func execRemoteCommand(dial *ssh.Client, run string) ([]byte, error) {
 	}
 
 	return buffer.Bytes(), nil
+}
+
+func validateNewConnection(name string, dest string, identity string) (string, error) { //nolint:cyclop
+	var connIdentity string
+
+	if name == "" {
+		return "", ErrEmptyConnectionName
+	}
+
+	if dest == "" {
+		return "", ErrEmptyURIDestination
+	}
+
+	match, err := regexp.Match("^[A-Za-z][A-Za-z0-9+.-]*://", []byte(dest)) //nolint:mirror
+	if err != nil {
+		return "", fmt.Errorf("%w invalid destition", err)
+	} else if !match {
+		dest = "ssh://" + dest
+	}
+
+	uri, err := url.Parse(dest)
+	if err != nil {
+		return "", err
+	}
+
+	switch uri.Scheme {
+	case "ssh":
+		if uri.User.Username() == "" {
+			uri.User, err = getUserInfo(uri)
+			if err != nil {
+				return "", err
+			}
+		}
+
+		connIdentity, err = utils.ResolveHomeDir(identity)
+		if err != nil {
+			return "", err
+		}
+
+		if identity == "" {
+			return "", ErrEmptySSHIdentity
+		}
+
+		if uri.Port() == "" {
+			uri.Host = net.JoinHostPort(uri.Hostname(), "22")
+		}
+
+		if uri.Path == "" || uri.Path == "/" {
+			uri.Path, err = getUDS(uri, connIdentity)
+			if err != nil {
+				return "", err
+			}
+		}
+	case "unix":
+		if identity != "" {
+			return "", fmt.Errorf("%w identity", ErrInvalidUnixSchemaOption)
+		}
+
+		info, err := os.Stat(uri.Path)
+
+		switch {
+		case errors.Is(err, os.ErrNotExist):
+			log.Warn().Msgf("config: %q does not exists", uri.Path)
+		case errors.Is(err, os.ErrPermission):
+			log.Warn().Msgf("config: You do not have permission to read %q", uri.Path)
+		case err != nil:
+			return "", err
+		case info.Mode()&os.ModeSocket == 0:
+			return "", fmt.Errorf("%w %q", ErrFileNotUnixSocket, uri.Path)
+		}
+	case "tcp":
+		if identity != "" {
+			return "", fmt.Errorf("%w identity", ErrInvalidTCPSchemaOption)
+		}
+	default:
+		return "", fmt.Errorf("%w %q", ErrInvalidURISchemaName, uri.Scheme)
+	}
+
+	return uri.String(), nil
 }
