@@ -1,3 +1,5 @@
-## Security and Disclosure Information Policy for the Podman TUI Project
+## Reporting a Vulnerability
 
-The Podman TUI Project follows the [Security and Disclosure Information Policy](https://github.com/containers/common/blob/main/SECURITY.md) for the Containers Projects.
+If you discover a potential security issue in this project we ask that you notify us directly via email to the project [maintainers](MAINTAINERS.md).
+
+Please do **not** create a public issue.
