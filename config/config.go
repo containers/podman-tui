@@ -1,8 +1,6 @@
 package config
 
 import (
-	"github.com/containers/podman-tui/config/pconfig"
-	"github.com/containers/podman-tui/config/tconfig"
 	"github.com/containers/podman-tui/pdcs/registry"
 )
 
@@ -17,22 +15,13 @@ type Config interface {
 func NewConfig() (Config, error) { //nolint:ireturn
 	var cfg Config
 
-	pconfig, err := pconfig.NewConfig()
+	// load podman remote connections config
+	pconfig, err := NewPodmanRemoteConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	premoteConns := pconfig.RemoteConnections()
-	if len(premoteConns) > 0 {
-		cfg = pconfig
-	} else {
-		tconfig, err := tconfig.NewConfig()
-		if err != nil {
-			return nil, err
-		}
-
-		cfg = tconfig
-	}
+	cfg = pconfig
 
 	defaultConn := cfg.GetDefaultConnection()
 	if defaultConn.URI != "" && defaultConn.Name != "" {

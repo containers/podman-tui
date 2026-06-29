@@ -1,23 +1,34 @@
-package pconfig
+package config
 
 import (
+	"errors"
 	"slices"
 
-	"github.com/containers/podman-tui/config/utils"
 	"github.com/containers/podman-tui/pdcs/registry"
 	"github.com/rs/zerolog/log"
 	cconfig "go.podman.io/common/pkg/config"
 	"go.podman.io/podman/v6/pkg/domain/entities"
 )
 
-type Config struct {
+var (
+	ErrInvalidURISchemaName    = errors.New("invalid schema name")
+	ErrInvalidTCPSchemaOption  = errors.New("invalid option for tcp")
+	ErrInvalidUnixSchemaOption = errors.New("invalid option for unix")
+	ErrFileNotUnixSocket       = errors.New("not a unix domain socket")
+	ErrEmptySSHIdentity        = errors.New("empty identity field for SSH connection")
+	ErrEmptyURIDestination     = errors.New("empty URI destination")
+	ErrEmptyConnectionName     = errors.New("empty connection name")
+	ErrConnectionNotFound      = errors.New("connection not found")
+)
+
+type PodmanRemoteConfig struct {
 	podmanOptions *entities.PodmanConfig
 }
 
-func NewConfig() (*Config, error) {
+func NewPodmanRemoteConfig() (*PodmanRemoteConfig, error) {
 	log.Debug().Msg("config: loading podman remote connections")
 
-	newConfig := &Config{}
+	newConfig := &PodmanRemoteConfig{}
 
 	defaultConfig, err := cconfig.New(&cconfig.Options{
 		SetDefault: true,
@@ -33,7 +44,7 @@ func NewConfig() (*Config, error) {
 	return newConfig, nil
 }
 
-func (c *Config) RemoteConnections() []registry.Connection {
+func (c *PodmanRemoteConfig) RemoteConnections() []registry.Connection {
 	rconn := make([]registry.Connection, 0)
 
 	conns, err := c.podmanOptions.ContainersConfDefaultsRO.GetAllConnections()
@@ -57,7 +68,7 @@ func (c *Config) RemoteConnections() []registry.Connection {
 	return rconn
 }
 
-func (c *Config) Remove(name string) error {
+func (c *PodmanRemoteConfig) Remove(name string) error {
 	return cconfig.EditConnectionConfig(func(cfg *cconfig.ConnectionsFile) error {
 		delete(cfg.Connection.Connections, name)
 
@@ -77,8 +88,8 @@ func (c *Config) Remove(name string) error {
 	})
 }
 
-func (c *Config) Add(name string, uri string, identity string) error {
-	connURI, err := utils.ValidateNewConnection(name, uri, identity)
+func (c *PodmanRemoteConfig) Add(name string, uri string, identity string) error {
+	connURI, err := validateNewConnection(name, uri, identity)
 	if err != nil {
 		return err
 	}
@@ -102,10 +113,10 @@ func (c *Config) Add(name string, uri string, identity string) error {
 	})
 }
 
-func (c *Config) SetDefaultConnection(name string) error {
+func (c *PodmanRemoteConfig) SetDefaultConnection(name string) error {
 	return cconfig.EditConnectionConfig(func(cfg *cconfig.ConnectionsFile) error {
 		if _, found := cfg.Connection.Connections[name]; !found {
-			return utils.ErrConnectionNotFound
+			return ErrConnectionNotFound
 		}
 
 		cfg.Connection.Default = name
@@ -114,7 +125,7 @@ func (c *Config) SetDefaultConnection(name string) error {
 	})
 }
 
-func (c *Config) GetDefaultConnection() registry.Connection {
+func (c *PodmanRemoteConfig) GetDefaultConnection() registry.Connection {
 	for _, conn := range c.RemoteConnections() {
 		if conn.Default {
 			return registry.Connection{
