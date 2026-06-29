@@ -71,7 +71,7 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 
 	statResultLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	statResultLayout.AddItem(statsDialog.containerInfo, 1, 0, true)
-	statResultLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
+	// statResultLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	statResultLayout.AddItem(statTableLayout, 0, 1, true)
 	statResultLayout.SetBackgroundColor(style.BgColor)
 	statResultLayout.SetBorder(false)

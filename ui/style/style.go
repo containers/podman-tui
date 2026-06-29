@@ -27,9 +27,9 @@ var (
 	MenuBgColor              = tcell.ColorMediumPurple
 	PageHeaderBgColor        = tcell.ColorMediumPurple
 	PageHeaderFgColor        = tcell.ColorFloralWhite
-	RunningStatusFgColor     = tcell.NewRGBColor(95, 215, 0)  //nolint:mnd
-	PausedStatusFgColor      = tcell.NewRGBColor(255, 175, 0) //nolint:mnd
-	DialogBgColor            = tcell.NewRGBColor(38, 38, 38)  //nolint:mnd
+	RunningStatusFgColor     = tcell.ColorLightGreen
+	PausedStatusFgColor      = tcell.NewRGBColor(255, 192, 103) //nolint:mnd
+	DialogBgColor            = tcell.NewRGBColor(38, 38, 38)    //nolint:mnd
 	DialogBorderColor        = tcell.ColorMediumPurple
 	DialogFgColor            = tcell.ColorFloralWhite
 	DialogSubBoxBorderColor  = tcell.ColorDimGray
