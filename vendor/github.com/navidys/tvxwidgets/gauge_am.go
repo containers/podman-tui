@@ -2,6 +2,7 @@ package tvxwidgets
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -76,9 +77,11 @@ func (g *ActivityModeGauge) Reset() {
 
 func (g *ActivityModeGauge) tickStr(maxCount int) string {
 	var (
-		prgHeadStr string
-		prgEndStr  string
-		prgStr     string
+		prgHeadStr     string
+		prgEndStr      string
+		prgStr         string
+		prgHeadbuilder strings.Builder
+		prgEndbuilder  strings.Builder
 	)
 
 	if g.counter >= maxCount-4 {
@@ -87,16 +90,25 @@ func (g *ActivityModeGauge) tickStr(maxCount int) string {
 
 	hWidth := 0
 
+	prgVal := fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+
 	for range g.counter {
-		prgHeadStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		// prgHeadStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		prgHeadbuilder.WriteString(prgVal)
+
 		hWidth++
 	}
+
+	prgHeadStr = prgHeadbuilder.String()
 
 	prgStr = prgCell + prgCell + prgCell + prgCell
 
 	for range maxCount + hWidth + 4 {
-		prgEndStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		// prgEndStr += fmt.Sprintf("[%s::]%s", getColorName(tview.Styles.PrimitiveBackgroundColor), prgCell)
+		prgEndbuilder.WriteString(prgVal)
 	}
+
+	prgEndStr = prgEndbuilder.String()
 
 	return fmt.Sprintf("%s[%s::]%s%s", prgHeadStr, getColorName(g.pgBgColor), prgStr, prgEndStr)
 }
