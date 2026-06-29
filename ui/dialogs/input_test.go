@@ -70,7 +70,7 @@ var _ = Describe("input dialog", Ordered, func() {
 
 		hasDesc = false
 		inputDialog.setLayout(hasDesc)
-		Expect(inputDialog.height).To(Equal(siDialogHeight - 3))
+		Expect(inputDialog.height).To(Equal(siDialogHeight - 2))
 	})
 
 	It("set description", func() {
@@ -84,7 +84,7 @@ var _ = Describe("input dialog", Ordered, func() {
 		inputDialog.SetDescription(description)
 		wantedDesc = "\n"
 		Expect(inputDialog.textview.GetText(true)).To(Equal(wantedDesc))
-		Expect(inputDialog.height).To(Equal(siDialogHeight - 3))
+		Expect(inputDialog.height).To(Equal(siDialogHeight - 2))
 	})
 
 	It("set and get input", func() {

@@ -14,9 +14,9 @@ import (
 const (
 	siInputElement     = 1
 	siFormElement      = 2
-	siDescHeight       = 4
+	siDescHeight       = 3
 	siDialogWidth      = 80
-	siDialogHeight     = 10
+	siDialogHeight     = 9
 	siDialogInputWidth = 57
 )
 
@@ -290,7 +290,7 @@ func (d *SimpleInputDialog) setLayout(haveDesc bool) {
 
 	if !haveDesc {
 		descHeight = 1
-		d.height = siDialogHeight - 3 //nolint:mnd
+		d.height = siDialogHeight - 2 //nolint:mnd
 	} else {
 		d.height = siDialogHeight
 	}

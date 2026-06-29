@@ -445,6 +445,7 @@ func (d *ImageSearchDialog) UpdateResults(data [][]string) {
 	if len(data) > 0 {
 		d.searchResult.Select(1, 1)
 		d.searchResult.ScrollToBeginning()
+		d.focusElement = sSearchResultElement
 	}
 }
 

@@ -75,7 +75,7 @@ func NewTopDialog() *TopDialog {
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 	tableLayout.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(dialog.info, 1, 0, false).
-		AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
+		// AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false).
 		AddItem(dialog.table, 0, 1, true), 0, 1, true)
 	tableLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, false)
 

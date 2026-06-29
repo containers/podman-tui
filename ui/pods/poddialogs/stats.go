@@ -141,7 +141,7 @@ func NewPodStatsDialog() *PodStatsDialog {
 
 	statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statsDialog.controlLayout, 1, 0, true)
-	statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
+	// statsDialog.layout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 1, 0, true)
 	statsDialog.layout.AddItem(statLayout, 0, 1, true)
 	statsDialog.layout.AddItem(statsDialog.form, dialogs.DialogFormHeight, 0, true)
 
@@ -154,7 +154,7 @@ func (d *PodStatsDialog) Display() {
 
 	d.podSortByDropDown.SetCurrentOption(0)
 
-	d.focusElement = podStatDialogResultTableFocus
+	d.focusElement = podStatDialogPodDropDownFocus
 	d.doneChan = make(chan bool)
 
 	d.startStatsQueryLoop()

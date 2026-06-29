@@ -413,7 +413,7 @@ func findUnused(cands []rune, used map[rune]bool) rune {
 
 func findAlphaFallback(used map[rune]bool) rune {
 	for c := 'a'; c <= 'z'; c++ {
-		if !used[c] {
+		if !used[c] && !isMovementKey(c) {
 			return c
 		}
 	}
