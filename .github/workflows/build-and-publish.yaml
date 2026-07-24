@@ -43,7 +43,7 @@ jobs:
           fi
 
       - name: Build container image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v3
         id: build_image
         with:
           image: ${{ env.IMAGE_NAMESPACE }}
