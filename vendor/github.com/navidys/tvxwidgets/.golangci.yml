@@ -16,6 +16,7 @@ linters:
     - exhaustruct
     - depguard
     - wsl
+    - gomodguard
   settings:
     errcheck:
       check-blank: false

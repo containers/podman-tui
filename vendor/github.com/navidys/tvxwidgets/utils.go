@@ -62,7 +62,7 @@ func getColorName(color tcell.Color) string {
 // getMessageWidth returns width size for dialogs based on messages.
 func getMessageWidth(message string) int {
 	var messageWidth int
-	for _, msg := range strings.Split(message, "\n") {
+	for msg := range strings.SplitSeq(message, "\n") {
 		if len(msg) > messageWidth {
 			messageWidth = len(msg)
 		}
