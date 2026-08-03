@@ -114,15 +114,13 @@ func (a *AgentServer) Serve(processLabel string) (string, error) {
 					continue
 				}
 			}
-			a.wg.Add(1)
-			go func() {
+			a.wg.Go(func() {
 				// agent.ServeAgent will only ever return with error,
 				err := agent.ServeAgent(a.agent, c)
 				if err != io.EOF {
 					logrus.Errorf("error serving agent: %v", err)
 				}
-				a.wg.Done()
-			}()
+			})
 			// the only way to get agent.ServeAgent is to close the connection it's serving on
 			// TODO: ideally we should use some sort of forwarding mechanism for output instead of manually closing connection.
 			go func() {

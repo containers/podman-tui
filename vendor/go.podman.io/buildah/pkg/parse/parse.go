@@ -866,7 +866,7 @@ func GetConfidentialWorkloadOptions(arg string) (define.ConfidentialWorkloadOpti
 		case strings.HasPrefix(option, "memory="):
 			options.Memory, err = strconv.Atoi(strings.TrimPrefix(option, "memory="))
 			if err != nil {
-				return options, fmt.Errorf("parsing memory= value %q: %w", strings.TrimPrefix(option, "memorys"), err)
+				return options, fmt.Errorf("parsing memory= value %q: %w", strings.TrimPrefix(option, "memory="), err)
 			}
 		case option == "ignore_attestation_errors", option == "ignore-attestation-errors":
 			options.IgnoreAttestationErrors = true
