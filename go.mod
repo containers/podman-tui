@@ -1,6 +1,6 @@
 module github.com/containers/podman-tui
 
-go 1.25.9
+go 1.26.0
 
 require (
 	github.com/distribution/reference v0.6.0
@@ -20,7 +20,7 @@ require (
 	go.podman.io/common v0.69.1
 	go.podman.io/podman/v6 v6.1.1
 	go.podman.io/storage v1.64.0
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 )
 
 require (
