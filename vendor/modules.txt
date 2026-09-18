@@ -770,7 +770,7 @@ go.podman.io/podman/v6/pkg/util
 go.podman.io/podman/v6/pkg/util/tlsutil
 go.podman.io/podman/v6/version
 go.podman.io/podman/v6/version/rawversion
-# go.podman.io/storage v1.64.0
+# go.podman.io/storage v1.64.1
 ## explicit; go 1.25.0
 go.podman.io/storage
 go.podman.io/storage/drivers
@@ -782,6 +782,7 @@ go.podman.io/storage/drivers/quota
 go.podman.io/storage/drivers/register
 go.podman.io/storage/drivers/vfs
 go.podman.io/storage/drivers/zfs
+go.podman.io/storage/internal/createpath
 go.podman.io/storage/internal/dedup
 go.podman.io/storage/internal/driver
 go.podman.io/storage/internal/rawfilelock
