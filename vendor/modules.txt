@@ -616,8 +616,8 @@ go.opentelemetry.io/otel/trace
 go.opentelemetry.io/otel/trace/embedded
 go.opentelemetry.io/otel/trace/internal/telemetry
 go.opentelemetry.io/otel/trace/noop
-# go.podman.io/buildah v1.45.0
-## explicit; go 1.25.9
+# go.podman.io/buildah v1.45.1
+## explicit; go 1.26.0
 go.podman.io/buildah/define
 go.podman.io/buildah/internal/mkcw/types
 go.podman.io/buildah/internal/parsevolume
@@ -626,7 +626,7 @@ go.podman.io/buildah/internal/tmpdir
 go.podman.io/buildah/internal/urlsource
 go.podman.io/buildah/pkg/parse
 go.podman.io/buildah/pkg/sshagent
-# go.podman.io/common v0.69.1
+# go.podman.io/common v0.69.2
 ## explicit; go 1.25.7
 go.podman.io/common/internal
 go.podman.io/common/libimage
@@ -663,7 +663,7 @@ go.podman.io/common/pkg/systemd
 go.podman.io/common/pkg/timetype
 go.podman.io/common/pkg/util
 go.podman.io/common/version
-# go.podman.io/image/v5 v5.41.1
+# go.podman.io/image/v5 v5.41.2
 ## explicit; go 1.25.7
 go.podman.io/image/v5/copy
 go.podman.io/image/v5/directory
@@ -731,8 +731,8 @@ go.podman.io/image/v5/transports
 go.podman.io/image/v5/transports/alltransports
 go.podman.io/image/v5/types
 go.podman.io/image/v5/version
-# go.podman.io/podman/v6 v6.1.1
-## explicit; go 1.25.9
+# go.podman.io/podman/v6 v6.1.3
+## explicit; go 1.26.0
 go.podman.io/podman/v6/cmd/podman/parse
 go.podman.io/podman/v6/internal/remote_build_helpers
 go.podman.io/podman/v6/libpod/define
@@ -770,7 +770,7 @@ go.podman.io/podman/v6/pkg/util
 go.podman.io/podman/v6/pkg/util/tlsutil
 go.podman.io/podman/v6/version
 go.podman.io/podman/v6/version/rawversion
-# go.podman.io/storage v1.64.0
+# go.podman.io/storage v1.64.1
 ## explicit; go 1.25.0
 go.podman.io/storage
 go.podman.io/storage/drivers
@@ -782,6 +782,7 @@ go.podman.io/storage/drivers/quota
 go.podman.io/storage/drivers/register
 go.podman.io/storage/drivers/vfs
 go.podman.io/storage/drivers/zfs
+go.podman.io/storage/internal/createpath
 go.podman.io/storage/internal/dedup
 go.podman.io/storage/internal/driver
 go.podman.io/storage/internal/rawfilelock
@@ -827,8 +828,8 @@ go.yaml.in/yaml/v2
 # go.yaml.in/yaml/v3 v3.0.5
 ## explicit; go 1.16
 go.yaml.in/yaml/v3
-# golang.org/x/crypto v0.55.0
-## explicit; go 1.25.0
+# golang.org/x/crypto v0.56.0
+## explicit; go 1.26.0
 golang.org/x/crypto/argon2
 golang.org/x/crypto/blake2b
 golang.org/x/crypto/blowfish
