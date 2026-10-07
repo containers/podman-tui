@@ -15,6 +15,7 @@ Terminal user interface for Podman environment.
 - [**Installation**](#installation)
 - [**PreRun Checks**](#prerun-checks)
 - [**Key Bindings**](#key-bindings)
+- [**Color Themes**](#color-themes)
 - [**Code of Conduct**](#code-of-conduct)
 - [**License**](#license)
 
@@ -91,6 +92,14 @@ podman-tui uses following keyboard keys for different actions:
 | Display images screen            | F6         |
 | Display networks screen          | F7         |
 | Display secrets screen           | F8         |
+
+## Color Themes
+
+podman-tui uses its own colors by default. To use your terminal's colors
+instead, run it with `--theme terminal` or set `PODMAN_TUI_THEME=terminal`.
+podman-tui then follows your terminal's color scheme, light or dark, even if
+you change it while podman-tui is running. See the
+[color theme guide](theme.md) for details and screenshots.
 
 ## Code of Conduct
 

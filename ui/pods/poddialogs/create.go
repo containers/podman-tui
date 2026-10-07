@@ -215,6 +215,8 @@ func NewPodCreateDialog() *PodCreateDialog {
 	podDialog.form.AddButton("Create", nil)
 	podDialog.form.SetButtonsAlign(tview.AlignRight)
 	podDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	podDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	podDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	podDialog.setupLayout()
 	podDialog.layout.SetBackgroundColor(style.DialogBgColor)
@@ -734,6 +736,7 @@ func (d *PodCreateDialog) setupBasicInfoUI() {
 	d.podNoHostsCheckBox.SetBackgroundColor(style.DialogBgColor)
 	d.podNoHostsCheckBox.SetLabelColor(style.DialogFgColor)
 	d.podNoHostsCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.podNoHostsCheckBox.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// labels field
 	d.podLabelsField.SetBackgroundColor(style.DialogBgColor)
@@ -792,6 +795,7 @@ func (d *PodCreateDialog) setupInfraSetupUI() {
 	d.podInfraCheckBox.SetBackgroundColor(style.DialogBgColor)
 	d.podInfraCheckBox.SetLabelColor(style.DialogFgColor)
 	d.podInfraCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.podInfraCheckBox.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// infra command field
 	d.podInfraCommandField.SetBackgroundColor(style.DialogBgColor)
@@ -914,6 +918,7 @@ func (d *PodCreateDialog) setupSecurityOptionsUI() {
 	d.podNoNewPrivField.SetBackgroundColor(style.DialogBgColor)
 	d.podNoNewPrivField.SetLabelColor(style.DialogFgColor)
 	d.podNoNewPrivField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.podNoNewPrivField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
@@ -1135,7 +1140,7 @@ func (d *PodCreateDialog) initCustomInputHandlers() {
 }
 
 func (d *PodCreateDialog) setActiveCategory(index int) {
-	fgColor := style.DialogFgColor
+	fgColor := style.PageHeaderFgColor
 	bgColor := style.ButtonBgColor
 	ctgTextColor := style.GetColorHex(fgColor)
 	ctgBgColor := style.GetColorHex(bgColor)

@@ -164,6 +164,7 @@ func NewContainers() *Containers {
 
 	containers.table.SetFixed(1, 1)
 	containers.table.SetSelectable(true, false)
+	containers.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// set command dialog functions
 	containers.cmdDialog.SetSelectedFunc(func() {

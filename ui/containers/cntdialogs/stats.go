@@ -56,7 +56,7 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 	statsDialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	statsDialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// form
 	statsDialog.form = tview.NewForm().
@@ -64,6 +64,8 @@ func NewContainerStatsDialog() *ContainerStatsDialog {
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	statsDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	statsDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// table layout
 	statTableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)

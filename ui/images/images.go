@@ -136,6 +136,7 @@ func NewImages() *Images {
 
 	imgTable.SetFixed(1, 1)
 	imgTable.SetSelectable(true, false)
+	imgTable.SetSelectedStyle(style.TableSelectedStyle)
 	images.table = imgTable
 
 	// set message dialog functions

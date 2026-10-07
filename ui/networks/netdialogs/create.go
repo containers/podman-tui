@@ -125,6 +125,7 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkInternalCheckBox.SetBackgroundColor(bgColor)
 	netDialog.networkInternalCheckBox.SetLabelColor(fgColor)
 	netDialog.networkInternalCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	netDialog.networkInternalCheckBox.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// drivers
 	netDialog.networkDriverField.SetBackgroundColor(bgColor)
@@ -145,8 +146,9 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkIpv6CheckBox.SetLabelWidth(ipSettingsPageLabelWidth)
 	netDialog.networkIpv6CheckBox.SetChecked(false)
 	netDialog.networkIpv6CheckBox.SetBackgroundColor(bgColor)
-	netDialog.networkIpv6CheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkIpv6CheckBox.SetLabelColor(style.DialogFgColor)
 	netDialog.networkIpv6CheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	netDialog.networkIpv6CheckBox.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// gateway
 	netDialog.networkGatewayField.SetBackgroundColor(bgColor)
@@ -171,8 +173,9 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.networkDisableDNSCheckBox.SetLabelWidth(basicInfoPageLabelWidth)
 	netDialog.networkDisableDNSCheckBox.SetChecked(false)
 	netDialog.networkDisableDNSCheckBox.SetBackgroundColor(bgColor)
-	netDialog.networkDisableDNSCheckBox.SetLabelColor(tcell.ColorWhite)
+	netDialog.networkDisableDNSCheckBox.SetLabelColor(style.DialogFgColor)
 	netDialog.networkDisableDNSCheckBox.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	netDialog.networkDisableDNSCheckBox.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// category pages
 	netDialog.categoryPages.SetBackgroundColor(bgColor)
@@ -185,6 +188,8 @@ func NewNetworkCreateDialog() *NetworkCreateDialog {
 	netDialog.form.AddButton("Create", nil)
 	netDialog.form.SetButtonsAlign(tview.AlignRight)
 	netDialog.form.SetButtonBackgroundColor(buttonBgColor)
+	netDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	netDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	netDialog.setupLayout()
 	netDialog.layout.SetBackgroundColor(bgColor)
@@ -522,7 +527,7 @@ func (d *NetworkCreateDialog) setupLayout() {
 }
 
 func (d *NetworkCreateDialog) setActiveCategory(index int) {
-	fgColor := style.DialogFgColor
+	fgColor := style.PageHeaderFgColor
 	bgColor := style.ButtonBgColor
 	ctgTextColor := style.GetColorHex(fgColor)
 	ctgBgColor := style.GetColorHex(bgColor)

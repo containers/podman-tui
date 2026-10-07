@@ -232,7 +232,7 @@ func (p *Pods) rm() {
 
 	p.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
-	fgColor := style.GetColorHex(style.DialogFgColor)
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
 	podItem := fmt.Sprintf("[%s:%s:b]POD ID:[:-:-] %s (%s)", fgColor, bgColor, podID, podName)
 
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected pod?", podItem) //nolint:perfsprint

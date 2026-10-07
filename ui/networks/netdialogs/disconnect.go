@@ -60,7 +60,7 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.network.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.network.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// container drop down
 	dialog.container.SetBackgroundColor(bgColor)
@@ -80,6 +80,8 @@ func NewNetworkDisconnectDialog() *NetworkDisconnectDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)

@@ -90,6 +90,8 @@ func NewImageImportDialog() *ImageImportDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)

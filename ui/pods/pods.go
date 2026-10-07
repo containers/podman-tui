@@ -129,6 +129,7 @@ func NewPods() *Pods {
 
 	pods.table.SetFixed(1, 1)
 	pods.table.SetSelectable(true, false)
+	pods.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// set command dialog functions
 	pods.cmdDialog.SetSelectedFunc(func() {

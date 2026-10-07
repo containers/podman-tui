@@ -49,7 +49,7 @@ func NewDfDialog() *DfDialog {
 	dialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.serviceName.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// disk usage table
 	dialog.table = tview.NewTable()
@@ -65,6 +65,8 @@ func NewDfDialog() *DfDialog {
 
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 
@@ -218,6 +220,7 @@ func (d *DfDialog) initTable() {
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+	d.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// add headers
 	for i := range d.tableHeaders {
@@ -232,4 +235,5 @@ func (d *DfDialog) initTable() {
 
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+	d.table.SetSelectedStyle(style.TableSelectedStyle)
 }

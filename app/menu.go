@@ -37,7 +37,7 @@ func newMenu(menuItems [][]string) *tview.TextView {
 }
 
 func genMenuItem(items []string) (string, string) {
-	key := fmt.Sprintf("[%s::b] <%s>[-:-:-]", style.GetColorHex(style.PageHeaderFgColor), items[0])
+	key := fmt.Sprintf("[%s::b] <%s>[-:-:-]", style.GetColorHex(style.FgColor), items[0])
 	desc := fmt.Sprintf("[%s:%s:b] %s [-:-:-]",
 		style.GetColorHex(style.PageHeaderFgColor),
 		style.GetColorHex(style.MenuBgColor),

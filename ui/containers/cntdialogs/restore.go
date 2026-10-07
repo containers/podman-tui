@@ -97,7 +97,8 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	ddselectedStyle := style.DropDownSelected
 
 	// containers
-	containersLabel := fmt.Sprintf("[:#%x:b]CONTAINER ID:[:-:-]", style.DialogBorderColor.Hex())
+	containersLabel := fmt.Sprintf("[%s:%s:b]CONTAINER ID:[:-:-]",
+		style.GetColorHex(style.PageHeaderFgColor), style.GetColorHex(style.DialogBorderColor))
 
 	dialog.containers.SetLabel(containersLabel)
 	dialog.containers.SetLabelWidth(cntRestoreDialogLabelWidth)
@@ -153,6 +154,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.keep.SetBackgroundColor(bgColor)
 	dialog.keep.SetLabelColor(fgColor)
 	dialog.keep.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.keep.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// ignoreStaticIP
 	ignoreStaticIPLabel := fmt.Sprintf("%*s ",
@@ -163,6 +165,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreStaticIP.SetBackgroundColor(bgColor)
 	dialog.ignoreStaticIP.SetLabelColor(fgColor)
 	dialog.ignoreStaticIP.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.ignoreStaticIP.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// ignoreStaticMAC
 	ignoreStaticMACLabel := fmt.Sprintf("%*s ",
@@ -173,6 +176,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreStaticMAC.SetBackgroundColor(bgColor)
 	dialog.ignoreStaticMAC.SetLabelColor(fgColor)
 	dialog.ignoreStaticMAC.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.ignoreStaticMAC.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// fileLocks
 	fileLocksLabel := fmt.Sprintf("%*s ",
@@ -183,6 +187,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.fileLocks.SetBackgroundColor(bgColor)
 	dialog.fileLocks.SetLabelColor(fgColor)
 	dialog.fileLocks.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.fileLocks.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// printStats
 	dialog.printStats.SetLabel("print Stats: ")
@@ -191,6 +196,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.printStats.SetBackgroundColor(bgColor)
 	dialog.printStats.SetLabelColor(fgColor)
 	dialog.printStats.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.printStats.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ",
@@ -201,6 +207,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.tcpEstablished.SetBackgroundColor(bgColor)
 	dialog.tcpEstablished.SetLabelColor(fgColor)
 	dialog.tcpEstablished.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.tcpEstablished.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// ignoreVolumes
 	ignoreVolumesLabel := fmt.Sprintf("%*s ",
@@ -211,6 +218,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreVolumes.SetBackgroundColor(bgColor)
 	dialog.ignoreVolumes.SetLabelColor(fgColor)
 	dialog.ignoreVolumes.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.ignoreVolumes.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ",
@@ -221,6 +229,7 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.ignoreRootFS.SetBackgroundColor(bgColor)
 	dialog.ignoreRootFS.SetLabelColor(fgColor)
 	dialog.ignoreRootFS.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.ignoreRootFS.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)
@@ -228,6 +237,8 @@ func NewContainerRestoreDialog() *ContainerRestoreDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	layout := tview.NewFlex().SetDirection(tview.FlexRow)

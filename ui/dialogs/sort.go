@@ -77,6 +77,8 @@ func NewSortDialog(options []string, defaultOption int) *SortDialog {
 	sd.form.SetButtonsAlign(tview.AlignRight)
 	sd.form.SetBackgroundColor(style.DialogBgColor)
 	sd.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	sd.form.SetButtonTextColor(style.ButtonFgColor)
+	sd.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	sortLayout := tview.NewFlex().SetDirection(tview.FlexRow)
 	sortLayout.SetBackgroundColor(style.DialogBgColor)

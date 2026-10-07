@@ -85,7 +85,7 @@ func (s *Secrets) rm() {
 	s.confirmDialog.SetTitle("podman secret remove")
 
 	bgColor := style.GetColorHex(style.DialogBorderColor)
-	fgColor := style.GetColorHex(style.DialogFgColor)
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
 	networkItem := fmt.Sprintf("[%s:%s:b]SECRET ID:[:-:-] %s (%s)", fgColor, bgColor, secID, secName)
 
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected secret?", //nolint:perfsprint

@@ -787,8 +787,8 @@ func (cnt *Containers) rename() {
 
 	cnt.cmdInputDialog.SetTitle("podman container rename")
 
-	fgColor := style.GetColorHex(style.DialogFgColor)
-	bgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
+	bgColor := style.GetColorHex(style.DialogBorderColor)
 	containerInfo := fmt.Sprintf("%s (%s)", cnt.selectedID, cnt.selectedName)
 	description := fmt.Sprintf("[%s:%s:b]%s[:-:-] %s",
 		fgColor, bgColor, utils.ContainerIDLabel, containerInfo)
@@ -840,7 +840,7 @@ func (cnt *Containers) rm() {
 	cnt.confirmDialog.SetTitle("podman container remove")
 	cnt.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
-	fgColor := style.GetColorHex(style.DialogFgColor)
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
 	containerItem := fmt.Sprintf("[%s:%s:b]%s[:-:-] %s(%s)", fgColor, bgColor, utils.ContainerIDLabel, cntID, cntName)
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected container ?", //nolint:perfsprint
 		containerItem)

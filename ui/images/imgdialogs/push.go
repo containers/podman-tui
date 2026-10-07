@@ -78,7 +78,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// destination input field
 	dialog.destination.SetBackgroundColor(bgColor)
@@ -92,6 +92,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.compress.SetLabel("compress:")
 	dialog.compress.SetLabelWidth(labelWidth)
 	dialog.compress.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.compress.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// format dropdown
 	formatLabel := "format:"
@@ -118,6 +119,7 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.skipTLSVerify.SetLabel(skipTLSVerifyLabel)
 	dialog.skipTLSVerify.SetLabelWidth(len(skipTLSVerifyLabel) + 1)
 	dialog.skipTLSVerify.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.skipTLSVerify.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// authfile input field
 	dialog.authFile.SetBackgroundColor(bgColor)
@@ -146,6 +148,8 @@ func NewImagePushDialog() *ImagePushDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	// dropdowns and checkbox row layour

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/containers/podman-tui/app"
+	"github.com/containers/podman-tui/ui/style"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sirupsen/logrus"
@@ -94,6 +95,22 @@ func run(cmd *cobra.Command, args []string) error { //nolint:cyclop
 		}
 	}
 
+	theme, err := cmd.Flags().GetString("theme")
+	if err != nil {
+		return err
+	}
+
+	if !cmd.Flags().Changed("theme") {
+		if envTheme, found := os.LookupEnv("PODMAN_TUI_THEME"); found {
+			theme = envTheme
+		}
+	}
+
+	err = style.SetTheme(theme)
+	if err != nil {
+		return err
+	}
+
 	app := app.NewApp(appName, appVersion)
 
 	err = app.Run()
@@ -123,4 +140,6 @@ func init() {
 
 	rootCmd.Flags().BoolP("debug", "d", false, "Run application in debug mode")
 	rootCmd.Flags().StringP("log-file", "l", defaultLogFile, "Application runtime log file")
+	rootCmd.Flags().String("theme", style.ThemeDefault,
+		"Color theme: default or terminal (terminal's own colors); env PODMAN_TUI_THEME")
 }

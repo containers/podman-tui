@@ -551,6 +551,8 @@ func (d *VtermDialog) initLayoutUI() {
 		SetButtonsAlign(tview.AlignRight)
 	d.form.SetBackgroundColor(bgColor)
 	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	d.form.SetButtonTextColor(style.ButtonFgColor)
+	d.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// terminal screen
 	d.termScreen.SetBackgroundColor(terminalBgColor)

@@ -83,7 +83,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// command
 	dialog.command.SetBackgroundColor(style.DialogBgColor)
@@ -98,6 +98,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.interactive.SetLabelColor(fgColor)
 	dialog.interactive.SetLabelWidth(execDialogLabelWidth)
 	dialog.interactive.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.interactive.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// tty
 	tLabel := "tty:"
@@ -108,6 +109,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.tty.SetLabelColor(fgColor)
 	dialog.tty.SetLabelWidth(len(tLabel) + 1)
 	dialog.tty.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.tty.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// privileged
 	pLabel := "privileged:"
@@ -118,6 +120,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.privileged.SetLabelColor(fgColor)
 	dialog.privileged.SetLabelWidth(len(pLabel) + 1)
 	dialog.privileged.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.privileged.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// detach
 	dLabel := "detach:"
@@ -128,6 +131,7 @@ func NewContainerExecDialog() *ContainerExecDialog {
 	dialog.detach.SetLabelColor(fgColor)
 	dialog.detach.SetLabelWidth(len(dLabel) + 1)
 	dialog.detach.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.detach.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// working dir
 	dialog.workingDir.SetBackgroundColor(style.DialogBgColor)
@@ -160,6 +164,8 @@ func NewContainerExecDialog() *ContainerExecDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// main dialog layout
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)

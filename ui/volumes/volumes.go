@@ -192,6 +192,7 @@ func (vols *Volumes) initUI() {
 
 	vols.table.SetFixed(1, 1)
 	vols.table.SetSelectable(true, false)
+	vols.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// set command dialog functions
 	vols.cmdDialog.SetSelectedFunc(func() {

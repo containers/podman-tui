@@ -52,7 +52,7 @@ func NewVolumeImportDialog() *VolumeImportDialog {
 	importDialog.volume.SetFieldBackgroundColor(style.DialogBgColor)
 	importDialog.volume.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// source
 	label := "source:"
@@ -68,6 +68,8 @@ func NewVolumeImportDialog() *VolumeImportDialog {
 	importDialog.form.AddButton("Import", nil)
 	importDialog.form.SetButtonsAlign(tview.AlignRight)
 	importDialog.form.SetButtonBackgroundColor(buttonBgColor)
+	importDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	importDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	importDialog.setupLayout()
 	importDialog.layout.SetBackgroundColor(bgColor)

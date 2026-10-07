@@ -283,7 +283,7 @@ func (img *Images) rm() {
 	img.confirmDialog.SetTitle("podman image remove")
 	img.confirmData = "rm"
 	bgColor := style.GetColorHex(style.DialogBorderColor)
-	fgColor := style.GetColorHex(style.DialogFgColor)
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
 	imageItem := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)", fgColor, bgColor, imageID, imageName)
 	description := fmt.Sprintf("%s\n\nAre you sure you want to remove the selected image?", imageItem) //nolint:perfsprint
 
@@ -393,7 +393,7 @@ func (img *Images) ctag() {
 
 	img.cmdInputDialog.SetTitle("podman image tag")
 
-	fgColor := style.GetColorHex(style.DialogFgColor)
+	fgColor := style.GetColorHex(style.PageHeaderFgColor)
 	bgColor := style.GetColorHex(style.DialogBorderColor)
 
 	description := fmt.Sprintf("[%s:%s:b]IMAGE ID:[:-:-] %s (%s)",

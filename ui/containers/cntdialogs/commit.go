@@ -77,7 +77,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.cntInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.cntInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// image field
 	dialog.image.SetBackgroundColor(style.DialogBgColor)
@@ -127,6 +127,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.pause.SetLabel(pauseLabel)
 	dialog.pause.SetLabelWidth(len(pauseLabel) + 1)
 	dialog.pause.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.pause.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// squash checkbox
 	squashLabel := "squash layers:"
@@ -136,6 +137,7 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.squash.SetLabel(squashLabel)
 	dialog.squash.SetLabelWidth(len(squashLabel) + 1)
 	dialog.squash.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.squash.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// form
 	dialog.form.AddButton("Cancel", nil)
@@ -143,6 +145,8 @@ func NewContainerCommitDialog() *ContainerCommitDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// image and author layout row
 	iaLayout := tview.NewFlex().SetDirection(tview.FlexColumn)

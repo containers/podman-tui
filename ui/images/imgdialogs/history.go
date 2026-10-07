@@ -61,7 +61,7 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 	dialog.imageInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.imageInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	dialog.table = tview.NewTable()
 	dialog.table.SetBackgroundColor(historyTableBgColor)
@@ -72,6 +72,8 @@ func NewImageHistoryDialog() *ImageHistoryDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// table layout
 	tableLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -297,6 +299,7 @@ func (d *ImageHistoryDialog) initTable() {
 	d.table.Clear()
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+	d.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	for i := range d.tableHeaders {
 		d.table.SetCell(0, i,

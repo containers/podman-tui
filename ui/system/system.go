@@ -95,6 +95,7 @@ func NewSystem() *System {
 	sys.connTable.SetBorderColor(style.BorderColor)
 	sys.connTable.SetFixed(1, 1)
 	sys.connTable.SetSelectable(true, false)
+	sys.connTable.SetSelectedStyle(style.TableSelectedStyle)
 
 	for i := range sys.connTableHeaders {
 		header := fmt.Sprintf("[::b]%s", strings.ToUpper(sys.connTableHeaders[i])) //nolint:perfsprint
