@@ -59,6 +59,8 @@ func NewSimpleInputDialog(text string) *SimpleInputDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)

@@ -50,6 +50,8 @@ func NewConfirmDialog() *ConfirmDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)

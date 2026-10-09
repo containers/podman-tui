@@ -1091,6 +1091,8 @@ func (d *ContainerCreateDialog) setupLayout() {
 
 	d.form.SetButtonsAlign(tview.AlignRight)
 	d.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	d.form.SetButtonTextColor(style.ButtonFgColor)
+	d.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// adding category pages
 	d.categoryPages.AddPage(d.categoryLabels[createContainerInfoPageIndex], d.containerInfoPage, true, true)
@@ -1175,6 +1177,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerPrivilegedField.SetBackgroundColor(bgColor)
 	d.containerPrivilegedField.SetLabelColor(style.DialogFgColor)
 	d.containerPrivilegedField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerPrivilegedField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// timeout field
 	timeoutLabel := "timeout:"
@@ -1191,6 +1194,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerInteractiveField.SetBackgroundColor(bgColor)
 	d.containerInteractiveField.SetLabelColor(style.DialogFgColor)
 	d.containerInteractiveField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerInteractiveField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// detach
 	d.containerDetachField.SetLabel("detach:")
@@ -1198,6 +1202,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerDetachField.SetBackgroundColor(bgColor)
 	d.containerDetachField.SetLabelColor(style.DialogFgColor)
 	d.containerDetachField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerDetachField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// tty
 	ttyLabel := fmt.Sprintf("%7s:", "tty")
@@ -1206,6 +1211,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerTtyField.SetBackgroundColor(bgColor)
 	d.containerTtyField.SetLabelColor(style.DialogFgColor)
 	d.containerTtyField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerTtyField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// remove field
 	removeLabel := fmt.Sprintf("%11s:", "remove")
@@ -1214,6 +1220,7 @@ func (d *ContainerCreateDialog) setupContainerInfoPageUI() {
 	d.containerRemoveField.SetBackgroundColor(bgColor)
 	d.containerRemoveField.SetLabelColor(style.DialogFgColor)
 	d.containerRemoveField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerRemoveField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// secrets
 	d.containerSecretField.SetBackgroundColor(style.DialogBgColor)
@@ -1270,6 +1277,7 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 	d.containerEnvHostField.SetBackgroundColor(style.DialogBgColor)
 	d.containerEnvHostField.SetLabel(utils.StringToInputLabel("env host:", envPageLabelWidth))
 	d.containerEnvHostField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerEnvHostField.SetActivatedStyle(style.CheckboxActivatedStyle)
 	d.containerEnvHostField.SetLabelStyle(style.InputLabelStyle)
 
 	// unset all
@@ -1279,6 +1287,7 @@ func (d *ContainerCreateDialog) setupEnvironmentPageUI() {
 	d.containerUnsetEnvAllField.SetBackgroundColor(bgColor)
 	d.containerUnsetEnvAllField.SetLabelColor(style.DialogFgColor)
 	d.containerUnsetEnvAllField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerUnsetEnvAllField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// environment variables
 	d.containerEnvVarsField.SetBackgroundColor(style.DialogBgColor)
@@ -1645,6 +1654,7 @@ func (d *ContainerCreateDialog) setupPortsPageUI() {
 	d.ContainerPortPublishAllField.SetBackgroundColor(bgColor)
 	d.ContainerPortPublishAllField.SetLabelColor(style.DialogFgColor)
 	d.ContainerPortPublishAllField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.ContainerPortPublishAllField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	d.portPage.SetDirection(tview.FlexRow)
 	d.portPage.AddItem(d.containerPortPublishField, 1, 0, true)
@@ -1696,6 +1706,7 @@ func (d *ContainerCreateDialog) setupSecurityPageUI() {
 	d.containerSecNoNewPrivField.SetBackgroundColor(bgColor)
 	d.containerSecNoNewPrivField.SetLabelColor(style.DialogFgColor)
 	d.containerSecNoNewPrivField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	d.containerSecNoNewPrivField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// security options page
 	d.securityOptsPage.SetDirection(tview.FlexRow)
@@ -2064,7 +2075,7 @@ func (d *ContainerCreateDialog) initCustomInputHanlers() {
 }
 
 func (d *ContainerCreateDialog) setActiveCategory(index int) {
-	fgColor := style.DialogFgColor
+	fgColor := style.PageHeaderFgColor
 	bgColor := style.ButtonBgColor
 	ctgTextColor := style.GetColorHex(fgColor)
 	ctgBgColor := style.GetColorHex(bgColor)

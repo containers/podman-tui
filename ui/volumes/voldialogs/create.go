@@ -126,6 +126,8 @@ func NewVolumeCreateDialog() *VolumeCreateDialog {
 	volDialog.form.AddButton("Create", nil)
 	volDialog.form.SetButtonsAlign(tview.AlignRight)
 	volDialog.form.SetButtonBackgroundColor(buttonBgColor)
+	volDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	volDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	volDialog.setupLayout()
 	volDialog.layout.SetBackgroundColor(bgColor)

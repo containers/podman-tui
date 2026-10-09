@@ -87,7 +87,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.containerInfo.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.containerInfo.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// createImage
 	dialog.createImage.SetBackgroundColor(style.DialogBgColor)
@@ -108,6 +108,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.printStats.SetBackgroundColor(style.DialogBgColor)
 	dialog.printStats.SetLabelColor(style.DialogFgColor)
 	dialog.printStats.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.printStats.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// fileLock
 	dialog.fileLock.SetLabel("file lock:")
@@ -116,6 +117,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.fileLock.SetBackgroundColor(style.DialogBgColor)
 	dialog.fileLock.SetLabelColor(style.DialogFgColor)
 	dialog.fileLock.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.fileLock.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// ignoreRootFS
 	ignoreRootFSLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "ignore rootFS:")
@@ -125,6 +127,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.ignoreRootFS.SetBackgroundColor(style.DialogBgColor)
 	dialog.ignoreRootFS.SetLabelColor(style.DialogFgColor)
 	dialog.ignoreRootFS.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.ignoreRootFS.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// keep
 	keepLabel := fmt.Sprintf("%*s ", chkGroupFirstColLabelWidth, "keep:")
@@ -134,6 +137,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.keep.SetBackgroundColor(style.DialogBgColor)
 	dialog.keep.SetLabelColor(style.DialogFgColor)
 	dialog.keep.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.keep.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// tcpEstablished
 	tcpEstablishedLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "tcp established:")
@@ -143,6 +147,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.tcpEstablished.SetBackgroundColor(style.DialogBgColor)
 	dialog.tcpEstablished.SetLabelColor(style.DialogFgColor)
 	dialog.tcpEstablished.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.tcpEstablished.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// leaveRunning
 	leaveRunningLabel := fmt.Sprintf("%*s ", chkGroupSecondColLabelWidth, "leave running:")
@@ -152,6 +157,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.leaveRunning.SetBackgroundColor(style.DialogBgColor)
 	dialog.leaveRunning.SetLabelColor(style.DialogFgColor)
 	dialog.leaveRunning.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.leaveRunning.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// preCheckpoint
 	preCheckPointLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "pre checkpoint:")
@@ -161,6 +167,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.preCheckpoint.SetBackgroundColor(style.DialogBgColor)
 	dialog.preCheckpoint.SetLabelColor(style.DialogFgColor)
 	dialog.preCheckpoint.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.preCheckpoint.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// withPrevious
 	withPreviousLabel := fmt.Sprintf("%*s ", chkGroupThirdColLabelWidth, "with previous:")
@@ -170,6 +177,7 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.withPrevious.SetBackgroundColor(style.DialogBgColor)
 	dialog.withPrevious.SetLabelColor(style.DialogFgColor)
 	dialog.withPrevious.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	dialog.withPrevious.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// form
 	dialog.form.AddButton(" Cancel ", nil)
@@ -177,6 +185,8 @@ func NewContainerCheckpointDialog() *ContainerCheckpointDialog {
 	dialog.form.SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	optionsLayoutRow01 := tview.NewFlex().SetDirection(tview.FlexRow)

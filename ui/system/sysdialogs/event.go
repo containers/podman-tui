@@ -46,7 +46,7 @@ func NewEventDialog() *EventsDialog {
 	eventsDialog.serviceName.SetFieldBackgroundColor(style.DialogBgColor)
 	eventsDialog.serviceName.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	// text view
 	eventsDialog.textview = tview.NewTextView().
@@ -66,6 +66,8 @@ func NewEventDialog() *EventsDialog {
 
 	eventsDialog.form.SetBackgroundColor(style.DialogBgColor)
 	eventsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	eventsDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	eventsDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// textview layout
 	tlayout := tview.NewFlex().SetDirection(tview.FlexColumn)

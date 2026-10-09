@@ -93,6 +93,7 @@ func NewSecrets() *Secrets {
 
 	secrets.table.SetFixed(1, 1)
 	secrets.table.SetSelectable(true, false)
+	secrets.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// set command dialog functions
 	secrets.cmdDialog.SetSelectedFunc(func() {

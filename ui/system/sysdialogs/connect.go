@@ -49,8 +49,8 @@ func NewConnectDialog() *ConnectDialog {
 	conn.textview.SetTextColor(style.DialogFgColor)
 
 	// cancel button and layout
-	conn.cancelButton.SetStyle(tcell.StyleDefault.Background(style.ButtonBgColor))
-	conn.cancelButton.SetLabelColorActivated(style.ButtonBgColor)
+	conn.cancelButton.SetStyle(tcell.StyleDefault.Background(style.ButtonBgColor).Foreground(style.ButtonFgColor))
+	conn.cancelButton.SetActivatedStyle(style.ButtonActivatedStyle)
 
 	cancelLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
 	cancelLayout.AddItem(utils.EmptyBoxSpace(style.DialogBgColor), 0, 1, false)

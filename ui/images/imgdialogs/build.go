@@ -267,6 +267,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.SquashField.SetLabelColor(fgColor)
 	buildDialog.SquashField.SetLabelWidth(len(squashLabel) + 1)
 	buildDialog.SquashField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.SquashField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// layers
 	layersLabel := "layers:"
@@ -277,6 +278,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.layersField.SetLabelColor(fgColor)
 	buildDialog.layersField.SetLabelWidth(len(layersLabel) + 1)
 	buildDialog.layersField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.layersField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// no-cache
 	noCacheLabel := "no cache:"
@@ -287,6 +289,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.noCacheField.SetLabelColor(fgColor)
 	buildDialog.noCacheField.SetLabelWidth(len(noCacheLabel) + 1)
 	buildDialog.noCacheField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.noCacheField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// labels
 	buildDialog.labelsField.SetBackgroundColor(bgColor)
@@ -305,12 +308,14 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.removeCntField.SetBackgroundColor(bgColor)
 	buildDialog.removeCntField.SetLabelColor(fgColor)
 	buildDialog.removeCntField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.removeCntField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	buildDialog.forceRemoveCntField.SetLabel("force remove: ")
 	buildDialog.forceRemoveCntField.SetLabelWidth(buildSettingFirstColWidth)
 	buildDialog.forceRemoveCntField.SetBackgroundColor(bgColor)
 	buildDialog.forceRemoveCntField.SetLabelColor(fgColor)
 	buildDialog.forceRemoveCntField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.forceRemoveCntField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// security options page
 	securityOptionsPAgeLabelWidth := 10
@@ -358,6 +363,7 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.httpProxyField.SetLabelColor(fgColor)
 	buildDialog.httpProxyField.SetLabelWidth(networkingPageLabelWidth)
 	buildDialog.httpProxyField.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	buildDialog.httpProxyField.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// Add host field
 	buildDialog.addHostField.SetBackgroundColor(bgColor)
@@ -462,6 +468,8 @@ func NewImageBuildDialog() *ImageBuildDialog { //nolint:maintidx
 	buildDialog.form.AddButton("Build", nil)
 	buildDialog.form.SetButtonsAlign(tview.AlignRight)
 	buildDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	buildDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	buildDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	buildDialog.setupLayout()
@@ -1214,7 +1222,7 @@ func (d *ImageBuildDialog) initData() {
 
 func (d *ImageBuildDialog) setActiveCategory(index int) {
 	bgColor := style.ButtonBgColor
-	fgColor := style.DialogFgColor
+	fgColor := style.PageHeaderFgColor
 
 	ctgFgColor := style.GetColorHex(fgColor)
 	ctgBgColor := style.GetColorHex(bgColor)

@@ -101,6 +101,7 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 	createDialog.secretReplace.SetBackgroundColor(bgColor)
 	createDialog.secretReplace.SetLabelColor(fgColor)
 	createDialog.secretReplace.SetFieldBackgroundColor(style.FieldBackgroundColor)
+	createDialog.secretReplace.SetActivatedStyle(style.CheckboxActivatedStyle)
 
 	// secret driver
 	createDialog.secretDriver.SetBackgroundColor(bgColor)
@@ -125,6 +126,8 @@ func NewSecretCreateDialog() *SecretCreateDialog {
 	createDialog.form.SetButtonsAlign(tview.AlignRight)
 	createDialog.form.SetBackgroundColor(bgColor)
 	createDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	createDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	createDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layout
 	optionsLayout := tview.NewFlex().SetDirection(tview.FlexRow)

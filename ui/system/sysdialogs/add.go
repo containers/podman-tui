@@ -74,6 +74,8 @@ func NewAddConnectionDialog() *AddConnectionDialog {
 		SetButtonsAlign(tview.AlignRight)
 	connDialog.form.SetBackgroundColor(style.DialogBgColor)
 	connDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	connDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	connDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// layouts
 	inputFieldLayout := tview.NewFlex().SetDirection(tview.FlexRow)

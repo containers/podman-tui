@@ -29,6 +29,7 @@ func NewErrorDialog() *ErrorDialog {
 	}
 
 	dialog.modal.SetButtonBackgroundColor(style.ErrorDialogButtonBgColor)
+	dialog.modal.SetButtonActivatedStyle(style.ErrorButtonActivated)
 	dialog.modal.SetBorderStyle(tcell.StyleDefault.
 		Background(bgColor).
 		Foreground(style.DialogFgColor))

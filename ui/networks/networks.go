@@ -109,6 +109,7 @@ func NewNetworks() *Networks {
 
 	nets.table.SetFixed(1, 1)
 	nets.table.SetSelectable(true, false)
+	nets.table.SetSelectedStyle(style.TableSelectedStyle)
 
 	// set command dialog functions
 	nets.cmdDialog.SetSelectedFunc(func() {

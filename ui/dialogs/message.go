@@ -50,7 +50,7 @@ func NewMessageDialog(text string) *MessageDialog {
 	dialog.infoType.SetFieldBackgroundColor(style.DialogBgColor)
 	dialog.infoType.SetLabelStyle(tcell.StyleDefault.
 		Background(style.DialogBorderColor).
-		Foreground(style.DialogFgColor))
+		Foreground(style.PageHeaderFgColor))
 
 	dialog.textview = tview.NewTextView().
 		SetDynamicColors(true).
@@ -77,6 +77,8 @@ func NewMessageDialog(text string) *MessageDialog {
 
 	dialog.form.SetBackgroundColor(style.DialogBgColor)
 	dialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.AddItem(tlayout, 0, 1, true)

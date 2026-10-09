@@ -53,10 +53,20 @@ var (
 	InputFieldStyle          = tcell.StyleDefault.Background(tcell.ColorGray).Foreground(DialogFgColor)
 	FieldBackgroundColor     = tcell.ColorGray
 	ButtonBgColor            = tcell.ColorMediumPurple
+	ButtonFgColor            = tcell.ColorWhite
+	TableSelectedStyle       = tcell.StyleDefault
+	DialogSelectedStyle      = tcell.StyleDefault.Background(DialogFgColor).Foreground(DialogBgColor)
+	ButtonActivatedStyle     = tcell.StyleDefault.Background(ButtonFgColor).Foreground(ButtonBgColor)
+	CheckboxActivatedStyle   = tcell.StyleDefault.Background(tcell.ColorWhite).Foreground(FieldBackgroundColor)
+	ErrorButtonActivated     = tcell.StyleDefault.Background(tcell.ColorWhite).Foreground(ErrorDialogButtonBgColor)
 )
 
 // GetColorName returns convert tcell color to its name.
 func GetColorName(color tcell.Color) string {
+	if name, ok := terminalColorTag(color); ok {
+		return name
+	}
+
 	for name, c := range tcell.ColorNames {
 		if c == color {
 			return name
@@ -68,5 +78,9 @@ func GetColorName(color tcell.Color) string {
 
 // GetColorHex returns convert tcell color to its hex useful for textview primitives.
 func GetColorHex(color tcell.Color) string {
+	if name, ok := terminalColorTag(color); ok {
+		return name
+	}
+
 	return fmt.Sprintf("#%x", color.Hex())
 }

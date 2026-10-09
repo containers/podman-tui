@@ -75,9 +75,11 @@ func NewPodStatsDialog() *PodStatsDialog {
 
 	// pod dropdown
 	pddLabel := "POD ID:"
-	labelBgColor := fmt.Sprintf("#%x", style.DialogBorderColor.Hex())
+	labelFgColor := style.GetColorHex(style.PageHeaderFgColor)
 
-	statsDialog.podDropDown.SetLabel(fmt.Sprintf("[:%s:b]%s[::-]", labelBgColor, pddLabel))
+	labelBgColor := style.GetColorHex(style.DialogBorderColor)
+
+	statsDialog.podDropDown.SetLabel(fmt.Sprintf("[%s:%s:b]%s[::-]", labelFgColor, labelBgColor, pddLabel))
 	statsDialog.podDropDown.SetLabelWidth(len(pddLabel) + 1)
 	statsDialog.podDropDown.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.podDropDown.SetLabelColor(style.DialogFgColor)
@@ -115,6 +117,8 @@ func NewPodStatsDialog() *PodStatsDialog {
 		SetButtonsAlign(tview.AlignRight)
 	statsDialog.form.SetBackgroundColor(style.DialogBgColor)
 	statsDialog.form.SetButtonBackgroundColor(style.ButtonBgColor)
+	statsDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	statsDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	// pod dropdown and sort by dropdown
 	statsDialog.controlLayout = tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -456,6 +460,7 @@ func (d *PodStatsDialog) initTableUI() {
 
 	d.table.SetFixed(1, 1)
 	d.table.SetSelectable(true, false)
+	d.table.SetSelectedStyle(style.TableSelectedStyle)
 }
 
 func (d *PodStatsDialog) updateData(statReport []ppods.StatReporter) {

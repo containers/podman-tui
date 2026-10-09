@@ -74,8 +74,8 @@ func NewImageSearchDialog() *ImageSearchDialog {
 	bgColor := style.DialogBgColor
 	buttonBgColor := style.ButtonBgColor
 
-	dialog.searchButton.SetStyle(tcell.StyleDefault.Background(buttonBgColor))
-	dialog.searchButton.SetLabelColorActivated(buttonBgColor)
+	dialog.searchButton.SetStyle(tcell.StyleDefault.Background(buttonBgColor).Foreground(style.ButtonFgColor))
+	dialog.searchButton.SetActivatedStyle(style.ButtonActivatedStyle)
 
 	searchLabel := "search term:"
 
@@ -112,6 +112,8 @@ func NewImageSearchDialog() *ImageSearchDialog {
 		SetButtonsAlign(tview.AlignRight)
 	dialog.form.SetBackgroundColor(bgColor)
 	dialog.form.SetButtonBackgroundColor(buttonBgColor)
+	dialog.form.SetButtonTextColor(style.ButtonFgColor)
+	dialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	dialog.layout = tview.NewFlex().SetDirection(tview.FlexRow)
 	dialog.layout.SetBorder(true)
@@ -503,4 +505,5 @@ func (d *ImageSearchDialog) initTable() {
 
 	d.searchResult.SetFixed(1, 1)
 	d.searchResult.SetSelectable(true, false)
+	d.searchResult.SetSelectedStyle(style.TableSelectedStyle)
 }

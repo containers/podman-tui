@@ -59,6 +59,8 @@ func NewVolumeExportDialog() *VolumeExportDialog {
 	exportDialog.form.AddButton("Export", nil)
 	exportDialog.form.SetButtonsAlign(tview.AlignRight)
 	exportDialog.form.SetButtonBackgroundColor(buttonBgColor)
+	exportDialog.form.SetButtonTextColor(style.ButtonFgColor)
+	exportDialog.form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	exportDialog.setupLayout()
 	exportDialog.layout.SetBackgroundColor(bgColor)

@@ -58,6 +58,8 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	form.SetBackgroundColor(style.DialogBgColor)
 	form.SetButtonBackgroundColor(style.ButtonBgColor)
+	form.SetButtonTextColor(style.ButtonFgColor)
+	form.SetButtonActivatedStyle(style.ButtonActivatedStyle)
 
 	cmdsTable := tview.NewTable()
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
@@ -119,6 +121,7 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	cmdsTable.SetFixed(1, 1)
 	cmdsTable.SetSelectable(true, false)
+	cmdsTable.SetSelectedStyle(style.TableSelectedStyle)
 	cmdsTable.SetBackgroundColor(style.DialogBgColor)
 
 	cmdLayout := tview.NewFlex().SetDirection(tview.FlexColumn)
@@ -136,19 +139,17 @@ func NewCommandDialog(options [][]string) *CommandDialog {
 
 	// returns the command primitive
 	return &CommandDialog{
-		Box:          tview.NewBox().SetBorder(false),
-		layout:       layout,
-		table:        cmdsTable,
-		form:         form,
-		display:      false,
-		focusElement: cmdTableFocus,
-		selectedStyle: tcell.StyleDefault.
-			Background(style.DialogFgColor).
-			Foreground(style.DialogBgColor),
-		options:   options,
-		width:     cmdWidth + cmdWidthOffset,
-		height:    len(options) + TableHeightOffset + DialogFormHeight,
-		shortcuts: shortcuts,
+		Box:           tview.NewBox().SetBorder(false),
+		layout:        layout,
+		table:         cmdsTable,
+		form:          form,
+		display:       false,
+		focusElement:  cmdTableFocus,
+		selectedStyle: style.DialogSelectedStyle,
+		options:       options,
+		width:         cmdWidth + cmdWidthOffset,
+		height:        len(options) + TableHeightOffset + DialogFormHeight,
+		shortcuts:     shortcuts,
 	}
 }
 
