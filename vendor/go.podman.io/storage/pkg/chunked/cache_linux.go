@@ -232,7 +232,7 @@ func (c *layersCache) createCacheFileFromTOC(layerID string) (*layer, error) {
 			return nil, err
 		}
 	}
-	manifestReader, err := c.store.LayerBigData(layerID, bigDataKey)
+	manifestReader, err := c.store.LayerBigData(layerID, minimal.ManifestBigDataKey)
 	if err != nil {
 		// the cache file is not needed since there is no manifest file.
 		if errors.Is(err, os.ErrNotExist) {
@@ -714,7 +714,7 @@ func prepareCacheFile(manifest []byte, format graphdriver.DifferOutputFormat) ([
 			return nil, err
 		}
 	default:
-		return nil, fmt.Errorf("unknown format %q", format)
+		return nil, fmt.Errorf("unknown format %d", format)
 	}
 
 	var r []*fileMetadata
