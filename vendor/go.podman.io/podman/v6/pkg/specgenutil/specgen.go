@@ -141,7 +141,7 @@ func LimitToSwap(memory *specs.LinuxMemory, swap string, ml int64) {
 		memory.Limit = &ml
 		if swap == "" {
 			limit := 2 * ml
-			memory.Swap = &(limit)
+			memory.Swap = &limit
 		}
 	}
 }
@@ -321,6 +321,16 @@ func currentLabelOpts() ([]string, error) {
 	}, nil
 }
 
+// CutSecurityOpt splits a security option into key and value.
+// Docker deprecated the ":" separator but still supports it, so we
+// need to as well.
+func CutSecurityOpt(opt string) (key, val string, hasVal bool) {
+	if strings.Contains(opt, "=") {
+		return strings.Cut(opt, "=")
+	}
+	return strings.Cut(opt, ":")
+}
+
 func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions, args []string) error {
 	rtc, err := config.Default()
 	if err != nil {
@@ -389,6 +399,37 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 		s.StartupHealthConfig = new(define.StartupHealthCheck)
 		s.StartupHealthConfig.Test = tmpHcConfig.Test
 		s.StartupHealthConfig.Interval = tmpHcConfig.Interval
+		s.StartupHealthConfig.Timeout = tmpHcConfig.Timeout
+		s.StartupHealthConfig.Retries = tmpHcConfig.Retries
+		s.StartupHealthConfig.Successes = int(c.StartupHCSuccesses)
+	}
+
+	// It is necessary to parse time values, as user can
+	// set either "0" or "0s" arguments
+	startupHCInterval, _ := time.ParseDuration(c.StartupHCInterval)
+	healthInterval, _ := time.ParseDuration(c.HealthInterval)
+
+	// To keep Docker compatibility, it is necessary
+	// to set health startup interval value to health interval one
+	if startupHCInterval == time.Duration(0) {
+		startupHCInterval = healthInterval
+	}
+	healthStartPeriod, _ := time.ParseDuration(c.HealthStartPeriod)
+
+	// This part of code has been created on response to the issue #27724:
+	if c.StartupHCCmd == "" &&
+		startupHCInterval != healthInterval &&
+		healthStartPeriod != time.Duration(0) &&
+		c.HealthCmd != "" {
+		tmpHcConfig, err := MakeHealthCheckFromCli(c.HealthCmd, startupHCInterval.String(), c.StartupHCRetries, c.HealthTimeout, healthStartPeriod.String(), true)
+		if err != nil {
+			return err
+		}
+
+		s.StartupHealthConfig = new(define.StartupHealthCheck)
+		s.StartupHealthConfig.Test = tmpHcConfig.Test
+		s.StartupHealthConfig.Interval = tmpHcConfig.Interval
+		s.StartupHealthConfig.StartPeriod = tmpHcConfig.StartPeriod
 		s.StartupHealthConfig.Timeout = tmpHcConfig.Timeout
 		s.StartupHealthConfig.Retries = tmpHcConfig.Retries
 		s.StartupHealthConfig.Successes = int(c.StartupHCSuccesses)
@@ -705,15 +746,7 @@ func FillOutSpecGen(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions
 	}
 
 	for _, opt := range c.SecurityOpt {
-		// Docker deprecated the ":" syntax but still supports it,
-		// so we need to as well
-		var key, val string
-		var hasVal bool
-		if strings.Contains(opt, "=") {
-			key, val, hasVal = strings.Cut(opt, "=")
-		} else {
-			key, val, hasVal = strings.Cut(opt, ":")
-		}
+		key, val, hasVal := CutSecurityOpt(opt)
 		if !hasVal &&
 			key != "no-new-privileges" {
 			return fmt.Errorf("invalid --security-opt 1: %q", opt)
@@ -1297,8 +1330,9 @@ func GetResources(s *specgen.SpecGenerator, c *entities.ContainerCreateOptions) 
 		}
 	}
 	if c.PIDsLimit != nil {
+		limit := PidsLimitForOCI(*c.PIDsLimit)
 		pids := specs.LinuxPids{
-			Limit: c.PIDsLimit,
+			Limit: &limit,
 		}
 
 		s.ResourceLimits.Pids = &pids
