@@ -169,12 +169,8 @@ func invokeUnpack(decompressedArchive io.Reader, dest *unpackDestination, option
 			return fmt.Errorf("%w\nexhausting input failed (error: %w)", errorOut, err)
 		}
 
-		var exitErr *exec.ExitError
-		if errors.As(err, &exitErr) {
-			status := exitErr.ExitCode()
-			if status == statusCodeENOSPC {
-				return unix.ENOSPC
-			}
+		if exitErr, ok := errors.AsType[*exec.ExitError](err); ok && exitErr.ExitCode() == statusCodeENOSPC {
+			return unix.ENOSPC
 		}
 
 		return errorOut
@@ -238,6 +234,13 @@ func invokePack(srcPath string, options *archive.TarOptions, root string) (io.Re
 	if strings.HasSuffix(srcPath, "/") && !strings.HasSuffix(relSrc, "/") {
 		relSrc += "/"
 	}
+
+	var optionsCopy archive.TarOptions
+	if options != nil {
+		optionsCopy = *options
+	}
+	optionsCopy.InternalRunningInMinimalChroot = true
+	options = &optionsCopy
 
 	cmd := reexec.Command("storage-tar", relSrc, root)
 
