@@ -3,6 +3,7 @@ package specgen
 import (
 	spec "github.com/opencontainers/runtime-spec/specs-go"
 	"go.podman.io/common/pkg/config"
+	"go.podman.io/storage/pkg/unshare"
 )
 
 func (s *SpecGenerator) InitResourceLimits(rtc *config.Config) {
@@ -18,5 +19,13 @@ func (s *SpecGenerator) InitResourceLimits(rtc *config.Config) {
 				}
 			}
 		}
+		return
+	}
+
+	// Rootless with cgroupfs the pids controller is often not delegated, and a
+	// new cgroup has no pids limit anyway, so do not ask the runtime to set one.
+	if limit := s.ResourceLimits.Pids.Limit; (limit == nil || *limit <= 0) &&
+		unshare.IsRootless() && rtc.Engine.CgroupManager != config.SystemdCgroupsManager {
+		s.ResourceLimits.Pids = nil
 	}
 }
