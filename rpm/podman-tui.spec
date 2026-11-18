@@ -75,9 +75,6 @@ export GOFLAGS="-mod=vendor"
 %endif
 
 export BUILDTAGS="exclude_graphdriver_devicemapper exclude_graphdriver_btrfs btrfs_noversion containers_image_openpgp remote"
-%if 0%{?rhel}
-export BUILDTAGS="$BUILDTAGS libtrust_openssl"
-%endif
 
 export CGO_LDFLAGS="${CGO_LDFLAGS} -Wl,--allow-multiple-definition"
 %gobuild -o %{gobuilddir}/bin/%{goname} %{goipath}
