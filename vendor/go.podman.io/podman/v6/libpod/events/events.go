@@ -43,8 +43,7 @@ func (e *Event) ToJSONString() (string, error) {
 	return string(b), err
 }
 
-// ToHumanReadable returns human-readable event as a formatted string
-func (e *Event) ToHumanReadable(truncate bool) string {
+func (e *Event) toHumanReadable(truncate bool, omitTime bool) string {
 	if e == nil {
 		return ""
 	}
@@ -53,9 +52,17 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 	if truncate {
 		id = stringid.TruncateID(id)
 	}
+
+	var prefix string
+	if omitTime {
+		prefix = fmt.Sprintf("%s %s", e.Type, e.Status)
+	} else {
+		prefix = fmt.Sprintf("%s %s %s", e.Time, e.Type, e.Status)
+	}
+
 	switch e.Type {
 	case Container, Pod:
-		humanFormat = fmt.Sprintf("%s %s %s %s (image=%s, name=%s", e.Time, e.Type, e.Status, id, e.Image, e.Name)
+		humanFormat = fmt.Sprintf("%s %s (image=%s, name=%s", prefix, id, e.Image, e.Name)
 		if e.PodID != "" {
 			humanFormat += fmt.Sprintf(", pod_id=%s", e.PodID)
 		}
@@ -74,28 +81,38 @@ func (e *Event) ToHumanReadable(truncate bool) string {
 	case Network:
 		if e.Status == Create || e.Status == Remove {
 			if netdriver, exists := e.Attributes["driver"]; exists {
-				humanFormat = fmt.Sprintf("%s %s %s %s (name=%s, type=%s)", e.Time, e.Type, e.Status, e.ID, e.Network, netdriver)
+				humanFormat = fmt.Sprintf("%s %s (name=%s, type=%s)", prefix, e.ID, e.Network, netdriver)
 			}
 		} else {
-			humanFormat = fmt.Sprintf("%s %s %s %s (container=%s, name=%s)", e.Time, e.Type, e.Status, id, id, e.Network)
+			humanFormat = fmt.Sprintf("%s %s (container=%s, name=%s)", prefix, id, id, e.Network)
 		}
 	case Image, Artifact:
-		humanFormat = fmt.Sprintf("%s %s %s %s %s", e.Time, e.Type, e.Status, id, e.Name)
+		humanFormat = fmt.Sprintf("%s %s %s", prefix, id, e.Name)
 		if e.Error != "" {
 			humanFormat += " " + e.Error
 		}
 	case System:
 		if e.Name != "" {
-			humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, e.Name)
+			humanFormat = fmt.Sprintf("%s %s", prefix, e.Name)
 		} else {
-			humanFormat = fmt.Sprintf("%s %s %s", e.Time, e.Type, e.Status)
+			humanFormat = prefix
 		}
 	case Machine, Volume:
-		humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, e.Name)
+		humanFormat = fmt.Sprintf("%s %s", prefix, e.Name)
 	case Secret:
-		humanFormat = fmt.Sprintf("%s %s %s %s", e.Time, e.Type, e.Status, id)
+		humanFormat = fmt.Sprintf("%s %s", prefix, id)
 	}
 	return humanFormat
+}
+
+// ToHumanReadable returns human-readable event as a formatted string
+func (e *Event) ToHumanReadable(truncate bool) string {
+	return e.toHumanReadable(truncate, false)
+}
+
+// ToHumanReadableWithoutTime returns human-readable event as a formatted string without timestamp prefix
+func (e *Event) ToHumanReadableWithoutTime(truncate bool) string {
+	return e.toHumanReadable(truncate, true)
 }
 
 // String converts a Type to a string
@@ -150,6 +167,8 @@ func StringToStatus(name string) (Status, error) {
 		return Cleanup, nil
 	case Commit.String():
 		return Commit, nil
+	case Copy.String():
+		return Copy, nil
 	case Create.String():
 		return Create, nil
 	case Exec.String():

@@ -52,13 +52,13 @@ func Attach(ctx context.Context, nameOrID string, stdin io.Reader, stdout io.Wri
 	}
 	// Ensure golang can determine that interfaces are "really" nil
 	if !isSet.stdin {
-		stdin = (io.Reader)(nil)
+		stdin = io.Reader(nil)
 	}
 	if !isSet.stdout {
-		stdout = (io.Writer)(nil)
+		stdout = io.Writer(nil)
 	}
 	if !isSet.stderr {
-		stderr = (io.Writer)(nil)
+		stderr = io.Writer(nil)
 	}
 
 	conn, err := bindings.GetClient(ctx)
@@ -144,7 +144,7 @@ func Attach(ctx context.Context, nameOrID string, stdin io.Reader, stdout io.Wri
 			// Ignore "closed network connection" as it occurs when the container ends, which is expected.
 			// This avoids noisy logs but does not fix the goroutine leak
 			// https://github.com/containers/podman/issues/25344
-			if err != nil && err != define.ErrDetach && !errors.Is(err, net.ErrClosed) {
+			if err != nil && !errors.Is(err, define.ErrDetach) && !errors.Is(err, net.ErrClosed) {
 				logrus.Errorf("Failed to write input to service: %v", err)
 			}
 			if err == nil {
@@ -273,6 +273,30 @@ func ResizeExecTTY(ctx context.Context, sessionID string, options *ResizeExecTTY
 		options = new(ResizeExecTTYOptions)
 	}
 	return resizeTTY(ctx, bindings.JoinURL("exec", sessionID, "resize"), options.Height, options.Width)
+}
+
+// ExecKill sends a signal to a running exec session's process group.
+func ExecKill(ctx context.Context, sessionID string, signal string, options *ExecKillOptions) error {
+	if options == nil {
+		options = new(ExecKillOptions)
+	}
+	conn, err := bindings.GetClient(ctx)
+	if err != nil {
+		return err
+	}
+
+	params, err := options.ToParams()
+	if err != nil {
+		return err
+	}
+	params.Set("signal", signal)
+	rsp, err := conn.DoRequest(ctx, nil, http.MethodPost, bindings.JoinURL("exec", sessionID, "kill"), params, nil)
+	if err != nil {
+		return err
+	}
+	defer rsp.Body.Close()
+
+	return rsp.Process(nil)
 }
 
 // resizeTTY set size of TTY of container
